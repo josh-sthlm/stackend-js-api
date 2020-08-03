@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/stackend-js-api.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/abuse.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/blog/blog.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/blog/poll.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/category.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cms.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/comments.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/counter.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/event.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/faq.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/forum.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/group.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/like.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/login.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/media.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/modules.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/notifications.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/permalink.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/poll.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/privileges.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/qna.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/rating.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/search.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/shop.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/stackend.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/tree.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/user.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/vote.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1faprEieOJ7m1F4PUFYByyLiXAO" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="nodejs_package_manager_path" value="npm" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="" />
+      <created>1596466254704</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1596466254704</updated>
+      <workItem from="1596466255871" duration="1749000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
