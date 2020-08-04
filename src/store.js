@@ -1,7 +1,9 @@
 // @flow
 import type { Store as ReduxStore, Dispatch as ReduxDispatch } from 'redux';
-import type { Action } from './action.js';
-import type { State } from './state.js';
+
+export type State = $ObjMap<any, any>;
+export type Action = any;
+export type ActionType = any;
 
 export type Store = ReduxStore<State, Action>;
 

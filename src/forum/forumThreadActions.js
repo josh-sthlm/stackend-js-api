@@ -1,13 +1,13 @@
 // @flow
 import _ from 'lodash/object';
 import * as forumApi from './forum.js';
-import * as likeApi from '../like/like.js';
-import * as api from '../xcap/api.js';
+import * as likeApi from '../like.js';
+import * as api from '../api.js';
 import * as forumActions from './forumActions.js';
-import type { Thunk, Dispatch, GetState } from '../types/store.js';
+import type { Thunk, Dispatch, GetState } from '../store.js';
 import * as reducer from './forumThreadReducer.js';
 import { sendEventToGA } from '../analytics/analyticsFunctions.js';
-import { removeForumThreadEntry } from '../forum/forum.js';
+import { removeForumThreadEntry } from './forum.js';
 import { handleAccordionStatus } from '../Accordion/accordionReducer.jsx';
 
 type FetchForumThreads = {

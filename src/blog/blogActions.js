@@ -1,9 +1,9 @@
 //@flow
-import * as blogApi from './blog.js';
+import { type Blog } from './blog.js';
 import * as reducer from './blogReducer.js';
 
 type RecieveBlogs = {
-	entries: Array<blogApi.Blog>
+	entries: Array<Blog>
 };
 
 export function recieveBlogs({ entries }: RecieveBlogs) {

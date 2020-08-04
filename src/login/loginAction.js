@@ -1,7 +1,7 @@
 //@flow
-import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginReducer';
+import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginReducer.js';
 import { getCurrentUser } from '../user/user.js';
-import type { Thunk } from '../types/store.js';
+import type { Thunk } from '../store.js';
 import _ from 'lodash/object';
 
 const LOGIN_TTL: number = 60 * 1000;

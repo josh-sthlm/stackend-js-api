@@ -1,16 +1,15 @@
 //@flow
 
-import { appendQueryString, LoadJson, urlEncodeParameters } from '../functions/LoadJson.jsx';
-import FetchContent from '../functions/FetchContent.jsx';
+import { appendQueryString, LoadJson, urlEncodeParameters } from './LoadJson.js';
 import _ from 'lodash/object';
 import { forIn } from 'lodash/object';
-import { type Thunk, type Dispatch } from '../types/store.js';
+import { type Thunk, type Dispatch } from './store.js';
 import { recieveReferences } from './referenceActions.js';
-import { type Request, getRequest } from '../request.js';
-import { type Community, type Module } from '../stackend/stackend.js';
-import { type User } from '../user/user.js';
+import { type Request, getRequest } from './request.js';
+import { type Community, type Module } from './stackend/stackend.js';
+import { type User } from './user/user.js';
 import { setLoadingThrobberVisible } from '../throbber/throbberActions.js';
-import { type Content, type Page, type SubSite } from '../cms/cms.js';
+import { type Content, type Page, type SubSite } from './cms/cms.js';
 import { getClientSideApi } from '../functions/ClientSideApi.js';
 
 declare var __xcapRunningServerSide: any;
@@ -1019,28 +1018,6 @@ export function getJsonOutsideApi({
 	};
 }
 
-/**
- * Get json from the api.
- *
- * @param url
- * @param parameters
- */
-export function getJsp({ url, parameters }: { url: string, parameters?: any }): Thunk<*> {
-	return async (dispatch: any) => {
-		const p = appendQueryString(url, urlEncodeParameters(argsToObject(parameters)));
-		let request = await dispatch(getRequest());
-		let result = await FetchContent({ url: p, cookie: request.cookie });
-		if (!!result) {
-			if (!!result.error) {
-				console.error('Error loading jsp', result.error);
-			}
-			return result;
-		}
-
-		// FIXME: Improve error handling
-		throw 'Error loading jsp: ' + url;
-	};
-}
 
 /**
  * Post using the json api.

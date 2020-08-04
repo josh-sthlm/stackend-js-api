@@ -1,6 +1,6 @@
 // @flow
-import { post } from '../xcap/api.js';
-import type { Thunk } from '../types/store.js';
+import { post } from './api.js';
+import type { Thunk } from './store.js';
 
 /**
  * Xcap Counter API constants and methods.

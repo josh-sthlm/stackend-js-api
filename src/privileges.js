@@ -1,7 +1,7 @@
 //@flow
-import * as userApi from '../user/user.js';
-import * as groupApi from '../group/group.js';
-import { PrivilegeType } from '../xcap/api.js';
+import * as userApi from './user/user.js';
+import * as groupApi from './group/group.js';
+import { PrivilegeType } from './api.js';
 
 export const CMS_COMPONENT_CLASS = 'se.josh.xcap.cms.CmsManager';
 

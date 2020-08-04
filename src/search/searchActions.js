@@ -1,8 +1,8 @@
 // @flow
 import _ from 'lodash/object';
-import * as loadJsonActions from '../actions/LoadJson.jsx';
+import * as loadJsonActions from '../LoadJson.js';
 import * as groupActions from '../group/groupActions.js';
-import * as xcapApi from '../xcap/api.js';
+import * as xcapApi from '../api.js';
 import {
 	type SearchAbleType,
 	type Order,
@@ -12,12 +12,10 @@ import {
 	search as _search
 } from './search.js';
 import * as qnaApi from '../qna/qna.js';
-import * as faqApi from '../faq/faq.js';
 import * as groupApi from '../group/group.js';
-import type { Thunk, Dispatch, GetState } from '../types/store.js';
+import type { Thunk, Dispatch, GetState } from '../store.js';
 import * as reducer from './searchReducer.js';
 import { getRequest } from '../request.js';
-import { Theme } from '../stackend/stackend.js';
 
 //Change Text
 type UpdateSearchString = {
@@ -166,6 +164,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 					} catch (e) {
 						console.error('searchApi.search question caught an error: ', e);
 					}
+				/*
 				} else if (filter === 'faq') {
 					try {
 						if (!parsedSearchParams.gameId) {
@@ -181,6 +180,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 					} catch (e) {
 						console.error('searchApi.search faq caught an error: ', e);
 					}
+				*/
 				} else if (filter === 'blog-article') {
 					const categoryId = _.get(getState(), 'categories.news.selected.search-input', []).map(
 						category => category.id

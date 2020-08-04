@@ -1,7 +1,7 @@
 //@flow
 
-import { type Thunk } from '../types/store.js';
-import { getJson, post, type XcapJsonResult } from '../xcap/api.js';
+import { type Thunk } from '../store.js';
+import { getJson, post, type XcapJsonResult } from '../api.js';
 
 export type GraphQLListNode<T> = {
 	node: T

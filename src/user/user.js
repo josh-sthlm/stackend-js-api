@@ -6,14 +6,14 @@ import {
 	getApiUrl,
 	type XcapJsonResult,
 	type AuthObject,
-	type PrivilegeTypeIds
-} from '../xcap/api.js';
+	type PrivilegeTypeIds,
+	Order, type OrderIds, invertOrder
+} from '../api.js';
 import { type Request } from '../request.js';
-import { type Thunk } from '../types/store.js';
+import { type Thunk } from '../store.js';
 import { AuthenticationType, type AuthenticationTypeId } from '../login/login.js';
-import { type PaginatedCollection } from '../xcap/PaginatedCollection.js';
+import { type PaginatedCollection } from '../PaginatedCollection.js';
 import moment from 'moment';
-import { Order, type OrderIds, invertOrder } from '../xcap/api.js';
 import _ from 'lodash/object';
 import { type CurrentUserType } from '../login/loginReducer.js';
 import type { Community } from '../stackend/stackend.js';

@@ -1,7 +1,7 @@
 //@flow
-import { getJson, post, type XcapJsonResult } from '../../xcap/api.js';
-import type { Thunk } from '../../types/store.js';
-import type { VoteSummary } from '../../vote/vote.js';
+import { getJson, post, type XcapJsonResult } from '../api.js';
+import type { Thunk } from '../store.js';
+import type { VoteSummary } from '../vote/vote.js';
 
 /**
  * Xcap Blog poll api constants and methods.

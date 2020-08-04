@@ -1,6 +1,6 @@
 //@flow
 import _ from 'lodash/object';
-import type { Thunk } from '../types/store.js';
+import type { Thunk } from '../store.js';
 import { type Request } from '../request.js';
 import {
 	type XcapJsonResult,
@@ -8,7 +8,7 @@ import {
 	type Config,
 	post,
 	_getApiUrl
-} from '../xcap/api.js';
+} from '../api.js';
 
 import { browserHistory } from 'react-router';
 

@@ -1,4 +1,6 @@
-import type { Action, ActionType } from './action';
+//@flow
+
+import type { Action, ActionType } from './store.js';
 
 type Reducer<S, A: Action> = (S, A) => S;
 

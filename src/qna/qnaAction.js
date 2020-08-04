@@ -18,7 +18,7 @@ import {
 	SET_QNA_AVAILABLE_FILTERS,
 	RECIEVE_SEARCH_RESULT
 } from './qnaReducer';
-import type { Thunk } from '../types/store.js';
+import type { Thunk } from '../store.js';
 import { type Request, getRequest } from '../request.js';
 
 declare var __xcapRunningServerSide: string;

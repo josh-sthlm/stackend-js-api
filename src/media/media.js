@@ -1,12 +1,11 @@
 //@flow
-import * as api from '../xcap/api.js';
+import * as api from '../api.js';
 import * as Stackend from '../stackend/stackend.js';
-import { LoadJson } from '../functions/LoadJson.jsx';
-import { type Thunk } from '../types/store.js';
-import type { PaginatedCollection } from '../xcap/PaginatedCollection.js';
+import { LoadJson } from '../LoadJson.js';
+import { type Thunk } from '../store.js';
+import type { PaginatedCollection } from '../PaginatedCollection.js';
 import type { User } from '../user/user.js';
-import type { XcapJsonResult } from '../xcap/api';
-import type { Reference } from '../xcap/api.js';
+import type { XcapJsonResult, Reference } from '../api.js';
 
 /**
  * Image
@@ -22,16 +21,12 @@ export type MediaStatusType = $Values<typeof MediaStatus>;
 
 export type Media = {
 	id: number,
-	mediaType: MediaTypeId,
-	mimeType: 'image/jpeg' | 'image/png',
 	createdDate: Date,
-	modifiedDate: Date,
 	originalName: string,
 	referenceId: number,
 	status: MediaStatusType,
 	title: string,
 	description: string,
-	originalName: string,
 
 	mediaType: MediaTypes,
 

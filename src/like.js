@@ -1,11 +1,9 @@
 // @flow
 import _ from 'lodash/object';
-import { post, getJson, type XcapJsonResult } from '../xcap/api.js';
-import type { Thunk } from '../types/store.js';
-import type { PaginatedCollection } from '../xcap/PaginatedCollection.js';
-import { _getApiUrl } from '../xcap/api';
-import type { Community } from '../stackend/stackend';
-import type { Config } from '../xcap/api';
+import { post, getJson, type XcapJsonResult, _getApiUrl, type Config } from './api.js';
+import type { Thunk } from './store.js';
+import type { PaginatedCollection } from './PaginatedCollection.js';
+import type { Community } from './stackend/stackend.js';
 
 const COMPONENT_NAME = 'like';
 const CONTEXT = 'like';

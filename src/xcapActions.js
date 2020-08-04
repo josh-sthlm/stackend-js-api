@@ -1,15 +1,15 @@
 //@flow
 
 import { getInitialStoreValues, type GetInitialStoreValuesResult } from './api.js';
-import { recieveLoginData } from '../login/loginAction.js';
-import { loadCommunity, receiveResourceUsage } from '../stackend/communityAction.js';
-import { receiveNotificationCounts } from '../notifications/notificationActions.js';
+import { recieveLoginData } from './login/loginAction.js';
+import { loadCommunity, receiveResourceUsage } from './stackend/communityAction.js';
+import { receiveNotificationCounts } from './notifications/notificationActions.js';
 import { XCAP_INITIAL_STORE_DATA_RECIEVED } from './configReducer.js';
-import type { Thunk } from '../types/store.js';
-import { setRequestInfo } from '../requestActions.js';
-import { recieveModules } from '../stackend/moduleAction.js';
-import { recieveContents } from '../cms/cmsActions.js';
-import { recievePages, recieveSubSites } from '../cms/pageActions.js';
+import type { Thunk } from './store.js';
+import { setRequestInfo } from './requestActions.js';
+import { recieveModules } from './stackend/moduleAction.js';
+import { recieveContents } from './cms/cmsActions.js';
+import { recievePages, recieveSubSites } from './cms/pageActions.js';
 
 /*
  * Populate the initial redux store.

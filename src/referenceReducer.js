@@ -1,7 +1,7 @@
 // @flow
 import update from 'immutability-helper';
-import type { Action } from '../types/action.js';
-import createReducer from '../types/createReducer.js';
+import type { Action } from './store.js';
+import createReducer from './createReducer.js';
 
 export type referenceActions = Recieve;
 export type referenceActionTypes = 'RECIEVE_REFERENCES';

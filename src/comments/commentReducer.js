@@ -3,10 +3,10 @@ import _ from 'lodash/object';
 import { concat } from 'lodash/array';
 import { List } from 'immutable';
 import update from 'immutability-helper';
-import type { Action } from '../types/action.js';
+import type { Action } from '../store.js';
 import * as commentAction from './commentAction.js';
 import * as commentsApi from './comments.js';
-import { emptyPaginatedCollection } from '../xcap/PaginatedCollection.js';
+import { emptyPaginatedCollection } from '../PaginatedCollection.js';
 
 //Action Type
 export const REQUEST_GROUP_COMMENTS = 'REQUEST_GROUP_COMMENTS';

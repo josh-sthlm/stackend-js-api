@@ -1,14 +1,12 @@
 // @flow
 import _ from 'lodash/object';
 import { concat } from 'lodash/array';
-//import { spread } from 'lodash/function';
-//import { groupBy, map } from 'lodash/collection';
 
 import update from 'immutability-helper';
 import * as blogApi from './blog.js';
 import { LOCATION_CHANGE } from 'react-router-redux';
-import createReducer from '../types/createReducer';
-import * as xcapApi from './../xcap/api.js';
+import createReducer from '../createReducer.js';
+import { getJsonErrorText } from '../api.js';
 
 //Action Type
 export const REQUEST_GROUP_BLOG_ENTRIES = 'REQUEST_GROUP_BLOG_ENTRIES';
@@ -104,7 +102,7 @@ export const groupBlogEntries = createReducer(
 					RECIEVE_GROUP_BLOG_ENTRIES,
 					'Error:',
 					action.blogKey,
-					xcapApi.getJsonErrorText(action.json)
+					getJsonErrorText(action.json)
 				);
 				return update(state, {
 					[action.blogKey]: {

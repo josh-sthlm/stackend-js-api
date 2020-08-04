@@ -1,5 +1,5 @@
 //@flow
-import { listNotifications, type Notification } from './notifications.js';
+import { type Notification } from './notifications.js';
 import update from 'immutability-helper';
 
 export const REQUEST_NOTIFICATIONS = 'REQUEST_NOTIFICATIONS';

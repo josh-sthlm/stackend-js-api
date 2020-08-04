@@ -1,7 +1,7 @@
 // @flow
 import update from 'immutability-helper';
 import * as search from './search.js';
-import { type Action } from '../types/action.js';
+import { type Action } from '../store.js';
 
 export const UPDATE_SEARCH_STRING = 'UPDATE_SEARCH_STRING';
 export const UPDATE_SELECTED_TYPE = 'UPDATE_SELECTED_TYPE';

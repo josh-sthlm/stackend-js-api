@@ -5,16 +5,16 @@ import {
 	post,
 	type XcapJsonResult,
 	type ModerationStatusIds
-} from '../xcap/api.js';
-import { generatePermalink } from '../xcap/permalink.js';
-import { type Thunk } from '../types/store.js';
+} from '../api.js';
+import { generatePermalink } from '../permalink.js';
+import { type Thunk } from '../store.js';
 import { type User } from '../user/user.js';
-import { type PaginatedCollection } from '../xcap/PaginatedCollection.js';
+import { type PaginatedCollection } from '../PaginatedCollection.js';
 import { type Category } from '../category/category.js';
 import { type InsertionType } from '../category/category.js';
 import { type Order } from '../search/search.js';
 import { type Tree, type Node, newTree, newTreeNode } from '../tree/tree.js';
-import { ModuleType } from '../modules/modules.js';
+import { ModuleType } from '../stackend/modules.js';
 import React from 'react';
 
 /**

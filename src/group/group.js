@@ -1,12 +1,11 @@
 //@flow
-import { getJson, post, createCommunityUrl, SortOrder, type XcapJsonResult } from '../xcap/api.js';
+import { getJson, post, createCommunityUrl, SortOrder, type XcapJsonResult, PrivilegeType } from '../api.js';
 import * as userApi from '../user/user.js';
-import type { Thunk } from '../types/store.js';
+import type { Thunk } from '../store.js';
 import { type Request } from '../request.js';
-import type { PaginatedCollection } from '../xcap/PaginatedCollection.js';
-import type { Auth } from '../privileges/privileges.js';
-import { PrivilegeType } from '../xcap/api';
-import type { Blog } from '../blog/blog';
+import type { PaginatedCollection } from '../PaginatedCollection.js';
+import type { Auth } from '../privileges.js';
+import type { Blog } from '../blog/blog.js';
 
 /**
  * Xcap group api constants and methods.

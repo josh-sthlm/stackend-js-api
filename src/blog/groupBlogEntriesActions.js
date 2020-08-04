@@ -5,10 +5,10 @@ import * as categoryApi from '../category/category.js';
 import * as groupActions from '../group/groupActions.js';
 import * as blogActions from './blogActions.js';
 import { listMyGroups } from '../group/group.js';
-import * as xcapApi from '../xcap/api.js';
+import { getJsonErrorText } from '../api.js';
 import * as commentActions from '../comments/commentAction.js';
 import * as commentApi from '../comments/comments.js';
-import type { Thunk, Dispatch } from '../types/store.js';
+import type { Thunk, Dispatch } from '../store.js';
 import {
 	INVALIDATE_GROUP_BLOG_ENTRIES,
 	RECIEVE_GROUP_BLOG_ENTRIES,
@@ -210,7 +210,7 @@ export function fetchBlogEntriesWithComments({
 			if (!!response.json.error) {
 				console.error(
 					'Could not get blog entries for ' + blogKey + ': ',
-					xcapApi.getJsonErrorText(response.json)
+					getJsonErrorText(response.json)
 				);
 				return null;
 			}

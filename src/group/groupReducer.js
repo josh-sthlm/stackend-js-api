@@ -1,8 +1,8 @@
 // @flow
 import update from 'immutability-helper';
-import * as xcapApi from '../xcap/api.js';
+import * as xcapApi from '../api.js';
 import * as groupApi from './group.js';
-import { Action } from '../types/action.js';
+import { type Action } from '../store.js';
 
 export const REQUEST_GROUPS = 'REQUEST_GROUPS';
 export const RECIEVE_GROUPS = 'RECIEVE_GROUPS';

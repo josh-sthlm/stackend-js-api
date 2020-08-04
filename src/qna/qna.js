@@ -4,15 +4,15 @@ import {
 	post as apiPost,
 	getCurrentCommunityPermalink,
 	getAbsoluteApiBaseUrl,
-	createCommunityUrl
-} from '../xcap/api.js';
+	createCommunityUrl,
+	type DeployProfile
+} from '../api.js';
 import * as searchApi from '../search/search.js';
 import * as forumApi from '../forum/forum.js';
-import type { Thunk } from '../types/store.js';
+import type { Thunk } from '../store.js';
 import { type Request } from '../request.js';
-import { Theme } from '../stackend/stackend';
+import { Theme } from '../stackend/stackend.js';
 import _ from 'lodash/object';
-import { DeployProfile } from '../xcap/api';
 
 /**
  * Xcap QNA API constants and methods.

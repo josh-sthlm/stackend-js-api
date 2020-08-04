@@ -1,6 +1,6 @@
 //@flow
 
-import type { Dispatch, Thunk } from '../types/store.js';
+import type { Dispatch, Thunk } from '../store.js';
 import { REQUEST_CONTENT, RECIEVE_CONTENT, RECIEVE_CONTENTS, SET_CONTENT } from './cmsReducer.js';
 import { getContent, type Content } from './cms.js';
 

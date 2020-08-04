@@ -1,6 +1,6 @@
 //@flow
 
-import { type Dispatch, type Thunk } from '../types/store.js';
+import { type Dispatch, type Thunk } from '../store.js';
 
 import {
 	CLEAR_PAGE,

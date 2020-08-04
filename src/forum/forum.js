@@ -6,20 +6,20 @@ import {
 	getJson,
 	post,
 	getDeployProfile,
+	DeployProfile,
 	createCommunityUrl,
 	type Modstatus,
 	type XcapJsonResult
-} from '../xcap/api.js';
+} from '../api.js';
 import * as categoryApi from '../category/category.js';
 import * as userApi from '../user/user.js';
 import * as qnaApi from '../qna/qna.js';
 import * as gaFunctions from '../functions/gaFunctions.js';
-import type { PaginatedCollection } from '../xcap/PaginatedCollection.js';
-import type { Thunk, Dispatch } from '../types/store.js';
+import type { PaginatedCollection } from '../PaginatedCollection.js';
+import type { Thunk, Dispatch } from '../store.js';
 import { type Request } from '../request.js';
-import { DeployProfile } from '../xcap/api.js';
 import { type VoteSummary } from '../vote/vote.js';
-import { type LikeDataMap } from '../like/like.js';
+import { type LikeDataMap } from '../like.js';
 
 /**
  * Xcap Forum API constants and methods.

@@ -44,7 +44,7 @@ const voteReducer = (state: State = {}, action: any) => {
 				hasVoted: action.hasVoted,
 				myReview: action.myReview
 			});
-			console.log('XCAP_VOTES_UPDATE', state, c, 'same=', state == c);
+			//console.log('XCAP_VOTES_UPDATE', state, c, 'same=', state === c);
 			break;
 
 		default:

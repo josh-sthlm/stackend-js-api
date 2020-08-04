@@ -10,8 +10,7 @@ import {
 } from './communityReducer.js';
 
 import * as Stackend from './stackend.js';
-import { type Thunk } from '../types/store.js';
-import { newPaginatedCollection } from '../xcap/PaginatedCollection.js';
+import { type Thunk } from '../store.js';
 
 /**
  * Load communities

@@ -1,5 +1,5 @@
 // @flow
-import { type Thunk } from './types/store.js';
+import { type Thunk } from './store.js';
 import _ from 'lodash/object';
 
 export type Location = {

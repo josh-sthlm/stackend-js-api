@@ -11,5 +11,25 @@
     "url": "info@stackend.com"
   },
   "author": "Stackend",
-  "homepage": "https://stackend.com"
+  "homepage": "https://stackend.com",
+  "prettier": {
+    "useTabs": true,
+    "jsxBracketSameLine": true,
+    "singleQuote": true,
+    "printWidth": 100
+  },
+  "dependencies": {
+    "es6-promise": "^3.3.1",
+    "immutability-helper": "^2.1.1",
+    "immutable": "^3.8.2",
+    "isomorphic-fetch": "^2.2.1",
+    "lodash": "^4.17.15",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "moment": "^2.22.0"
+  },
+  "devDependencies": {
+    "flow-bin": "^0.125.1",
+    "flow-typed": "^3.1.0"
+  }
 }

@@ -1,7 +1,7 @@
 // @flow
 import _ from 'lodash/object';
 import { listForums, type Forum } from './forum.js';
-import type { Thunk, Dispatch } from '../types/store.js';
+import type { Thunk, Dispatch } from '../store.js';
 import * as reducer from './forumReducer.js';
 
 //Requests and recieve comments and store them in redux-state

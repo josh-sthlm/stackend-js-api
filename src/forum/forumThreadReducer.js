@@ -2,8 +2,8 @@
 import _ from 'lodash/object';
 import { spread } from 'lodash/function';
 import update from 'immutability-helper';
-import Action from '../types/action.js';
-import createReducer from '../types/createReducer.js';
+import { type Action } from '../store.js';
+import createReducer from '../createReducer.js';
 import * as forumApi from './forum.js';
 
 export type ForumThreadActions = Request | Recieve | Invalidate | Rate | Like | DeleteEntry;

@@ -1,6 +1,6 @@
 // @flow
-import { post, type XcapJsonResult } from '../xcap/api.js';
-import type { Thunk } from '../types/store.js';
+import { post, type XcapJsonResult } from '../api.js';
+import type { Thunk } from '../store.js';
 
 /**
  * Component name

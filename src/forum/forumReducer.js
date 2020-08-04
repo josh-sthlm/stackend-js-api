@@ -1,9 +1,9 @@
 // @flow
 import update from 'immutability-helper';
-import Action from '../types/action.js';
+import { type Action } from '../store.js';
 import _ from 'lodash/object';
 import { spread } from 'lodash/function';
-import createReducer from '../types/createReducer.js';
+import createReducer from '../createReducer.js';
 import * as forumApi from './forum.js';
 
 export type ForumActions = Request | Recieve | Invalidate;

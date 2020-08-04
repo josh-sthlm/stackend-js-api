@@ -1,5 +1,5 @@
 //@flow
-import { type Thunk } from '../types/store.js';
+import { type Thunk } from '../store.js';
 import { type Request } from '../request.js';
 import {
 	getJson,
@@ -12,10 +12,10 @@ import {
 	type PrivilegeIds,
 	Order,
 	type ModerationStatusIds
-} from '../xcap/api.js';
+} from '../api.js';
 import { fetchModules } from './moduleAction.js';
 import { hasElevatedPrivilege, type User } from '../user/user.js';
-import { type PaginatedCollection } from '../xcap/PaginatedCollection.js';
+import { type PaginatedCollection } from '../PaginatedCollection.js';
 import { type CurrentUserType } from '../login/loginReducer.js';
 
 /**

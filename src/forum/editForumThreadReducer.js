@@ -1,7 +1,7 @@
 // @flow
 import update from 'immutability-helper';
-import Action from '../types/action.js';
-import createReducer from '../types/createReducer.js';
+import Action from '../action.js';
+import createReducer from '../createReducer.js';
 
 export type EditForumThreadActions = Edit | Set | AddQuote | ToggleEdit;
 export type EditForumThreadActionTypes = $Keys<typeof actionTypes>;
