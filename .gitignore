@@ -1,0 +1,17 @@
+/target/
+.mymetadata
+/node/
+/node_modules/
+/.project~
+/.DS_Store
+/etc/
+/.eslintrc
+/.flowconfig
+.DS_Store
+/npm-debug.log
+/.happypack/
+/build_artifacts/
+build_artifacts.tar
+/project_version.txt
+stackend-stackend-*.tgz
+/lib/
