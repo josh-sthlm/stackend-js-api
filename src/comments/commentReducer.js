@@ -288,6 +288,8 @@ export function GroupComments(state: State = {}, action: Action) {
 	}
 }
 
+export default GroupComments;
+
 export function openReplyBoxes(
 	state: Array<number> = [],
 	action: { type: string, parentId: number }

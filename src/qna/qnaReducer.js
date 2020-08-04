@@ -197,6 +197,8 @@ const defaultStyle = {
 	linkColor: '',
 	textDetailColor: ''
 };
+
+
 const qnaStyling = (
 	state: any = xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.styling
 		? xcapModuleSettings.qna.styling
@@ -212,3 +214,5 @@ const qnaStyling = (
 };
 
 export { qnaReducer, qnaServer, qnaSelectedFilters, qnaGame, qnaStyling };
+
+export default qnaReducer;

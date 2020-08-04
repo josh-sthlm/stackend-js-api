@@ -6,7 +6,7 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 import { isCommunityUrlBlocked } from './stackend/stackend.js';
 
 /**
- * Sets up an implementaion neutral object that keeps track of the current url
+ * Sets up an implementation neutral object that keeps track of the current url
  */
 export const requestReducer = (
 	state: Request = {
@@ -138,3 +138,5 @@ export const requestReducer = (
 			return state;
 	}
 };
+
+export default requestReducer;

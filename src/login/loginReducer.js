@@ -13,7 +13,7 @@ export type CurrentUserType = {
 	user: ?User
 };
 
-const loginReducer = (
+export const loginReducer = (
 	state: CurrentUserType = { isLoggedIn: false, lastUpdated: 0 },
 	action: any
 ) => {
@@ -34,4 +34,4 @@ const loginReducer = (
 	}
 };
 
-export { loginReducer };
+export default loginReducer;

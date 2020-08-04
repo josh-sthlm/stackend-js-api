@@ -189,6 +189,8 @@ export const groupBlogEntries = createReducer(
 	}
 );
 
+export default groupBlogEntries;
+
 type OpenBlogEntryWriteCommentSection =
 	| false
 	| { blogEntryId: number, editorType: 'EDIT' | 'COMMENT' };

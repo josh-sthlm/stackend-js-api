@@ -2,10 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.flowconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.flowconfig" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/reducers.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/blog/groupBlogEntriesReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/blog/groupBlogEntriesReducer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stackend/stackend.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend/stackend.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/comments/commentReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/comments/commentReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/forum/editForumThreadReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/editForumThreadReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/login/loginReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/login/loginReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/qna/qnaReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/qna/qnaReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/requestReducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/requestReducers.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +35,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -40,7 +47,7 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="Settings.JavaScript" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.JavaScript" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -51,7 +58,9 @@
       <option name="presentableId" value="Default" />
       <updated>1596466254704</updated>
       <workItem from="1596466255871" duration="9401000" />
-      <workItem from="1596540894485" duration="288000" />
+      <workItem from="1596540894485" duration="929000" />
+      <workItem from="1596552394269" duration="835000" />
+      <workItem from="1596553555279" duration="1646000" />
     </task>
     <task id="LOCAL−00001" summary="Added to GIT">
       <created>1596468255316</created>
@@ -71,7 +80,13 @@
       <option name="presentableId" value="LOCAL−00003" />
       <updated>1596540967343</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL−00004" summary="Fixes">
+      <created>1596541214636</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1596541214637</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -81,17 +96,18 @@
     <MESSAGE value="Added to GIT" />
     <MESSAGE value="Added files" />
     <MESSAGE value="Work" />
-    <option name="LAST_COMMIT_MESSAGE" value="Work" />
+    <MESSAGE value="Fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixes" />
   </component>
   <component name="WindowStateProjectService">
     <state x="1107" y="661" width="704" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1596541054995">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1107" y="661" width="704" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.46.2928.1784@0.46.2928.1784" timestamp="1596541054995" />
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1596540966914">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1596541214521">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1596540966914" />
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1596541214521" />
     <state width="2891" height="487" key="GridCell.Tab.0.bottom" timestamp="1596529202770">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
@@ -108,14 +124,14 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state width="2891" height="487" key="GridCell.Tab.0.right/0.46.2928.1784@0.46.2928.1784" timestamp="1596529202770" />
-    <state x="594" y="273" width="1739" height="1299" key="SettingsEditor" timestamp="1596527696938">
+    <state x="594" y="273" width="1739" height="1299" key="SettingsEditor" timestamp="1596553655616">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="594" y="273" width="1739" height="1299" key="SettingsEditor/0.46.2928.1784@0.46.2928.1784" timestamp="1596527696938" />
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1596540973710">
+    <state x="594" y="273" width="1739" height="1299" key="SettingsEditor/0.46.2928.1784@0.46.2928.1784" timestamp="1596553655616" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1596541216338">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1596540973710" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1596541216338" />
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1596533562889">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
