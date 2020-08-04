@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "JS bindings to api.stackend.com",
   "main": "index.js",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bugs": {
+    "url": "info@stackend.com"
   },
   "author": "Stackend",
   "homepage": "https://stackend.com"

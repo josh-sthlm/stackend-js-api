@@ -2,38 +2,28 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/stackend-js-api.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/abuse.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/api.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/blog/blog.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/blog/poll.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/category.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/cms.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/comments.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/counter.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/event.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/faq.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/forum.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/group.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/like.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/login.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/media.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/modules.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/notifications.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/permalink.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/poll.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/privileges.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/qna.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/rating.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/search.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/shop.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/stackend.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/tree.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/user.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/vote.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/abuse.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/category.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cms.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/comments.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/event.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/faq.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/forum.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/group.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/login.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/media.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/modules.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/notifications.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/qna.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/search.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shop.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stackend.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tree.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vote.js" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,11 +60,32 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1596466254704</updated>
-      <workItem from="1596466255871" duration="1749000" />
+      <workItem from="1596466255871" duration="4658000" />
     </task>
+    <task id="LOCAL−00001" summary="Added to GIT">
+      <created>1596468255316</created>
+      <option name="number" value="LOCAL−00001" />
+      <option name="presentableId" value="LOCAL−00001" />
+      <updated>1596468255316</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added to GIT" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added to GIT" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1596468255102">
+      <screen x="0" y="46" width="2928" height="1784" />
+    </state>
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1596468255102" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1596468258151">
+      <screen x="0" y="46" width="2928" height="1784" />
+    </state>
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1596468258151" />
   </component>
 </project>
