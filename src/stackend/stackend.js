@@ -1231,7 +1231,7 @@ export function inviteUserToCommunity({
  * @returns {*|string}
  */
 export function getReferenceUrl(url: string) {
-	let r = /(?:https|http)?(?::\/\/)?(?:www\.)?([^\?\#]*)/.exec(url);
+	let r = /(?:https|http)?(?::\/\/)?(?:www\.)?([^?#]*)/.exec(url);
 	return r && r[1];
 }
 

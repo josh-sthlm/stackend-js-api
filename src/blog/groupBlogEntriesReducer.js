@@ -122,7 +122,7 @@ export const groupBlogEntries = createReducer(
 			let origEntries = _.get(state, `[${action.blogKey}].json.resultPaginated.entries`, []);
 			let addEntries = [];
 			action.json.resultPaginated.entries.forEach(e => {
-				let existingEntry = origEntries.find(o => o.id == e.id);
+				let existingEntry = origEntries.find(o => o.id === e.id);
 				if (existingEntry) {
 					_.assign(existingEntry, e);
 				} else {
