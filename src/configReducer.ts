@@ -1,5 +1,5 @@
 //@flow
-import _ from 'lodash/object';
+import _ from 'lodash';
 
 export const XCAP_INITIAL_STORE_DATA_RECIEVED = 'XCAP_INITIAL_STORE_DATA_RECIEVED';
 

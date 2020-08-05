@@ -1,5 +1,6 @@
 //@flow
 
+
 export interface PaginatedCollection<T> {
 	page: number,
 	pageSize: number,
@@ -59,6 +60,6 @@ export function newPaginatedCollection<T>({
  * Construct a new empty paginated collection.
  * @param pageSize
  */
-export function emptyPaginatedCollection(pageSize: number = 10): PaginatedCollection<*> {
+export function emptyPaginatedCollection<T>(pageSize: number = 10): PaginatedCollection<T> {
 	return newPaginatedCollection({ pageSize });
 }

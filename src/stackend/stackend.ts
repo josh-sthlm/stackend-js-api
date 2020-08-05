@@ -9,9 +9,8 @@ import {
 	XcapJsonResult,
 	PrivilegeTypeIds,
 	PrivilegeType,
-	PrivilegeIds,
 	Order,
-	ModerationStatusIds, XcapObject
+	XcapObject, ModerationStatus
 } from '../api'
 import { fetchModules } from './moduleAction';
 import { hasElevatedPrivilege, User } from '../user/user';
@@ -99,8 +98,8 @@ export interface Module {
 
 export interface ModuleRule {
 	/** Create privilege */
-	createPrivilege: PrivilegeIds,
-	moderationStatus: ModerationStatusIds,
+	createPrivilege: PrivilegeTypeIds
+	moderationStatus: ModerationStatus,
 	postModerationTtlMinutes: number,
 	contentFiltering: boolean,
 	trustedUsers: Array<User>
@@ -370,7 +369,7 @@ export function setCommunitySetting({
 	});
 }
 
-export type GetCommunityPrivateSettingsResult = XcapJsonResult & {};
+export interface GetCommunityPrivateSettingsResult extends XcapJsonResult {};
 
 /**
  * Get the community's private settings that are not exposed to the frontend
@@ -412,7 +411,7 @@ export function storeCommunityPrivateSettings({
 	values?: Map<string, any>,
 	community?: string | null
 }): Thunk<XcapJsonResult> {
-	let x = { key: string, values: string };
+	let x = { key: key, values: null };
 
 	if (values) {
 		x.values = JSON.stringify(values);
@@ -521,7 +520,7 @@ export function searchCommunity({
 /**
  * Get the current user (with privileges from stackend rather than the current community)
  */
-export function getCurrentStackendUser(): Thunk<*> {
+export function getCurrentStackendUser(): Thunk<XcapJsonResult> {
 	return getJson({
 		url: '/user/get',
 		community: STACKEND_COMMUNITY
@@ -989,8 +988,8 @@ export function storeModule({
 }
 
 interface RuleSetup {
-	createPrivilege: PrivilegeIds,
-	moderationStatus: ModerationStatusIds,
+	createPrivilege: PrivilegeTypeIds,
+	moderationStatus: ModerationStatus,
 	contentFiltering: boolean,
 	postModerationTtlMinutes: number
 }
@@ -1053,7 +1052,7 @@ export function storeModuleRules({
  * @param id
  * @param communityId
  */
-export function removeModule({ id, communityId }: { id: number, communityId: number }): Thunk<*> {
+export function removeModule({ id, communityId }: { id: number, communityId: number }): Thunk<XcapJsonResult> {
 	return post({
 		url: '/stackend/module/remove',
 		parameters: {
@@ -1068,7 +1067,7 @@ export function removeModule({ id, communityId }: { id: number, communityId: num
  * Detect modules by inspecting existing data. Developer tool.
  * @param communityId
  */
-export function detectModules({ communityId }: { communityId: number }): Thunk<*> {
+export function detectModules({ communityId }: { communityId: number }): Thunk<XcapJsonResult> {
 	return post({
 		url: '/stackend/modules/update',
 		parameters: {
@@ -1248,8 +1247,8 @@ export function getStackendUrl({
 	path
 }: {
 	request: Request,
-	community?: ?Community,
-	module?: ?Module,
+	community?: Community | null,
+	module?: Module | null,
 	path: string
 }): string {
 	let s: string = request.contextPath;

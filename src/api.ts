@@ -1,9 +1,9 @@
 //@flow
 
 import { appendQueryString, LoadJson, urlEncodeParameters } from './LoadJson';
-import _ from 'lodash/object';
-import { forIn } from 'lodash/object';
-import { Thunk, Dispatch } from './store';
+import _ from 'lodash';
+import { Thunk } from './store';
+import { Dispatch} from 'redux';
 import { recieveReferences } from './referenceActions';
 import { Request, getRequest } from './request';
 import { Community, Module } from './stackend/stackend';
@@ -273,6 +273,7 @@ const typeNames = {
 	'net.josh.community.media.Image': 'Image',
 	'net.josh.community.media.Document': 'Document',
 	'net.josh.community.media.Audio': 'Audio',
+	'net.josh.community.media.Video': 'Video',
 	'se.josh.xcap.cms.Content': 'CMS Content',
 	'se.josh.xcap.cms.impl.ContentImpl': 'CMS Content',
 	'se.josh.xcap.community.Community': 'Site'
@@ -1437,7 +1438,7 @@ export function getJsonErrorText(response?: XcapJsonResult): string {
 		}
 	}
 
-	forIn(response.error.fieldErrors, (value, key) => {
+	_.forIn(response.error.fieldErrors, (value, key) => {
 		if (m.length > 0) {
 			m += '\n';
 		}

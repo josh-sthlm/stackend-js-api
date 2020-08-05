@@ -14,7 +14,7 @@ import { Thunk } from '../store';
 import { AuthenticationType, AuthenticationTypeId } from '../login/login';
 import { PaginatedCollection } from '../PaginatedCollection';
 import moment from 'moment';
-import _ from 'lodash/object';
+import _ from 'lodash';
 import { CurrentUserType } from '../login/loginReducer';
 import { Community } from '../stackend/stackend';
 

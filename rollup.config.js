@@ -26,7 +26,7 @@ const makeExternalPredicate = (externalArr) => {
 export default [
   // CommonJS
   {
-    input: 'src/index.ts',
+    input: 'src/api.ts',
     output: { file: 'lib/api.ts', format: 'cjs', indent: false },
     external: makeExternalPredicate([
       ...Object.keys(pkg.dependencies || {}),
@@ -49,7 +49,7 @@ export default [
 
   // ES
   {
-    input: 'src/index.ts',
+    input: 'src/api.ts',
     output: { file: 'es/api.ts', format: 'es', indent: false },
     external: makeExternalPredicate([
       ...Object.keys(pkg.dependencies || {}),
@@ -75,7 +75,7 @@ export default [
 
   // ES for Browsers
   {
-    input: 'src/index.ts',
+    input: 'src/api.ts',
     output: { file: 'es/api.mjs', format: 'es', indent: false },
     plugins: [
       nodeResolve({

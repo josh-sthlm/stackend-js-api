@@ -1,5 +1,5 @@
 // @flow
-import type { Store as ReduxStore, Dispatch as ReduxDispatch, Action } from 'redux';
+import type { Store as ReduxStore, Action, Dispatch} from 'redux';
 
 export type State = Map<any, any>;
 
@@ -7,4 +7,4 @@ export type Store = ReduxStore<State, Action>;
 
 export type GetState = () => State;
 
-export type Thunk<A> = ((Dispatch, GetState) => Promise<void> | void) => A;
+export type Thunk<A> = ((dispatch: Dispatch, getState: GetState) => Promise<void> | void) => A;
