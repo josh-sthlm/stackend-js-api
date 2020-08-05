@@ -1,22 +1,22 @@
-//@flow
+
 import {
 	getJson,
 	createCommunityUrl,
 	post,
 	getApiUrl,
-	type XcapJsonResult,
-	type AuthObject,
-	type PrivilegeTypeIds,
-	Order, type OrderIds, invertOrder
-} from '../api.js';
-import { type Request } from '../request.js';
-import { type Thunk } from '../store.js';
-import { AuthenticationType, type AuthenticationTypeId } from '../login/login.js';
-import { type PaginatedCollection } from '../PaginatedCollection.js';
+	XcapJsonResult,
+	AuthObject,
+	PrivilegeTypeIds,
+	Order, invertOrder
+} from '../api';
+import { Request } from '../request';
+import { Thunk } from '../store';
+import { AuthenticationType, AuthenticationTypeId } from '../login/login';
+import { PaginatedCollection } from '../PaginatedCollection';
 import moment from 'moment';
 import _ from 'lodash/object';
-import { type CurrentUserType } from '../login/loginReducer.js';
-import type { Community } from '../stackend/stackend.js';
+import { CurrentUserType } from '../login/loginReducer';
+import { Community } from '../stackend/stackend';
 
 /**
  * Xcap User api constants and methods.
@@ -29,7 +29,7 @@ export const TYPE_USER: string = 'net.josh.community.user.backend.xcap.XcapUser'
 /**
  * Definition of a user
  */
-export type User = {|
+export interface User {
 	id: number,
 	__type: 'net.josh.community.user.backend.xcap.XcapUser',
 	name: string,
@@ -43,49 +43,50 @@ export type User = {|
 	/** Full name, or the alias if not set */
 	nameOrAlias: string,
 	/** Birth date or null if not set*/
-	birthDate: ?number,
+	birthDate: number | null,
 	cityId: number,
 
 	/** City name, if set */
-	city: ?string,
+	city: string | null,
 	online: boolean,
 	userName: string,
 
 	/** Profile image url, or null if not set */
-	profileImage: ?string,
+	profileImage: string | null,
 	//KING avatarCss: string,
 	privileges: Array<string>,
 
 	/* Gender. Not present if unknown */
-	gender?: ?GenderType
-|};
+	gender?: GenderType | null
+}
 
 /**
  * User fields only available to privileged users
  */
-export type UserPrivateDataType = User & {|
+export interface UserPrivateDataType extends User {
 	email: string,
 	status?: StatusIdType,
-	zipCode?: ?string,
-	nrOfLogins?: ?number
-|};
+	zipCode?: string | null,
+	nrOfLogins?: number | null,
+	profile: Map<string,any>
+}
 
 /**
  * User status
  * @type {{OK: number, NOT_VERIFIED: number, BLOCKED: number, DELETED_BY_USER: number, DELETED_BY_ADMIN: number}}
  */
-export const Status = {
-	OK: 0,
-	NOT_VERIFIED: 5,
-	BLOCKED: 10,
-	DELETED_BY_USER: 15,
-	DELETED_BY_ADMIN: 20
-};
+export enum Status {
+	OK = 0,
+	NOT_VERIFIED = 5,
+	BLOCKED = 10,
+	DELETED_BY_USER = 15,
+	DELETED_BY_ADMIN = 20
+}
 
 /**
  * Valid Statuses
  */
-export type StatusIdType = $Values<typeof Status>;
+export type StatusIdType = 0 | 5 | 10 | 15 | 20;
 
 const STATUS_NAMES = {
 	[Status.BLOCKED]: 'Blocked',
@@ -111,13 +112,13 @@ export function getStatusName(statusId: StatusIdType): string {
 /**
  * Gender
  */
-export const GenderId = {
-	UNKNOWN: 0,
-	FEMALE: 1,
-	MALE: 2
-};
+export enum GenderId {
+	UNKNOWN = 0,
+	FEMALE = 1,
+	MALE = 2
+}
 
-export type GenderIdType = $Values<typeof GenderId>;
+export type GenderIdType = 0 | 1 | 2;
 
 export const Gender = {
 	UNKNOWN: 'UNKNOWN',
@@ -135,7 +136,7 @@ export const Gender = {
 		}
 	},
 
-	getGenderId: function(gender: ?Gender) {
+	getGenderId: function(gender: string | null) {
 		switch (gender) {
 			case Gender.FEMALE:
 				return Gender.FEMALE;
@@ -145,9 +146,9 @@ export const Gender = {
 				return Gender.UNKNOWN;
 		}
 	}
-};
+}
 
-export type GenderType = $Values<typeof Gender>;
+export type GenderType = "FEMALE" | "MALE" | "UNKNOWN";
 
 /**
  * User context-type
@@ -170,27 +171,25 @@ export const COMPONENT_CLASS: string = 'net.josh.community.user.UserManager';
 /**
  * Sort order for user search
  */
-export const OrderBy = {
-	ALIAS: 'ALIAS',
-	CREATED: 'CREATED',
-	CITY: 'CITY',
-	AGE: 'AGE',
-	LAST_LOGIN: 'LAST_LOGIN',
-	GENDER: 'GENDER',
-	LAST_MODIFIED: 'LAST_MODIFIED',
-	STATUS: 'STATUS'
-};
+export enum OrderBy {
+	ALIAS = 'ALIAS',
+	CREATED = 'CREATED',
+	CITY = 'CITY',
+	AGE = 'AGE',
+	LAST_LOGIN = 'LAST_LOGIN',
+	GENDER = 'GENDER',
+	LAST_MODIFIED = 'LAST_MODIFIED',
+	STATUS = 'STATUS'
+}
 
-export type OrderByIds = $Values<typeof OrderBy>;
-
-export type GetUserResult = XcapJsonResult & {
-	user: ?User
-};
+export interface GetUserResult extends XcapJsonResult {
+	user: User | null
+}
 
 /**
  * Get the current user in the current community, or null if not authorized.
  * This involves a server request.
- * @see stackend.js:getCurrentStackendUser()
+ * @see stackend.ts:getCurrentStackendUser()
  * @return {Thunk}
  */
 export function getCurrentUser(): Thunk<GetUserResult> {
@@ -232,7 +231,7 @@ export function getProfilePageUrl({
 export function getProfileLink(
 	request: Request,
 	user: User,
-	community: ?Community
+	community: Community | null
 ): {
 	url: string,
 	isRemote: boolean
@@ -240,7 +239,7 @@ export function getProfileLink(
 	const useRemoteProfileLink = _.get(community, 'settings.useRemoteProfileLink', false);
 	let profileLink = null;
 	let isRemote = false;
-	if (useRemoteProfileLink && user.profile.remoteProfileUrl) {
+	if (useRemoteProfileLink && user.profile && user.profile.remoteProfileUrl) {
 		profileLink = user.profile.remoteProfileUrl;
 		isRemote = true;
 	}
@@ -265,7 +264,7 @@ export function getProfileLink(
  * @param privilegeType {number} Minimum required privilege
  */
 export function hasElevatedPrivilege(
-	currentUser?: CurrentUserType,
+	currentUser: CurrentUserType | null,
 	componentContext: string,
 	componentClass: string,
 	privilegeType: number
@@ -354,9 +353,9 @@ export function getMutableUser(user: User): any {
 	};
 }
 
-export type StoreUserResult = XcapJsonResult & {
-	user: ?User
-};
+export interface StoreUserResult extends XcapJsonResult  {
+	user: User | null
+}
 
 /**
  * Store a user.
@@ -460,7 +459,7 @@ const ORDER_MAPPING = {
  * @param order
  * @returns {number}
  */
-function convertSortOrder(orderBy: ?OrderByIds, order: ?OrderIds): number {
+function convertSortOrder(orderBy: OrderByIds | null, order: OrderIds | null): number {
 	let k = (orderBy || OrderBy.ALIAS) + (order || Order.ASCENDING);
 	let v = ORDER_MAPPING[k];
 	if (v) {
@@ -505,8 +504,8 @@ export function search({
 	excludeCurrentUser?: boolean,
 	p?: number,
 	pageSize?: number,
-	orderBy?: ?OrderByIds,
-	order?: ?OrderIds,
+	orderBy?: OrderBy | null,
+	order?: Order | null,
 	community?: string
 }): Thunk<SearchResult> {
 	const sortOrder = convertSortOrder(orderBy, order);
@@ -567,7 +566,7 @@ export function getUserFeedUrl({ userId }: { userId: number }): Thunk<string> {
 }
 
 export type IsEmailFreeResult = XcapJsonResult & {
-	email: ?string,
+	email: string|null,
 	isEmailFree: boolean
 };
 
@@ -598,18 +597,18 @@ export function isAliasFree({ alias }: { alias: string }): Thunk<IsAliasFreeResu
 	});
 }
 
-export type GetRegistrationDataResult = XcapJsonResult & {
+export interface GetRegistrationDataResult extends XcapJsonResult {
 	/** Email, if available */
-	email: ?string,
+	email: string | null,
 
 	/** Should the user be able to edit the email? */
 	isEmailEditable: boolean,
 
 	/** Unique alias (generated) */
-	alias: ?string,
+	alias: string | null,
 
 	/** Non unique user name */
-	username: ?string,
+	username: string | null,
 
 	/** Should the user be able to edit the user name? */
 	isUsernameEditable: boolean,
@@ -623,17 +622,17 @@ export type GetRegistrationDataResult = XcapJsonResult & {
 	cityId: number,
 
 	/** Gender  */
-	gender: ?GenderIdType,
+	gender: GenderIdType | null,
 
 	/** First name */
-	firstName: ?string,
+	firstName: string | null,
 
 	/** Last name */
-	lastName: ?string,
+	lastName: string | null,
 
 	/** Birth date, if available */
-	birthDate: ?number
-};
+	birthDate: number | null
+}
 
 /**
  * Get data needed to make a registration.
@@ -693,7 +692,7 @@ export function registerFacebookUser({
 export function removeFacebookReference({
 	facebookId
 }: {
-	facebookId?: ?string
+	facebookId?: string | null
 }): Thunk<XcapJsonResult> {
 	return post({
 		url: '/user/auth/facebook/remove',
@@ -709,7 +708,7 @@ export function removeFacebookReference({
 export function removeGoogleReference({
 	userReferenceId
 }: {
-	userReferenceId?: ?string
+	userReferenceId?: string | null
 }): Thunk<XcapJsonResult> {
 	return post({
 		url: '/user/auth/google/remove',
@@ -793,16 +792,16 @@ export function registerOAuth2User({
 	});
 }
 
-export type VerifyEmailResult = XcapJsonResult & {
+export interface VerifyEmailResult extends XcapJsonResult {
 	/** Was the validation successfull? */
 	valid: boolean,
 
 	/** Does the user need to enter additional data? */
 	register: boolean,
-	returnUrl: ?string,
+	returnUrl: string | null,
 
 	/** Permalink of the users first, automatically created community */
-	firstCommunityPermalink?: ?string
+	firstCommunityPermalink?: string | null
 };
 
 /**
@@ -857,9 +856,9 @@ export function verifyEmail({
 	});
 }
 
-export type RegisterUserResult = XcapJsonResult & {
+export interface RegisterUserResult extends XcapJsonResult {
 	user: User
-};
+}
 
 /**
  * Register a user using an email address.
@@ -911,7 +910,7 @@ export function registerUser({
 /**
  * Activity statistics for a user. If any of the counts equals -1, that feature is disabled.
  */
-export type UserStatistics = {
+export interface UserStatistics {
 	userId: number,
 	numberOfPosts: number,
 	numberOfComments: number,
@@ -919,12 +918,12 @@ export type UserStatistics = {
 	numberOfQuestions: number,
 	numberOfAnswers: number,
 	numberOfLikes: number
-};
+}
 
-export type GetUserStatisticsResult = XcapJsonResult & {
-	user: ?User,
-	userStatistics: ?UserStatistics
-};
+export interface GetUserStatisticsResult extends XcapJsonResult {
+	user: User | null,
+	userStatistics: UserStatistics | null
+}
 
 /**
  * Get activity counters for a user
@@ -943,15 +942,15 @@ export function getStatistics({ id }: { id: number }): Thunk<GetUserStatisticsRe
  * @param password
  * @returns {string|boolean|(Array<string>&{index: number, input: string, groups})}
  */
-export function isPasswordAcceptable(password: string): boolean {
-	return password && password.length >= 6 && password.match(/[0-9]/);
+export function isPasswordAcceptable(password: string | null): boolean {
+	return !!password && password.length >= 6 && !!password.match(/[0-9]/);
 }
 
-export type ListAutenticationOptionsResult = XcapJsonResult & {
-	user: ?User,
+export interface ListAutenticationOptionsResult extends XcapJsonResult {
+	user: User | null,
 	availableOptions: Array<AuthenticationTypeId>,
 	enabledOptions: Array<AuthenticationTypeId>
-};
+}
 
 /**
  * List available and enabled autentication options of the current user.

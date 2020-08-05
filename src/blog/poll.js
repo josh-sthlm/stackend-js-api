@@ -1,6 +1,6 @@
 //@flow
-import { getJson, post, type XcapJsonResult } from '../api.js';
-import type { Thunk } from '../store.js';
+import { getJson, post, type XcapJsonResult } from '../api.ts';
+import type { Thunk } from '../store.ts';
 import type { VoteSummary } from '../vote/vote.js';
 
 /**

@@ -1,6 +1,6 @@
 //@flow
 import _ from 'lodash/object';
-import { type User } from '../user/user.js';
+import { type User } from '../user/user.ts';
 
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';

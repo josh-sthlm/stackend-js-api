@@ -1,20 +1,20 @@
 //@flow
-import * as userApi from './user/user.js';
-import * as groupApi from './group/group.js';
-import { PrivilegeType } from './api.js';
+import * as userApi from './user/user';
+import * as groupApi from './group/group';
+import { PrivilegeType } from './api';
 
 export const CMS_COMPONENT_CLASS = 'se.josh.xcap.cms.CmsManager';
 
-// FIXME: duplicated in xcap/api.js
-export const Privileges = {
-	VISITOR: 1,
-	IDENTIFIED: 2,
-	VERIFIED: 4,
-	BLOCKED: 8,
-	TRUSTED: 16,
-	ADMIN: 32,
-	SUPER_ADMIN: 64
-};
+// FIXME: duplicated in xcap/api.ts
+export enum Privileges {
+	VISITOR = 1,
+	IDENTIFIED = 2,
+	VERIFIED = 4,
+	BLOCKED = 8,
+	TRUSTED = 16,
+	ADMIN = 32,
+	SUPER_ADMIN= 64
+}
 
 export type Privilege =
 	| 'VISITOR'
@@ -25,7 +25,7 @@ export type Privilege =
 	| 'ADMIN'
 	| 'SUPER_ADMIN';
 
-export type Auth = {
+export interface Auth {
 	userPrivilege: Privilege,
 	comment: boolean,
 	create: boolean,
@@ -35,7 +35,7 @@ export type Auth = {
 	textFilteredPre: boolean,
 	textFilteringRequired: boolean,
 	ruleId: number
-};
+}
 
 export function isSuperUser({ user }: { user?: userApi.User }) {
 	return userApi.hasElevatedPrivilege(

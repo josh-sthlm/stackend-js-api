@@ -1,17 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/reducers.js" afterDir="false" />
+    <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="Work">
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.prettierrc.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/rollup.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/setup-redux.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/store.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LoadJson.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/LoadJson.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PaginatedCollection.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/PaginatedCollection.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/abuse/abuse.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/abuse/abuse.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/blog/blog.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/blog/blog.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/blog/groupBlogEntriesActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/blog/groupBlogEntriesActions.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/blog/groupBlogEntriesReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/blog/groupBlogEntriesReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/blog/poll.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/blog/poll.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/category/category.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/category/category.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/category/categoryReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/category/categoryReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cms/cms.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms/cms.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cms/cmsActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms/cmsActions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cms/cmsReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms/cmsReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cms/pageActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms/pageActions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cms/pageReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms/pageReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/comments/commentAction.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/comments/commentAction.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/comments/commentReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/comments/commentReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/comments/comments.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/comments/comments.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/configReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/configReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/counter.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/counter.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/createReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/createReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/event/event.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/event/event.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/forum/editForumThreadReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/editForumThreadReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/forum/forum.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/forum.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/forum/forumActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/forumActions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/forum/forumReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/forumReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/forum/forumThreadActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/forumThreadActions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/forum/forumThreadReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/forumThreadReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/group/group.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/group/group.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/group/groupActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/group/groupActions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/group/groupReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/group/groupReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/like.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/like.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/login/login.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/login/login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/login/loginAction.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/login/loginAction.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/login/loginReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/login/loginReducer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/qna/qnaReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/qna/qnaReducer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/requestReducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/requestReducers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/media/media.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/media/media.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/notifications/notificationActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/notifications/notificationActions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/notifications/notifications.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/notifications/notifications.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/permalink.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/permalink.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/poll.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/poll.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/privileges.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/privileges.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/qna/qna.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/qna/qna.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/qna/qnaAction.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/qna/qnaAction.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rating.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/rating.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/reducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/reducers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/referenceActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/referenceActions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/referenceReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/referenceReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/request.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/request.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/requestActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/requestActions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/requestReducers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/requestReducers.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/search/search.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/search/search.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/search/searchActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/search/searchActions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/search/searchReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/search/searchReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shop/shop.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/shop/shop.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shop/shopActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/shop/shopActions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shop/shopReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/shop/shopReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stackend/communityAction.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend/communityAction.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stackend/communityReducer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend/communityReducer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stackend/moduleAction.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend/moduleAction.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stackend/modules.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend/modules.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/stackend/stackend.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend/stackend.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/store.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/tree/tree.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/tree/tree.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/user/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/user/user.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vote/vote.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/vote/vote.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/xcapActions.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/xcapActions.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +97,7 @@
   <component name="ProjectViewState">
     <option name="autoscrollFromSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="false" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
@@ -38,16 +105,21 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.standard" value="project" />
     <property name="node.js.path.for.package.tslint" value="project" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.standard" value="" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
+    <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.JavaScript" />
+    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -60,7 +132,7 @@
       <workItem from="1596466255871" duration="9401000" />
       <workItem from="1596540894485" duration="929000" />
       <workItem from="1596552394269" duration="835000" />
-      <workItem from="1596553555279" duration="1646000" />
+      <workItem from="1596553555279" duration="13698000" />
     </task>
     <task id="LOCAL−00001" summary="Added to GIT">
       <created>1596468255316</created>
@@ -86,7 +158,13 @@
       <option name="presentableId" value="LOCAL−00004" />
       <updated>1596541214637</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL−00005" summary="Work">
+      <created>1596555217369</created>
+      <option name="number" value="LOCAL−00005" />
+      <option name="presentableId" value="LOCAL−00005" />
+      <updated>1596555217369</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -95,51 +173,55 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added to GIT" />
     <MESSAGE value="Added files" />
-    <MESSAGE value="Work" />
     <MESSAGE value="Fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixes" />
+    <MESSAGE value="Work" />
+    <option name="LAST_COMMIT_MESSAGE" value="Work" />
   </component>
   <component name="WindowStateProjectService">
     <state x="1107" y="661" width="704" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1596541054995">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1107" y="661" width="704" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.46.2928.1784@0.46.2928.1784" timestamp="1596541054995" />
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1596541214521">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1596614164149">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1596541214521" />
-    <state width="2891" height="487" key="GridCell.Tab.0.bottom" timestamp="1596529202770">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1596614164149" />
+    <state width="2891" height="462" key="GridCell.Tab.0.bottom" timestamp="1596616457580">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="487" key="GridCell.Tab.0.bottom/0.46.2928.1784@0.46.2928.1784" timestamp="1596529202770" />
-    <state width="2891" height="487" key="GridCell.Tab.0.center" timestamp="1596529202770">
+    <state width="2891" height="462" key="GridCell.Tab.0.bottom/0.46.2928.1784@0.46.2928.1784" timestamp="1596616457580" />
+    <state width="2891" height="462" key="GridCell.Tab.0.center" timestamp="1596616457579">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="487" key="GridCell.Tab.0.center/0.46.2928.1784@0.46.2928.1784" timestamp="1596529202770" />
-    <state width="2891" height="487" key="GridCell.Tab.0.left" timestamp="1596529202769">
+    <state width="2891" height="462" key="GridCell.Tab.0.center/0.46.2928.1784@0.46.2928.1784" timestamp="1596616457579" />
+    <state width="2891" height="462" key="GridCell.Tab.0.left" timestamp="1596616457579">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="487" key="GridCell.Tab.0.left/0.46.2928.1784@0.46.2928.1784" timestamp="1596529202769" />
-    <state width="2891" height="487" key="GridCell.Tab.0.right" timestamp="1596529202770">
+    <state width="2891" height="462" key="GridCell.Tab.0.left/0.46.2928.1784@0.46.2928.1784" timestamp="1596616457579" />
+    <state width="2891" height="462" key="GridCell.Tab.0.right" timestamp="1596616457580">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="487" key="GridCell.Tab.0.right/0.46.2928.1784@0.46.2928.1784" timestamp="1596529202770" />
-    <state x="594" y="273" width="1739" height="1299" key="SettingsEditor" timestamp="1596553655616">
+    <state width="2891" height="462" key="GridCell.Tab.0.right/0.46.2928.1784@0.46.2928.1784" timestamp="1596616457580" />
+    <state x="594" y="273" width="1739" height="1299" key="SettingsEditor" timestamp="1596616773168">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="594" y="273" width="1739" height="1299" key="SettingsEditor/0.46.2928.1784@0.46.2928.1784" timestamp="1596553655616" />
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1596541216338">
+    <state x="594" y="273" width="1739" height="1299" key="SettingsEditor/0.46.2928.1784@0.46.2928.1784" timestamp="1596616773168" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1596555219180">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1596541216338" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1596555219180" />
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1596533562889">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.46.2928.1784@0.46.2928.1784" timestamp="1596533562889" />
-    <state x="875" y="404" key="run.anything.popup" timestamp="1596527878058">
+    <state x="955" y="418" width="1538" height="966" key="find.popup" timestamp="1596620989570">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="875" y="404" key="run.anything.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1596527878058" />
+    <state x="955" y="418" width="1538" height="966" key="find.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1596620989570" />
+    <state x="875" y="404" key="run.anything.popup" timestamp="1596617421115">
+      <screen x="0" y="46" width="2928" height="1784" />
+    </state>
+    <state x="875" y="404" key="run.anything.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1596617421115" />
     <state x="873" y="44" width="1177" height="1976" key="search.everywhere.popup" timestamp="1596541008755">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>

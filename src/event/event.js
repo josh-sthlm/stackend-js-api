@@ -1,6 +1,6 @@
 //@flow
-import { post, getJson } from '../api.js';
-import { type Thunk } from '../store.js';
+import { post, getJson } from '../api.ts';
+import { type Thunk } from '../store.ts';
 
 /**
  * Xcap Event api constants and methods.

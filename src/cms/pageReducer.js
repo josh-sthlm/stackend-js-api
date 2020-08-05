@@ -1,7 +1,7 @@
 //@flow
 
-import { type Action } from '../store.js';
-import { getJsonErrorText } from '../api.js';
+import { type Action } from '../store.ts';
+import { getJsonErrorText } from '../api.ts';
 import { type Page, type SubSite } from './cms.js';
 
 export const RECIEVE_PAGES: string = 'RECIEVE_PAGES';

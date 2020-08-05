@@ -1,8 +1,8 @@
 // @flow
 import { REQUEST_MODULES, RECIEVE_MODULES, RESET_MODULES } from './moduleReducer.js';
-import { type Thunk } from '../store.js';
+import { type Thunk } from '../store.ts';
 
-import * as Stackend from './stackend.js';
+import * as Stackend from './stackend.ts';
 
 /**
  * Load communities

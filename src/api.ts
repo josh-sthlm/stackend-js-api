@@ -1,16 +1,16 @@
 //@flow
 
-import { appendQueryString, LoadJson, urlEncodeParameters } from './LoadJson.js';
+import { appendQueryString, LoadJson, urlEncodeParameters } from './LoadJson';
 import _ from 'lodash/object';
 import { forIn } from 'lodash/object';
-import { type Thunk, type Dispatch } from './store.js';
-import { recieveReferences } from './referenceActions.js';
-import { type Request, getRequest } from './request.js';
-import { type Community, type Module } from './stackend/stackend.js';
-import { type User } from './user/user.js';
-import { setLoadingThrobberVisible } from '../throbber/throbberActions.js';
-import { type Content, type Page, type SubSite } from './cms/cms.js';
-import { getClientSideApi } from '../functions/ClientSideApi.js';
+import { Thunk, Dispatch } from './store';
+import { recieveReferences } from './referenceActions';
+import { Request, getRequest } from './request';
+import { Community, Module } from './stackend/stackend';
+import { User } from './user/user';
+import { setLoadingThrobberVisible } from '../throbber/throbberActions';
+import { Content, Page, SubSite } from './cms/cms';
+import { getClientSideApi } from '../functions/ClientSideApi';
 
 declare var __xcapRunningServerSide: any;
 
@@ -20,7 +20,7 @@ export const STACKEND_DEFAULT_CONTEXT_PATH: string = '';
 /**
  * Xcap API configuration
  */
-export type Config = {
+export interface Config {
 	/** Absolute url to the api server*/
 	server: string,
 
@@ -40,8 +40,8 @@ export type Config = {
 	gaKey: string,
 
 	/** Other configuration properties */
-	...any
-};
+	[propName: string]: any
+}
 
 /**
  * Known deploy profiles
@@ -90,35 +90,32 @@ export const RICH_CONTENT_CHAIN_PARAMETER: string = 'xcap.rich-content-chain';
 /**
  * Privilege types (new enum based version)
  */
-export const Privilege = {
-	VISITOR: 'VISITOR',
-	IDENTIFIED: 'IDENTIFIED',
-	VERIFIED: 'VERIFIED',
-	BLOCKED: 'BLOCKED',
-	TRUSTED: 'TRUSTED',
-	ADMIN: 'ADMIN',
-	SUPER_ADMIN: 'SUPER_ADMIN'
-};
+export enum Privilege {
+	VISITOR = 'VISITOR',
+	IDENTIFIED = 'IDENTIFIED',
+	VERIFIED = 'VERIFIED',
+	BLOCKED = 'BLOCKED',
+	TRUSTED = 'TRUSTED',
+	ADMIN = 'ADMIN',
+	SUPER_ADMIN = 'SUPER_ADMIN'
+}
 
-export type PrivilegeIds = $Values<typeof Privilege>;
 
 /**
  * Privilege types (old id based version)
  */
-export const PrivilegeType = {
-	VISITOR: 1,
-	IDENTIFIED: 2,
-	VERIFIED: 4,
-	BLOCKED: 8,
-	TRUSTED: 16,
-	ADMIN: 32,
-	SUPER_ADMIN: 64
-};
+export enum PrivilegeType {
+	VISITOR = 1,
+	IDENTIFIED = 2,
+	VERIFIED = 4,
+	BLOCKED = 8,
+	TRUSTED = 16,
+	ADMIN = 32,
+	SUPER_ADMIN = 64
+}
 
-/**
- * Valid privilege types
- */
-export type PrivilegeTypeIds = $Values<typeof PrivilegeType>;
+export type PrivilegeTypeIds = 1 | 2 | 4 | 8 | 16 | 32 | 64;
+
 
 /**
  * Privilege type names
@@ -136,18 +133,16 @@ const PRIVILEGE_NAMES = {
 /**
  * Search order
  */
-export const Order = {
-	ASCENDING: 'ASCENDING',
-	DESCENDING: 'DESCENDING',
-	UNORDERED: 'UNORDERED'
-};
-
-export type OrderIds = $Values<typeof Order>;
+export enum Order {
+	ASCENDING = 'ASCENDING',
+	DESCENDING = 'DESCENDING',
+	UNORDERED = 'UNORDERED'
+}
 
 /**
  * Base type for api results
  */
-export type XcapJsonResult = {
+export interface XcapJsonResult {
 	/**
 	 * Error messages. Not present if the API call was successfull
 	 */
@@ -176,28 +171,28 @@ export type XcapJsonResult = {
 
 	/**
 	 * Related objects mapped from a hash string to the actual object.
-	 * Present only when a call is successfull.
+	 * Present only when a call is successful.
 	 */
 	__relatedObjects?: Map<string, any>,
 
 	/** Additional properties specific to the called API method  */
-	...any
-};
+	[propName: string]: any
+}
 
 /**
  * Base class for all xcap objects
  */
-export type XcapObject = {
+export interface XcapObject {
 	__type: string,
 	id: number
-};
+}
 
 /**
  * Invert the ordering
  * @param order
  * @returns {string}
  */
-export function invertOrder(order: OrderIds): OrderIds {
+export function invertOrder(order: Order): Order {
 	if (Order.ASCENDING === order) {
 		return Order.DESCENDING;
 	} else if (Order.DESCENDING === order) {
@@ -218,9 +213,9 @@ export function getPrivilegeName(privilegeType: number): string {
 /**
  * Describes the user access to an object
  */
-export type AuthObject = {
+export interface AuthObject {
 	/** Users privilege */
-	userPrivilege: PrivilegeIds,
+	userPrivilege: Privilege,
 
 	/** Is comment allowed? */
 	comment: boolean,
@@ -245,15 +240,15 @@ export type AuthObject = {
 
 	/** Rule in effect */
 	ruleId: number
-};
+}
 
 /**
  * Generic sort order. Some components supports additional orders.
  */
-export const SortOrder = {
-	ASCENDING: 'ASCENDING',
-	DESCENDING: 'DESCENDING'
-};
+export enum SortOrder {
+	ASCENDING = 'ASCENDING',
+	DESCENDING = 'DESCENDING'
+}
 
 export type Modstatus = 'NONE' | 'PASSED' | 'NOT_PASSED';
 
@@ -284,28 +279,22 @@ const typeNames = {
 };
 
 /**
- * Moderation functionality
- * @author jens
- * @since 16 feb 2017
- */
-export type ModerationVisibilityIds = $Keys<typeof ModerationVisibility>;
-/**
  * Moderation visibility indicator, used to filter content depending on
  * moderation status. Managers that accept this visibility filter must maintain
  * sensible defaults (i.e {@link #VISIBLE}) for safety reasons.
  */
-export const ModerationVisibility = {
+export enum ModerationVisibility {
 	/**
 	 * All will return all items disregarding any moderation status, useful for
 	 * administration purposes.
 	 */
-	ALL: 'ALL',
+	ALL = 'ALL',
 
 	/**
 	 * Visible is the normal behavior, which filters out all disapproved items
 	 * but includes items that are post moderated and not expired.
 	 */
-	VISIBLE: 'VISIBLE',
+	VISIBLE = 'VISIBLE',
 
 	/**
 	 * The same behavior as {@link #VISIBLE} but for modules that support user
@@ -313,7 +302,7 @@ export const ModerationVisibility = {
 	 * also included. For modules that do not support this, treat like
 	 * {@link #VISIBLE}.
 	 */
-	VISIBLE_INCLUDING_AWAITING_USER_APPROVAL: 'VISIBLE_INCLUDING_AWAITING_USER_APPROVAL',
+	VISIBLE_INCLUDING_AWAITING_USER_APPROVAL = 'VISIBLE_INCLUDING_AWAITING_USER_APPROVAL',
 
 	/**
 	 * The same behavior as {@link #VISIBLE} but for modules that support user
@@ -321,7 +310,7 @@ export const ModerationVisibility = {
 	 * approved and disapproved are also included. For modules that do not
 	 * support this, treat like {@link #VISIBLE}.
 	 */
-	VISIBLE_INCLUDING_USER_APPROVAL: 'VISIBLE_INCLUDING_USER_APPROVAL',
+	VISIBLE_INCLUDING_USER_APPROVAL = 'VISIBLE_INCLUDING_USER_APPROVAL',
 
 	/**
 	 * Only approved will approve content that has been actively approved or
@@ -329,56 +318,54 @@ export const ModerationVisibility = {
 	 * moderated items that have not yet been approved will be left out. Useful
 	 * for extra sensitive listings (a front page listing for example).
 	 */
-	APPROVED: 'APPROVED',
+	APPROVED = 'APPROVED',
 
 	/**
 	 * Only disapproved means that only content that has been disapproved will
 	 * be included.
 	 */
-	DISAPPROVED: 'DISAPPROVED',
+	DISAPPROVED = 'DISAPPROVED',
 
 	/**
 	 * All objects that are pending premoderation or expired postmoderation - i.e. items that are not included in {@link #VISIBLE}.
 	 */
-	MODERATION_REQUIRED: 'MODERATION_REQUIRED',
+	MODERATION_REQUIRED = 'MODERATION_REQUIRED',
 
 	/**
 	 * All objects pending moderation, all premoderated and postmoderated items regardless of expiration.
 	 */
-	MODERATION_PENDING: 'MODERATION_PENDING'
-};
+	MODERATION_PENDING = 'MODERATION_PENDING'
+}
 
 /**
  * Moderation statuses
  */
-export const ModerationStatus = {
+export enum ModerationStatus {
 	/**
 	 * No moderation required 0
 	 */
-	NONE: 'NONE',
+	NONE = 'NONE',
 
 	/**
 	 * Approved by a moderator 1
 	 */
-	PASSED: 'PASSED',
+	PASSED = 'PASSED',
 
 	/**
 	 * Disapproved by a moderator 2
 	 */
-	NOT_PASSED: 'NOT_PASSED',
+	NOT_PASSED = 'NOT_PASSED',
 
 	/**
 	 * Pre moderation required 4
 	 */
-	PRE: 'PRE',
+	PRE = 'PRE',
 
 	/**
 	 * Post moderation required within the specified TTL 5
 	 */
-	POST: 'POST'
-};
-
-export type ModerationStatusIds = $Keys<typeof ModerationStatus>;
+	POST = 'POST'
+}
 
 const ModerationStatusNames = {
 	[ModerationStatus.NONE]: 'Visible, not moderated',
@@ -388,7 +375,7 @@ const ModerationStatusNames = {
 	[ModerationStatus.PRE]: 'Hidden, requires moderation'
 };
 
-export function getModerationStatus(n: number): ModerationStatusIds {
+export function getModerationStatus(n: number): ModerationStatus {
 	switch (n) {
 		case 0:
 			return ModerationStatus.NONE;
@@ -405,7 +392,7 @@ export function getModerationStatus(n: number): ModerationStatusIds {
 	}
 }
 
-export function getModerationStatusName(m: ModerationStatusIds): string {
+export function getModerationStatusName(m: ModerationStatus): string {
 	let x = ModerationStatusNames[m];
 	if (x) {
 		return x;
@@ -421,18 +408,18 @@ export const ModerationStatusCode = {
 	[ModerationStatus.POST]: 5
 };
 
-export type ModerationStatusCodes = $Values<typeof ModerationStatusCode>;
+export type ModerationStatusCodes = 0 | 1 | 2 | 4 | 5;
 
-export type CommunityContext = {
+export interface CommunityContext {
 	community: string,
 	context: string
-};
+}
 
-export type Reference = {
+export interface Reference {
 	communityContext: CommunityContext,
 	type: string,
 	id: number
-};
+}
 
 /**
  * Get the API configuration object
@@ -475,7 +462,7 @@ export function _getServer(config: Config) {
 
 /**
  * @deprecated bad practise to dispatch getters which doesn't set any state, use api._getDeployProfile instead
- * Get the deploy profile name. Allows customized styling for different deploymens
+ * Get the deploy profile name. Allows customized styling for different deployments
  * @return a profile name, or the empty string.
  */
 export function getDeployProfile(): Thunk<string> {
@@ -492,7 +479,7 @@ export function getDeployProfile(): Thunk<string> {
 }
 
 /**
- * Get the deploy profile name. Allows customized styling for different deploymens
+ * Get the deploy profile name. Allows customized styling for different deployments
  * @return a profile name, or the empty string.
  */
 export function _getDeployProfile(config: Config): string {
@@ -652,7 +639,7 @@ export function getEffectiveCommunityPath(): Thunk<string> {
  * @return {Thunk<string>}
  */
 export function getAbsoluteApiBaseUrl(community: string): Thunk<string> {
-	return (dispatch: any, getState: any) => {
+	return (_dispatch: any, getState: any) => {
 		const state = getState();
 
 		const pfx =
@@ -678,7 +665,7 @@ export function getAbsoluteApiBaseUrl(community: string): Thunk<string> {
 		}
 
 		return pfx + '/' + community + '/api';
-	};
+	}
 }
 
 /**
@@ -719,10 +706,10 @@ export function _getAbsoluteApiBaseUrl({
  * Get the current community name (For example "c123")
  * @return may return null
  */
-export function getCurrentCommunity(): Thunk<?Community> {
+export function getCurrentCommunity(): Thunk<Community|null> {
 	return (dispatch: any, getState: any) => {
 		return _.get(getState(), 'communities.community', null);
-	};
+	}
 }
 
 /**
@@ -730,7 +717,7 @@ export function getCurrentCommunity(): Thunk<?Community> {
  *
  * @return May return null
  */
-export function getCurrentCommunityPermalink(): Thunk<?string> {
+export function getCurrentCommunityPermalink(): Thunk<string|null> {
 	return (dispatch: any, getState: any) => {
 		return _.get(getState(), 'communities.community.permalink', null);
 	};
@@ -926,7 +913,7 @@ export function getJson({
 				})
 			);
 
-			let c: ?string = cookie;
+			let c: string | null = cookie;
 
 			// The client will supply the cookie automatically. Server side will not, so pass it along
 			if (
@@ -965,11 +952,11 @@ export function getJson({
 				return r;
 			}
 
-			console.error('No result recieved: ', p);
+			console.error('No result received: ', p);
 			dispatch(setLoadingThrobberVisible(false));
 			return {
 				error: {
-					actionErrors: ['No result recieved']
+					actionErrors: ['No result received']
 				}
 			};
 		} catch (e) {
@@ -1132,7 +1119,7 @@ export function getXpressToken({
 	community?: string,
 	componentName?: string,
 	context?: string
-}): Thunk<*> {
+}): Thunk<any> {
 	return getJson({
 		url: '/xpresstoken',
 		community,
@@ -1260,7 +1247,7 @@ export function createUrl({
 /**
  * Construct an url to a community in the UI.
  *
- * @param request Request object from requestReducers.js
+ * @param request Request object from requestReducers.ts
  * @param path Path
  * @param parameters Parameters map
  * @param hash
@@ -1304,7 +1291,7 @@ export function createCommunityUrl({
  * @param args
  * @return {Object}
  */
-export function argsToObject(args: any): ?any {
+export function argsToObject(args: any): any {
 	if (typeof args === 'string') {
 		return args;
 	}
@@ -1358,7 +1345,7 @@ function _postProcessApiResult(result: XcapJsonResult, relatedObjects: any, like
 	let d = result;
 	for (let n in result) {
 		if (!result.hasOwnProperty(n) || n === RELATED_OBJECTS) {
-			continue;
+			// Skip
 		} else if (n.endsWith('Ref')) {
 			/*This disables ssr due to wrong-formating in json-response
         if (n === "createdDate" || n === "modifiedDate" || n === "publishDate" || n === "expiresDate")
@@ -1432,12 +1419,16 @@ export function getJsonErrorText(response?: XcapJsonResult): string {
 	}
 
 	if (t === 'string') {
-		return response.error;
+		return t;
 	}
 
 	let m = '';
 
-	if (response.error && response.error.actionErrors) {
+	if (!response.error) {
+		return m;
+	}
+
+	if (response.error.actionErrors) {
 		for (let i = 0; i < response.error.actionErrors.length; i++) {
 			if (i > 0) {
 				m += '\n';
@@ -1481,7 +1472,7 @@ export function getTypeName(objectOrClassName: any): string {
 	return 'Unknown type';
 }
 
-export type GetInitialStoreValuesResult = XcapJsonResult & {
+export interface GetInitialStoreValuesResult extends XcapJsonResult {
 	/** Was the community determined from the domain rather that from the permalink? */
 	communityFromDomain: boolean,
 
@@ -1489,14 +1480,14 @@ export type GetInitialStoreValuesResult = XcapJsonResult & {
 	permalink: string,
 
 	/** Current community. may be null */
-	stackendCommunity: ?Community,
+	stackendCommunity: Community | null,
 
 	/** Privilege of current community (when running in /stacks) */
-	communityPrivilegeType: PrivilegeTypeIds,
-	domain: ?string,
+	communityPrivilegeType: PrivilegeType,
+	domain: string | null,
 
 	/** Current user. Stackend user when running in /stacks */
-	user: ?User,
+	user: User | null,
 	xcapApiConfiguration: Map<string, any>,
 	numberOfUnseen: number,
 	modules: Map<string, Module>,
@@ -1512,7 +1503,7 @@ export type GetInitialStoreValuesResult = XcapJsonResult & {
 
 	/** Maps the referenceUrl parameter to an id */
 	referenceUrlId: number
-};
+}
 
 /**
  * Load the initial store values
@@ -1562,7 +1553,7 @@ export function getInitialStoreValues({
  * Log a javascript error
  * @param error Browser Error object
  */
-export async function logJsError(error: Error): Promise<*> {
+export async function logJsError(error: Error): Promise<any> {
 	if (!error) {
 		return;
 	}
@@ -1621,7 +1612,7 @@ export async function logJsError(error: Error): Promise<*> {
  * @param communityContext
  * @returns {null|CommunityContext}
  */
-export function parseCommunityContext(communityContext: ?string): ?CommunityContext {
+export function parseCommunityContext(communityContext: string | null): CommunityContext | null {
 	if (!communityContext) {
 		return null;
 	}
@@ -1644,7 +1635,7 @@ export function parseCommunityContext(communityContext: ?string): ?CommunityCont
  * @param reference
  * @returns {null|Reference}
  */
-export function parseReference(reference: ?string): ?Reference {
+export function parseReference(reference: string|null): Reference | null {
 	if (!reference) {
 		return null;
 	}
@@ -1719,7 +1710,7 @@ export function getReference(
  * @param ref
  * @returns {string|null}
  */
-export function getReferenceAsString(ref: ?Reference): ?string {
+export function getReferenceAsString(ref: Reference | null): string | null {
 	if (!ref) {
 		return null;
 	}
@@ -1749,7 +1740,7 @@ export const TEMPLATE_END: string = '}}';
 export function templateReplace(
 	template: string,
 	values: Map<string, string>,
-	valueEncoder?: ?(v: string) => string
+	valueEncoder?: (v: string) => string | null
 ): string {
 	if (!template) {
 		return template;

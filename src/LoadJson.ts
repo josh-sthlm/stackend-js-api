@@ -1,5 +1,5 @@
 //@flow
-import { templateReplace } from './api.js';
+import { templateReplace } from './api';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -253,7 +253,7 @@ export function createFormData(parameters: any) {
 	return formData;
 }
 
-export function templateReplaceUrl(url: string, replacements: Map<string, string>): ?string {
+export function templateReplaceUrl(url: string | null, replacements: Map<string, string>): string | null {
 	if (!url) {
 		return url;
 	}

@@ -1,8 +1,8 @@
 // @flow
 import _ from 'lodash/object';
-import * as loadJsonActions from '../LoadJson.js';
+import * as loadJsonActions from '../LoadJson.ts';
 import * as groupActions from '../group/groupActions.js';
-import * as xcapApi from '../api.js';
+import * as xcapApi from '../api.ts';
 import {
 	type SearchAbleType,
 	type Order,
@@ -13,9 +13,9 @@ import {
 } from './search.js';
 import * as qnaApi from '../qna/qna.js';
 import * as groupApi from '../group/group.js';
-import type { Thunk, Dispatch, GetState } from '../store.js';
+import type { Thunk, Dispatch, GetState } from '../store.ts';
 import * as reducer from './searchReducer.js';
-import { getRequest } from '../request.js';
+import { getRequest } from '../request.ts';
 
 //Change Text
 type UpdateSearchString = {

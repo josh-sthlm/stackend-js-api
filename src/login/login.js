@@ -1,14 +1,14 @@
 //@flow
 import _ from 'lodash/object';
-import type { Thunk } from '../store.js';
-import { type Request } from '../request.js';
+import type { Thunk } from '../store.ts';
+import { type Request } from '../request.ts';
 import {
 	type XcapJsonResult,
 	_getServerWithContextPath,
 	type Config,
 	post,
 	_getApiUrl
-} from '../api.js';
+} from '../api.ts';
 
 import { browserHistory } from 'react-router';
 

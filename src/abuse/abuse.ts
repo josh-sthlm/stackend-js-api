@@ -1,6 +1,6 @@
 // @flow
-import { post, type XcapJsonResult } from '../api.js';
-import type { Thunk } from '../store.js';
+import { post, XcapJsonResult } from '../api';
+import { Thunk } from '../store';
 
 /**
  * Component name
@@ -27,8 +27,8 @@ export function report({
 }: {
 	obfuscatedReference: string,
 	abuseText: string,
-	context?: string,
-	componentName?: ?string
+	context?: string | null,
+	componentName?: string | null
 }): Thunk<XcapJsonResult> {
 	return post({
 		url: '/abuse/report',

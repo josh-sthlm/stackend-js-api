@@ -1,11 +1,11 @@
 //@flow
-import * as api from '../api.js';
-import * as Stackend from '../stackend/stackend.js';
-import { LoadJson } from '../LoadJson.js';
-import { type Thunk } from '../store.js';
-import type { PaginatedCollection } from '../PaginatedCollection.js';
-import type { User } from '../user/user.js';
-import type { XcapJsonResult, Reference } from '../api.js';
+import * as api from '../api.ts';
+import * as Stackend from '../stackend/stackend.ts';
+import { LoadJson } from '../LoadJson.ts';
+import { type Thunk } from '../store.ts';
+import type { PaginatedCollection } from '../PaginatedCollection.ts';
+import type { User } from '../user/user.ts';
+import type { XcapJsonResult, Reference } from '../api.ts';
 
 /**
  * Image

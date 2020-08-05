@@ -1,20 +1,20 @@
 // @flow
 import update from 'immutability-helper';
-import type { Action } from './store.js';
-import createReducer from './createReducer.js';
+import { Action } from 'redux';
+import createReducer from './createReducer';
 
 export type referenceActions = Recieve;
 export type referenceActionTypes = 'RECIEVE_REFERENCES';
 export const RECIEVE_REFERENCES = 'RECIEVE_REFERENCES';
 
-export type Recieve = {
+export interface Recieve {
 	type: 'RECIEVE_REFERENCES',
 	entries: { [key: number]: any }
-};
+}
 
-type State = {
+interface State {
 	[key: number]: any
-};
+}
 const initialState = {};
 
 export default createReducer(initialState, {

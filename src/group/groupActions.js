@@ -1,6 +1,6 @@
 // @flow
 import _ from 'lodash/object';
-import { type AuthObject } from '../api.js';
+import { type AuthObject } from '../api.ts';
 import {
 	type Group,
 	type GroupMemberAuth,
@@ -12,7 +12,7 @@ import {
 	getGroup
 } from './group.js';
 
-import type { Thunk, Dispatch } from '../store.js';
+import type { Thunk, Dispatch } from '../store.ts';
 import * as reducer from './groupReducer.js';
 
 type Request = { type: 'REQUEST_GROUPS' };

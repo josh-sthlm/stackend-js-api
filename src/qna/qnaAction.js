@@ -18,8 +18,8 @@ import {
 	SET_QNA_AVAILABLE_FILTERS,
 	RECIEVE_SEARCH_RESULT
 } from './qnaReducer';
-import type { Thunk } from '../store.js';
-import { type Request, getRequest } from '../request.js';
+import type { Thunk } from '../store.ts';
+import { type Request, getRequest } from '../request.ts';
 
 declare var __xcapRunningServerSide: string;
 declare var browserHistory: { push: any => any };

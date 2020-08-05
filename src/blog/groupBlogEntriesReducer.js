@@ -5,8 +5,8 @@ import { concat } from 'lodash/array';
 import update from 'immutability-helper';
 import * as blogApi from './blog.js';
 import { LOCATION_CHANGE } from 'react-router-redux';
-import createReducer from '../createReducer.js';
-import { getJsonErrorText } from '../api.js';
+import createReducer from '../createReducer.ts';
+import { getJsonErrorText } from '../api.ts';
 
 //Action Type
 export const REQUEST_GROUP_BLOG_ENTRIES = 'REQUEST_GROUP_BLOG_ENTRIES';

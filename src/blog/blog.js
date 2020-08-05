@@ -5,19 +5,19 @@ import {
 	createCommunityUrl,
 	type XcapJsonResult,
 	type AuthObject
-} from '../api.js';
+} from '../api.ts';
 import * as event from '../event/event.js';
-import * as poll from '../poll.js';
+import * as poll from '../poll.ts';
 import * as group from '../group/group.js';
 import * as gaFunctions from '../functions/gaFunctions.js';
-import { type Thunk } from '../store.js';
-import { type Request } from '../request.js';
+import { type Thunk } from '../store.ts';
+import { type Request } from '../request.ts';
 import { type Category } from '../category/category.js';
 import { type VoteSummary } from '../vote/vote.js';
 import { type Image } from '../media/media.js';
-import { type Auth } from '../privileges.js';
-import { type PaginatedCollection } from '../PaginatedCollection.js';
-import { type LikeDataMap } from '../like.js';
+import { type Auth } from '../privileges.ts';
+import { type PaginatedCollection } from '../PaginatedCollection.ts';
+import { type LikeDataMap } from '../like.ts';
 
 /**
  * Xcap Blog api constants and methods.

@@ -22,7 +22,7 @@ import {
 	gaCommentEventObject,
 	gaEditCommentEventObject
 } from './comments.js';
-import type { Thunk, Dispatch } from '../store.js';
+import type { Thunk, Dispatch } from '../store.ts';
 import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 import type { commentModule } from './comments.js';
 import { recieveVotes } from '../vote/voteActions.js';

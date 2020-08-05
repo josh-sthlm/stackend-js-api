@@ -1,11 +1,11 @@
 // @flow
-import { getJson, post, SortOrder, type XcapJsonResult } from '../api.js';
+import { getJson, post, SortOrder, type XcapJsonResult } from '../api.ts';
 import * as groupApi from '../group/group.js';
-import * as user from '../user/user.js';
+import * as user from '../user/user.ts';
 import * as gaFunctions from '../functions/gaFunctions.js';
-import { type Thunk } from '../store.js';
-import { type LikesByCurrentUser } from '../like.js';
-import { type PaginatedCollection } from '../PaginatedCollection.js';
+import { type Thunk } from '../store.ts';
+import { type LikesByCurrentUser } from '../like.ts';
+import { type PaginatedCollection } from '../PaginatedCollection.ts';
 
 declare var __xcapRunningServerSide: any;
 

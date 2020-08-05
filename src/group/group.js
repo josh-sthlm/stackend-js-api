@@ -1,10 +1,10 @@
 //@flow
-import { getJson, post, createCommunityUrl, SortOrder, type XcapJsonResult, PrivilegeType } from '../api.js';
-import * as userApi from '../user/user.js';
-import type { Thunk } from '../store.js';
-import { type Request } from '../request.js';
-import type { PaginatedCollection } from '../PaginatedCollection.js';
-import type { Auth } from '../privileges.js';
+import { getJson, post, createCommunityUrl, SortOrder, type XcapJsonResult, PrivilegeType } from '../api.ts';
+import * as userApi from '../user/user.ts';
+import type { Thunk } from '../store.ts';
+import { type Request } from '../request.ts';
+import type { PaginatedCollection } from '../PaginatedCollection.ts';
+import type { Auth } from '../privileges.ts';
 import type { Blog } from '../blog/blog.js';
 
 /**
@@ -87,7 +87,7 @@ export type GroupMember = {
 	userId: number,
 	userRef: userApi.User,
 
-	/** Privilege. See privileges.js */
+	/** Privilege. See privileges.ts */
 	privilegeType: number,
 	createdDate: number
 };

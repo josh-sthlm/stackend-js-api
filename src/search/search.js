@@ -7,13 +7,13 @@ import {
 	type Config,
 	type XcapJsonResult,
 	type XcapObject
-} from '../api.js';
+} from '../api.ts';
 import * as qnaApi from '../qna/qna.js';
-import type { Thunk } from '../store.js';
+import type { Thunk } from '../store.ts';
 import _ from 'lodash';
-import { type Request } from '../request.js';
-import { type PaginatedCollection } from '../PaginatedCollection.js';
-import { type LikeDataMap } from '../like.js';
+import { type Request } from '../request.ts';
+import { type PaginatedCollection } from '../PaginatedCollection.ts';
+import { type LikeDataMap } from '../like.ts';
 
 /**
  * Search functionality

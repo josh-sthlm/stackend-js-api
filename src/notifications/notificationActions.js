@@ -1,7 +1,7 @@
 //@flow
 import * as reducer from './notificationReducer.js';
 import * as Notifications from './notifications.js';
-import { type Thunk } from '../store.js';
+import { type Thunk } from '../store.ts';
 import XcapWebSocket from '../xcap/websocket.js';
 import { getXcapWebSocket } from '../xcap/WebSocketFactory.js';
 

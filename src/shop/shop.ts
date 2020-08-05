@@ -1,22 +1,23 @@
 //@flow
 
-import { type Thunk } from '../store.js';
-import { getJson, post, type XcapJsonResult } from '../api.js';
+import { Thunk } from '../store';
+import { getJson, post, XcapJsonResult } from '../api';
 
-export type GraphQLListNode<T> = {
+export interface GraphQLListNode<T> {
 	node: T
-};
-export type GraphQLList<T> = {
+}
+
+export interface GraphQLList<T> {
 	edges: Array<GraphQLListNode<T>>
-};
+}
 
-export type ProductImage = {
+export interface ProductImage {
 	id: string,
-	altText: ?string,
+	altText: string | null,
 	transformedSrc: string
-};
+}
 
-export type Product = {
+export interface Product {
 	id: string,
 	/** permalink */
 	handle: string,
@@ -29,7 +30,7 @@ export type Product = {
 	availableForSale: boolean,
 	/** Actual number of images and size depends on context/listing */
 	images: GraphQLList<ProductImage>
-};
+}
 
 /**
  * Get the shop configuration. Requires admin privs
@@ -51,8 +52,8 @@ export function storeShopConfiguration({
 	shop,
 	storeFrontAccessToken
 }: {
-	shop: ?string,
-	storeFrontAccessToken: ?string
+	shop: string|null,
+	storeFrontAccessToken: string|null
 }): Thunk<XcapJsonResult> {
 	return post({
 		url: '/shop/admin/store-config',
@@ -60,13 +61,13 @@ export function storeShopConfiguration({
 	});
 }
 
-export type ListProductTypesRequest = {
+export interface ListProductTypesRequest {
 	first?: number
-};
+}
 
-export type ListProductTypesResult = XcapJsonResult & {
+export interface ListProductTypesResult extends XcapJsonResult {
 	productTypes: GraphQLList<string>
-};
+}
 
 /**
  * List product types
@@ -80,22 +81,22 @@ export function listProductTypes(req: ListProductTypesRequest): Thunk<ListProduc
 	});
 }
 
-export const ProductSortKeys = {
-	RELEVANCE: 'RELEVANCE'
-};
+export enum ProductSortKeys {
+	RELEVANCE = 'RELEVANCE'
+}
 
-export type ListProductsRequest = {
+export interface ListProductsRequest {
 	q?: string,
 	productTypes?: Array<string>,
 	tags?: Array<string>,
 	first?: Number,
 	after?: string,
-	sort?: $Values<ProductSortKeys>
-};
+	sort?: ProductSortKeys
+}
 
-export type ListProductsResult = XcapJsonResult & {
+export interface ListProductsResult extends XcapJsonResult {
 	products: GraphQLList<Product>
-};
+}
 
 /**
  * List products
@@ -109,13 +110,13 @@ export function listProducts(req: ListProductsRequest): Thunk<ListProductsResult
 	});
 }
 
-export type GetProductRequest = {
+export interface GetProductRequest {
 	handle: string
-};
+}
 
-export type GetProductResult = {
-	product: ?Product
-};
+export interface GetProductResult extends XcapJsonResult {
+	product: Product | null
+}
 
 /**
  * Get a single product
@@ -129,9 +130,9 @@ export function getProduct(req: GetProductRequest): Thunk<GetProductResult> {
 	});
 }
 
-export type ListProductsAndTypesResult = ListProductsResult & {
+export interface ListProductsAndTypesResult extends ListProductsResult {
 	productTypes: GraphQLList<string>
-};
+}
 
 /**
  * List products and types
@@ -145,7 +146,7 @@ export function listProductsAndTypes(req: ListProductsRequest): Thunk<ListProduc
 	});
 }
 
-export function getFirstImage(product: ?Product): ?ProductImage {
+export function getFirstImage(product: Product | null): ProductImage | null {
 	if (!product) {
 		return null;
 	}
@@ -174,7 +175,7 @@ export type ProductTypeTree = {
  * @param productTypes
  * @returns {null}
  */
-export function constructProductTypeTree(productTypes: GraphQLList<string>): ProductTypeTree {
+export function constructProductTypeTree(productTypes: GraphQLList<string>): ProductTypeTree | null {
 	if (!productTypes) {
 		return null;
 	}
@@ -210,7 +211,7 @@ function _addNode(root: ProductTypeTree, name: string): ProductTypeTree {
 	return t;
 }
 
-function _createNodes(root: ProductTypeTree, parts: Array<string>): ?ProductTypeTree {
+function _createNodes(root: ProductTypeTree, parts: Array<string>): ProductTypeTree | null {
 	if (parts.length === 0) {
 		return null;
 	}
@@ -239,6 +240,6 @@ function _createNodes(root: ProductTypeTree, parts: Array<string>): ?ProductType
 		return t;
 	}
 
-	let remainigParts = parts.slice(1);
-	return _createNodes(match, remainigParts);
+	let remainingParts = parts.slice(1);
+	return _createNodes(match, remainingParts);
 }

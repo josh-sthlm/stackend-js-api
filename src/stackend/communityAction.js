@@ -9,8 +9,8 @@ import {
 	RECEIVE_RESOURCE_USAGE
 } from './communityReducer.js';
 
-import * as Stackend from './stackend.js';
-import { type Thunk } from '../store.js';
+import * as Stackend from './stackend.ts';
+import { type Thunk } from '../store.ts';
 
 /**
  * Load communities

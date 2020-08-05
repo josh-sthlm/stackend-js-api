@@ -1,8 +1,8 @@
 // @flow
-import { type Thunk } from './store.js';
+import { Thunk } from './store.js';
 import _ from 'lodash/object';
 
-export type Location = {
+export interface Location {
 	hash: string,
 	host: string,
 	hostName: string,
@@ -12,12 +12,34 @@ export type Location = {
 	port: number,
 	protocol: string,
 	search: string
-};
+}
+
+/**
+ * An object representing the parsed part of an anchor link.
+ * Used to load relevant data and for jumping to objects.
+ */
+export interface StackendAnchor {
+	type: string,
+	permalink: string,
+	items?: Array<StackendAnchor>,
+	reference?: any,
+
+	// User
+	userId?: number,
+
+	// Site
+	sitePermalink?: string,
+	pagePermalink?: string,
+
+	// Blog
+	blogKey?: string,
+	blogEntryPermalink?: string
+}
 
 /**
  * An implementation neutral object that keeps track of the current url and some extra stackend specific data
  */
-export type Request = {
+export interface Request {
 	location: Location,
 
 	/** Client cookie */
@@ -41,38 +63,19 @@ export type Request = {
 	/** Reference url id */
 	referenceUrlId: number,
 
-	anchor: ?StackendAnchor
-};
+	anchor: StackendAnchor | null
+}
 
 /**
  * Get the request object
  */
-export function getRequest(): Thunk<*> {
+export function getRequest(): Thunk<any> {
 	return (dispatch: any, getState: any) => {
 		return _.get(getState(), 'request');
 	};
 }
 
-/**
- * An object representing the parsed part of an anchor link.
- * Used to load relevant data and for jumping to objects.
- */
-export type StackendAnchor = {
-	type: string,
-	permalink: string,
-	items?: Array<StackendAnchor>,
 
-	// User
-	userId?: number,
-
-	// Site
-	sitePermalink?: string,
-	pagePermalink?: string,
-
-	// Blog
-	blogKey?: string,
-	blogEntryPermalink?: string
-};
 
 /**
  * Construct the string version of an anchor
@@ -101,7 +104,7 @@ export function formatAnchor(anchor: StackendAnchor): string {
  * @param anchor
  * @returns {null}
  */
-export function getAnchorId(anchor: StackendAnchor): string {
+export function getAnchorId(anchor: StackendAnchor): string | null {
 	if (!anchor) {
 		return null;
 	}
@@ -113,7 +116,7 @@ export function getAnchorId(anchor: StackendAnchor): string {
  * @param anchor
  * @returns {StackendAnchor|null}
  */
-export function parseAnchor(anchor: ?string): StackendAnchor {
+export function parseAnchor(anchor: string|null): StackendAnchor | null {
 	if (!anchor) {
 		return null;
 	}
@@ -147,7 +150,7 @@ export function parseAnchor(anchor: ?string): StackendAnchor {
 	return a;
 }
 
-function parseAnchorInt(anchor: string): StackendAnchor {
+function parseAnchorInt(anchor: string): StackendAnchor|null {
 	if (anchor.indexOf('/') === 0) {
 		anchor = anchor.substring(1);
 	}
@@ -215,7 +218,7 @@ function parseAnchorInt(anchor: string): StackendAnchor {
  * @param type
  * @returns {StackendAnchor|null}
  */
-export function getAnchorPart(anchor: StackendAnchor, type: AnchorType): ?StackendAnchor {
+export function getAnchorPart(anchor: StackendAnchor|null, type: AnchorType): StackendAnchor|null {
 	if (!anchor || !type || !anchor.items) {
 		return null;
 	}
@@ -256,11 +259,10 @@ export function scrollToAnchor(anchor: StackendAnchor) {
 	}
 }
 
-export const AnchorType = {
-	BLOG: 'blog',
-	USER: 'user',
-	SITE: 'site',
-	COMMENT: 'comment'
-};
+export enum AnchorType {
+	BLOG = 'blog',
+	USER = 'user',
+	SITE = 'site',
+	COMMENT = 'comment'
+}
 
-export type AnchorTypes = $Values<AnchorType>;

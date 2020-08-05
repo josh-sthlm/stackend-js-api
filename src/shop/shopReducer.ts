@@ -2,7 +2,7 @@
 
 //Action Type
 
-import { type GraphQLList, type Product } from './shop.js';
+import { GraphQLList, Product } from './shop';
 import _ from 'lodash';
 
 export const RECIEVE_PRODUCT_TYPES: string = 'RECIEVE_PRODUCT_TYPES';
@@ -13,7 +13,7 @@ export const REMOVE_FROM_BASKET: string = 'REMOVE_FROM_BASKET';
 
 export const DEFAULT_PRODUCT_TYPE: string = '';
 
-export type ShopState = {
+export interface ShopState {
 	productTypes: Array<string>,
 	products: {
 		[handle: string]: Product
@@ -22,7 +22,7 @@ export type ShopState = {
 		[productType: string]: GraphQLList<Product>
 	},
 	basket: []
-};
+}
 
 export default function shopReducer(
 	state: ShopState = {

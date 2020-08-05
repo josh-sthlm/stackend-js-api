@@ -1,7 +1,7 @@
 //@flow
 
-import { post, type XcapJsonResult } from '../api.js';
-import type { Thunk } from '../store.js';
+import { post, type XcapJsonResult } from '../api.ts';
+import type { Thunk } from '../store.ts';
 import { CommentModule } from '../comments/comments.js';
 
 /** VoteSummary is used for like and dislike in forum*/

@@ -7,9 +7,9 @@
  */
 
 /**
- * Defintion of a poll
+ * Definition of a poll
  */
-export type Poll = {
+export interface Poll {
 	id: number,
 	description: string,
 	creatorUserId: number,
@@ -26,16 +26,16 @@ export type Poll = {
 	visible: boolean,
 	votes: number,
 	answers: [PollAnswer]
-};
+}
 
 /**
- * Defintion of a poll answer
+ * Definition of a poll answer
  */
-export type PollAnswer = {
+export interface PollAnswer {
 	id: number,
 	answerId: number,
 	order: number,
 	answer: string,
 	votes: number,
 	votesPercent: number
-};
+}

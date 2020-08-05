@@ -5,11 +5,11 @@ import {
 	post,
 	type XcapJsonResult,
 	type ModerationStatusIds
-} from '../api.js';
-import { generatePermalink } from '../permalink.js';
-import { type Thunk } from '../store.js';
-import { type User } from '../user/user.js';
-import { type PaginatedCollection } from '../PaginatedCollection.js';
+} from '../api.ts';
+import { generatePermalink } from '../permalink.ts';
+import { type Thunk } from '../store.ts';
+import { type User } from '../user/user.ts';
+import { type PaginatedCollection } from '../PaginatedCollection.ts';
 import { type Category } from '../category/category.js';
 import { type InsertionType } from '../category/category.js';
 import { type Order } from '../search/search.js';

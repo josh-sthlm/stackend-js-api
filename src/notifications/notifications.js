@@ -1,7 +1,7 @@
 //@flow
 
-import { getJson, type XcapJsonResult } from '../api.js';
-import type { Thunk } from '../store.js';
+import { getJson, type XcapJsonResult } from '../api.ts';
+import type { Thunk } from '../store.ts';
 
 /**
  * A notification

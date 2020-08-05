@@ -1,6 +1,6 @@
 //@flow
 
-export type PaginatedCollection<T> = {
+export interface PaginatedCollection<T> {
 	page: number,
 	pageSize: number,
 	totalSize: number,
@@ -11,7 +11,8 @@ export type PaginatedCollection<T> = {
 	nextPage: number,
 	previousPage: number,
 	entries: Array<T>
-};
+}
+
 
 /**
  * Construct a new paginated collection.
@@ -21,17 +22,17 @@ export type PaginatedCollection<T> = {
  * @param pageSize Page size (optional, default 10)
  * @param totalSize Total size (optional, taken from entries)
  */
-export function newPaginatedCollection({
+export function newPaginatedCollection<T>({
 	entries = [],
 	page = 1,
 	pageSize = 10,
 	totalSize = 0
 }: {
-	entries?: Array<*>,
+	entries?: Array<T>,
 	page?: number,
 	pageSize?: number,
 	totalSize?: number
-}): PaginatedCollection<*> {
+}): PaginatedCollection<T> {
 	let e = entries || [];
 	let tz = totalSize || e.length;
 	let hasPreviousPage = page > 1;

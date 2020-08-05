@@ -4,7 +4,7 @@
  * Given a permalink, calculate the parent permalink
  * @param permalink
  */
-export function getParentPermalink(permalink: string): ?string {
+export function getParentPermalink(permalink: string): string | null {
 	if (!permalink) {
 		return null;
 	}
@@ -23,7 +23,7 @@ export function getParentPermalink(permalink: string): ?string {
  * @param permalink
  * @returns {Array|Array<string>|null}
  */
-export function splitPermalink(permalink: ?string): ?Array<string> {
+export function splitPermalink(permalink: string | null): Array<string> | null {
 	if (!permalink) {
 		return null;
 	}
@@ -36,7 +36,7 @@ export function splitPermalink(permalink: ?string): ?Array<string> {
  * @param permalink
  * @param typingMode Allow trailing dash
  */
-export function generatePermalink(permalink: string, typingMode?: ?boolean): ?string {
+export function generatePermalink(permalink: string, typingMode?: boolean): string | null {
 	if (!permalink) {
 		return null;
 	}

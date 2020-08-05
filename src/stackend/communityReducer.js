@@ -1,6 +1,6 @@
 // @flow
 import update from 'immutability-helper';
-import { type Community } from './stackend.js';
+import { type Community } from './stackend.ts';
 
 export const KEY: string = 'COMMUNITIES';
 

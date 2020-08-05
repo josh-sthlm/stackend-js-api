@@ -6,12 +6,12 @@ import {
 	getAbsoluteApiBaseUrl,
 	createCommunityUrl,
 	type DeployProfile
-} from '../api.js';
+} from '../api.ts';
 import * as searchApi from '../search/search.js';
 import * as forumApi from '../forum/forum.js';
-import type { Thunk } from '../store.js';
-import { type Request } from '../request.js';
-import { Theme } from '../stackend/stackend.js';
+import type { Thunk } from '../store.ts';
+import { type Request } from '../request.ts';
+import { Theme } from '../stackend/stackend.ts';
 import _ from 'lodash/object';
 
 /**

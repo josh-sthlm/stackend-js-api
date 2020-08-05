@@ -1,6 +1,6 @@
 //@flow
 import update from 'immutability-helper';
-import { type Request } from './request.js';
+import { Request } from './request';
 export const SET_REQUEST_INFO = 'SET_REQUEST_INFO';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import { isCommunityUrlBlocked } from './stackend/stackend.js';

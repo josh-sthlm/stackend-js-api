@@ -1,8 +1,8 @@
 //@flow
 
 import { type Content } from './cms.js';
-import { type Action } from '../store.js';
-import { getJsonErrorText } from '../api.js';
+import { type Action } from '../store.ts';
+import { getJsonErrorText } from '../api.ts';
 
 export const REQUEST_CONTENT: string = 'REQUEST_CONTENT';
 export const RECIEVE_CONTENT: string = 'RECIEVE_CONTENT';

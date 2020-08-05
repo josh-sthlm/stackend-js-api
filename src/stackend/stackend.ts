@@ -1,22 +1,22 @@
 //@flow
-import { type Thunk } from '../store.js';
-import { type Request } from '../request.js';
+import { Thunk } from '../store';
+import { Request } from '../request';
 import {
 	getJson,
 	post,
 	getCurrentCommunityPermalink,
-	type Config,
-	type XcapJsonResult,
-	type PrivilegeTypeIds,
+	Config,
+	XcapJsonResult,
+	PrivilegeTypeIds,
 	PrivilegeType,
-	type PrivilegeIds,
+	PrivilegeIds,
 	Order,
-	type ModerationStatusIds
-} from '../api.js';
-import { fetchModules } from './moduleAction.js';
-import { hasElevatedPrivilege, type User } from '../user/user.js';
-import { type PaginatedCollection } from '../PaginatedCollection.js';
-import { type CurrentUserType } from '../login/loginReducer.js';
+	ModerationStatusIds, XcapObject
+} from '../api'
+import { fetchModules } from './moduleAction';
+import { hasElevatedPrivilege, User } from '../user/user';
+import { PaginatedCollection } from '../PaginatedCollection';
+import { CurrentUserType } from '../login/loginReducer';
 
 /**
  * Stackend API constants and methods.
@@ -28,11 +28,11 @@ import { type CurrentUserType } from '../login/loginReducer.js';
  *  CommunityStatus
  * @type {{VISIBLE: string, HIDDEN: string, REMOVED: string}}
  */
-export const CommunityStatus = {
-	VISIBLE: 'VISIBLE',
-	HIDDEN: 'HIDDEN',
-	REMOVED: 'REMOVED'
-};
+export enum CommunityStatus {
+	VISIBLE = 'VISIBLE',
+	HIDDEN = 'HIDDEN',
+	REMOVED = 'REMOVED'
+}
 
 /**
  * Xcap community name for stackend.
@@ -47,10 +47,9 @@ export const STACKEND_COMMUNITY: string = 'stackend';
 export const STACKEND_DOT_COM_COMMUNITY: string = 'stackend-com';
 
 /**
- * Defintion of a community
+ * Definition of a community
  */
-export type Community = {
-	id: number,
+export interface Community extends XcapObject {
 	permalink: string,
 	name: string,
 	description: string,
@@ -68,7 +67,7 @@ export type Community = {
 	modStatus: string,
 	expiresDate: number,
 	theme: string
-};
+}
 
 /**
  * Community setting keys
@@ -82,7 +81,7 @@ export const CommmunitySettings = {
 	OAUTH2_LOGIN: 'oauth2Login'
 };
 
-export type Module = {
+export interface Module {
 	id: number,
 	communityId: number,
 	name: string,
@@ -96,31 +95,31 @@ export type Module = {
 	ruleTypeId: number,
 	settings: string,
 	style: string
-};
+}
 
-export type ModuleRule = {
+export interface ModuleRule {
 	/** Create privilege */
 	createPrivilege: PrivilegeIds,
 	moderationStatus: ModerationStatusIds,
 	postModerationTtlMinutes: number,
 	contentFiltering: boolean,
 	trustedUsers: Array<User>
-};
+}
 
-export type ModuleStats = {
+export interface ModuleStats {
 	numberOfMembers: number /** -1 for unknown */,
 	numberOfPosts: number /** -1 for unknown */,
 	numberOfComments: number /** -1 for unknown */
-};
+}
 
-export type CommunityStats = {
+export interface CommunityStats {
 	numberOfModules: number,
 	objectsAwaitingModeration: number,
 	numberOfUsers: number,
 	numberOfActiveUsers: number,
 	mediaFileSize: number,
 	numberOfPosts: number
-};
+}
 
 /**
  * A community theme
@@ -132,12 +131,10 @@ export const Theme = {
 /**
  * Community search sort ordering
  */
-export const OrderBy = {
-	NAME: 'NAME',
-	CREATED_DATE: 'CREATED_DATE'
-};
-
-export type OrderByIds = $Values<typeof OrderBy>;
+export enum OrderBy {
+	NAME = 'NAME',
+	CREATED_DATE = 'CREATED_DATE'
+}
 
 /**
  * Given a theme, get a human readable label
@@ -171,14 +168,14 @@ export const COMPONENT_CLASS: string = 'se.josh.xcap.community.CommunityManager'
  */
 export const STACKEND_COM_COMMUNITY_PERMALINK: string = 'stackend-com';
 
-export type GetCommunityResult = XcapJsonResult & {
+export interface GetCommunityResult extends XcapJsonResult {
 	communityFromDomain: boolean,
-	stackendCommunity: ?Community,
+	stackendCommunity: Community | null,
 	/**
 	 * Number of objects waiting for moderation. Available to admins only.
 	 */
 	objectsRequiringModeration: number
-};
+}
 
 /**
  * Get a community.
@@ -209,10 +206,10 @@ export function getCommunity({
 	});
 }
 
-export type ValidateCommunityPermalinkResult = XcapJsonResult & {
+export interface ValidateCommunityPermalinkResult extends XcapJsonResult {
 	valid: boolean,
 	suggestions: Array<string>
-};
+}
 
 /**
  * Validate a community permalink and get suggestions based on the permalink/name.
@@ -259,9 +256,9 @@ export function newCommunity(name: string, permalink: string): any {
 	};
 }
 
-export type StoreCommunityResult = XcapJsonResult & {
+export interface StoreCommunityResult extends XcapJsonResult {
 	storedCommunity: Community
-};
+}
 
 /**
  * Edit/create a community.
@@ -376,7 +373,7 @@ export function setCommunitySetting({
 export type GetCommunityPrivateSettingsResult = XcapJsonResult & {};
 
 /**
- * Get the communitys private settings that are not exposed to the frontend
+ * Get the community's private settings that are not exposed to the frontend
  * @param key Get a specific setting
  * @param prefix Get settings with a specific prefix ("" for all)
  */
@@ -385,9 +382,9 @@ export function getCommunityPrivateSettings({
 	prefix,
 	community
 }: {
-	key?: ?string,
-	prefix?: ?string,
-	community?: ?string
+	key?: string | null,
+	prefix?: string | null,
+	community?: string | null
 }): Thunk<GetCommunityPrivateSettingsResult> {
 	return getJson({
 		url: '/stackend/community/private/get-settings',
@@ -410,12 +407,12 @@ export function storeCommunityPrivateSettings({
 	values,
 	community
 }: {
-	key?: ?string,
-	value?: ?any,
+	key?: string | null,
+	value?: any | null,
 	values?: Map<string, any>,
-	community?: ?string
+	community?: string | null
 }): Thunk<XcapJsonResult> {
-	let x = { key, value };
+	let x = { key: string, values: string };
 
 	if (values) {
 		x.values = JSON.stringify(values);
@@ -445,9 +442,9 @@ export function setCommunityStatus({
 	});
 }
 
-export type RemoveCommunityResult = XcapJsonResult & {
+export interface RemoveCommunityResult extends XcapJsonResult  {
 	dataRemoved: boolean
-};
+}
 
 /**
  * Remove a community. If new or empty, the data will also be removed.
@@ -470,10 +467,10 @@ export function removeCommunity({
 	});
 }
 
-export type SearchCommunityResult = XcapJsonResult & {
+export interface SearchCommunityResult extends XcapJsonResult {
 	results: PaginatedCollection<Community>,
 	statistics: Map<String, CommunityStats>
-};
+}
 
 /**
  * Search for a communities.
@@ -502,8 +499,8 @@ export function searchCommunity({
 	q?: number,
 	p?: number,
 	pageSize?: number,
-	orderBy?: OrderByIds,
-	order?: $Values<typeof Order>
+	orderBy?: OrderBy,
+	order?: Order
 }): Thunk<SearchCommunityResult> {
 	return getJson({
 		url: '/stackend/community/search',
@@ -535,7 +532,7 @@ export function getCurrentStackendUser(): Thunk<*> {
  * In a list of communities, find the one that matches the permalink
  * @return {Community} may return null,
  */
-export function getCurrentCommunity(communities: Array<Community>): Thunk<?Community> {
+export function getCurrentCommunity(communities: Array<Community>): Thunk<Community|null> {
 	return (dispatch: any) => {
 		if (typeof communities === 'undefined' || communities === null || communities.length === 0) {
 			return null;
@@ -598,7 +595,7 @@ export function isCommunityUrlBlocked(communityUrl: string): boolean {
  * In a list of communities, find the one that matches the permalink
  * @return {Community} may return null,
  */
-export function _getCurrentCommunity(communities: Array<Community>, request: Request): ?Community {
+export function _getCurrentCommunity(communities: Array<Community>, request: Request): Community | null {
 	if (typeof communities === 'undefined' || communities === null || communities.length === 0) {
 		return null;
 	}
@@ -652,7 +649,7 @@ export function _getCurrentCommunityPermalinkFromUrl(request: Request, config: C
  * @param userId
  * @returns {boolean}
  */
-export function isCommunityModerator(community: ?Community, userId: number): boolean {
+export function isCommunityModerator(community: Community|null, userId: number): boolean {
 	if (!(community && community.id)) {
 		return false;
 	}
@@ -667,6 +664,8 @@ export function isCommunityModerator(community: ?Community, userId: number): boo
 	) {
 		return true;
 	}
+
+	return false;
 }
 
 /**
@@ -675,12 +674,11 @@ export function isCommunityModerator(community: ?Community, userId: number): boo
  * @param userId
  * @returns {boolean}
  */
-export function isCommunityAdmin(community: ?Community, userId?: ?number): boolean {
+export function isCommunityAdmin(community: Community|null, userId?: number|null): boolean {
 	if (
 		typeof community === 'undefined' ||
 		community === null ||
-		typeof userId === 'undefined' ||
-		userId === 0
+		!!userId ||  userId === null || userId === 0
 	) {
 		return false;
 	}
@@ -702,7 +700,7 @@ export function isCommunityAdmin(community: ?Community, userId?: ?number): boole
  * @param currentUser
  */
 export function hasCommunityAdminOrModeratorAccess(
-	community: ?Community,
+	community: Community | null,
 	currentUser: CurrentUserType
 ): boolean {
 	if (!(community && community.id)) {
@@ -739,7 +737,7 @@ export function hasCommunityAdminOrModeratorAccess(
  * @returns {boolean}
  */
 export function hasCommunityAdminAccess(
-	community: ?Community,
+	community: Community | null,
 	currentUser: CurrentUserType
 ): boolean {
 	if (!(currentUser && currentUser.user)) {
@@ -781,7 +779,7 @@ export function hasStackendAdminAccess(currentUser: CurrentUserType): boolean {
 	);
 }
 
-export type GetModulesResult = XcapJsonResult & {
+export interface GetModulesResult extends XcapJsonResult {
 	modules: Array<Module>,
 
 	supportedModuleContexts: Array<{
@@ -791,7 +789,7 @@ export type GetModulesResult = XcapJsonResult & {
 	}>,
 
 	stats: Map<string, ModuleStats>
-};
+}
 
 /**
  * Get the modules of a community.
@@ -810,12 +808,12 @@ export function getModules({ communityId }: { communityId: number }): Thunk<GetM
 	});
 }
 
-export type GetModuleResult = XcapJsonResult & {
-	module: ?Module,
-	rule: ?ModuleRule,
-	commentRule: ?ModuleRule,
-	stats: ?ModuleStats
-};
+export interface GetModuleResult extends XcapJsonResult {
+	module: Module | null,
+	rule: ModuleRule | null,
+	commentRule: ModuleRule | null,
+	stats: ModuleStats | null
+}
 
 /**
  * Get a module of a community.
@@ -911,9 +909,9 @@ export function newModule({
 	};
 }
 
-export type StoreModuleResult = XcapJsonResult & {
-	module: ?Module
-};
+export interface StoreModuleResult extends XcapJsonResult {
+	module: Module | null
+}
 
 /**
  * Store a module of a community.
@@ -990,12 +988,12 @@ export function storeModule({
 	};
 }
 
-type RuleSetup = {
+interface RuleSetup {
 	createPrivilege: PrivilegeIds,
 	moderationStatus: ModerationStatusIds,
 	contentFiltering: boolean,
 	postModerationTtlMinutes: number
-};
+}
 
 /**
  * Store rules for a module
@@ -1017,7 +1015,7 @@ export function storeModuleRules({
 	rule: RuleSetup,
 	commentRule: RuleSetup,
 	trustedUsers: Array<number>
-}): Thunk<*> {
+}): Thunk<XcapJsonResult> {
 	let r = {
 		createPrivilege: rule.createPrivilege,
 		moderationStatus: rule.moderationStatus,
@@ -1131,9 +1129,9 @@ export function getComponentClassFromModuleType(moduleType: string) {
 	return t;
 }
 
-export type ListAdminUsersResult = XcapJsonResult & {
+export interface ListAdminUsersResult extends XcapJsonResult {
 	users: Array<User>
-};
+}
 
 /**
  * List users with stackend admin status.
@@ -1163,7 +1161,7 @@ export function setAdminStatus({
 }: {
 	userId: number,
 	privilege: number
-}): Thunk<*> {
+}): Thunk<XcapJsonResult> {
 	return post({
 		url: '/stackend/user/set-admin-status',
 		parameters: {
@@ -1187,7 +1185,7 @@ export function setCommunityAccess({
 }: {
 	communityId: number,
 	userId: number,
-	communityPrivilegeType: number
+	privilegeType: number
 }): Thunk<XcapJsonResult> {
 	return post({
 		url: '/stackend/user/set-community-access',

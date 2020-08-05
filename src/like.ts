@@ -1,9 +1,9 @@
 // @flow
 import _ from 'lodash/object';
-import { post, getJson, type XcapJsonResult, _getApiUrl, type Config } from './api.js';
-import type { Thunk } from './store.js';
-import type { PaginatedCollection } from './PaginatedCollection.js';
-import type { Community } from './stackend/stackend.js';
+import { post, getJson,  XcapJsonResult, _getApiUrl, Config } from './api';
+import type { Thunk } from './store';
+import type { PaginatedCollection } from './PaginatedCollection';
+import type { Community } from './stackend/stackend';
 
 const COMPONENT_NAME = 'like';
 const CONTEXT = 'like';
@@ -14,10 +14,10 @@ const CONTEXT = 'like';
  * @since 20 feb 2017
  */
 
-export type LikeData = {
+export interface LikeData {
 	likes: number,
 	likedByCurrentUser: boolean
-};
+}
 
 /**
  * Maps from id to boolean if the current user likes this id
@@ -68,7 +68,7 @@ export function like({
 	obfuscatedReference?: string,
 	reference?: string,
 	context: string
-}): Thunk<*> {
+}): Thunk<XcapJsonResult> {
 	return post({
 		url: '/like/like',
 		parameters: { obfuscatedReference, reference },
@@ -93,7 +93,7 @@ export function removeLike({
 	obfuscatedReference?: string,
 	reference?: string,
 	context: string
-}): Thunk<*> {
+}): Thunk<XcapJsonResult> {
 	return post({
 		url: '/like/like',
 		parameters: { obfuscatedReference, reference, remove: true },
@@ -119,7 +119,7 @@ export function setLike({
 	reference?: string,
 	like: boolean,
 	context?: string
-}): Thunk<*> {
+}): Thunk<XcapJsonResult> {
 	return post({
 		url: '/like/like',
 		parameters: { obfuscatedReference, reference, remove: !like },
@@ -128,12 +128,12 @@ export function setLike({
 	});
 }
 
-export type LikeObjectAndCount = {
+export interface LikeObjectAndCount {
 	object: any,
 	likes: number
-};
+}
 
-export type GetLikeToplistResult = XcapJsonResult & {
+export interface GetLikeToplistResult extends XcapJsonResult {
 	/** Toplist of liked objects */
 	toplist: PaginatedCollection<LikeObjectAndCount>,
 
@@ -147,13 +147,13 @@ export type GetLikeToplistResult = XcapJsonResult & {
 	creatorUserId: number,
 
 	/** Object context */
-	objectContext: ?string,
+	objectContext: string | null,
 
 	/** Object creator user id */
 	objectCreatorUserId: number
-};
+}
 
-type GetToplist = {
+interface GetToplist {
 	creatorUserId?: number,
 	objectCreatorUserId?: number,
 	interval?: string,
@@ -161,7 +161,8 @@ type GetToplist = {
 	objectContext?: string,
 	p?: number,
 	pageSize?: number
-};
+}
+
 /**
  * Get a toplist of liked objects.
  *
