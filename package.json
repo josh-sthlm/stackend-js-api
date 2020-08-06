@@ -36,6 +36,8 @@
     "@rollup/plugin-node-resolve": "^8.4.0",
     "@rollup/plugin-replace": "^2.3.3",
     "@types/lodash": "^4.14.158",
+    "@types/jest": "^25.2.3",
+    "@types/node": "^10.17.28",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "eslint": "^6.8.0",
@@ -64,7 +66,6 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "pretest": "npm run build",
     "test": "jest",
     "check-types": "tsc --noEmit",
     "lint": "eslint --ext js,ts src tests",

@@ -44,7 +44,7 @@ export function getVoteSummary(state: any, context: string, referenceId: number)
 	return vi ? vi.voteSummary : null;
 }
 
-export function getVotes(state: any, context: string, referenceId: number): Map<number, Vote> | null {
+export function getVotes(state: any, context: string, referenceId: number): { [referenceGroupId:number] : Vote } | null {
 	let vi = getVoteInfo(state, context, referenceId);
 	return vi ? vi.votes : null;
 }

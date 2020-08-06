@@ -1,6 +1,6 @@
 //@flow
 
-import {createStore, compose, applyMiddleware, combineReducers, Action} from 'redux';
+import { createStore, compose, applyMiddleware, combineReducers, Action} from 'redux';
 import thunk from 'redux-thunk';
 import { ALL_REDUCERS } from "../src/reducers";
 
@@ -16,7 +16,7 @@ const rootReducer = (state: any, action: Action) => {
     return appReducer(state, action);
 };
 
-let preloadedState = undefined;
+
 
 export const crashReporter = (store: any) => (next: any) => (action: any) => {
 
@@ -34,16 +34,19 @@ export const crashReporter = (store: any) => (next: any) => (action: any) => {
     }
 };
 
-let store = createStore(
-    rootReducer,
-    preloadedState,
-    compose(
+let preloadedState:any = undefined;
+
+export default function createTestStore() {
+    return createStore(
+      rootReducer,
+      preloadedState,
+      compose(
         applyMiddleware(thunk, crashReporter),
         (window && window.__REDUX_DEVTOOLS_EXTENSION__)
-            ? window.__REDUX_DEVTOOLS_EXTENSION__( {trace: true, traceLimit: 25 })
-            : f => f
-    )
-);
+          ? window.__REDUX_DEVTOOLS_EXTENSION__({ trace: true, traceLimit: 25 })
+          : f => f
+      )
+    );
+}
 
-export default store;
 

@@ -10,7 +10,7 @@ export const XCAP_VOTES_UPDATE = 'XCAP_VOTES_UPDATE';
 
 export interface VoteInfo {
 	voteSummary: VoteSummary,
-	votes: Map<number, Vote>, // referenceGroupId
+	votes: {[referenceGroupId: number]: Vote },
 	hasVoted: boolean,
 	myReview?: Comment | null
 }
@@ -18,7 +18,7 @@ export interface VoteInfo {
 type State = {
 	[key: string]: {
 		// Context
-		[key: string]: VoteInfo // referenceId
+		[referenceId: string]: VoteInfo
 	}
 };
 
@@ -68,7 +68,7 @@ function updateVotes({
 	state: State,
 	context: string,
 	voteSummary: VoteSummary,
-	votes?: Map<number, Vote>,
+	votes?: { [referenceGroupId:number]: Vote},
 	vote?: Vote,
 	hasVoted?: boolean,
 	myReview?: Comment | null
@@ -115,6 +115,7 @@ function updateVotes({
 		v.myReview = myReview;
 	}
 
+	// @ts-ignore
 	x.n = Math.random(); // Hack to make this update
 
 	x[context][refId] = v;
