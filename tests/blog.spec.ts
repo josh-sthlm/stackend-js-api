@@ -1,10 +1,6 @@
 //@flow
 
-import store from './setup-redux.js';
-
-
-
-
+import store from './setup-redux';
 import { getEntries, GetEntriesResult } from '../src/blog';
 
 describe('Blog', () => {

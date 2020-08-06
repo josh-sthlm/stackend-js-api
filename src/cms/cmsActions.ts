@@ -1,7 +1,7 @@
 //@flow
 
 import { Dispatch} from 'redux';
-import { Thunk } from '../store';
+import { Thunk } from '../api';
 import { REQUEST_CONTENT, RECIEVE_CONTENT, RECIEVE_CONTENTS, SET_CONTENT } from './cmsReducer';
 import { getContent, Content } from '../cms';
 
@@ -12,7 +12,7 @@ import { getContent, Content } from '../cms';
  * @returns {Function}
  */
 export function fetchContent({ id, permalink }: { id: number, permalink?: string }): Thunk<any> {
-	return async (dispatch: Dispatch /*, getState: any*/) => {
+	return async (dispatch) => {
 		dispatch({
 			type: REQUEST_CONTENT,
 			id,

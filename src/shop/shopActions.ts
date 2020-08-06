@@ -16,8 +16,9 @@ import {
 	RECIEVE_PRODUCT_TYPES,
 	RECIEVE_PRODUCTS
 } from './shopReducer';
+import { Thunk } from '../api'
 
-export const requestProductTypes = (req: ListProductTypesResult) => async (dispatch:any) => {
+export const requestProductTypes = (req: ListProductTypesResult):Thunk<ListProductTypesResult> => async (dispatch) => {
 	let r = await dispatch(listProductTypes(req));
 	await dispatch({ type: RECIEVE_PRODUCT_TYPES, json: r });
 	return r;

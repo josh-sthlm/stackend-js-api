@@ -1,9 +1,8 @@
 // @flow
-import { getJson, post, SortOrder, XcapJsonResult, XcapObject } from './api'
+import { getJson, post, SortOrder, XcapJsonResult, XcapObject, Thunk } from './api'
 import * as groupApi from './group';
 import * as user from './user';
 import * as gaFunctions from '../functions/gaFunctions.js';
-import { Thunk } from './store';
 import { LikesByCurrentUser } from './like';
 import { PaginatedCollection } from './PaginatedCollection';
 

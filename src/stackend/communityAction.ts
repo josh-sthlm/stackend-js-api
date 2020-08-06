@@ -10,7 +10,7 @@ import {
 } from './communityReducer';
 
 import * as Stackend from '../stackend';
-import { Thunk } from '../store';
+import { Thunk } from '../api';
 
 /**
  * Load communities

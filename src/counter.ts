@@ -1,6 +1,5 @@
 // @flow
-import { post, XcapJsonResult } from './api';
-import { Thunk } from './store';
+import { post, XcapJsonResult, Thunk } from './api';
 
 /**
  * Xcap Counter API constants and methods.

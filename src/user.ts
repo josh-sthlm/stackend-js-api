@@ -5,10 +5,10 @@ import {
 	post,
 	getApiUrl,
 	XcapJsonResult,
-	Order, invertOrder
+	Order, invertOrder,
+	Thunk
 } from './api';
 import { Request } from './request';
-import { Thunk } from './store';
 import { AuthenticationType  } from './login';
 import { PaginatedCollection } from './PaginatedCollection';
 import moment from 'moment';

@@ -12,10 +12,10 @@ import {
 } from '../search'
 import * as qnaApi from '../qna';
 import * as groupApi from '../group';
-import { Thunk, GetState } from '../store';
 import { Dispatch} from 'redux';
 import * as reducer from './searchReducer';
 import { getRequest } from '../request'
+import { Thunk } from '../api'
 
 //Change Text
 type UpdateSearchString = {
@@ -46,9 +46,9 @@ export function updateSelectedType({
 	type,
 	p = 1,
 	updateUrl = true
-}: UpdateSelectedType): Thunk<any> {
+}: UpdateSelectedType): Thunk<void> {
 
-	return async (dispatch: Dispatch, getState) => {
+	return async (dispatch, getState) => {
 		if (updateUrl) {
 			const request = await dispatch(getRequest());
 			browserHistory.push(getSearchBaseUrl({ request }) + '/' + type.toLocaleLowerCase());

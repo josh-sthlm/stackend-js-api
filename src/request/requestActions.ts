@@ -12,6 +12,7 @@ export function setRequestInfo(request: {
 	communityUrl?: string,
 	absoluteCommunityUrl?: string,
 	communityFromDomain?: boolean,
+	referenceUrlId?: number,
 	contextPath?: string,
 	anchor?: StackendAnchor
 }) {

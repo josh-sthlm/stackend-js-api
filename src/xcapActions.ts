@@ -1,11 +1,10 @@
 //@flow
 
-import { getInitialStoreValues, GetInitialStoreValuesResult } from './api';
+import { getInitialStoreValues, GetInitialStoreValuesResult, Thunk } from './api';
 import { recieveLoginData } from './login/loginAction';
 import { loadCommunity, receiveResourceUsage } from './stackend/communityAction';
-import { receiveNotificationCounts } from './notifications/notificationActions';
+//import { receiveNotificationCounts } from './notifications/notificationActions';
 import { XCAP_INITIAL_STORE_DATA_RECIEVED } from './configReducer';
-import type { Thunk } from './store.js';
 import { setRequestInfo } from './request/requestActions';
 import { recieveModules } from './stackend/moduleAction';
 import { recieveContents } from './cms/cmsActions';
@@ -77,7 +76,7 @@ export function loadInitialStoreValues({
 		dispatch(setRequestInfo({ referenceUrlId: r.referenceUrlId }));
 		dispatch(recieveLoginData({ user: r.user }));
 		dispatch(loadCommunity(r.stackendCommunity));
-		dispatch(receiveNotificationCounts({ numberOfUnseen: r.numberOfUnseen }));
+		//dispatch(receiveNotificationCounts({ numberOfUnseen: r.numberOfUnseen }));
 
 		dispatch(receiveResourceUsage(r));
 

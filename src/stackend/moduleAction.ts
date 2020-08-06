@@ -1,6 +1,6 @@
 // @flow
 import { REQUEST_MODULES, RECIEVE_MODULES, RESET_MODULES } from './moduleReducer';
-import { Thunk } from '../store';
+import { Thunk } from '../api';
 
 import * as Stackend from '../stackend';
 
@@ -11,7 +11,7 @@ import * as Stackend from '../stackend';
  * @author jens
  */
 
-export function recieveModules(json: string): any {
+export function recieveModules(json: any): any {
 	return {
 		type: RECIEVE_MODULES,
 		json,

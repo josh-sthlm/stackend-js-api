@@ -1,6 +1,6 @@
 //@flow
 
-import { Thunk } from '../store';
+import { Thunk } from '../api';
 import { Dispatch} from 'redux';
 
 import {

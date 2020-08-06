@@ -1,7 +1,6 @@
 //@flow
 
-import { post, XcapJsonResult } from './api';
-import { Thunk } from './store';
+import { post, XcapJsonResult, Thunk } from './api';
 import { CommentModule } from './comments';
 
 /** VoteSummary is used for like and dislike in forum*/

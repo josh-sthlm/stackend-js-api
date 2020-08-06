@@ -2,20 +2,16 @@
 
 import { appendQueryString, LoadJson, urlEncodeParameters } from './LoadJson';
 import _ from 'lodash';
-import { Thunk } from './store';
 import { Dispatch} from 'redux';
 import { recieveReferences } from './referenceActions';
 import { Request, getRequest } from './request';
 import { Community, Module } from './stackend';
 import { User } from './user';
-import { setLoadingThrobberVisible } from '../throbber/throbberActions';
+import { setLoadingThrobberVisible } from './throbber/throbberActions';
 import { Content, Page, SubSite } from './cms';
-import { getClientSideApi } from '../functions/ClientSideApi';
 import { Privilege } from './privileges'
 
 declare var __xcapRunningServerSide: any;
-
-
 
 export const STACKEND_DEFAULT_SERVER: string = 'https://api.stackend.com';
 export const STACKEND_DEFAULT_CONTEXT_PATH: string = '';
@@ -147,6 +143,16 @@ export interface XcapObject {
 	__type: string,
 	id: number
 }
+
+/**
+ * Redux store state
+ */
+export type State = { [key:string]: any };
+
+/**
+ * Function that dispatches actions against the store
+ */
+export type Thunk<A> = (dispatch: Dispatch, getState: () => State) => Promise<A> | A | any;
 
 /**
  * Invert the ordering
@@ -560,8 +566,8 @@ export function getEffectiveCommunityPath(): Thunk<string> {
  * @param community Optional community
  * @return {Thunk<string>}
  */
-export function getAbsoluteApiBaseUrl(community: string): Thunk<any> {
-	return (_dispatch: any, getState: any) => {
+export function getAbsoluteApiBaseUrl(community: string): Thunk<string> {
+	return (dispatch, getState) => {
 		const state = getState();
 
 		const pfx =
@@ -1451,6 +1457,7 @@ export async function logJsError(error: Error): Promise<any> {
 
 	let communityId = 0;
 	let store = '';
+	/* FIXME: Re add this
 	let api = getClientSideApi();
 	if (api && api.reduxStore) {
 		let state = api.reduxStore.getState();
@@ -1461,6 +1468,7 @@ export async function logJsError(error: Error): Promise<any> {
 			store = JSON.stringify(state);
 		}
 	}
+	 */
 
 	// Produces the best error message in all browsers.
 	// Safari, however does not include the stacktrace
@@ -1508,12 +1516,10 @@ export function parseCommunityContext(communityContext: string | null): Communit
 		return null;
 	}
 
-	let c: CommunityContext = {
+	return  {
 		community: p[0],
 		context: p[1]
 	};
-
-	return c;
 }
 
 /**
@@ -1541,13 +1547,11 @@ export function parseReference(reference: string|null): Reference | null {
 		return null;
 	}
 
-	let r: Reference = {
+	return {
 		communityContext: cc,
 		type: p[1],
 		id
 	};
-
-	return r;
 }
 
 /**

@@ -1,6 +1,5 @@
 //@flow
-import { post, getJson, XcapObject, XcapJsonResult } from './api';
-import { Thunk } from './store';
+import { post, getJson, XcapObject, XcapJsonResult, Thunk } from './api';
 
 /**
  * Xcap Event api constants and methods.

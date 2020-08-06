@@ -3,9 +3,9 @@ import _ from 'lodash';
 
 import update from 'immutability-helper';
 import * as blogApi from '../blog';
-import { LOCATION_CHANGE } from 'react-router-redux';
 import createReducer from '../createReducer';
 import { getJsonErrorText } from '../api';
+import { REACT_ROUTER_REDUX_LOCATION_CHANGE } from '../request/requestReducers'
 
 //Action Type
 export const REQUEST_GROUP_BLOG_ENTRIES = 'REQUEST_GROUP_BLOG_ENTRIES';
@@ -15,14 +15,6 @@ export const TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY = 'TOGGLE_EDIT_OR_COMMENT_BLOG_EN
 export const CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY = 'CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY';
 export const UPDATE_GROUP_BLOG_ENTRY = 'UPDATE_GROUP_BLOG_ENTRY';
 
-const actionTypes = {
-	INVALIDATE_GROUP_BLOG_ENTRIES,
-	RECIEVE_GROUP_BLOG_ENTRIES,
-	REQUEST_GROUP_BLOG_ENTRIES,
-	TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
-	CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY,
-	UPDATE_GROUP_BLOG_ENTRY
-};
 export type GroupBlogEntriesActions = Recieve | Update | Request | Invalidate;
 export type GroupBlogEntriesActionTypes = 'INVALIDATE_GROUP_BLOG_ENTRIES'
 	| 'RECIEVE_GROUP_BLOG_ENTRIES'
@@ -226,7 +218,7 @@ export function openBlogEntryWriteCommentSection(
 					editorType: action.editorType
 				};
 			}
-		case LOCATION_CHANGE:
+		case REACT_ROUTER_REDUX_LOCATION_CHANGE:
 		case CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY:
 			return false;
 		default:

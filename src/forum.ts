@@ -5,13 +5,12 @@ import {
 	post,
 	createCommunityUrl,
 	Modstatus,
-	XcapJsonResult, XcapObject
+	XcapJsonResult, XcapObject, Thunk
 } from './api'
 import * as categoryApi from './category';
 import * as userApi from './user';
-import * as gaFunctions from '../functions/gaFunctions';
+//import * as gaFunctions from '../functions/gaFunctions';
 import { PaginatedCollection } from './PaginatedCollection';
-import { Thunk } from './store';
 import { Request } from './request';
 import { VoteSummary } from './vote';
 import { LikeDataMap } from './like';
@@ -634,10 +633,13 @@ export function getGALabels({ forumThreadEntry }: GaTrackForumThread) {
 	const threadEntryId = _.get(forumThreadEntry, `id`, 'undefined');
 	const isThreadParent = threadId === threadEntryId ? '_threadParent' : '';
 
+	/* Fixme: readd
 	const readableCategory = gaFunctions.getGaObjectName({
 		object: forumThreadEntry.__type,
 		relatedToObject: forumLink + isThreadParent
 	});
+	 */
+	const readableCategory = forumThreadEntry.name;
 	const eventCategory = `${readableCategory}_(${objectType}_${forumId}${isThreadParent})`;
 	const eventLabel = `${threadLink}_${forumThreadEntry.text}_(${threadId}_${threadEntryId})`;
 	return { eventLabel, eventCategory };

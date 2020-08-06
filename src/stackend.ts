@@ -1,21 +1,18 @@
 //@flow
-import { Thunk } from './store';
 import { Request } from './request';
 import {
 	getJson,
 	post,
 	getCurrentCommunityPermalink,
-	Config,
 	XcapJsonResult,
-	PrivilegeTypeIds,
-	PrivilegeType,
 	Order,
-	XcapObject, ModerationStatus
+	XcapObject, ModerationStatus, Thunk
 } from './api'
 import { fetchModules } from './stackend/moduleAction';
 import { hasElevatedPrivilege, User } from './user';
 import { PaginatedCollection } from './PaginatedCollection';
 import { CurrentUserType } from './login/loginReducer';
+import { PrivilegeTypeId, PrivilegeTypeIds } from './privileges'
 
 /**
  * Stackend API constants and methods.
@@ -560,7 +557,7 @@ export function getCurrentCommunity(communities: Array<Community>): Thunk<Commun
  * @returns {boolean}
  */
 export function isCommunityUrlBlocked(communityUrl: string): boolean {
-	const blockedUrls = {
+	const blockedUrls:{[url:string]: boolean} = {
 		create: true,
 		'my-settings': true,
 		contact: true,
@@ -618,7 +615,7 @@ export function _getCurrentCommunity(communities: Array<Community>, request: Req
  * From the request url try to get the communityPermalink
  * @return {Community} may return null,
  */
-export function _getCurrentCommunityPermalinkFromUrl(request: Request, config: Config): any {
+export function _getCurrentCommunityPermalinkFromUrl(request: Request): any {
 	const p = request.location.pathname;
 	// Needs to work with:
 	// - /XXX
@@ -760,7 +757,7 @@ export function hasStackendCreateAccess(currentUser: CurrentUserType): boolean {
 		currentUser,
 		COMMUNITY_MANAGER_CONTEXT,
 		COMPONENT_CLASS,
-		PrivilegeType.TRUSTED
+		PrivilegeTypeId.TRUSTED
 	);
 }
 
@@ -774,7 +771,7 @@ export function hasStackendAdminAccess(currentUser: CurrentUserType): boolean {
 		currentUser,
 		COMMUNITY_MANAGER_CONTEXT,
 		COMPONENT_CLASS,
-		PrivilegeType.ADMIN
+		PrivilegeTypeId.ADMIN
 	);
 }
 
@@ -1080,7 +1077,7 @@ export function detectModules({ communityId }: { communityId: number }): Thunk<X
 /**
  * Translates component class names to human readable names.
  */
-const COMPONENT_CLASS_TO_MODULE_NAME = {
+const COMPONENT_CLASS_TO_MODULE_NAME: {[name:string]: string} = {
 	'se.josh.xcap.comment.impl.CommentManagerImpl': 'Comments',
 	'se.josh.xcap.comment.CommentManager': 'Comments',
 	'net.josh.community.blog.BlogManager': 'Blog',
@@ -1093,7 +1090,7 @@ const COMPONENT_CLASS_TO_MODULE_NAME = {
 	'net.josh.community.category.CategoryManager': 'Page'
 };
 
-const MODULE_TYPE_TO_COMPONENT_CLASS = {
+const MODULE_TYPE_TO_COMPONENT_CLASS:{[name:string]: string} = {
 	comment: 'se.josh.xcap.comment.impl.CommentManagerImpl',
 	blog: 'net.josh.community.blog.BlogManager',
 	forum: 'net.josh.community.forum.impl.ForumManagerImpl',

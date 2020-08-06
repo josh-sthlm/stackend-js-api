@@ -6,10 +6,10 @@ import {
 	post,
 	Config,
 	XcapJsonResult,
-	XcapObject
+	XcapObject,
+	Thunk
 } from './api';
 import * as qnaApi from './qna';
-import { Thunk } from './store';
 import _ from 'lodash';
 import { Request } from './request';
 import { PaginatedCollection } from './PaginatedCollection';

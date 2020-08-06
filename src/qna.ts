@@ -3,11 +3,11 @@ import {
 	getJson as apiGetJson,
 	post as apiPost,
 	createCommunityUrl,
-	XcapJsonResult
+	XcapJsonResult,
+	Thunk
 } from './api'
 import * as searchApi from './search';
 import * as forumApi from './forum';
-import { Thunk } from './store';
 import { Request } from './request';
 import { SearchAbleType } from './search'
 

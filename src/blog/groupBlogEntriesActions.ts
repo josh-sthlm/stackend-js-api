@@ -5,10 +5,9 @@ import * as categoryApi from '../category';
 import * as groupActions from '../group/groupActions';
 import * as blogActions from './blogActions';
 import { listMyGroups } from '../group';
-import { getJsonErrorText, XcapJsonResult } from '../api'
+import { getJsonErrorText, XcapJsonResult, Thunk } from '../api'
 import * as commentActions from '../comments/commentAction';
 import * as commentApi from '../comments';
-import type { Thunk } from '../store';
 import { Dispatch } from 'redux';
 
 import {
@@ -100,7 +99,7 @@ export function fetchBlogEntries({
 	categories,
 	invalidatePrevious = false,
 	goToBlogEntry
-}: FetchBlogEntries): Thunk<*> {
+}: FetchBlogEntries): Thunk<any> {
 	return async (dispatch: Dispatch, getState: any) => {
 		const categoryId = _.get(categories, '[0].id', null);
 
@@ -153,7 +152,7 @@ export function fetchBlogEntries({
 }
 
 /**
- * Requests and recieve entries and store them in redux-state
+ * Requests and receive entries and store them in redux-state
  */
 export function fetchBlogEntry({
 	id,
@@ -191,7 +190,7 @@ export function fetchBlogEntry({
 			);
 		}
 	};
-}
+};
 
 interface FetchBlogEntriesWithComments {
 	blogKey: string,
@@ -205,7 +204,7 @@ export function fetchBlogEntriesWithComments({
 	page = 1,
 	categories,
 	goToBlogEntry
-}: FetchBlogEntriesWithComments): Thunk<*> {
+}: FetchBlogEntriesWithComments): Thunk<any> {
 	return async (dispatch: any, getState: any) => {
 		let response;
 		try {
@@ -251,7 +250,7 @@ export function fetchBlogEntryWithComments({
 					commentActions.fetchComments({
 						module: commentApi.CommentModule.BLOG,
 						referenceId: blogEntry.id,
-						referenceGroupId: blogEntry.blogId
+						referenceGroupId: blogEntry.blogId,
 					})
 				);
 			} else {
@@ -350,7 +349,7 @@ export function postBlogEntry({
 	};
 }
 
-export function changeBlogEntryStatus({ blogKey, id, status }: SetEntryStatus): Thunk<*> {
+export function changeBlogEntryStatus({ blogKey, id, status }: SetEntryStatus): Thunk<void> {
 	return async (dispatch: any /*, getState: any*/) => {
 		let response = await dispatch(setEntryStatus({ blogKey, id, status }));
 		dispatch(updateBlogEntry(blogKey, { resultPaginated: { entries: [response.entry] } }));

@@ -1,13 +1,13 @@
 //@flow
 import _ from 'lodash';
-import { Thunk } from './store';
 import { Request } from './request';
 import {
 	XcapJsonResult,
 	_getServerWithContextPath,
 	Config,
 	post,
-	_getApiUrl
+	_getApiUrl,
+	Thunk
 } from './api';
 
 
@@ -166,13 +166,11 @@ export function _getLogoutUrl({
 }): string {
 	const ru = _getReturnUrl({ request, returnUrl });
 
-	const l = _getApiUrl({
+	return _getApiUrl({
 		state: { request, config, communities: {} },
 		url: '/user/logout',
 		parameters: { redirectUrl: ru }
 	});
-
-	return l;
 
 	//const pfx = _getServerWithContextPath(config);
 	//return pfx + '/logout?redirectUrl=' + ru;

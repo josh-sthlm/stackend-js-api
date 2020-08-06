@@ -1,8 +1,6 @@
 //@flow
 
-import store from './setup-redux.js';
-
-import { report } from '../src/abuse';
+import store from './setup-redux';
 
 describe('Store', () => {
 	describe('store', () => {

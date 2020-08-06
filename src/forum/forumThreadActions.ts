@@ -4,12 +4,12 @@ import * as forumApi from '../forum';
 import * as likeApi from '../like';
 import * as api from '../api';
 import * as forumActions from './forumActions';
-import type { Thunk, GetState } from '../store';
 import { Dispatch} from 'redux';
 import * as reducer from './forumThreadReducer';
-import { sendEventToGA } from '../analytics/analyticsFunctions';
-import { removeForumThreadEntry } from '../forum';
-import { handleAccordionStatus } from '../Accordion/accordionReducer';
+//import { sendEventToGA } from '../analytics/analyticsFunctions';
+import { ForumThreadEntry, removeForumThreadEntry } from '../forum'
+import { Thunk } from '../api'
+//import { handleAccordionStatus } from '../Accordion/accordionReducer';
 
 interface FetchForumThreads {
 	forumPermalink: string,
@@ -24,7 +24,7 @@ export function fetchForumThreads({
 	forumPermalink,
 	page,
 	pageSize = 25
-}: FetchForumThreads): Thunk<any> {
+}: FetchForumThreads): api.Thunk<any> {
 	return async (dispatch: Dispatch /*, getState: GetState*/) => {
 		dispatch(requestForumThreads());
 		const json = await dispatch(forumApi.listThreads({ forumPermalink, pageSize, p: page }));
@@ -59,7 +59,7 @@ interface FetchForumThreadEntries {
 }
 
 /**
- * Requests and recieve forumThreads and store them in redux-state
+ * Requests and receive forumThreads and store them in redux-state
  * if entryId is specified we fetch the page that this entry is located on
  */
 export function fetchForumThreadEntries({
@@ -154,18 +154,20 @@ export function rateForumThreadEntry({
 
 	/**Id of the forum thread entry to be liked, can also be a forumEntry*/
 	forumThreadEntry: forumApi.ForumThreadEntry
-}) {
-	return async (dispatch: Dispatch, getState: GetState) => {
+}): Thunk<any> {
+	return async (dispatch, getState) => {
 		const forumId = forumThreadEntry.forumRef.id;
 		const voteJson = await dispatch(forumApi.vote({ forumThreadEntry, score }));
 		const currentForum = getState().forums.entries.filter(
 			forum => !!forum && forum.id === forumId
 		)[0];
+		/* FIXME: re add this
 		if (score === 2) {
 			dispatch(sendEventToGA(forumApi.gaLikeEventObject({ forumThreadEntry })));
 		} else {
 			dispatch(sendEventToGA(forumApi.gaDislikeEventObject({ forumThreadEntry })));
 		}
+		 */
 		return dispatch(recieveVoteForumThread({ voteJson, forumPermalink: currentForum.permalink }));
 	};
 }
@@ -194,8 +196,8 @@ export function likeForumThreadEntry({
 	referenceId,
 	likedByCurrentUser,
 	context
-}: LikeForumThreadEntry) {
-	return async (dispatch: Dispatch, getState: GetState) => {
+}: LikeForumThreadEntry): Thunk<any> {
+	return async (dispatch, getState) => {
 		const forumThreadEntry = forumApi.getThreadEntryFromRedux({
 			forumThreads: getState().forumThreads,
 			id: referenceId
@@ -210,12 +212,13 @@ export function likeForumThreadEntry({
 			throw "can't get obfuscatedReference from forumThreadEntry in redux";
 		}
 
+		// FIXME: re add ga
 		if (likedByCurrentUser) {
 			receivedLikes = await dispatch(likeApi.removeLike({ obfuscatedReference, context }));
-			dispatch(sendEventToGA(forumApi.gaUnlikeEventObject({ forumThreadEntry })));
+			//dispatch(sendEventToGA(forumApi.gaUnlikeEventObject({ forumThreadEntry })));
 		} else {
 			receivedLikes = await dispatch(likeApi.like({ obfuscatedReference, context }));
-			dispatch(sendEventToGA(forumApi.gaLikeEventObject({ forumThreadEntry })));
+			//dispatch(sendEventToGA(forumApi.gaLikeEventObject({ forumThreadEntry })));
 		}
 
 		return dispatch(_receiveLikeForumThreadEntry({ receivedLikes, referenceId, forumPermalink }));
@@ -252,15 +255,15 @@ interface DeleteForumThreadEntry {
 export function deleteForumThreadEntry({
 	forumThreadEntryId,
 	modalName
-}: DeleteForumThreadEntry): Thunk<*> {
+}: DeleteForumThreadEntry): api.Thunk<void> {
 	return async (dispatch: Dispatch /*, getState: GetState*/) => {
-		dispatch(handleAccordionStatus({ name: modalName, isOpen: true }));
+		//dispatch(handleAccordionStatus({ name: modalName, isOpen: true }));
 		const json = await removeForumThreadEntry({ entryId: forumThreadEntryId });
 		!!json.entry && dispatch(_deleteForumThreadEntry({ entry: json.entry }));
 	};
 }
 
-function _deleteForumThreadEntry({ entry }) {
+function _deleteForumThreadEntry({ entry }: { entry: ForumThreadEntry}) {
 	return {
 		type: reducer.actionTypes.DELETE_FORUM_THREAD,
 		entry

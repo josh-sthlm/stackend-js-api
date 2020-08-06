@@ -1,6 +1,5 @@
 //@flow
-import { XcapJsonResult, post, getJson } from './api';
-import { Thunk } from './store';
+import { XcapJsonResult, post, getJson, Thunk } from './api';
 
 /**
  * Submit a rating

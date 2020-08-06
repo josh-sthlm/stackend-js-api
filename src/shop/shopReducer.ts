@@ -2,7 +2,7 @@
 
 //Action Type
 
-import { GraphQLList, Product } from '../shop';
+import { GraphQLList, GraphQLListNode, Product } from '../shop'
 import _ from 'lodash';
 
 export const RECIEVE_PRODUCT_TYPES: string = 'RECIEVE_PRODUCT_TYPES';
@@ -39,7 +39,7 @@ export default function shopReducer(
 ) {
 	switch (action.type) {
 		case RECIEVE_PRODUCT_TYPES: {
-			let edges = _.get(action, 'json.productTypes.edges', []);
+			let edges:[GraphQLListNode<string>] = _.get(action, 'json.productTypes.edges', []);
 			let productTypes = edges.map(e => e.node);
 			return Object.assign({}, state, {
 				productTypes

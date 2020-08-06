@@ -4,13 +4,11 @@ import {
 	getJson,
 	post,
 	XcapJsonResult,
-	ModerationStatus, XcapObject
+	ModerationStatus, XcapObject, Thunk
 } from './api'
 import { generatePermalink } from './permalink';
-import { Thunk } from './store';
 import { User } from './user';
 import { PaginatedCollection } from './PaginatedCollection';
-import {  } from './category';
 import { Insertion, Category } from './category';
 import { Order } from './search';
 import { Tree, Node, newTree, newTreeNode } from './tree';
@@ -225,6 +223,7 @@ export interface EditContentResult extends XcapJsonResult {
  * @param headline
  * @param teaser
  * @param body
+ * @param categoryId
  *
  * The body may be up to 65KB html.
  *
@@ -704,7 +703,7 @@ export function createContentValue(html: string, css: string, js: string): strin
 	const stringJavascript = `<script type="text/javascript" data-stackend-cms="js">${js}</script>`;
 	const stringHtml = `<div data-stackend-cms="html">${html}</div>`;
 
-	// HTML should be the last one to not mess up the other two in case of backend tag ballancing.
+	// HTML should be the last one to not mess up the other two in case of backend tag balancing.
 	// However, javascript needs to be last for preview to work
 	return `${stringStyle}${stringHtml}${stringJavascript}`;
 }

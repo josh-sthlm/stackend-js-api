@@ -1,7 +1,6 @@
 // @flow
 import _ from 'lodash';
-import { post, getJson,  XcapJsonResult, _getApiUrl, Config } from './api';
-import type { Thunk } from './store';
+import { post, getJson,  XcapJsonResult, _getApiUrl, Config, Thunk } from './api';
 import type { PaginatedCollection } from './PaginatedCollection';
 import type { Community } from './stackend';
 

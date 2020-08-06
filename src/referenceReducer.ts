@@ -1,6 +1,5 @@
 // @flow
 import update from 'immutability-helper';
-import { Action } from 'redux';
 import createReducer from './createReducer';
 
 export type referenceActions = Recieve;
@@ -15,8 +14,8 @@ export interface Recieve {
 interface State {
 	[key: number]: any
 }
-const initialState = {};
+const initialState:State = {};
 
 export default createReducer(initialState, {
-	RECIEVE_REFERENCES: (state: State, action: Action) => update(state, { $merge: action.entries })
+	RECIEVE_REFERENCES: (state: State, action: Recieve) => update(state, { $merge: action.entries })
 });

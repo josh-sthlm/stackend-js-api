@@ -1,5 +1,5 @@
 // @flow
-import { Thunk } from './store.js';
+import { Thunk } from './api';
 import _ from 'lodash';
 
 export interface Location {
@@ -78,7 +78,7 @@ export interface Request {
  * Get the request object
  */
 export function getRequest(): Thunk<any> {
-	return (dispatch: any, getState: any) => {
+	return (dispatch, getState) => {
 		return _.get(getState(), 'request');
 	};
 }

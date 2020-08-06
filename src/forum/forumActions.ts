@@ -1,13 +1,12 @@
 // @flow
 import _ from 'lodash';
-import { listForums } from '../forum';
-import type { Forum } from '../forum';
-import type { Thunk } from '../store';
+import { listForums, Forum } from '../forum';
+import { Thunk } from '../api';
 import { Dispatch} from 'redux';
 import * as reducer from './forumReducer';
 
-//Requests and recieve comments and store them in redux-state
-export function fetchForums(): Thunk<any> {
+//Requests and receive comments and store them in redux-state
+export function fetchForums(): Thunk<void> {
 	return async (dispatch: Dispatch /*, getState: GetState*/) => {
 		dispatch(requestForums());
 		const json = await dispatch(listForums({}));
@@ -21,7 +20,8 @@ export function requestForums(): reducer.Request {
 
 interface RecieveForums {
 	entries: Array<Forum>
-};
+}
+
 export function recieveForums({ entries }: RecieveForums): reducer.Recieve {
 	return {
 		type: reducer.actionTypes.RECIEVE_FORUMS,

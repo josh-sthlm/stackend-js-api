@@ -1,7 +1,6 @@
 //@flow
-import { getJson, post, createCommunityUrl, XcapJsonResult, XcapObject } from './api'
+import { getJson, post, createCommunityUrl, XcapJsonResult, XcapObject, Thunk } from './api'
 import * as userApi from './user';
-import  { Thunk } from './store';
 import { Request } from './request';
 import  { PaginatedCollection } from './PaginatedCollection';
 import  { AuthObject } from './privileges';

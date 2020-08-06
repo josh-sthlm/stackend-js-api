@@ -1,6 +1,5 @@
 // @flow
 import update from 'immutability-helper';
-import { Action } from 'redux';
 import createReducer from '../createReducer';
 
 export type EditForumThreadActions = Edit | Set | AddQuote | ToggleEdit;
@@ -36,32 +35,35 @@ export type ToggleEdit = {
 type State = {
 	text: string,
 	iteration: number,
-	quote: string
+	quote: string,
+	editForumPermalink: string|undefined,
+	editThreadId: number
 };
 
 const initialState = {
 	text: '',
 	iteration: 0,
-	quote: ''
+	quote: '',
+	editThreadId: 0,
 };
 
 export default createReducer(initialState, {
-	EDIT_FORUM_ENTRY_TEXT: (state: State, action: Action) =>
+	EDIT_FORUM_ENTRY_TEXT: (state: State, action: Edit) =>
 		update(state, {
 			text: { $set: action.text },
 			quote: { $set: '' }
 		}),
-	SET_FORUM_ENTRY_TEXT: (state: State, action: Action) =>
+	SET_FORUM_ENTRY_TEXT: (state: State, action: Set) =>
 		update(state, {
 			text: { $set: action.text },
 			iteration: { $set: state.iteration + 1 },
 			quote: { $set: '' }
 		}),
-	ADD_QUOTE: (state: State, action: Action) =>
+	ADD_QUOTE: (state: State, action: AddQuote) =>
 		update(state, {
 			quote: { $set: action.quote }
 		}),
-	FORUM_THREAD_TOGGLE_EDIT: (state: State, action: Action) =>
+	FORUM_THREAD_TOGGLE_EDIT: (state: State, action: ToggleEdit) =>
 		update(state, {
 			editForumPermalink: { $set: action.forumPermalink },
 			editThreadId: { $set: action.editThreadId }

@@ -44,7 +44,7 @@ export default createReducer(initialState, {
 			isFetching: { $set: true },
 			didInvalidate: { $set: false }
 		}),
-	RECIEVE_FORUMS: (state: State, action: Action) => {
+	RECIEVE_FORUMS: (state: State, action: Recieve) => {
 		const uniqueForums = _(action.entries)
 			.concat(_.get(state, `entries`, []))
 			.groupBy('id')

@@ -4,13 +4,13 @@ import {
 	post,
 	createCommunityUrl,
 	XcapJsonResult,
-	XcapObject
+	XcapObject,
+	Thunk
 } from './api'
 import * as event from './event';
 import * as poll from './poll';
 import * as group from './group';
 import * as gaFunctions from '../functions/gaFunctions';
-import { Thunk } from './store';
 import { Request } from './request';
 import { Category } from './category';
 import { VoteSummary } from './vote';

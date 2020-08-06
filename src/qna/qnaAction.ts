@@ -16,7 +16,7 @@ import {
 	SET_QNA_AVAILABLE_FILTERS,
 	RECIEVE_SEARCH_RESULT
 } from './qnaReducer';
-import { Thunk } from '../store';
+import { Thunk } from '../api';
 import { Request, getRequest } from '../request';
 
 declare var __xcapRunningServerSide: string;

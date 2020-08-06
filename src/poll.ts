@@ -1,6 +1,5 @@
 //@flow
-import { getJson, post, XcapJsonResult, XcapObject } from './api'
-import { Thunk } from './store';
+import { getJson, post, XcapJsonResult, XcapObject, Thunk } from './api'
 import { VoteSummary } from './vote';
 
 /**

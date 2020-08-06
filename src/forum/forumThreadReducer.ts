@@ -71,7 +71,7 @@ export default createReducer(initialState, {
 			didInvalidate: { $set: false }
 		}),
 
-	RECIEVE_FORUM_THREADS: (state: State, action: Action) => {
+	RECIEVE_FORUM_THREADS: (state: State, action: Recieve) => {
 		const uniqueForumThreads = _(action.entries)
 			.concat(_.get(state, `forums[${action.forumPermalink}]`, []))
 			.groupBy('id')
@@ -91,7 +91,7 @@ export default createReducer(initialState, {
 		});
 	},
 
-	UPDATE_FORUM_THREAD_ENTRY: (state: State, action: Action) => {
+	UPDATE_FORUM_THREAD_ENTRY: (state: State, action: Update) => {
 		let indexOfUpdatedEntry = state.forums[action.forumPermalink]
 			.map(entry => entry.id)
 			.indexOf(action.entry.id);
@@ -116,7 +116,7 @@ export default createReducer(initialState, {
 		update(state, {
 			didInvalidate: { $set: true }
 		}),
-	RECIEVE_VOTE_FORUM_THREAD: (state: State, action: Action) => {
+	RECIEVE_VOTE_FORUM_THREAD: (state: State, action: Rate) => {
 		const forumThreadKey = state.forums[action.forumPermalink].findIndex(
 			thread => thread.id === action.voteJson.referenceId
 		);
@@ -131,7 +131,7 @@ export default createReducer(initialState, {
 			}
 		});
 	},
-	RECIEVE_LIKE_FORUM_THREAD: (state: State, action: Action) => {
+	RECIEVE_LIKE_FORUM_THREAD: (state: State, action: Like) => {
 		const forumThreadKey = state.forums[action.forumPermalink].findIndex(
 			thread => thread.id === action.referenceId
 		);
@@ -154,7 +154,7 @@ export default createReducer(initialState, {
 			}
 		});
 	},
-	DELETE_FORUM_THREAD: (state: State, action: Action) => {
+	DELETE_FORUM_THREAD: (state: State, action: DeleteEntry) => {
 		const forumThreadEntryKey = state.forums[action.entry.forumRef.permalink].findIndex(
 			thread => thread.id === action.entry.id
 		);

@@ -1,7 +1,7 @@
 //@flow
 import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginReducer';
 import { getCurrentUser } from '../user';
-import type { Thunk } from '../store';
+import { Thunk } from '../api';
 import _ from 'lodash';
 
 const LOGIN_TTL: number = 60 * 1000;
@@ -30,10 +30,10 @@ function requestLoginData() {
 /**
  * Refresh the current user. Cached 1 minute.
  * @param params { force?:boolean }
- * @returns {function(any, any)}
+ * @returns
  */
 export function refreshLoginData(params?: any): Thunk<any> {
-	return async (dispatch: any, getState: any) => {
+	return async (dispatch, getState) => {
 		try {
 			const { currentUser } = getState();
 

@@ -22,9 +22,9 @@ import {
 	gaCommentEventObject,
 	gaEditCommentEventObject
 } from '../comments';
-import { Thunk } from '../store';
+import { Thunk } from '../api';
 import { Dispatch } from 'redux';
-import { sendEventToGA } from '../analytics/analyticsFunctions';
+//import { sendEventToGA } from '../analytics/analyticsFunctions';
 import { commentModule } from '../comments';
 import { recieveVotes } from '../vote/voteActions';
 
@@ -90,7 +90,7 @@ export function fetchMultipleComments({
 	p?: number, //page number in paginated collection
 	pageSize?: number
 }): Thunk<any> {
-	return async (dispatch: Dispatch /*, getState: any*/) => {
+	return async (dispatch /*, getState: any*/) => {
 		dispatch(requestGroupComments(module, referenceGroupId));
 		let json = await dispatch(getMultipleComments({ module, referenceIds, pageSize, p }));
 		dispatch(recieveGroupComments(module, referenceGroupId, json));
@@ -173,7 +173,7 @@ interface FetchComments {
 	referenceGroupId?: number, // Reference group id, for example blog id (optional)
 	p?: number, //page number in paginated collection
 	pageSize?: number,
-	useVotes: boolean
+	useVotes?: boolean
 }
 
 /**

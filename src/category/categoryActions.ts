@@ -6,7 +6,7 @@ import * as reducer from './categoryReducer';
 
 interface ContextObject {
 	context: Category
-};
+}
 
 export function fetchCategories({ context }: ContextObject) {
 	return async (dispatch: any /*, getState: any*/) => {

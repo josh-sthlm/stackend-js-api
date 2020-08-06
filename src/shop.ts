@@ -1,7 +1,6 @@
 //@flow
 
-import { Thunk } from './store';
-import { getJson, post, XcapJsonResult } from './api';
+import { getJson, post, XcapJsonResult, Thunk } from './api';
 
 export interface GraphQLListNode<T> {
 	node: T

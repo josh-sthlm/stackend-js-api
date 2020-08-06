@@ -1,6 +1,6 @@
 // @flow
 import _ from 'lodash';
-import { AuthObject } from '../api';
+import { AuthObject } from '../privileges';
 import {
 	Group,
 	GroupMemberAuth,
@@ -9,18 +9,18 @@ import {
 	unsubscribe as _unsubscribe,
 	applyForMembership as _applyForMembership,
 	listMembers,
-	getGroup
-} from '../group';
+	getGroup, ListMembersResult
+} from '../group'
 
 import { Dispatch } from 'redux';
-import { Thunk } from '../store';
+import { Thunk, XcapJsonResult } from '../api'
 import * as reducer from './groupReducer';
 
 type Request = { type: 'REQUEST_GROUPS' };
 type Recieve = { type: 'RECIEVE_GROUPS', entries: Array<Group> };
 type RecieveGroup = { type: 'RECIEVE_GROUP', entries: Array<Group> };
 type Invalidate = { type: 'INVALIDATE_GROUPS' };
-type RecieveAuth = { type: 'RECIEVE_GROUPS_AUTH', entries: { [number]: AuthObject } };
+type RecieveAuth = { type: 'RECIEVE_GROUPS_AUTH', entries: { [id:number]: AuthObject } };
 type RecieveMembers = {
 	type: 'RECIEVE_GROUP_MEMBERS',
 	groupMembers: { [key: number]: Array<GroupMemberAuth> }
@@ -104,8 +104,8 @@ export function unsubscribe({
 }: {
 	groupPermalink?: string,
 	groupId?: number
-}): Thunk<any> {
-	return async (dispatch: Dispatch /*, getState: any*/) => {
+}): Thunk<XcapJsonResult> {
+	return async (dispatch) => {
 		let json = await dispatch(_unsubscribe({ groupPermalink, groupId }));
 		try {
 			dispatch(fetchGroupMembers({ groupId: json.groupId }));
@@ -124,7 +124,7 @@ interface ApplyForMembership {
 	groupId: number //ex: 1
 }
 
-export function applyForMembership({ groupPermalink, groupId }: ApplyForMembership): Thunk<*> {
+export function applyForMembership({ groupPermalink, groupId }: ApplyForMembership): Thunk<any> {
 	return async (dispatch: Dispatch /*, getState: any*/) => {
 		let json = await _applyForMembership({ groupPermalink, groupId });
 		let myGroups = await dispatch(listMyGroups());
@@ -181,8 +181,8 @@ export function fetchGroupMembers({
 }: {
 	groupId?: number,
 	groupPermalink?: string
-}): Thunk<any> {
-	return async (dispatch: Dispatch /*, getState: any*/) => {
+}): Thunk<ListMembersResult> {
+	return async (dispatch) => {
 		let json = await dispatch(listMembers({ groupId, groupPermalink }));
 		dispatch(recieveGroups({ entries: json.group, json }));
 		dispatch(recieveGroupMembers({ groupMembers: { [json.groupId]: json.groupMembers }, json }));
