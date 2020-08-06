@@ -1,8 +1,10 @@
+//@flow
 import nodeResolve from '@rollup/plugin-node-resolve'
 import babel from 'rollup-plugin-babel'
 import replace from '@rollup/plugin-replace'
 import typescript from 'rollup-plugin-typescript2'
 import { terser } from 'rollup-plugin-terser'
+import commonjs from '@rollup/plugin-commonjs';
 
 const NAME = "stackend";
 import pkg from './package.json'
@@ -36,6 +38,7 @@ export default [
       nodeResolve({
         extensions,
       }),
+      commonjs(),
       typescript({ useTsconfigDeclarationDir: true }),
       babel({
         extensions,
@@ -59,6 +62,7 @@ export default [
       nodeResolve({
         extensions,
       }),
+      commonjs(),
       typescript({ tsconfigOverride: noDeclarationFiles }),
       babel({
         extensions,
@@ -81,6 +85,7 @@ export default [
       nodeResolve({
         extensions,
       }),
+      commonjs(),
       replace({
         'process.env.NODE_ENV': JSON.stringify('production'),
       }),
@@ -102,7 +107,7 @@ export default [
 
   // UMD Development
   {
-    input: 'src/index.ts',
+    input: 'src/api.ts',
     output: {
       file: 'dist/api.ts',
       format: 'umd',
@@ -113,6 +118,7 @@ export default [
       nodeResolve({
         extensions,
       }),
+      commonjs(),
       typescript({ tsconfigOverride: noDeclarationFiles }),
       babel({
         extensions,
@@ -126,7 +132,7 @@ export default [
 
   // UMD Production
   {
-    input: 'src/index.ts',
+    input: 'src/api.ts',
     output: {
       file: 'dist/stackend.min.js',
       format: 'umd',
@@ -137,6 +143,7 @@ export default [
       nodeResolve({
         extensions,
       }),
+      commonjs(),
       typescript({ tsconfigOverride: noDeclarationFiles }),
       babel({
         extensions,
