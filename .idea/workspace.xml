@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/cms.getContentValues.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.flowconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.flowconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LoadJson.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/LoadJson.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/createReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/createReducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/request.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/request.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cms.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +69,7 @@
       <workItem from="1596540894485" duration="929000" />
       <workItem from="1596552394269" duration="835000" />
       <workItem from="1596553555279" duration="39252000" />
-      <workItem from="1596719474166" duration="1422000" />
+      <workItem from="1596719474166" duration="2408000" />
     </task>
     <task id="LOCAL−00001" summary="Added to GIT">
       <created>1596468255316</created>
@@ -126,7 +125,13 @@
       <option name="presentableId" value="LOCAL−00009" />
       <updated>1596707731318</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL−00010" summary="Compile fixes">
+      <created>1596721146404</created>
+      <option name="number" value="LOCAL−00010" />
+      <option name="presentableId" value="LOCAL−00010" />
+      <updated>1596721146404</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,7 +142,8 @@
     <MESSAGE value="Added files" />
     <MESSAGE value="Fixes" />
     <MESSAGE value="Work" />
-    <option name="LAST_COMMIT_MESSAGE" value="Work" />
+    <MESSAGE value="Compile fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Compile fixes" />
   </component>
   <component name="WindowStateProjectService">
     <state x="1131" y="456" width="655" height="1007" key="#com.intellij.ide.util.MemberChooser" timestamp="1596634707566">
@@ -148,14 +154,14 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1000" y="512" width="917" height="895" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.46.2928.1784@0.46.2928.1784" timestamp="1596705513510" />
-    <state x="1107" y="661" width="704" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1596703821364">
+    <state x="1107" y="661" width="704" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1596721759136">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="1107" y="661" width="704" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.46.2928.1784@0.46.2928.1784" timestamp="1596703821364" />
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1596707731071">
+    <state x="1107" y="661" width="704" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.46.2928.1784@0.46.2928.1784" timestamp="1596721759136" />
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1596721146176">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1596707731071" />
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1596721146176" />
     <state width="2891" height="462" key="GridCell.Tab.0.bottom" timestamp="1596713274232">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
@@ -176,10 +182,10 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="594" y="273" width="1739" height="1299" key="SettingsEditor/0.46.2928.1784@0.46.2928.1784" timestamp="1596627927412" />
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1596707732853">
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1596721148534">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1596707732853" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1596721148534" />
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1596533562889">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>

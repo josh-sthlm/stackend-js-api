@@ -12,7 +12,7 @@ import { PaginatedCollection } from './PaginatedCollection';
 import { Insertion, Category } from './category';
 import { Order } from './search';
 import { Tree, Node, newTree, newTreeNode } from './tree';
-import { ModuleType } from './stackend/modules';
+;
 
 /**
  * Xcap Cms api constants and methods.
@@ -453,6 +453,7 @@ export interface GetPagesResult extends XcapJsonResult {
  * Get multiple pages by id.
  * @param pageIds
  * @param permalinks
+ * @param communityPermalink
  * @returns {Thunk<GetPagesResult>}
  */
 export function getPages({
@@ -475,12 +476,13 @@ export function getPages({
 }
 
 export interface SearchPageContentResult extends XcapJsonResult {
-	result: Map<string, Array<PageContent>>
+	result: { [key:string] : Array<PageContent> }
 }
 
 /**
  * Search for page content
  * @param q
+ * @param codeBinOnly
  * @returns {Thunk<SearchPageContentResult>}
  */
 export function searchPageContent({
@@ -721,65 +723,67 @@ export function extractContentValues(
 	javascriptValue: string,
 	cssValue: string
 } {
-	let html, javascript, css;
+	let html:Element|null = null;
+	let javascript:Element  | null = null;
+	let css:Element | null = null;
 
 	if (content && content.body) {
 		let xmlDoc = new DOMParser().parseFromString(content.body, 'text/html');
 
-		css = xmlDoc.evaluate(
+		css = (xmlDoc.evaluate(
 			'//style[@data-stackend-cms="css"]',
 			xmlDoc,
 			null,
 			XPathResult.FIRST_ORDERED_NODE_TYPE,
 			null
-		).singleNodeValue;
+		).singleNodeValue as Element);
 
-		javascript = xmlDoc.evaluate(
+		javascript = (xmlDoc.evaluate(
 			'//script[@data-stackend-cms="js"]',
 			xmlDoc,
 			null,
 			XPathResult.FIRST_ORDERED_NODE_TYPE,
 			null
-		).singleNodeValue;
+		).singleNodeValue as Element);
 
-		html = xmlDoc.evaluate(
+		html = (xmlDoc.evaluate(
 			'//div[@data-stackend-cms="html"]',
 			xmlDoc,
 			null,
 			XPathResult.FIRST_ORDERED_NODE_TYPE,
 			null
-		).singleNodeValue;
+		).singleNodeValue as Element);
 
 		// Fall backs to old style code
 
 		if (css === null) {
-			css = xmlDoc.evaluate(
+			css = (xmlDoc.evaluate(
 				'/html/head/style',
 				xmlDoc,
 				null,
 				XPathResult.FIRST_ORDERED_NODE_TYPE,
 				null
-			).singleNodeValue;
+			).singleNodeValue as Element);
 		}
 
 		if (html == null) {
-			html = xmlDoc.evaluate(
+			html = (xmlDoc.evaluate(
 				'/html/body/div',
 				xmlDoc,
 				null,
 				XPathResult.FIRST_ORDERED_NODE_TYPE,
 				null
-			).singleNodeValue;
+			).singleNodeValue as Element);
 		}
 
 		if (javascript == null) {
-			javascript = xmlDoc.evaluate(
+			javascript = (xmlDoc.evaluate(
 				'/html/body/script',
 				xmlDoc,
 				null,
 				XPathResult.FIRST_ORDERED_NODE_TYPE,
 				null
-			).singleNodeValue;
+			).singleNodeValue as Element);
 		}
 	}
 
@@ -796,42 +800,4 @@ export interface ContentValues {
 		javascript: string | null,
 		style: string | null
 	}
-}
-
-/**
- * Extract all content values from a page
- * @param page
- */
-export function getContentValues(page: Page | null): ContentValues {
-	if (!page) {
-		return {};
-	}
-
-	let contentValues = {};
-
-	page.content.forEach(pc => {
-		if (pc.type === ModuleType.CMS && pc.referenceRef) {
-			const { htmlValue, javascriptValue, cssValue } = extractContentValues(pc.referenceRef);
-			let style = cssValue ? (
-				<style
-					type="text/css"
-					dangerouslySetInnerHTML={{ __html: cssValue }}
-					key={'pc-css-' + pc.referenceRef.id}
-					id={'stackend-cms-' + pc.referenceRef.id + '-style'}
-				/>
-			) : null;
-			let javascript = null;
-			if (javascriptValue !== '') {
-				javascript = `<script type="text/javascript" id="stackend-cms-${pc.referenceRef.id}-js">${javascriptValue}</script>`;
-			}
-			let html = htmlValue ? `<div class='${RICH_CONTENT_CSS_CLASS}'>${htmlValue}</div>` : null;
-			contentValues[pc.reference] = {
-				html,
-				style,
-				javascript
-			};
-		}
-	});
-
-	return contentValues;
 }
