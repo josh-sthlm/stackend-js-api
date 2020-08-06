@@ -5,3 +5,6 @@
 /.flowconfig
 .DS_Store
 /npm-debug.log
+/es/
+/lib/
+/types/

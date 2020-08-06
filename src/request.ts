@@ -41,7 +41,11 @@ export interface StackendAnchor {
 
 	// Blog
 	blogKey?: string,
-	blogEntryPermalink?: string
+	blogEntryPermalink?: string,
+
+	// Comment
+	referenceId?: number,
+	id?: number
 }
 
 /**
@@ -145,11 +149,14 @@ export function parseAnchor(anchor: string|null): StackendAnchor | null {
 	for (let i = 0; i < v.length; i++) {
 		let x = parseAnchorInt(v[i]);
 		if (x) {
+			// @ts-ignore
 			a.items.push(x);
 		}
 	}
 
+	// @ts-ignore
 	if (a.items.length !== 0) {
+		// @ts-ignore
 		a.type = a.items[0].type;
 		let i = s.indexOf('/');
 		a.permalink = s.substring(i + 1);
@@ -207,8 +214,8 @@ function parseAnchorInt(anchor: string): StackendAnchor|null {
 		case AnchorType.COMMENT:
 			// comment/REFID/ID/type/....
 			if (v.length >= 2) {
-				a.referenceId = v[0];
-				a.id = v[1];
+				a.referenceId = parseInt(v[0]);
+				a.id = parseInt(v[1]);
 				v.shift();
 				v.shift();
 				let n = v.join('/');

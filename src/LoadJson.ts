@@ -45,7 +45,7 @@ export async function LoadJson({
 	body?: any,
 	bodyContentType?: string,
 	xpressToken?: string,
-	cookie?: string
+	cookie?: string | null
 }) {
 	//console.log("Fetching json: ",url);
 	//console.trace("Fetching json: ",url);
@@ -59,7 +59,7 @@ export async function LoadJson({
 		}
 	}
 
-	let opts = {
+	let opts:RequestInit = {
 		method,
 		headers,
 		mode: 'cors',

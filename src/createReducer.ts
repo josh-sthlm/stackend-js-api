@@ -2,13 +2,13 @@
 
 import { Action } from 'redux';
 
-type Reducer<S, A> = (S:any, A:Action) => S;
+type Reducer<S, A> = (S:any, A:any) => S;
 
 export default function createReducer<S, A>(
 	initialState: S,
-	handlers: { [key: Action]: Reducer<S, A> }
+	handlers: { [key: string]: Reducer<S, A> }
 ): Reducer<S, A> {
-	return function reducer(state: S = initialState, action: A): S {
+	return function reducer(state: S = initialState, action: Action): S {
 		return handlers.hasOwnProperty(action.type) ? handlers[action.type](state, action) : state;
 	};
 }

@@ -13,6 +13,10 @@ import { Privilege } from './privileges'
 
 declare var __xcapRunningServerSide: any;
 
+// FIXME: Get rid of this
+declare var global: any;
+declare var window: any;
+
 export const STACKEND_DEFAULT_SERVER: string = 'https://api.stackend.com';
 export const STACKEND_DEFAULT_CONTEXT_PATH: string = '';
 
@@ -673,7 +677,7 @@ export function _getApiUrl({
 	componentName,
 	context
 }: {
-	state: { communities: any, config: any }, //redux state
+	state: State,
 	url: string, //extra url
 	parameters?: any, //extra parameters
 	notFromApi?: boolean, //if the url is not in the api
@@ -1046,7 +1050,7 @@ export function getConfig({
 	componentName?: string,
 	context?: string,
 	defaultValue?: any
-}): Thunk<*> {
+}): Thunk<any> {
 	return (dispatch: any, getState: any) => {
 		const config = _.get(getState(), 'config');
 		return _getConfig({ config, key, componentName, context, defaultValue });
@@ -1183,16 +1187,18 @@ export function createCommunityUrl({
  * @param args
  * @return {Object}
  */
-export function argsToObject(args: any): any {
+export function argsToObject(args: any): null | { [key:string]: string } {
 	if (typeof args === 'string') {
-		return args;
+		return {
+			[args]: args
+		}
 	}
 
 	if (!args) {
 		return null;
 	}
 
-	let r = {};
+	let r: { [key:string]: string } = {};
 	if (typeof args.length === 'undefined') {
 		r = args; // Plain object
 	} else {
@@ -1445,7 +1451,7 @@ export function getInitialStoreValues({
  * Log a javascript error
  * @param error Browser Error object
  */
-export async function logJsError(error: Error): Promise<any> {
+export async function logJsError(error: any /* Error */): Promise<any> {
 	if (!error) {
 		return;
 	}

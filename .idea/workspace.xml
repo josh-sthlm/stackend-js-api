@@ -2,56 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/throbber/throbberActions.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/throbber/throbberReducer.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/abuse.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/abuse.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LoadJson.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/LoadJson.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/blog.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/blog.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/blog/groupBlogEntriesActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/blog/groupBlogEntriesActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/blog/groupBlogEntriesReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/blog/groupBlogEntriesReducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/category.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/category.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/category/categoryActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/category/categoryActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cms.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cms/cmsActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms/cmsActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cms/pageActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms/pageActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/comments.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/comments.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/comments/commentAction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/comments/commentAction.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/counter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/counter.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/event.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/event.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/forum.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/forum/editForumThreadReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/editForumThreadReducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/forum/forumActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/forumActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/forum/forumReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/forumReducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/forum/forumThreadActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/forumThreadActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/forum/forumThreadReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/forum/forumThreadReducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/group.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/group.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/group/groupActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/group/groupActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/like.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/like.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/login.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/login.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/login/loginAction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/login/loginAction.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/media.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/media.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/poll.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/poll.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/qna.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/qna.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/qna/qnaAction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/qna/qnaAction.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/rating.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/rating.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/referenceReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/referenceReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/createReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/createReducer.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/request.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/request.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/request/requestActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/request/requestActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/search.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/search.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/search/searchActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/search/searchActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/shop.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shop.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/shop/shopActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shop/shopActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/shop/shopReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shop/shopReducer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stackend.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stackend/communityAction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend/communityAction.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stackend/moduleAction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend/moduleAction.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/store.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/user.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/user.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/vote.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/vote.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/xcapActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/xcapActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/blog.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/blog.spec.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/store.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/store.spec.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +49,7 @@
     <property name="prettierjs.PrettierConfiguration.Package" value="$PROJECT_DIR$/node_modules/prettier" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.JavaScript" />
-    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
+    <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -114,7 +69,8 @@
       <workItem from="1596466255871" duration="9401000" />
       <workItem from="1596540894485" duration="929000" />
       <workItem from="1596552394269" duration="835000" />
-      <workItem from="1596553555279" duration="38622000" />
+      <workItem from="1596553555279" duration="39252000" />
+      <workItem from="1596719474166" duration="1422000" />
     </task>
     <task id="LOCAL−00001" summary="Added to GIT">
       <created>1596468255316</created>
@@ -164,7 +120,13 @@
       <option name="presentableId" value="LOCAL−00008" />
       <updated>1596701991977</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL−00009" summary="Work">
+      <created>1596707731318</created>
+      <option name="number" value="LOCAL−00009" />
+      <option name="presentableId" value="LOCAL−00009" />
+      <updated>1596707731318</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -190,49 +152,49 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1107" y="661" width="704" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.46.2928.1784@0.46.2928.1784" timestamp="1596703821364" />
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1596701991687">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1596707731071">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1596701991687" />
-    <state width="2891" height="462" key="GridCell.Tab.0.bottom" timestamp="1596695974889">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1596707731071" />
+    <state width="2891" height="462" key="GridCell.Tab.0.bottom" timestamp="1596713274232">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="462" key="GridCell.Tab.0.bottom/0.46.2928.1784@0.46.2928.1784" timestamp="1596695974889" />
-    <state width="2891" height="462" key="GridCell.Tab.0.center" timestamp="1596695974889">
+    <state width="2891" height="462" key="GridCell.Tab.0.bottom/0.46.2928.1784@0.46.2928.1784" timestamp="1596713274232" />
+    <state width="2891" height="462" key="GridCell.Tab.0.center" timestamp="1596713274232">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="462" key="GridCell.Tab.0.center/0.46.2928.1784@0.46.2928.1784" timestamp="1596695974889" />
-    <state width="2891" height="462" key="GridCell.Tab.0.left" timestamp="1596695974888">
+    <state width="2891" height="462" key="GridCell.Tab.0.center/0.46.2928.1784@0.46.2928.1784" timestamp="1596713274232" />
+    <state width="2891" height="462" key="GridCell.Tab.0.left" timestamp="1596713274232">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="462" key="GridCell.Tab.0.left/0.46.2928.1784@0.46.2928.1784" timestamp="1596695974888" />
-    <state width="2891" height="462" key="GridCell.Tab.0.right" timestamp="1596695974889">
+    <state width="2891" height="462" key="GridCell.Tab.0.left/0.46.2928.1784@0.46.2928.1784" timestamp="1596713274232" />
+    <state width="2891" height="462" key="GridCell.Tab.0.right" timestamp="1596713274232">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="462" key="GridCell.Tab.0.right/0.46.2928.1784@0.46.2928.1784" timestamp="1596695974889" />
+    <state width="2891" height="462" key="GridCell.Tab.0.right/0.46.2928.1784@0.46.2928.1784" timestamp="1596713274232" />
     <state x="594" y="273" width="1739" height="1299" key="SettingsEditor" timestamp="1596627927412">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="594" y="273" width="1739" height="1299" key="SettingsEditor/0.46.2928.1784@0.46.2928.1784" timestamp="1596627927412" />
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1596701993842">
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1596707732853">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1596701993842" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1596707732853" />
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1596533562889">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.46.2928.1784@0.46.2928.1784" timestamp="1596533562889" />
-    <state x="955" y="418" width="1538" height="1160" key="find.popup" timestamp="1596701687279">
+    <state x="955" y="418" width="1538" height="1160" key="find.popup" timestamp="1596720016575">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="955" y="418" width="1538" height="1160" key="find.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1596701687279" />
+    <state x="955" y="418" width="1538" height="1160" key="find.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1596720016575" />
     <state x="875" y="404" key="run.anything.popup" timestamp="1596617421115">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="875" y="404" key="run.anything.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1596617421115" />
-    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup" timestamp="1596638805722">
+    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup" timestamp="1596720095398">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1596638805722" />
+    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1596720095398" />
   </component>
 </project>
