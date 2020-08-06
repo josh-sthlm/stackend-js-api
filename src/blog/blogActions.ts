@@ -1,5 +1,5 @@
 //@flow
-import { Blog } from './blog';
+import { Blog } from '../blog';
 import * as reducer from './blogReducer';
 
 interface ReceiveBlogs {

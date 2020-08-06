@@ -2,7 +2,7 @@
 
 //Action Type
 
-import { GraphQLList, Product } from './shop';
+import { GraphQLList, Product } from '../shop';
 import _ from 'lodash';
 
 export const RECIEVE_PRODUCT_TYPES: string = 'RECIEVE_PRODUCT_TYPES';

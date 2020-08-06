@@ -1,7 +1,7 @@
 //@flow
-import { VoteSummary, Vote } from './vote';
+import { VoteSummary, Vote } from '../vote';
 import update from 'immutability-helper';
-import { Comment } from '../comments/comments';
+import { Comment } from '../comments';
 
 export const XCAP_VOTES_RECIEVED = 'XCAP_VOTES_RECIEVED';
 export const XCAP_VOTES_UPDATE = 'XCAP_VOTES_UPDATE';

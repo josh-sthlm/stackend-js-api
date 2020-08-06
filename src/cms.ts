@@ -5,16 +5,16 @@ import {
 	post,
 	XcapJsonResult,
 	ModerationStatus, XcapObject
-} from '../api'
-import { generatePermalink } from '../permalink';
-import { Thunk } from '../store';
-import { User } from '../user/user';
-import { PaginatedCollection } from '../PaginatedCollection';
-import {  } from '../category/category';
-import { Insertion, Category } from '../category/category';
-import { Order } from '../search/search';
-import { Tree, Node, newTree, newTreeNode } from '../tree/tree';
-import { ModuleType } from '../stackend/modules';
+} from './api'
+import { generatePermalink } from './permalink';
+import { Thunk } from './store';
+import { User } from './user';
+import { PaginatedCollection } from './PaginatedCollection';
+import {  } from './category';
+import { Insertion, Category } from './category';
+import { Order } from './search';
+import { Tree, Node, newTree, newTreeNode } from './tree';
+import { ModuleType } from './stackend/modules';
 
 /**
  * Xcap Cms api constants and methods.
@@ -102,11 +102,11 @@ export function populateTemplateContent({
 	return getJson({ url: '/cms/populate-template', parameters: arguments });
 }
 
-export type ListContentResult = XcapJsonResult & {
+export interface ListContentResult extends XcapJsonResult {
 	contentPaginated: PaginatedCollection<Content>,
 	isPage: boolean,
 	childCategories: Array<Category>
-};
+}
 
 /**
  * List CMS content by category/permalink.
@@ -269,7 +269,7 @@ export function setModerationStatus({
  * @param id Cms content id (required)
  * @returns {Promise}
  */
-export function removeContent({ id }: { id: number }): Thunk<*> {
+export function removeContent({ id }: { id: number }): Thunk<XcapJsonResult> {
 	return post({ url: '/cms/remove', parameters: arguments });
 }
 

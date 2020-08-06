@@ -6,13 +6,16 @@ import { Thunk } from './store';
 import { Dispatch} from 'redux';
 import { recieveReferences } from './referenceActions';
 import { Request, getRequest } from './request';
-import { Community, Module } from './stackend/stackend';
-import { User } from './user/user';
+import { Community, Module } from './stackend';
+import { User } from './user';
 import { setLoadingThrobberVisible } from '../throbber/throbberActions';
-import { Content, Page, SubSite } from './cms/cms';
+import { Content, Page, SubSite } from './cms';
 import { getClientSideApi } from '../functions/ClientSideApi';
+import { Privilege } from './privileges'
 
 declare var __xcapRunningServerSide: any;
+
+
 
 export const STACKEND_DEFAULT_SERVER: string = 'https://api.stackend.com';
 export const STACKEND_DEFAULT_CONTEXT_PATH: string = '';
@@ -87,48 +90,6 @@ export const COMMUNITY_PARAMETER: string = '__community';
  */
 export const RICH_CONTENT_CHAIN_PARAMETER: string = 'xcap.rich-content-chain';
 
-/**
- * Privilege types (new enum based version)
- */
-export enum Privilege {
-	VISITOR = 'VISITOR',
-	IDENTIFIED = 'IDENTIFIED',
-	VERIFIED = 'VERIFIED',
-	BLOCKED = 'BLOCKED',
-	TRUSTED = 'TRUSTED',
-	ADMIN = 'ADMIN',
-	SUPER_ADMIN = 'SUPER_ADMIN'
-}
-
-
-/**
- * Privilege types (old id based version)
- */
-export enum PrivilegeType {
-	VISITOR = 1,
-	IDENTIFIED = 2,
-	VERIFIED = 4,
-	BLOCKED = 8,
-	TRUSTED = 16,
-	ADMIN = 32,
-	SUPER_ADMIN = 64
-}
-
-export type PrivilegeTypeIds = 1 | 2 | 4 | 8 | 16 | 32 | 64;
-
-
-/**
- * Privilege type names
- */
-const PRIVILEGE_NAMES = {
-	'1': 'Visitor',
-	'2': 'Identified',
-	'4': 'Verified',
-	'8': 'Blocked',
-	'16': 'Author',
-	'32': 'Admin',
-	'64': 'Super-Admin'
-};
 
 /**
  * Search order
@@ -144,7 +105,7 @@ export enum Order {
  */
 export interface XcapJsonResult {
 	/**
-	 * Error messages. Not present if the API call was successfull
+	 * Error messages. Not present if the API call was successful
 	 */
 	error?: {
 		/**
@@ -203,46 +164,6 @@ export function invertOrder(order: Order): Order {
 }
 
 /**
- * Get the name of a privilege type
- */
-export function getPrivilegeName(privilegeType: number): string {
-	let s = PRIVILEGE_NAMES[String(privilegeType)];
-	return s || 'Visitor';
-}
-
-/**
- * Describes the user access to an object
- */
-export interface AuthObject {
-	/** Users privilege */
-	userPrivilege: Privilege,
-
-	/** Is comment allowed? */
-	comment: boolean,
-
-	/** Is create allowed? */
-	create: boolean,
-
-	/** Is moderate allowed? */
-	moderate: boolean,
-
-	/** Is read allowed? */
-	read: boolean,
-
-	/** Is post moderation required? */
-	postModerateRequired: boolean,
-
-	/** Will objects caught by the text filter cause it to be pre-moderated? */
-	textFilteredPre: boolean,
-
-	/** Is text filtering requred? */
-	textFilteringRequired: boolean,
-
-	/** Rule in effect */
-	ruleId: number
-}
-
-/**
  * Generic sort order. Some components supports additional orders.
  */
 export enum SortOrder {
@@ -255,7 +176,7 @@ export type Modstatus = 'NONE' | 'PASSED' | 'NOT_PASSED';
 /**
  * Xcap types and their names
  */
-const typeNames = {
+const typeNames: { [type:string]: string } = {
 	'se.josh.xcap.comment.Comment': 'Comment',
 	'se.josh.xcap.comment.impl.CommentImpl': 'Comment',
 	'net.josh.community.user.User': 'User',
@@ -639,7 +560,7 @@ export function getEffectiveCommunityPath(): Thunk<string> {
  * @param community Optional community
  * @return {Thunk<string>}
  */
-export function getAbsoluteApiBaseUrl(community: string): Thunk<string> {
+export function getAbsoluteApiBaseUrl(community: string): Thunk<any> {
 	return (_dispatch: any, getState: any) => {
 		const state = getState();
 
@@ -845,7 +766,7 @@ export function getApiUrl({
 	componentName?: string,
 	context?: string
 }): Thunk<string> {
-	return (dispatch: any, getState: any) => {
+	return (dispatch, getState) => {
 		return _getApiUrl({
 			state: getState(),
 			url,
@@ -859,7 +780,7 @@ export function getApiUrl({
 }
 
 /**
- * Add any related objects recieved to the store
+ * Add any related objects received to the store
  * @param dispatch
  * @param json
  */
@@ -914,7 +835,7 @@ export function getJson({
 				})
 			);
 
-			let c: string | null = cookie;
+			let c: string | undefined | null = cookie;
 
 			// The client will supply the cookie automatically. Server side will not, so pass it along
 			if (
@@ -1069,42 +990,6 @@ export function post({
 			return r;
 		}
 		return {}; // FIXME: report error
-	};
-}
-
-/**
- * Post using the json api to an external server.
- * @param url
- * @param parameters
- * @param remoteServer
- * @returns {Promise}
- * @deprected
- * FIXME: Remove this
- *
- */
-export function postToExternalServer({
-	url,
-	parameters,
-	remoteServer
-}: {
-	url: string,
-	parameters: any,
-	remoteServer: string
-}): Thunk<XcapJsonResult> {
-	return async (dispatch: any /*, getState: any*/) => {
-		let params = argsToObject(parameters);
-		const result = await LoadJson({
-			url,
-			method: 'POST',
-			parameters: params,
-			server: remoteServer
-		});
-		if (!!result.error) {
-			console.warn(getJsonErrorText(result), url);
-		}
-		const r = postProcessApiResult(result);
-		addRelatedObjectsToStore(dispatch, r);
-		return r;
 	};
 }
 
@@ -1338,7 +1223,7 @@ export function postProcessApiResult(result: XcapJsonResult): any {
 	return _postProcessApiResult(result, result[RELATED_OBJECTS], likes, votes);
 }
 
-function _postProcessApiResult(result: XcapJsonResult, relatedObjects: any, likes, votes) {
+function _postProcessApiResult(result: XcapJsonResult, relatedObjects: any, likes?: any, votes?:any) {
 	if (result === null) {
 		return null;
 	}
@@ -1471,7 +1356,7 @@ export function getTypeName(objectOrClassName: any): string {
 	}
 
 	return 'Unknown type';
-}
+};
 
 export interface GetInitialStoreValuesResult extends XcapJsonResult {
 	/** Was the community determined from the domain rather that from the permalink? */
@@ -1484,7 +1369,7 @@ export interface GetInitialStoreValuesResult extends XcapJsonResult {
 	stackendCommunity: Community | null,
 
 	/** Privilege of current community (when running in /stacks) */
-	communityPrivilegeType: PrivilegeType,
+	communityPrivilegeType: Privilege,
 	domain: string | null,
 
 	/** Current user. Stackend user when running in /stacks */
@@ -1579,7 +1464,7 @@ export async function logJsError(error: Error): Promise<any> {
 
 	// Produces the best error message in all browsers.
 	// Safari, however does not include the stacktrace
-	let message = message + error.toString() + (error.stack ? '\n' + error.stack : '');
+	let message = error.toString() + (error.stack ? '\n' + error.stack : '');
 
 	let params = {
 		communityId,
@@ -1731,7 +1616,7 @@ export const TEMPLATE_START: string = '{{';
 export const TEMPLATE_END: string = '}}';
 
 /**
- * Replace occurances of {{XXX}} with the values of XXX from the values.
+ * Replace occurrences of {{XXX}} with the values of XXX from the values.
  * For example templateReplace("Hello {{name}}!", { name: 'Jane' }) would return "Hello Jane!"
  * @param template
  * @param values
@@ -1740,7 +1625,7 @@ export const TEMPLATE_END: string = '}}';
  */
 export function templateReplace(
 	template: string,
-	values: Map<string, string>,
+	values: {[name:string]: string},
 	valueEncoder?: (v: string) => string | null
 ): string {
 	if (!template) {
@@ -1784,7 +1669,7 @@ export function templateReplace(
 }
 
 /**
- * Create a hash code of a string. Rouhgly the same impl as java.
+ * Create a hash code of a string. Roughly the same impl as java.
  * @param str
  * @returns {number}
  */

@@ -1,6 +1,6 @@
 // @flow
 import _ from 'lodash';
-import * as forumApi from './forum';
+import * as forumApi from '../forum';
 import * as likeApi from '../like';
 import * as api from '../api';
 import * as forumActions from './forumActions';
@@ -8,7 +8,7 @@ import type { Thunk, GetState } from '../store';
 import { Dispatch} from 'redux';
 import * as reducer from './forumThreadReducer';
 import { sendEventToGA } from '../analytics/analyticsFunctions';
-import { removeForumThreadEntry } from './forum';
+import { removeForumThreadEntry } from '../forum';
 import { handleAccordionStatus } from '../Accordion/accordionReducer';
 
 interface FetchForumThreads {

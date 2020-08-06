@@ -9,7 +9,7 @@ import {
 	RECEIVE_RESOURCE_USAGE
 } from './communityReducer';
 
-import * as Stackend from './stackend';
+import * as Stackend from '../stackend';
 import { Thunk } from '../store';
 
 /**

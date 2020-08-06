@@ -2,7 +2,7 @@
 import { REQUEST_MODULES, RECIEVE_MODULES, RESET_MODULES } from './moduleReducer';
 import { Thunk } from '../store';
 
-import * as Stackend from './stackend';
+import * as Stackend from '../stackend';
 
 /**
  * Load communities
@@ -31,7 +31,7 @@ export function resetModules(): any {
 	};
 }
 
-export function fetchModules({ communityId }: { communityId: number }): Thunk<*> {
+export function fetchModules({ communityId }: { communityId: number }): Thunk<any> {
 	return async (dispatch: any /*, getState: any*/) => {
 		dispatch(requestModules(communityId));
 		let json = await dispatch(Stackend.getModules({ communityId }));

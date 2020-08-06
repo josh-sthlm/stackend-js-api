@@ -1,6 +1,6 @@
 // @flow
-import * as searchApi from '../search/search';
-import { Category, Context, Reference, list } from './category';
+import * as searchApi from '../search';
+import { Category, Context, Reference, list } from '../category';
 import * as searchActions from '../search/searchActions';
 import * as reducer from './categoryReducer';
 

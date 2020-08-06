@@ -1,5 +1,5 @@
 // @flow
-import * as QNA from './qna';
+import * as QNA from '../qna';
 import update from 'immutability-helper';
 
 ////Action Type

@@ -1,6 +1,6 @@
 // @flow
 import update from 'immutability-helper';
-import * as search from './search';
+import * as search from '../search';
 
 export const UPDATE_SEARCH_STRING = 'UPDATE_SEARCH_STRING';
 export const UPDATE_SELECTED_TYPE = 'UPDATE_SELECTED_TYPE';

@@ -1,11 +1,11 @@
 //@flow
-import { getJson, post, createCommunityUrl, SortOrder, XcapJsonResult, Privilege, XcapObject } from '../api'
-import * as userApi from '../user/user';
-import  { Thunk } from '../store';
-import { Request } from '../request';
-import  { PaginatedCollection } from '../PaginatedCollection';
-import  { Auth } from '../privileges';
-import  { Blog } from '../blog/blog';
+import { getJson, post, createCommunityUrl, XcapJsonResult, XcapObject } from './api'
+import * as userApi from './user';
+import  { Thunk } from './store';
+import { Request } from './request';
+import  { PaginatedCollection } from './PaginatedCollection';
+import  { AuthObject } from './privileges';
+import  { Blog } from './blog';
 
 /**
  * Xcap group api constants and methods.
@@ -22,7 +22,7 @@ export const groupType = {
 	DISCUSSION: 'DISCUSSION'
 };
 
-export const GROUP_TYPES_BY_ID = {
+export const GROUP_TYPES_BY_ID: {[id:string]: string} = {
 	'1': 'CLOSED',
 	'2': 'OPEN',
 	'3': 'DISCUSSION',
@@ -30,8 +30,13 @@ export const GROUP_TYPES_BY_ID = {
 };
 
 export enum Visibility {
-	VISIBLE = 1,
-	HIDDEN = 2
+	VISIBLE = "VISIBLE",
+	HIDDEN = "HIDDEN"
+}
+
+export const VisibilityId: { [vis:string]: number } = {
+	[Visibility.VISIBLE]: 1,
+	[Visibility.HIDDEN]:  2
 }
 
 /**
@@ -51,10 +56,10 @@ export interface Group extends XcapObject {
 	modStatus: string,
 	ttl: number,
 	obfuscatedReference: string,
-	contentVisibility: string,
+	contentVisibility: Visibility,
 	nrOfMembers: number,
 	type: GroupType, //OPEN or CLOSED group
-	visibility: 'VISIBLE' | 'HIDDEN', // VISIBLE or HIDDEN
+	visibility: Visibility,
 	blogKey: string, //url-path to group
 	backgroundImage: string, //Main image of group
 	css: {
@@ -114,7 +119,7 @@ export const COMPONENT_NAME = 'group';
 /**
  * Sort by for groups
  */
-export enum sortBy {
+export enum SortBy {
 	/**
 	 * Sort by number of members
 	 */
@@ -136,7 +141,7 @@ export enum sortBy {
 	CREATION_DATE = 4
 }
 
-export type SortBy = sortBy;
+export type sortBy = SortBy; // For backwards compatibility
 
 
 /**
@@ -289,7 +294,7 @@ export interface ListMyGroupsResult extends XcapJsonResult {
 	groups: PaginatedCollection<Group>,
 
 	/** Maps from group id */
-	groupAuth: Map<string, Auth>,
+	groupAuth: Map<string, AuthObject>,
 
 	groupTypes: Map<string, number>
 }
@@ -319,8 +324,8 @@ export function search({
 	categoryId,
 	categoryPermaLink,
 	memberUserId,
-	sortBy = SortBy.ALPHABETICAL,
-	order = SortOrder.ASCENDING,
+	sortBy,
+	order,
 	pageSize,
 	p = 1
 }: {
@@ -362,7 +367,7 @@ export function listGroupsByTag({
 export function getGroup({
 	groupPermalink,
 	groupId
-}: { groupPermalink: string } | { groupId: number }): Thunk<XcapJsonResult> {
+}: { groupPermalink?: string, groupId?: number  }): Thunk<XcapJsonResult> {
 	return getJson({ url: '/group/get', parameters: arguments });
 }
 
@@ -427,7 +432,7 @@ export function applyForMembership({
  * @param groupPermalink
  * @param groupId
  * @param userId {[number]} One or more user ids. Required
- * @param privilegeType {PrivilegeType} Optional. The privilege of the user (can be used to add and make a user admin in one request)
+ * @param privilegeType Optional. The privilege of the user (can be used to add and make a user admin in one request)
  */
 export function editMembership({
 	action,

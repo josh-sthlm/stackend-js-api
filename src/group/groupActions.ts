@@ -10,7 +10,7 @@ import {
 	applyForMembership as _applyForMembership,
 	listMembers,
 	getGroup
-} from './group';
+} from '../group';
 
 import { Dispatch } from 'redux';
 import { Thunk } from '../store';

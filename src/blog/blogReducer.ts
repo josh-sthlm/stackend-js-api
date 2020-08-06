@@ -2,7 +2,7 @@
 import update from 'immutability-helper';
 import {
 	Blog
-} from './blog';
+} from '../blog';
 
 export const REQUEST_BLOGS = 'REQUEST_BLOGS';
 export const RECIEVE_BLOGS = 'RECIEVE_BLOGS';

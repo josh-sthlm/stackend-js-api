@@ -1,7 +1,7 @@
 //@flow
 
-import { Thunk } from '../store';
-import { getJson, post, XcapJsonResult } from '../api';
+import { Thunk } from './store';
+import { getJson, post, XcapJsonResult } from './api';
 
 export interface GraphQLListNode<T> {
 	node: T
@@ -159,10 +159,10 @@ export function getFirstImage(product: Product | null): ProductImage | null {
 	return images.edges[0].node;
 }
 
-export type ProductTypeTree = {
+export interface ProductTypeTree {
 	name: string,
 	children?: Array<ProductTypeTree>
-};
+}
 
 /**
  * Given a flat list with product types, construct a tree structure from the labels:

@@ -253,7 +253,7 @@ export function createFormData(parameters: any) {
 	return formData;
 }
 
-export function templateReplaceUrl(url: string | null, replacements: Map<string, string>): string | null {
+export function templateReplaceUrl(url: string | null, replacements: {[name:string]: string}): string | null {
 	if (!url) {
 		return url;
 	}

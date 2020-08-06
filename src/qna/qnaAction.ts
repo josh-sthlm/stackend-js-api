@@ -7,8 +7,8 @@ import {
 	getCategories,
 	search as _search,
 	QnaTypeConverter
-} from './qna';
-import * as Search from '../search/search';
+} from '../qna';
+import * as Search from '../search';
 import * as searchActions from '../search/searchActions';
 import {
 	CHANGE_QNA_PAGE,

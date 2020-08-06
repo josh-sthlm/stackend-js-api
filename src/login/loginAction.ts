@@ -1,6 +1,6 @@
 //@flow
 import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginReducer';
-import { getCurrentUser } from '../user/user';
+import { getCurrentUser } from '../user';
 import type { Thunk } from '../store';
 import _ from 'lodash';
 

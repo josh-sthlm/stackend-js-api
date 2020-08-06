@@ -1,6 +1,6 @@
 //@flow
 import { SET_REQUEST_INFO } from './requestReducers';
-import { Location, StackendAnchor } from './request';
+import { Location, StackendAnchor } from '../request';
 
 /**
  * Sets up an implementation neutral object that keeps track of the current url

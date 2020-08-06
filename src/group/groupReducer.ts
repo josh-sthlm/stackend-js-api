@@ -1,7 +1,7 @@
 // @flow
 import update from 'immutability-helper';
 import * as xcapApi from '../api';
-import * as groupApi from './group';
+import * as groupApi from '../group';
 import { Action } from 'redux';
 export const REQUEST_GROUPS = 'REQUEST_GROUPS';
 export const RECIEVE_GROUPS = 'RECIEVE_GROUPS';

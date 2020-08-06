@@ -3,7 +3,7 @@
 import { Dispatch} from 'redux';
 import { Thunk } from '../store';
 import { REQUEST_CONTENT, RECIEVE_CONTENT, RECIEVE_CONTENTS, SET_CONTENT } from './cmsReducer';
-import { getContent, Content } from './cms';
+import { getContent, Content } from '../cms';
 
 /**
  * Fetch CMS content

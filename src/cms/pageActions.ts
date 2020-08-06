@@ -11,8 +11,8 @@ import {
 	RECIEVE_SUB_SITES
 } from './pageReducer';
 
-import { getPages, GetPagesResult, getSubSite, Page, SubSiteNode } from './cms';
-import { getPermalink } from '../tree/tree';
+import { getPages, GetPagesResult, getSubSite, Page, SubSiteNode } from '../cms';
+import { getPermalink } from '../tree';
 
 /**
  * Request multiple pages

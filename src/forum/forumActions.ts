@@ -1,7 +1,7 @@
 // @flow
 import _ from 'lodash';
-import { listForums } from './forum';
-import type { Forum } from './forum';
+import { listForums } from '../forum';
+import type { Forum } from '../forum';
 import type { Thunk } from '../store';
 import { Dispatch} from 'redux';
 import * as reducer from './forumReducer';

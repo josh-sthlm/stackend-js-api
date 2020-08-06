@@ -1,7 +1,7 @@
 //@flow
 import { Action } from 'redux';
 import { getJsonErrorText } from '../api';
-import { Page, SubSite } from './cms';
+import { Page, SubSite } from '../cms';
 
 export const RECIEVE_PAGES: string = 'RECIEVE_PAGES';
 export const CLEAR_PAGE: string = 'CLEAR_PAGE';

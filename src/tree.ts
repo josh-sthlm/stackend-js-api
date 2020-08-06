@@ -1,7 +1,7 @@
 //@flow
 
-import { Reference, XcapObject } from '../api';
-import { generatePermalink } from '../permalink';
+import { Reference, XcapObject } from './api';
+import { generatePermalink } from './permalink';
 
 export const TREE_CLASS: string = 'se.josh.xcap.tree.impl.TreeImpl';
 
@@ -130,7 +130,7 @@ export function removeTreeNodeByPermalink(tree: Tree, permalink: string): Node |
 }
 
 export enum InsertionPoint {
-	BEFORE= 'BEFORE',
+	BEFORE = 'BEFORE',
 	AFTER = 'AFTER',
 	CHILD = 'CHILD'
 }

@@ -9,9 +9,9 @@ import {
 	OrderBy,
 	getActiveSearchTypes,
 	search as _search, getSearchBaseUrl
-} from './search'
-import * as qnaApi from '../qna/qna';
-import * as groupApi from '../group/group';
+} from '../search'
+import * as qnaApi from '../qna';
+import * as groupApi from '../group';
 import { Thunk, GetState } from '../store';
 import { Dispatch} from 'redux';
 import * as reducer from './searchReducer';

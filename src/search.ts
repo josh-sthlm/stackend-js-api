@@ -7,13 +7,13 @@ import {
 	Config,
 	XcapJsonResult,
 	XcapObject
-} from '../api';
-import * as qnaApi from '../qna/qna';
-import { Thunk } from '../store';
+} from './api';
+import * as qnaApi from './qna';
+import { Thunk } from './store';
 import _ from 'lodash';
-import { Request } from '../request';
-import { PaginatedCollection } from '../PaginatedCollection';
-import { LikeDataMap } from '../like';
+import { Request } from './request';
+import { PaginatedCollection } from './PaginatedCollection';
+import { LikeDataMap } from './like';
 
 /**
  * Search functionality
@@ -184,10 +184,10 @@ type Search = {
 	excludeCurrentUser?: boolean //applicable for user-search
 };
 
-export type SearchResult = XcapJsonResult & {
+export interface SearchResult extends XcapJsonResult {
 	results: PaginatedCollection<XcapObject>,
 	likes: LikeDataMap
-};
+}
 
 /**
  * Search
@@ -320,13 +320,13 @@ export const SEARCH_INDEX_POPULATORS: Array<{ name: string, className: string }>
 	}
 ];
 
-export type PopulateSearchIndexResult = XcapJsonResult & {
+export interface PopulateSearchIndexResult extends XcapJsonResult {
 	/** Number of objects added/updated to the index */
 	nIndexed: number,
 
 	/** Execution time in ms */
 	executeTime: number
-};
+}
 
 /**
  * Populate the search index

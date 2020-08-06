@@ -1,9 +1,9 @@
 //@flow
 
 import { XCAP_VOTES_RECIEVED, XCAP_VOTES_UPDATE } from './voteReducer';
-import { Vote, VoteSummary } from './vote';
+import { Vote, VoteSummary } from '../vote';
 import { VoteInfo } from './voteReducer';
-import { Comment } from '../comments/comments';
+import { Comment } from '../comments';
 
 export function recieveVotes(
 	context: string,

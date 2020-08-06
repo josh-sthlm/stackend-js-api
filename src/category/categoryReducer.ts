@@ -1,6 +1,6 @@
 // @flow
 import update from 'immutability-helper';
-import * as categoryApi from './category';
+import * as categoryApi from '../category';
 import { Action } from 'redux';
 
 ////Action Type

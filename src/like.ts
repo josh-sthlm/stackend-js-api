@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { post, getJson,  XcapJsonResult, _getApiUrl, Config } from './api';
 import type { Thunk } from './store';
 import type { PaginatedCollection } from './PaginatedCollection';
-import type { Community } from './stackend/stackend';
+import type { Community } from './stackend';
 
 const COMPONENT_NAME = 'like';
 const CONTEXT = 'like';
@@ -22,13 +22,13 @@ export interface LikeData {
 /**
  * Maps from id to boolean if the current user likes this id
  */
-export type LikesByCurrentUser = Map<string, boolean>;
+export type LikesByCurrentUser = { [id:string]: boolean };
 
 /**
  * Like data map.
  * Maps from obfuscated reference to like data.
  */
-export type LikeDataMap = Map<string, LikeData>;
+export type LikeDataMap = { [ref:string]: LikeData };
 
 /**
  * Get like data for an object given a likes object.

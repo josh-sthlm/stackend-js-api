@@ -9,7 +9,7 @@ import {
 	GetProductRequest,
 	ListProductsRequest,
 	ListProductTypesResult
-} from './shop';
+} from '../shop';
 import {
 	ADD_TO_BASKET,
 	RECIEVE_PRODUCT,

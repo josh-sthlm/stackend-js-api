@@ -2,7 +2,7 @@
 import _ from 'lodash';
 
 import update from 'immutability-helper';
-import * as blogApi from './blog';
+import * as blogApi from '../blog';
 import { LOCATION_CHANGE } from 'react-router-redux';
 import createReducer from '../createReducer';
 import { getJsonErrorText } from '../api';

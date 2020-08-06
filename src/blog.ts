@@ -4,20 +4,20 @@ import {
 	post,
 	createCommunityUrl,
 	XcapJsonResult,
-	AuthObject, XcapObject
-} from '../api'
-import * as event from '../event/event';
-import * as poll from '../poll';
-import * as group from '../group/group';
+	XcapObject
+} from './api'
+import * as event from './event';
+import * as poll from './poll';
+import * as group from './group';
 import * as gaFunctions from '../functions/gaFunctions';
-import { Thunk } from '../store';
-import { Request } from '../request';
-import { Category } from '../category/category';
-import { VoteSummary } from '../vote/vote';
-import { Image } from '../media/media';
-import { Auth } from '../privileges';
-import { PaginatedCollection } from '../PaginatedCollection';
-import { LikeDataMap } from '../like';
+import { Thunk } from './store';
+import { Request } from './request';
+import { Category } from './category';
+import { VoteSummary } from './vote';
+import { Image } from './media';
+import { AuthObject } from './privileges';
+import { PaginatedCollection } from './PaginatedCollection';
+import { LikeDataMap } from './like';
 
 /**
  * Xcap Blog api constants and methods.
@@ -160,7 +160,7 @@ export interface Blog extends XcapObject {
  * Blog with auth information
  */
 export interface AuthBlog extends Blog {
-	auth: Auth
+	auth: AuthObject
 }
 
 /**
@@ -339,9 +339,10 @@ export function getMostPopularEntries({
 }
 
 // FIXME: Use same format as other listings
-export type GetMostCommentedEntriesResult = XcapJsonResult & {
+export interface GetMostCommentedEntriesResult extends XcapJsonResult {
 	mostCommentedPaginated: PaginatedCollection<BlogEntry>
-};
+}
+
 /**
  * List the blog entries with most comments.
  *

@@ -1,17 +1,17 @@
 //@flow
 import _ from 'lodash';
-import { Thunk } from '../store';
-import { Request } from '../request';
+import { Thunk } from './store';
+import { Request } from './request';
 import {
 	XcapJsonResult,
 	_getServerWithContextPath,
 	Config,
 	post,
 	_getApiUrl
-} from '../api';
+} from './api';
 
-import { browserHistory } from 'react-router';
 
+declare var browserHistory: { push: (location:string) => any }; // FIXME: for backward compability with react-router
 declare var xcapModuleSettings: any; // FIXME: For backward compatibility
 
 /**
@@ -39,7 +39,7 @@ export enum AuthenticationType {
 	OAUTH2 = 'OAUTH2'
 }
 
-const AUTH_NAMES = {
+const AUTH_NAMES: {[key:string]: string} = {
 	[AuthenticationType.FACEBOOK]: 'Facebook',
 	[AuthenticationType.GOOGLE]: 'Google',
 	[AuthenticationType.XCAP]: 'E-mail & password',
@@ -107,7 +107,7 @@ export function _getLoginUrl({
 			);
 
 		case AuthenticationType.XCAP: {
-			let parameters = {};
+			let parameters:any = {};
 			if (returnUrl) {
 				parameters.returnUrl = returnUrl;
 			}
@@ -212,7 +212,7 @@ function _getReturnUrl({ request, returnUrl }: { request: Request, returnUrl?: s
  * @param redirectUrl
  * @returns {Thunk<XcapJsonResult>}
  */
-export function logout({ redirectUrl }: { redirectUrl?: ?string }): Thunk<XcapJsonResult> {
+export function logout({ redirectUrl }: { redirectUrl?: string|null }): Thunk<XcapJsonResult> {
 	return post({
 		url: '/user/logout',
 		parameters: arguments
@@ -368,9 +368,9 @@ export function sendPasswordChangeToken({ email }: { email: string }): Thunk<Xca
 	});
 }
 
-export type ChangePasswordResult = XcapJsonResult & {
-	returnUrl: ?string
-};
+export interface ChangePasswordResult extends XcapJsonResult {
+	returnUrl: string|null
+}
 
 /**
  * Change password.

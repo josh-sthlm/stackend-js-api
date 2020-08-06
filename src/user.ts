@@ -5,18 +5,17 @@ import {
 	post,
 	getApiUrl,
 	XcapJsonResult,
-	AuthObject,
-	PrivilegeTypeIds,
 	Order, invertOrder
-} from '../api';
-import { Request } from '../request';
-import { Thunk } from '../store';
-import { AuthenticationType, AuthenticationTypeId } from '../login/login';
-import { PaginatedCollection } from '../PaginatedCollection';
+} from './api';
+import { Request } from './request';
+import { Thunk } from './store';
+import { AuthenticationType  } from './login';
+import { PaginatedCollection } from './PaginatedCollection';
 import moment from 'moment';
 import _ from 'lodash';
-import { CurrentUserType } from '../login/loginReducer';
-import { Community } from '../stackend/stackend';
+import { CurrentUserType } from './login/loginReducer';
+import { Community } from './stackend';
+import { AuthObject, PrivilegeTypeIds } from './privileges'
 
 /**
  * Xcap User api constants and methods.
@@ -39,6 +38,7 @@ export interface User {
 	alias: string,
 	firstName: string,
 	lastName: string,
+	userName: string,
 
 	/** Full name, or the alias if not set */
 	nameOrAlias: string,
@@ -49,11 +49,16 @@ export interface User {
 	/** City name, if set */
 	city: string | null,
 	online: boolean,
-	userName: string,
 
 	/** Profile image url, or null if not set */
 	profileImage: string | null,
-	//KING avatarCss: string,
+
+	/** Additional profile data */
+	profile: {
+		[key:string]: string
+	}
+
+	/** Privileges. using the format: context,componentName,privilegeType */
 	privileges: Array<string>,
 
 	/* Gender. Not present if unknown */
@@ -68,7 +73,6 @@ export interface UserPrivateDataType extends User {
 	status?: StatusIdType,
 	zipCode?: string | null,
 	nrOfLogins?: number | null,
-	profile: Map<string,any>
 }
 
 /**
@@ -285,7 +289,7 @@ export function hasElevatedPrivilege(
 			continue;
 		}
 
-		let pt = p.split(',')[2];
+		let pt = parseInt(p.split(',')[2]);
 		if (pt >= privilegeType) {
 			return true;
 		}
@@ -306,9 +310,9 @@ export function getUser({ id, alias }: { id?: number, alias?: string }): Thunk<G
 	return getJson({ url: '/user/get', parameters: arguments });
 }
 
-export type GetUsersResult = XcapJsonResult & {
+export interface GetUsersResult extends XcapJsonResult {
 	users: Array<User>
-};
+}
 
 /**
  * Get multiple users by id
@@ -411,10 +415,10 @@ export function storeUser({
 	return post({ url: '/user/store', parameters: arguments });
 }
 
-export type GetUserPrivilegesResult = XcapJsonResult & {
+export interface GetUserPrivilegesResult extends XcapJsonResult {
 	auth: AuthObject,
 	privilegeType: PrivilegeTypeIds
-};
+}
 
 /**
  * Get the current users privileges for a given component/context
@@ -459,7 +463,7 @@ const ORDER_MAPPING = {
  * @param order
  * @returns {number}
  */
-function convertSortOrder(orderBy: OrderByIds | null, order: OrderIds | null): number {
+function convertSortOrder(orderBy: OrderBy | null, order: Order | null): number {
 	let k = (orderBy || OrderBy.ALIAS) + (order || Order.ASCENDING);
 	let v = ORDER_MAPPING[k];
 	if (v) {
@@ -476,9 +480,9 @@ function convertSortOrder(orderBy: OrderByIds | null, order: OrderIds | null): n
 	return ORDER_MAPPING[OrderBy.ALIAS + Order.ASCENDING];
 }
 
-export type SearchResult = XcapJsonResult & {
+export interface SearchResult extends XcapJsonResult {
 	users: PaginatedCollection<User>
-};
+}
 
 /**
  * Search for users.
@@ -517,14 +521,15 @@ export function search({
 	});
 }
 
-export type SetProfileImageResult = XcapJsonResult & {
+export interface SetProfileImageResult extends XcapJsonResult {
 	imageId: number
-};
+}
 
 /**
  * Set profile image of the current user
  *
  * @param imageId Image id (from the members context)
+ * @param community
  * @returns {Promise}
  */
 export function setProfileImage({
@@ -555,7 +560,7 @@ export function removeProfileImage({ community }: { community?: string }): Thunk
 
 /**
  * Get the url to a users feed.
- * @param userId {Integer} optional, defaults to current user
+ * @param userId optional, defaults to current user
  * @returns {String}
  */
 export function getUserFeedUrl({ userId }: { userId: number }): Thunk<string> {
@@ -565,10 +570,10 @@ export function getUserFeedUrl({ userId }: { userId: number }): Thunk<string> {
 	});
 }
 
-export type IsEmailFreeResult = XcapJsonResult & {
+export interface IsEmailFreeResult extends XcapJsonResult {
 	email: string|null,
 	isEmailFree: boolean
-};
+}
 
 /**
  * Check if the email is free for registration
@@ -581,10 +586,10 @@ export function isEmailFree({ email }: { email: string }): Thunk<IsEmailFreeResu
 	});
 }
 
-export type IsAliasFreeResult = XcapJsonResult & {
-	alias: ?string,
+export interface IsAliasFreeResult extends XcapJsonResult {
+	alias: string | null,
 	isAliasFree: boolean
-};
+}
 
 /**
  * Check if the alias is free for registration
@@ -617,7 +622,7 @@ export interface GetRegistrationDataResult extends XcapJsonResult {
 	referenceId: number,
 
 	/** */
-	authenticationType: AuthenticationTypeId,
+	authenticationType: AuthenticationType,
 
 	cityId: number,
 
@@ -793,7 +798,7 @@ export function registerOAuth2User({
 }
 
 export interface VerifyEmailResult extends XcapJsonResult {
-	/** Was the validation successfull? */
+	/** Was the validation successful? */
 	valid: boolean,
 
 	/** Does the user need to enter additional data? */
@@ -802,7 +807,7 @@ export interface VerifyEmailResult extends XcapJsonResult {
 
 	/** Permalink of the users first, automatically created community */
 	firstCommunityPermalink?: string | null
-};
+}
 
 /**
  * Send an email with a verification code link.
@@ -948,8 +953,8 @@ export function isPasswordAcceptable(password: string | null): boolean {
 
 export interface ListAutenticationOptionsResult extends XcapJsonResult {
 	user: User | null,
-	availableOptions: Array<AuthenticationTypeId>,
-	enabledOptions: Array<AuthenticationTypeId>
+	availableOptions: Array<AuthenticationType>,
+	enabledOptions: Array<AuthenticationType>
 }
 
 /**
@@ -977,7 +982,7 @@ export function setBlocked({
 }: {
 	id: number,
 	block: boolean,
-	comment?: ?string
+	comment?: string | null
 }): Thunk<XcapJsonResult> {
 	return post({
 		url: '/user/set-blocked',

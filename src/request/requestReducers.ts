@@ -1,9 +1,12 @@
 //@flow
 import update from 'immutability-helper';
-import { Request } from './request';
+import { Request } from '../request';
+import { isCommunityUrlBlocked } from '../stackend.js';
+
 export const SET_REQUEST_INFO = 'SET_REQUEST_INFO';
-import { LOCATION_CHANGE } from 'react-router-redux';
-import { isCommunityUrlBlocked } from './stackend/stackend.js';
+
+// Hack to access this action
+export const REACT_ROUTER_REDUX_LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
 
 /**
  * Sets up an implementation neutral object that keeps track of the current url
@@ -28,7 +31,8 @@ export const requestReducer = (
 		absoluteCommunityUrl: '',
 		communityFromDomain: false,
 		contextPath: '',
-		anchor: null
+		anchor: null,
+		referenceUrlId: 0
 	},
 	action: any
 ) => {
@@ -44,7 +48,7 @@ export const requestReducer = (
 			break;
 		*/
 
-		case LOCATION_CHANGE:
+		case REACT_ROUTER_REDUX_LOCATION_CHANGE:
 			/* In response to a navigation event. Will only update the
 			 * location and possibly the community urls
 			 */

@@ -1,7 +1,7 @@
 // @flow
 import type { Store as ReduxStore, Action, Dispatch} from 'redux';
 
-export type State = Map<any, any>;
+export type State = { [key:any]: any };
 
 export type Store = ReduxStore<State, Action>;
 

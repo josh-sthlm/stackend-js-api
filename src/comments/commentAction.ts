@@ -21,11 +21,11 @@ import {
 	gaReplyEventObject,
 	gaCommentEventObject,
 	gaEditCommentEventObject
-} from './comments';
+} from '../comments';
 import { Thunk } from '../store';
 import { Dispatch } from 'redux';
 import { sendEventToGA } from '../analytics/analyticsFunctions';
-import { commentModule } from './comments';
+import { commentModule } from '../comments';
 import { recieveVotes } from '../vote/voteActions';
 
 const DEFAULT_PAGE_SIZE = 3;

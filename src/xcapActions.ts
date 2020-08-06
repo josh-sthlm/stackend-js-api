@@ -6,7 +6,7 @@ import { loadCommunity, receiveResourceUsage } from './stackend/communityAction'
 import { receiveNotificationCounts } from './notifications/notificationActions';
 import { XCAP_INITIAL_STORE_DATA_RECIEVED } from './configReducer';
 import type { Thunk } from './store.js';
-import { setRequestInfo } from './requestActions';
+import { setRequestInfo } from './request/requestActions';
 import { recieveModules } from './stackend/moduleAction';
 import { recieveContents } from './cms/cmsActions';
 import { recievePages, recieveSubSites } from './cms/pageActions';

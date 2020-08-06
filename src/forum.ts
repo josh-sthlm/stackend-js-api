@@ -6,15 +6,15 @@ import {
 	createCommunityUrl,
 	Modstatus,
 	XcapJsonResult, XcapObject
-} from '../api'
-import * as categoryApi from '../category/category';
-import * as userApi from '../user/user';
+} from './api'
+import * as categoryApi from './category';
+import * as userApi from './user';
 import * as gaFunctions from '../functions/gaFunctions';
-import { PaginatedCollection } from '../PaginatedCollection';
-import { Thunk } from '../store';
-import { Request } from '../request';
-import { VoteSummary } from '../vote/vote';
-import { LikeDataMap } from '../like';
+import { PaginatedCollection } from './PaginatedCollection';
+import { Thunk } from './store';
+import { Request } from './request';
+import { VoteSummary } from './vote';
+import { LikeDataMap } from './like';
 
 /**
  * Xcap Forum API constants and methods.
@@ -197,7 +197,7 @@ export function listForums({
 	return getJson({ url: '/forum/list', parameters: arguments });
 }
 
-export type ListThreadsResult = XcapJsonResult & {
+export interface ListThreadsResult extends XcapJsonResult {
 	threadsPaginated: PaginatedCollection<ForumThreadEntry>,
 	forumId: number,
 	forumPermalink: string | null,
@@ -206,7 +206,7 @@ export type ListThreadsResult = XcapJsonResult & {
 	votes: Map<string, any>,
 	pageSize: number,
 	p: number
-};
+}
 
 /**
  * List threads of a forum.

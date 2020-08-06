@@ -1,6 +1,6 @@
 //@flow
-import { Thunk } from '../store';
-import { Request } from '../request';
+import { Thunk } from './store';
+import { Request } from './request';
 import {
 	getJson,
 	post,
@@ -11,11 +11,11 @@ import {
 	PrivilegeType,
 	Order,
 	XcapObject, ModerationStatus
-} from '../api'
-import { fetchModules } from './moduleAction';
-import { hasElevatedPrivilege, User } from '../user/user';
-import { PaginatedCollection } from '../PaginatedCollection';
-import { CurrentUserType } from '../login/loginReducer';
+} from './api'
+import { fetchModules } from './stackend/moduleAction';
+import { hasElevatedPrivilege, User } from './user';
+import { PaginatedCollection } from './PaginatedCollection';
+import { CurrentUserType } from './login/loginReducer';
 
 /**
  * Stackend API constants and methods.

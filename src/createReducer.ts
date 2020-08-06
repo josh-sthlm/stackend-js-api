@@ -2,9 +2,9 @@
 
 import { Action } from 'redux';
 
-type Reducer<S: any, A: Action> = (S, A) => S;
+type Reducer<S, A> = (S:any, A:Action) => S;
 
-export default function createReducer<S, A: *>(
+export default function createReducer<S, A>(
 	initialState: S,
 	handlers: { [key: Action]: Reducer<S, A> }
 ): Reducer<S, A> {

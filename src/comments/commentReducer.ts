@@ -4,7 +4,7 @@ import { List } from 'immutable';
 import update from 'immutability-helper';
 import { Action } from 'redux';
 import * as commentAction from './commentAction';
-import * as commentsApi from './comments';
+import * as commentsApi from '../comments';
 import { emptyPaginatedCollection } from '../PaginatedCollection';
 
 //Action Type

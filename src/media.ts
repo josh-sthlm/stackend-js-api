@@ -1,10 +1,10 @@
 //@flow
-import * as Stackend from '../stackend/stackend';
-import { LoadJson } from '../LoadJson';
-import { Thunk } from '../store';
-import type { PaginatedCollection } from '../PaginatedCollection';
-import { getJson, post, COMMUNITY_PARAMETER, XcapJsonResult, Reference, XcapObject, Config, _getServer, _getContextPath, _getConfig } from '../api';
-import { User } from '../user/user';
+import * as Stackend from './stackend';
+import { LoadJson } from './LoadJson';
+import { Thunk } from './store';
+import type { PaginatedCollection } from './PaginatedCollection';
+import { getJson, post, COMMUNITY_PARAMETER, XcapJsonResult, Reference, XcapObject, Config, _getServer, _getContextPath, _getConfig } from './api';
+import { User } from './user';
 
 
 /**

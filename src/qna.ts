@@ -4,11 +4,12 @@ import {
 	post as apiPost,
 	createCommunityUrl,
 	XcapJsonResult
-} from '../api'
-import * as searchApi from '../search/search';
-import * as forumApi from '../forum/forum';
-import { Thunk } from '../store';
-import { Request } from '../request';
+} from './api'
+import * as searchApi from './search';
+import * as forumApi from './forum';
+import { Thunk } from './store';
+import { Request } from './request';
+import { SearchAbleType } from './search'
 
 /**
  * Xcap QNA API constants and methods.
@@ -88,7 +89,7 @@ export function getQnaUrl({
 	if (!!section && !article) {
 		return searchApi.getSearchUrl({
 			request,
-			type: 'question',
+			type: SearchAbleType.QUESTION,
 			searchType: 'search',
 			filter: section
 		});
@@ -150,7 +151,7 @@ export function listTrendingQuestions({ p, pageSize }: { p: number, pageSize: nu
  * @param pageSize Page size (optional)
  * @returns {Promise}
  */
-export function listSolvedQuestions({ p, pageSize }: { p: number, pageSize: number } = {}): Thunk<any> {
+export function listSolvedQuestions({ p, pageSize }: { p: number, pageSize: number }): Thunk<XcapJsonResult> {
 	return getJson({ url: '/question/solved', parameters: arguments });
 }
 
@@ -258,7 +259,7 @@ export function getCategories(): Thunk<XcapJsonResult> {
  * Search
  */
 export function search({
-	searchType = 'search',
+	searchType,
 	q,
 	issue,
 	p,

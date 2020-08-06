@@ -3,7 +3,7 @@ import update from 'immutability-helper';
 import { Action } from 'redux';
 import _ from 'lodash';
 import createReducer from '../createReducer';
-import * as forumApi from './forum';
+import * as forumApi from '../forum';
 
 export type ForumActions = Request | Recieve | Invalidate;
 

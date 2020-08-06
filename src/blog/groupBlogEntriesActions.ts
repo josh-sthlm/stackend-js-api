@@ -1,13 +1,13 @@
 // @flow
 import _ from 'lodash';
 import update from 'immutability-helper';
-import * as categoryApi from '../category/category';
+import * as categoryApi from '../category';
 import * as groupActions from '../group/groupActions';
 import * as blogActions from './blogActions';
-import { listMyGroups } from '../group/group';
+import { listMyGroups } from '../group';
 import { getJsonErrorText, XcapJsonResult } from '../api'
 import * as commentActions from '../comments/commentAction';
-import * as commentApi from '../comments/comments';
+import * as commentApi from '../comments';
 import type { Thunk } from '../store';
 import { Dispatch } from 'redux';
 
@@ -29,7 +29,7 @@ import {
 	setEntryStatus,
 	gaPostEventObject,
 	gaEditPostEventObject
-} from './blog';
+} from '../blog';
 import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**

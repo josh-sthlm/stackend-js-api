@@ -1,6 +1,6 @@
 // @flow
 import { Thunk } from './store.js';
-import _ from 'lodash/object';
+import _ from 'lodash';
 
 export interface Location {
 	hash: string,
@@ -11,7 +11,15 @@ export interface Location {
 	pathname: string,
 	port: number,
 	protocol: string,
-	search: string
+	search: string,
+	query: { [name:string]: string}
+}
+
+export enum AnchorType {
+	BLOG = 'blog',
+	USER = 'user',
+	SITE = 'site',
+	COMMENT = 'comment'
 }
 
 /**
@@ -63,7 +71,7 @@ export interface Request {
 	/** Reference url id */
 	referenceUrlId: number,
 
-	anchor: StackendAnchor | null
+	anchor: StackendAnchor | null,
 }
 
 /**
@@ -259,10 +267,5 @@ export function scrollToAnchor(anchor: StackendAnchor) {
 	}
 }
 
-export enum AnchorType {
-	BLOG = 'blog',
-	USER = 'user',
-	SITE = 'site',
-	COMMENT = 'comment'
-}
+
 

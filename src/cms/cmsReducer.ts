@@ -1,6 +1,6 @@
 //@flow
 
-import { Content } from './cms';
+import { Content } from '../cms';
 import { Action } from 'redux';
 import { getJsonErrorText } from '../api';
 
