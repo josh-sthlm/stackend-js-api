@@ -26,10 +26,10 @@ import {
 	saveEntry,
 	SetEntryStatus,
 	setEntryStatus,
-	gaPostEventObject,
-	gaEditPostEventObject
+	//gaPostEventObject,
+	//gaEditPostEventObject
 } from '../blog';
-import { sendEventToGA } from '../analytics/analyticsFunctions.js';
+//import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**
  * Load comments in a group and for a specific blogEntry
@@ -339,11 +339,13 @@ export function postBlogEntry({
 		if (!!blogEntryJson.id && blogEntryJson.id > 0) {
 			//Edit an blogEntry
 			dispatch(toggleWriteCommentOrEdit({ blogEntryId: response.entry.id, editorType: 'EDIT' }));
-			dispatch(sendEventToGA(gaEditPostEventObject({ blogEntry: response.entry })));
+			// FIXME: Re add ga
+			//dispatch(sendEventToGA(gaEditPostEventObject({ blogEntry: response.entry })));
 			return dispatch(updateBlogEntry(blogKey, state));
 		} else {
 			//Add new blogEntry
-			dispatch(sendEventToGA(gaPostEventObject({ blogEntry: response.entry })));
+      // FIXME: Re add ga
+			//dispatch(sendEventToGA(gaPostEventObject({ blogEntry: response.entry })));
 			return dispatch(recieveBlogEntries(blogKey, state));
 		}
 	};

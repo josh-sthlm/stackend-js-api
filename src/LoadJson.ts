@@ -1,5 +1,4 @@
 //@flow
-import { templateReplace } from './api';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -253,9 +252,3 @@ export function createFormData(parameters: any) {
 	return formData;
 }
 
-export function templateReplaceUrl(url: string | null, replacements: {[name:string]: string}): string | null {
-	if (!url) {
-		return url;
-	}
-	return encodeURI(templateReplace(url, replacements));
-}

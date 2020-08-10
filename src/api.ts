@@ -1232,13 +1232,17 @@ export function argsToObject(args: any): null | { [key:string]: string } {
 export function postProcessApiResult(result: XcapJsonResult): any {
 	const likes = !!result[LIKES] ? result[LIKES] : undefined;
 	const votes = !!result[VOTES] ? result[VOTES] : undefined;
-	return _postProcessApiResult(result, result[RELATED_OBJECTS], likes, votes);
+	return _postProcessApiResult(result, result[RELATED_OBJECTS] || {}, likes, votes);
 }
 
 function _postProcessApiResult(result: XcapJsonResult, relatedObjects: any, likes?: any, votes?:any) {
 	if (result === null) {
 		return null;
 	}
+
+	if (!relatedObjects) {
+	  console.error("Stackend: no related objects in result", result);
+  }
 
 	let d = result;
 	for (let n in result) {
@@ -1259,7 +1263,7 @@ function _postProcessApiResult(result: XcapJsonResult, relatedObjects: any, like
 				let r = relatedObjects[v];
 				result[n] = r;
 				if (r === null) {
-					console.error('Could not resolve related object ' + n + '=' + v);
+					console.error('Stackend: Could not resolve related object ' + n + '=' + v);
 				} else {
 					result[n] = _postProcessApiResult(r, relatedObjects, likes);
 				}
@@ -1269,7 +1273,7 @@ function _postProcessApiResult(result: XcapJsonResult, relatedObjects: any, like
 					let r = relatedObjects[ref] || ref;
 					v[i] = r;
 					if (r === null) {
-						console.error('Could not resolve related object ' + ref);
+						console.error('Stackend: Could not resolve related object ' + ref);
 					}
 				}
 			}
@@ -1677,6 +1681,14 @@ export function templateReplace(
 
 	return sb;
 }
+
+export function templateReplaceUrl(url: string | null, replacements: {[name:string]: string}): string | null {
+	if (!url) {
+		return url;
+	}
+	return encodeURI(templateReplace(url, replacements));
+}
+
 
 /**
  * Create a hash code of a string. Roughly the same impl as java.

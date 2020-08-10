@@ -1,8 +1,8 @@
 // @flow
 import { getJson, post, SortOrder, XcapJsonResult, XcapObject, Thunk } from './api'
-import * as groupApi from './group';
+//import * as groupApi from './group';
 import * as user from './user';
-import * as gaFunctions from '../functions/gaFunctions.js';
+//import * as gaFunctions from '../functions/gaFunctions.js';
 import { LikesByCurrentUser } from './like';
 import { PaginatedCollection } from './PaginatedCollection';
 
@@ -216,6 +216,7 @@ export function postComment({
 	});
 }
 
+/*
 interface GaTrackNewComment {
 	comment: Comment
 }
@@ -267,3 +268,4 @@ function getGALabels({ comment }: GaTrackNewComment) {
 		return { eventLabel, eventCategory };
 	}
 }
+*/

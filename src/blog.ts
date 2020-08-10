@@ -10,7 +10,7 @@ import {
 import * as event from './event';
 import * as poll from './poll';
 import * as group from './group';
-import * as gaFunctions from '../functions/gaFunctions';
+//import * as gaFunctions from '../functions/gaFunctions';
 import { Request } from './request';
 import { Category } from './category';
 import { VoteSummary } from './vote';
@@ -102,7 +102,7 @@ export interface BlogEntry extends XcapObject {
 	creatorUserId: number,
 	creatorUserRef: any,
 	createdDate: number,
-	publishDate: number,
+	publishDate: number|null,
 	modifiedDate: number,
 	modStatus: string,
 	ttl: number,
@@ -208,13 +208,14 @@ export function getBlogEntryUrl({
 
 /**
  * Create a new blogEntry that is ok to save.
- * @returns {{id: number, title: string, description: string, body: string, publishDate: null, blogKey: string, allowComments: boolean, categories: Array, headerStyle: {font: null, fontSize: null, fontStyle: null, overlay: boolean, fg: {color: string, opacity: number}, bg: {color: string, opacity: number}, autoHeaderColor: null, autoStyle: boolean, paletteColors: Array}, slideshow: {frame: boolean, shadow: boolean, slides: Array}, tags: Array, products: Array}}
+ * @returns BlogEntry
  */
-export function newBlogEntry(blogKey: string) {
+export function newBlogEntry(blogKey: string): BlogEntry {
 	//FIXME: a lot of hardcoded stuff, not sure what is necessary
 	return {
 		id: 0,
-		title: '',
+    __type: 'net.josh.community.blog.BlogEntry',
+		name: '',
 		description: '',
 		body: '',
 		publishDate: null,
@@ -235,7 +236,10 @@ export function newBlogEntry(blogKey: string) {
 		slideshow: {
 			frame: false,
 			shadow: false,
-			slides: []
+			slides: [],
+      hasImageSlide: false,
+      hasVideoSlide: false,
+      empty: true
 		},
 		tags: [],
 		products: []
@@ -488,6 +492,7 @@ export function saveEntry({
 	});
 }
 
+/*
 type GaTrackPost = {
 	blogEntry: BlogEntry
 };
@@ -521,3 +526,4 @@ function getGALabels({ blogEntry }: GaTrackPost) {
 	const eventLabel = `${groupName}_${blogEntryName}_(${blogEntry.blogId}_${blogEntry.id})`;
 	return { eventLabel, eventCategory };
 }
+*/

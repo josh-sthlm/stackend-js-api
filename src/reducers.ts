@@ -21,6 +21,7 @@ import communities from "./stackend/communityReducer";
 import modules from "./stackend/moduleReducer";
 import vote from "./vote/voteReducer";
 import GroupComments from "./comments/commentReducer";
+import throbber from "./throbber/throbberReducer";
 
 
 /**
@@ -33,6 +34,7 @@ export const BASE_REDUCERS = {
     request,
     communities,
     modules,
+    throbber
 };
 
 

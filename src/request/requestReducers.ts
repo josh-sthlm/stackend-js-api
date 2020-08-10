@@ -1,7 +1,7 @@
 //@flow
 import update from 'immutability-helper';
 import { Request } from '../request';
-import { isCommunityUrlBlocked } from '../stackend.js';
+import { isCommunityUrlBlocked } from '../stackend';
 
 export const SET_REQUEST_INFO = 'SET_REQUEST_INFO';
 
