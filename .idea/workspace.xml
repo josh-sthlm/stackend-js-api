@@ -2,13 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/cms.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/forum.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/group.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/like.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/login.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/permalink.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/poll.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/search.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/shop.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/user.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/vote.spec.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cms.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/cms/pageActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms/pageActions.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/group.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/group.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +131,7 @@
       <workItem from="1596553555279" duration="39252000" />
       <workItem from="1596719474166" duration="6658000" />
       <workItem from="1597041337761" duration="13261000" />
-      <workItem from="1597064976536" duration="4073000" />
+      <workItem from="1597064976536" duration="6086000" />
     </task>
     <task id="LOCAL−00001" summary="Added to GIT">
       <created>1596468255316</created>
@@ -233,7 +235,13 @@
       <option name="presentableId" value="LOCAL−00017" />
       <updated>1597066699321</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL−00018" summary="More tests">
+      <created>1597069237022</created>
+      <option name="number" value="LOCAL−00018" />
+      <option name="presentableId" value="LOCAL−00018" />
+      <updated>1597069237022</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -267,10 +275,10 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1107" y="661" width="1055" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.46.2928.1784@0.46.2928.1784" timestamp="1596722417797" />
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1597066698925">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1597069236893">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1597066698925" />
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1597069236893" />
     <state width="2891" height="485" key="GridCell.Tab.0.bottom" timestamp="1597061779405">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
@@ -291,10 +299,10 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="594" y="273" width="1739" height="1299" key="SettingsEditor/0.46.2928.1784@0.46.2928.1784" timestamp="1596627927412" />
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1597066701196">
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1597069238424">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1597066701196" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1597069238424" />
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1596533562889">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
