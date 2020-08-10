@@ -5,10 +5,10 @@ import {
   argsToObject,
   Config, constructReference,
   createUrl,
-  getConfiguration, getInitialStoreValues, getTypeName,
+  getConfiguration, getInitialStoreValues, getReferenceAsString, getTypeName,
   invertOrder,
   Order, parseCommunityContext, parseReference,
-  STACKEND_DEFAULT_SERVER
+  STACKEND_DEFAULT_SERVER, templateReplace, templateReplaceUrl
 } from '../src/api'
 import { Community, CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
 
@@ -117,6 +117,31 @@ describe('API', () => {
     })
   });
 
+  describe("getReferenceAsString", () => {
+    it("Creates a string version of a Reference", () => {
+      expect(getReferenceAsString(null)).toBeNull();
+      expect(getReferenceAsString(parseReference("a:b-t-1"))).toBe("a:b-t-1");
+    })
+  });
+
+  describe("templateReplace", () => {
+    it ("Does string substitution ", () => {
+      expect(templateReplace("Hello {{name}}, how are you?", {
+         name: 'World', extra: 'Wow'
+      })).toBe("Hello World, how are you?");
+
+
+      expect(templateReplace("{{a}}, {{b}}, {{noValue}}, {{c}}", {
+        a: 'a', b: 'b', c: 'c',
+      })).toBe("a, b, , c");
+    });
+  });
+
+  describe("templateReplaceUrl", () => {
+    it("Url string substitution", () => {
+      expect(templateReplaceUrl("/path?a={{a}}", { a : 'apan ola', b : 'bosse'})).toBe("/path?a=apan%20ola");
+    })
+  })
 });
 
 

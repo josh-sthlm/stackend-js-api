@@ -1,7 +1,7 @@
 //@flow
 
 import createTestStore from './setup-redux';
-import { CommentModule, getComments } from '../src/comments'
+import { CommentModule, getComments, GetCommentsResult } from '../src/comments'
 import { COMMUNITY_PARAMETER } from '../src/api';
 
 describe('Comments', () => {
@@ -12,7 +12,7 @@ describe('Comments', () => {
 
   describe("getComments", () => {
     it("List comments", async () => {
-      let r = await store.dispatch(getComments({ referenceId: 300007,  module: CommentModule.GENERIC, [COMMUNITY_PARAMETER]: 'husdjur' }));
+      let r:GetCommentsResult = await store.dispatch(getComments({ referenceId: 300007,  module: CommentModule.GENERIC, [COMMUNITY_PARAMETER]: 'husdjur' }));
       expect(r.__resultCode).toBe("success");
       expect(r.comments).toBeDefined();
       expect(r.comments.totalSize).toBeGreaterThanOrEqual(2);

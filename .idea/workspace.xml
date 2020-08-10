@@ -2,13 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/api.spec.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/stackend.spec.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/configReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/configReducer.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/stackend.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/stackend.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/api.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/api.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/blog.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/blog.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/comments.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/comments.spec.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +45,7 @@
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.standard" value="" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs.jest.jest_package" value="$PROJECT_DIR$/node_modules/jest" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -64,6 +64,56 @@
       <recent name="$PROJECT_DIR$/src/poll" />
     </key>
   </component>
+  <component name="RunManager" selected="Jest.API.templateReplaceUrl">
+    <configuration name="API.templateReplace" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/tests/api.spec.ts" />
+      <test-names>
+        <test-name value="API" />
+        <test-name value="templateReplace" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="API.templateReplaceUrl" type="JavaScriptTestRunnerJest" temporary="true" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="SUITE" />
+      <test-file value="$PROJECT_DIR$/tests/api.spec.ts" />
+      <test-names>
+        <test-name value="API" />
+        <test-name value="templateReplaceUrl" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="All Tests" type="JavaScriptTestRunnerJest" nameIsGenerated="true">
+      <node-interpreter value="project" />
+      <node-options value="" />
+      <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+      <working-dir value="$PROJECT_DIR$" />
+      <envs />
+      <scope-kind value="ALL" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Jest.All Tests" />
+      <item itemvalue="Jest.API.templateReplace" />
+      <item itemvalue="Jest.API.templateReplaceUrl" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Jest.API.templateReplaceUrl" />
+        <item itemvalue="Jest.API.templateReplace" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -77,7 +127,7 @@
       <workItem from="1596552394269" duration="835000" />
       <workItem from="1596553555279" duration="39252000" />
       <workItem from="1596719474166" duration="6658000" />
-      <workItem from="1597041337761" duration="10639000" />
+      <workItem from="1597041337761" duration="13154000" />
     </task>
     <task id="LOCAL−00001" summary="Added to GIT">
       <created>1596468255316</created>
@@ -163,7 +213,13 @@
       <option name="presentableId" value="LOCAL−00014" />
       <updated>1597049379099</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL−00015" summary="More tests">
+      <created>1597053042899</created>
+      <option name="number" value="LOCAL−00015" />
+      <option name="presentableId" value="LOCAL−00015" />
+      <updated>1597053042899</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -177,9 +233,14 @@
     <MESSAGE value="Build fixes" />
     <MESSAGE value="Fixes" />
     <MESSAGE value="Added test cases" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added test cases" />
+    <MESSAGE value="More tests" />
+    <option name="LAST_COMMIT_MESSAGE" value="More tests" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="910" y="468" width="1574" height="928" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1597061073094">
+      <screen x="0" y="46" width="2928" height="1784" />
+    </state>
+    <state x="910" y="468" width="1574" height="928" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.46.2928.1784@0.46.2928.1784" timestamp="1597061073094" />
     <state x="1131" y="456" width="655" height="1007" key="#com.intellij.ide.util.MemberChooser" timestamp="1596634707566">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
@@ -192,34 +253,34 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1107" y="661" width="1055" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.46.2928.1784@0.46.2928.1784" timestamp="1596722417797" />
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1597049378786">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1597053042777">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1597049378786" />
-    <state width="2891" height="486" key="GridCell.Tab.0.bottom" timestamp="1596726133592">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1597053042777" />
+    <state width="2891" height="485" key="GridCell.Tab.0.bottom" timestamp="1597061286615">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="486" key="GridCell.Tab.0.bottom/0.46.2928.1784@0.46.2928.1784" timestamp="1596726133592" />
-    <state width="2891" height="486" key="GridCell.Tab.0.center" timestamp="1596726133591">
+    <state width="2891" height="485" key="GridCell.Tab.0.bottom/0.46.2928.1784@0.46.2928.1784" timestamp="1597061286615" />
+    <state width="2891" height="485" key="GridCell.Tab.0.center" timestamp="1597061286615">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="486" key="GridCell.Tab.0.center/0.46.2928.1784@0.46.2928.1784" timestamp="1596726133591" />
-    <state width="2891" height="486" key="GridCell.Tab.0.left" timestamp="1596726133591">
+    <state width="2891" height="485" key="GridCell.Tab.0.center/0.46.2928.1784@0.46.2928.1784" timestamp="1597061286615" />
+    <state width="2891" height="485" key="GridCell.Tab.0.left" timestamp="1597061286614">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="486" key="GridCell.Tab.0.left/0.46.2928.1784@0.46.2928.1784" timestamp="1596726133591" />
-    <state width="2891" height="486" key="GridCell.Tab.0.right" timestamp="1596726133592">
+    <state width="2891" height="485" key="GridCell.Tab.0.left/0.46.2928.1784@0.46.2928.1784" timestamp="1597061286614" />
+    <state width="2891" height="485" key="GridCell.Tab.0.right" timestamp="1597061286615">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state width="2891" height="486" key="GridCell.Tab.0.right/0.46.2928.1784@0.46.2928.1784" timestamp="1596726133592" />
+    <state width="2891" height="485" key="GridCell.Tab.0.right/0.46.2928.1784@0.46.2928.1784" timestamp="1597061286615" />
     <state x="594" y="273" width="1739" height="1299" key="SettingsEditor" timestamp="1596627927412">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="594" y="273" width="1739" height="1299" key="SettingsEditor/0.46.2928.1784@0.46.2928.1784" timestamp="1596627927412" />
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1597049381856">
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1597053044341">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1597049381856" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1597053044341" />
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1596533562889">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
@@ -228,13 +289,13 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="955" y="418" width="1538" height="1160" key="find.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597045608272" />
-    <state x="875" y="404" key="run.anything.popup" timestamp="1596617421115">
+    <state x="875" y="404" key="run.anything.popup" timestamp="1597061519303">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="875" y="404" key="run.anything.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1596617421115" />
-    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup" timestamp="1597050397333">
+    <state x="875" y="404" key="run.anything.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597061519303" />
+    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup" timestamp="1597061438814">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597050397333" />
+    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597061438814" />
   </component>
 </project>

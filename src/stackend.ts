@@ -46,6 +46,7 @@ export const STACKEND_DOT_COM_COMMUNITY: string = 'stackend-com';
  * Definition of a community
  */
 export interface Community extends XcapObject {
+  __type: 'se.josh.xcap.community.Community',
 	permalink: string,
 	name: string,
 	description: string,

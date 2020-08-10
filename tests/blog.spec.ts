@@ -1,7 +1,7 @@
 //@flow
 
 import createTestStore from './setup-redux';
-import { getEntries, getEntry, newBlogEntry } from '../src/blog';
+import { GetBlogEntryResult, getEntries, GetEntriesResult, getEntry, newBlogEntry } from '../src/blog'
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import { COMMUNITY_PARAMETER } from '../src/api';
 
@@ -15,7 +15,7 @@ describe('Blog', () => {
   describe('getEntries', () => {
     it("List entries", async () => {
 
-      let r = await store.dispatch(getEntries({blogId : 1, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK }));
+      let r:GetEntriesResult = await store.dispatch(getEntries({blogId : 1, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK }));
       expect(r.__resultCode).toBe("success");
       expect(r.blog).toBeDefined();
       expect(r.resultPaginated).toBeDefined();
@@ -26,7 +26,7 @@ describe('Blog', () => {
 
   describe("getEntry", () => {
     it("Fetches an entry", async () => {
-      let r = await store.dispatch(getEntry({blogId : 1, id: 17, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK }));
+      let r:GetBlogEntryResult = await store.dispatch(getEntry({blogId : 1, id: 17, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK }));
       expect(r.__resultCode).toBe("success");
       expect(r.blogEntry).toBeDefined();
       expect(r.blogEntry.id).toBe(17);
