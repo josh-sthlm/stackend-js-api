@@ -1,7 +1,6 @@
 //@flow
 
 import { Thunk } from '../api';
-import { Dispatch} from 'redux';
 
 import {
 	CLEAR_PAGE,
@@ -26,7 +25,7 @@ export function requestPages({
 	permalinks?: Array<string>,
 	communityPermalink?: string | null
 }): Thunk<GetPagesResult> {
-	return async (dispatch: Dispatch /*, getState: any*/) => {
+	return async (dispatch /*, getState: any*/) => {
 		let r = await dispatch(getPages({ pageIds, permalinks, communityPermalink }));
 		await dispatch({
 			type: RECIEVE_PAGES,
@@ -53,7 +52,7 @@ export function requestMissingPages({
 	permalinks?: Array<string>,
 	communityPermalink?: string | null
 }): Thunk<GetPagesResult> {
-	return async (dispatch: Dispatch, getState) => {
+	return async (dispatch, getState) => {
 		let fetchPageIds = [];
 		let fetchPermalinks = [];
 		let { pages } = getState();
@@ -129,7 +128,7 @@ export function requestPageByPermalink(permalink: string): Thunk<GetPagesResult>
  * @returns {Function}
  */
 export function clearPages(): Thunk<any> {
-	return (dispatch: Dispatch /*, getState: any*/) => {
+	return (dispatch /*, getState: any*/) => {
 		dispatch({
 			type: CLEAR_PAGES
 		});
@@ -142,7 +141,7 @@ export function clearPages(): Thunk<any> {
  * @returns {Function}
  */
 export function clearPage(pageId: number): Thunk<any> {
-	return (dispatch: Dispatch /*, getState: any*/) => {
+	return (dispatch /*, getState: any*/) => {
 		dispatch({
 			type: CLEAR_PAGE,
 			id: pageId
@@ -151,7 +150,7 @@ export function clearPage(pageId: number): Thunk<any> {
 }
 
 export function recievePages(json: any): Thunk<any> {
-	return (dispatch: Dispatch /*, getState: any*/) => {
+	return (dispatch /*, getState: any*/) => {
 		return dispatch({
 			type: RECIEVE_PAGES,
 			json
@@ -160,7 +159,7 @@ export function recievePages(json: any): Thunk<any> {
 }
 
 export function requestSubSite(id: number): Thunk<any> {
-	return async (dispatch: Dispatch) => {
+	return async (dispatch) => {
 		let r = await dispatch(getSubSite({ id }));
 		if (!r.error && r.tree) {
 			let pages = {};
@@ -179,7 +178,7 @@ export function requestSubSite(id: number): Thunk<any> {
 }
 
 export function recieveSubSites(json: any): Thunk<any> {
-	return (dispatch: Dispatch /*, getState: any*/) => {
+	return (dispatch /*, getState: any*/) => {
 		return dispatch({
 			type: RECIEVE_SUB_SITES,
 			json

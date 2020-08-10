@@ -12,7 +12,9 @@ import { PaginatedCollection } from './PaginatedCollection';
 import { Insertion, Category } from './category';
 import { Order } from './search';
 import { Tree, Node, newTree, newTreeNode } from './tree';
-;
+
+
+declare var __xcapRunningServerSide: any;
 
 /**
  * Xcap Cms api constants and methods.
@@ -137,7 +139,7 @@ export interface SearchResult extends XcapJsonResult {
 }
 
 /**
- * Search CMS content
+ * Search CMS content. Requires stack admin.
  * @param q Search expression
  * @param p Page number (optional)
  * @param pageSize Page size (optional)
@@ -322,7 +324,7 @@ export function newPage(name: string, permalink?: string): Page {
 	};
 }
 
-export interface EditPageResult extends XcapJsonResult {};
+export interface EditPageResult extends XcapJsonResult {}
 
 /**
  * Edit a cms page
@@ -360,6 +362,7 @@ export interface GetPageResult extends XcapJsonResult {
 
 /**
  * List all content for a cms page.
+ * @param id
  * @param permalink
  * @param p
  * @param pageSize
@@ -656,7 +659,6 @@ export function _addContentToDom(
 	}
 }
 
-declare var __xcapRunningServerSide: any;
 
 /**
  * Add content to the dom. Client side only

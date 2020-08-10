@@ -359,6 +359,12 @@ export function listGroupsByTag({
 	return getJson({ url: '/group/list/by-tag', parameters: arguments });
 }
 
+export interface GetGroupResult extends XcapJsonResult {
+  groupMembers: Array<GroupMember> | null,
+  group: Group | null,
+  hasApplied: boolean,
+}
+
 /**
  * Get a group and it's members.
  * Specify groupId or groupPermalink.
@@ -366,7 +372,7 @@ export function listGroupsByTag({
 export function getGroup({
 	groupPermalink,
 	groupId
-}: { groupPermalink?: string, groupId?: number  }): Thunk<XcapJsonResult> {
+}: { groupPermalink?: string, groupId?: number  }): Thunk<GetGroupResult> {
 	return getJson({ url: '/group/get', parameters: arguments });
 }
 
