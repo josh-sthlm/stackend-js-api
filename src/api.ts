@@ -37,10 +37,10 @@ export interface Config {
 	deployProfile: string,
 
 	/** Recaptch site key */
-	recaptchaSiteKey: string,
+	recaptchaSiteKey: string | null,
 
 	/** Google Analytics key */
-	gaKey: string,
+	gaKey: string | null,
 
 	/** Other configuration properties */
 	[propName: string]: any
@@ -384,7 +384,7 @@ export function getServer(): Thunk<string> {
  * Server domain enabling CORS calls
  * @type {string}
  */
-export function _getServer(config: Config) {
+export function _getServer(config: Config): string {
 	return _.get(
 		config,
 		'server',
@@ -1003,9 +1003,13 @@ export function post({
 	};
 }
 
+export interface GetExpressTokenResult extends XcapJsonResult {
+  xpressToken: string,
+  xcapAjaxToken: string
+}
+
 /**
- * Get an xpress token used for CSRF prevention.
- * @return {Promise}
+ * Get a token used for CSRF prevention.
  */
 export function getXpressToken({
 	community,
@@ -1015,7 +1019,7 @@ export function getXpressToken({
 	community?: string,
 	componentName?: string,
 	context?: string
-}): Thunk<any> {
+}): Thunk<GetExpressTokenResult> {
 	return getJson({
 		url: '/xpresstoken',
 		community,
@@ -1027,7 +1031,7 @@ export function getXpressToken({
 /**
  * Get a configuration variable.
  *
- * <p>When looking up a key, the followin order is used:</p>
+ * <p>When looking up a key, the following order is used:</p>
  * <ol>
  * 	<li>COMPONENT.CONTEXT.KEY</li>
  * 	<li>COMPONENT.KEY</li>
@@ -1121,14 +1125,24 @@ export function createUrl({
 	let loc = path;
 
 	if (!!params) {
-		let i = loc.indexOf('?') === -1 ? 0 : 1;
+		let hasQ = loc.indexOf('?') !== -1;
 		for (let p in params) {
 			if (params.hasOwnProperty(p)) {
-				loc += (i === 0 ? '?' : '&') + encodeURIComponent(p);
+				loc += (hasQ ? '&' : '?');
 				let v = params[p];
-				if (!!v) {
-					loc += '=' + encodeURIComponent(v);
+				if (!v) {
+          loc += encodeURIComponent(p);
+        } else {
+				  if (typeof v === 'object') {
+				    for (let i = 0; i<v.length; i++) {
+				      let w = v[i];
+              loc += (i>0?'&': '') +  encodeURIComponent(p) + '=' + encodeURIComponent(w);
+            }
+          } else {
+            loc += encodeURIComponent(p) + '=' + encodeURIComponent(v);
+          }
 				}
+        hasQ = true;
 			}
 		}
 	}
@@ -1372,7 +1386,7 @@ export function getTypeName(objectOrClassName: any): string {
 	}
 
 	return 'Unknown type';
-};
+}
 
 export interface GetInitialStoreValuesResult extends XcapJsonResult {
 	/** Was the community determined from the domain rather that from the permalink? */

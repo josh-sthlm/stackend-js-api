@@ -2,7 +2,11 @@
   "name": "@stackend/api",
   "version": "1.0.0",
   "description": "JS bindings to api.stackend.com",
-  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/josh-sthlm/stackend-js-api"
+  },
+  "module": "src/api.ts",
   "private": true,
   "bugs": {
     "url": "info@stackend.com"
@@ -76,5 +80,6 @@
   "jest": {
     "testRegex": "(/tests/.*\\.spec\\.[tj]s)$",
     "coverageProvider": "v8"
-  }
+  },
+  "types": "./types/"
 }

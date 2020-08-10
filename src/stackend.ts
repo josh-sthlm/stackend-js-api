@@ -62,7 +62,7 @@ export interface Community extends XcapObject {
 	createdDate: number,
 	modStatus: string,
 	expiresDate: number,
-	theme: string
+	theme: string,
 }
 
 /**
