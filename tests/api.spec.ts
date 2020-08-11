@@ -8,7 +8,8 @@ import {
   getConfiguration, getInitialStoreValues, getReferenceAsString, getTypeName,
   invertOrder,
   Order, parseCommunityContext, parseReference,
-  STACKEND_DEFAULT_SERVER, templateReplace, templateReplaceUrl
+  STACKEND_DEFAULT_SERVER, templateReplace, templateReplaceUrl, _constructConfig,
+  STACKEND_DEFAULT_CONTEXT_PATH, DeployProfile, setConfiguration
 } from '../src/api'
 import { Community, CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
 
@@ -24,13 +25,17 @@ describe('API', () => {
 		})
 	});
 
-
-	describe("getConfiguration", () => {
-	  it("Should get stackend configuration from redux state", () => {
-      let cfg:Config = store.dispatch(getConfiguration());
-      expect(cfg).toBeDefined();
-      expect(cfg.server).toBe(STACKEND_DEFAULT_SERVER);
-    })
+  describe("getConfiguration", () => {
+    it("Should get stackend configuration from redux state", async () => {
+      let c:Config = await store.dispatch(getConfiguration());
+      expect(c).toBeDefined();
+      expect(c.server).toBe(STACKEND_DEFAULT_SERVER);
+      expect(c.contextPath).toBe(STACKEND_DEFAULT_CONTEXT_PATH);
+      expect(c.apiUrl).toBe(STACKEND_DEFAULT_SERVER + "" + STACKEND_DEFAULT_CONTEXT_PATH + "/api");
+      expect(c.deployProfile).toBe(DeployProfile.STACKEND);
+      expect(c.recaptchaSiteKey).toBeNull();
+      expect(c.gaKey).toBeNull();
+    });
   });
 
   describe("createUrl", () => {
@@ -61,7 +66,7 @@ describe('API', () => {
 
 
   describe("getInitialStoreValues", () => {
-    it("Loads inital information about a community into the redux store", async () => {
+    it("Loads initial information about a community into the redux store", async () => {
       let r = await store.dispatch(getInitialStoreValues({ permalink: STACKEND_COM_COMMUNITY_PERMALINK }));
       expect(r.__resultCode).toBe("success");
       expect(r.stackendCommunity).toBeDefined();
@@ -141,7 +146,36 @@ describe('API', () => {
     it("Url string substitution", () => {
       expect(templateReplaceUrl("/path?a={{a}}", { a : 'apan ola', b : 'bosse'})).toBe("/path?a=apan%20ola");
     })
-  })
+  });
+
+
+  describe("_constructConfig", () => {
+    it("Creates a default configuration", () => {
+      let c = _constructConfig();
+      expect(c).toBeDefined();
+      expect(c.server).toBe(STACKEND_DEFAULT_SERVER);
+      expect(c.contextPath).toBe(STACKEND_DEFAULT_CONTEXT_PATH);
+      expect(c.apiUrl).toBe(STACKEND_DEFAULT_SERVER + "" + STACKEND_DEFAULT_CONTEXT_PATH + "/api");
+      expect(c.deployProfile).toBe(DeployProfile.STACKEND);
+      expect(c.recaptchaSiteKey).toBeNull();
+      expect(c.gaKey).toBeNull();
+    });
+  });
+
+  // Must be last to not mess upp the rest of the tests
+  describe("setConfig", () => {
+    it("Alter the configuration", async () => {
+      await store.dispatch(setConfiguration({
+        server: "http://localhost:8080/"
+      }));
+
+      let c:Config = store.dispatch(getConfiguration());
+      expect(c).toBeDefined();
+      expect(c.server).toBe("http://localhost:8080/");
+      expect(c.apiUrl).toBe(STACKEND_DEFAULT_SERVER + "" + STACKEND_DEFAULT_CONTEXT_PATH + "/api");
+    });
+  });
+
 });
 
 

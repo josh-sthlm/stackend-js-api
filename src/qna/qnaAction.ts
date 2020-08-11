@@ -16,10 +16,9 @@ import {
 	SET_QNA_AVAILABLE_FILTERS,
 	RECIEVE_SEARCH_RESULT
 } from './qnaReducer';
-import { Thunk } from '../api';
+import { isRunningInBrowser, Thunk } from '../api'
 import { Request, getRequest } from '../request';
 
-declare var __xcapRunningServerSide: string;
 declare var browserHistory: { push: (location:string) => any };
 
 //Action Creator to change qnaPage using pageType, eg. "ViewForumThread" and permalink to question
@@ -38,7 +37,7 @@ export function changeQnaPage(pageType: string, forumThreadPermalink: string) {
  server
  }
  }*/
-type ChangeFilter = {
+export interface ChangeFilter {
 	filter: {
 		(filterName: string): string, //filterName is the filter group (currently only issue), and the value is selected filter
 		searchType?: QnaSearchType,
@@ -48,7 +47,8 @@ type ChangeFilter = {
 	},
 	contentType: ContentType,
 	triggerSearch?: boolean //option to disable search trigger
-};
+}
+
 //Action Creator to change selected filter in reduxStoreName
 export function changeFilter({
 	filter,
@@ -96,11 +96,7 @@ export function changeFilter({
 
 			const newPath = Search.getSearchBaseUrl({ request }) + type + sortOrder + _filter;
 
-			if (
-				!!filter.updateUrl &&
-				typeof __xcapRunningServerSide === 'undefined' &&
-				newPath !== request.location.pathname
-			) {
+			if (!!filter.updateUrl && isRunningInBrowser() && newPath !== request.location.pathname) {
 				browserHistory.push(newPath);
 			}
 

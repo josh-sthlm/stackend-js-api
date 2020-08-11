@@ -29,7 +29,7 @@ import { LikeDataMap } from './like';
  * The default blog key
  * @type {string}
  */
-export const DEFAULT_BLOG_KEY: string = 'king';
+export const DEFAULT_BLOG_KEY: string = 'news';
 
 /**
  * Default context for the blog

@@ -21,7 +21,7 @@ export interface ShopState {
 	productsByType: {
 		[productType: string]: GraphQLList<Product>
 	},
-	basket: []
+	basket: Array<any>
 }
 
 export default function shopReducer(
@@ -78,7 +78,10 @@ export default function shopReducer(
 
 		case ADD_TO_BASKET: {
 			let basket = [...state.basket];
-			basket.push(action.product);
+      let p:Product = _.get(action, "product");
+      if (p) {
+			  basket.push(p);
+      }
 
 			return Object.assign({}, state, {
 				basket

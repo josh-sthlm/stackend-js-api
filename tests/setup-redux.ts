@@ -3,8 +3,8 @@
 import { createStore, compose, applyMiddleware, combineReducers, Action} from 'redux';
 import thunk from 'redux-thunk';
 import { ALL_REDUCERS } from "../src/reducers";
+import { isRunningInBrowser } from '../src/api'
 
-declare var __xcapRunningServerSide: any;
 
 const appReducer = combineReducers(ALL_REDUCERS);
 
@@ -23,7 +23,7 @@ export const crashReporter = (store: any) => (next: any) => (action: any) => {
     try {
         return next(action);
     } catch (err) {
-        if (typeof __xcapRunningServerSide === 'undefined') {
+        if (isRunningInBrowser()) {
             console.error('Caught an exception!', err);
             console.error('redux action', action);
             console.error('redux state', store.getState());
@@ -36,7 +36,7 @@ export const crashReporter = (store: any) => (next: any) => (action: any) => {
 
 let preloadedState:any = undefined;
 
-export default function createTestStore() {
+export default function createTestStore():any {
     return createStore(
       rootReducer,
       preloadedState,

@@ -10,12 +10,10 @@ import { User } from './user';
 import { setLoadingThrobberVisible } from './throbber/throbberActions';
 import { Content, Page, SubSite } from './cms';
 import { Privilege } from './privileges'
+import config from 'config';
+import { XCAP_SET_CONFIG } from './configReducer'
 
 declare var __xcapRunningServerSide: any;
-
-// FIXME: Get rid of this
-declare var global: any;
-declare var window: any;
 
 export const STACKEND_DEFAULT_SERVER: string = 'https://api.stackend.com';
 export const STACKEND_DEFAULT_CONTEXT_PATH: string = '';
@@ -53,6 +51,23 @@ export const DeployProfile = {
 	STACKEND: 'stackend',
 	CASTLE: 'castle'
 };
+
+/**
+ * Is the app running server side?
+ */
+export function isRunningServerSide()
+{
+  return typeof __xcapRunningServerSide !== 'undefined';
+}
+
+/**
+ * Is the app running in the browser
+ */
+export function isRunningInBrowser()
+{
+  return typeof __xcapRunningServerSide === 'undefined';
+}
+
 
 /**
  * The default community ("stackend")
@@ -230,7 +245,7 @@ export enum ModerationVisibility {
 
 	/**
 	 * The same behavior as {@link #VISIBLE} but for modules that support user
-	 * approval like {@link CommentManager}, the objects awaiting approval are
+	 * approval like  CommentManager, the objects awaiting approval are
 	 * also included. For modules that do not support this, treat like
 	 * {@link #VISIBLE}.
 	 */
@@ -238,7 +253,7 @@ export enum ModerationVisibility {
 
 	/**
 	 * The same behavior as {@link #VISIBLE} but for modules that support user
-	 * approval like {@link CommentManager}, the objects awaiting approval,
+	 * approval like CommentManager, the objects awaiting approval,
 	 * approved and disapproved are also included. For modules that do not
 	 * support this, treat like {@link #VISIBLE}.
 	 */
@@ -342,11 +357,19 @@ export const ModerationStatusCode = {
 
 export type ModerationStatusCodes = 0 | 1 | 2 | 4 | 5;
 
+/**
+ * A community context represents a instance of some functionality,
+ * for example comments, blog etc. Some functions may multiple instances,
+ * like for example stand alone comments or comments on blog posts.
+ */
 export interface CommunityContext {
 	community: string,
 	context: string
 }
 
+/**
+ * UID of a specific type of object in a context
+ */
 export interface Reference {
 	communityContext: CommunityContext,
 	type: string,
@@ -354,13 +377,58 @@ export interface Reference {
 }
 
 /**
+ * Construct basic configuration from the environment.
+ */
+export function _constructConfig(): Config
+{
+  let defaults = config.get("stackend");
+
+  let c:Config = Object.assign({
+    server: STACKEND_DEFAULT_SERVER,
+    contextPath: STACKEND_DEFAULT_CONTEXT_PATH,
+    apiUrl: STACKEND_DEFAULT_SERVER + "/api",
+    deployProfile: DeployProfile.STACKEND,
+    gaKey: null,
+    recaptchaSiteKey: null
+  }, defaults);
+
+  return c;
+}
+
+/**
  * Get the API configuration object
  * @type {Thunk<Config>}
  */
 export function getConfiguration(): Thunk<Config> {
-	return (dispatch: any, getState: any) => {
-		return _.get(getState(), 'config', global.xcapModuleSettings);
+	return (dispatch, getState) => {
+		let c =  _.get(getState(), 'config');
+		if (c) {
+		  return c;
+    }
+		// FIXME: Push to store?
+    return _constructConfig();
 	};
+}
+
+/**
+ * Set the API configuration
+ * @param config
+ */
+export function setConfiguration(config: {
+  server?: string,
+  contextPath?: string,
+  apiUri?: string,
+  deployProfile?: string,
+  recaptchaSiteKey?: string | null,
+  gaKey?: string | null,
+  [propName: string]: any
+}): Thunk<any> {
+  return (dispatch, getState) => {
+    return dispatch({
+      type: XCAP_SET_CONFIG,
+      config
+    });
+  }
 }
 
 /**
@@ -368,15 +436,21 @@ export function getConfiguration(): Thunk<Config> {
  * @type {string}
  */
 export function getServer(): Thunk<string> {
-	return (dispatch: any, getState: any) => {
+	return (dispatch, getState) => {
+
+	  let s = undefined;
 		if (typeof getState !== 'function') {
 			console.error('getServer: Wrong invocation');
 		}
-		return _.get(
-			typeof getState === 'function' ? getState() : null,
-			'config.server',
-			_.get(global, 'xcapModuleSettings.server', STACKEND_DEFAULT_SERVER)
-		);
+		else
+    {
+      s = _.get(getState(), 'config.server');
+      if (s) {
+        return s;
+      }
+    }
+
+		return _constructConfig().server;
 	};
 }
 
@@ -384,12 +458,12 @@ export function getServer(): Thunk<string> {
  * Server domain enabling CORS calls
  * @type {string}
  */
-export function _getServer(config: Config): string {
-	return _.get(
-		config,
-		'server',
-		_.get(global, 'xcapModuleSettings.server', STACKEND_DEFAULT_SERVER)
-	);
+export function _getServer(config: Config | null): string {
+	let s = _.get(config, 'server');
+	if (s) {
+	  return s;
+  }
+  return _constructConfig().server;
 }
 
 /**
@@ -402,11 +476,15 @@ export function getDeployProfile(): Thunk<string> {
 		if (typeof getState !== 'function') {
 			console.error('getDeployProfile: Wrong invocation');
 		}
-		return _.get(
-			typeof getState === 'function' ? getState() : null,
-			'config.deployProfile',
-			_.get(global, 'xcapModuleSettings.deployProfile', DeployProfile.STACKEND)
-		);
+		else
+    {
+      let s = _.get(getState(), 'config.deployProfile');
+      if (s) {
+        return s;
+      }
+    }
+
+		return _constructConfig().deployProfile;
 	};
 }
 
@@ -414,12 +492,12 @@ export function getDeployProfile(): Thunk<string> {
  * Get the deploy profile name. Allows customized styling for different deployments
  * @return a profile name, or the empty string.
  */
-export function _getDeployProfile(config: Config): string {
-	return _.get(
-		config,
-		'deployProfile',
-		_.get(global, 'xcapModuleSettings.deployProfile', DeployProfile.STACKEND)
-	);
+export function _getDeployProfile(config: Config | null): string {
+  let s = _.get(config, 'deployProfile');
+  if (s) {
+    return s;
+  }
+  return _constructConfig().deployProfile;
 }
 
 /**
@@ -431,11 +509,15 @@ export function getContextPath(): Thunk<string> {
 		if (typeof getState !== 'function') {
 			console.error('Stackend: getContextPath: Wrong invocation');
 		}
-		return _.get(
-			typeof getState === 'function' ? getState() : null,
-			'config.contextPath',
-			_.get(global, 'xcapModuleSettings.contextPath', STACKEND_DEFAULT_CONTEXT_PATH)
-		);
+		else
+    {
+      let s = _.get(getState(), 'config.contextPath');
+      if (s) {
+        return s;
+      }
+    }
+
+		return _constructConfig().contextPath;
 	};
 }
 
@@ -443,12 +525,12 @@ export function getContextPath(): Thunk<string> {
  * ContextPath of Api server
  * @type {string}
  */
-export function _getContextPath(config: Config): string {
-	return _.get(
-		config,
-		'contextPath',
-		_.get(global, 'xcapModuleSettings.contextPath', STACKEND_DEFAULT_CONTEXT_PATH)
-	);
+export function _getContextPath(config: Config | null): string {
+  let s = _.get(config, 'contextPath');
+  if (s) {
+    return s;
+  }
+  return _constructConfig().contextPath;
 }
 
 /**
@@ -457,23 +539,26 @@ export function _getContextPath(config: Config): string {
  */
 export function getServerWithContextPath(): Thunk<string> {
 	return (dispatch: any, getState: any) => {
+
+	  let server, contextPath;
+
 		if (typeof getState !== 'function') {
 			console.error('getServerWithContextPath: Wrong invocation');
 		}
-		const state = typeof getState !== 'function' ? getState() : null;
+		else
+    {
+      let state = getState();
+      server = _.get(state, 'config.server');
+      contextPath = _.get(state, 'config.contextPath');
+    }
 
-		return (
-			_.get(
-				state,
-				'config.server',
-				_.get(global, 'xcapModuleSettings.server', STACKEND_DEFAULT_SERVER)
-			) +
-			_.get(
-				state,
-				'config.contextPath',
-				_.get(global, 'xcapModuleSettings.contextPath', STACKEND_DEFAULT_CONTEXT_PATH)
-			)
-		);
+		if (!server || !contextPath) {
+		  let c = _constructConfig();
+		  server = server || c.server;
+		  contextPath = contextPath || c.contextPath;
+    }
+
+		return server + contextPath;
 	};
 }
 
@@ -481,28 +566,26 @@ export function getServerWithContextPath(): Thunk<string> {
  * Server domain address with ContextPath from redux store
  */
 export function getServerWithContextPathFromStore(config: Config): string {
-	return (
-		_.get(config, 'server', _.get(global, 'xcapModuleSettings.server', STACKEND_DEFAULT_SERVER)) +
-		_.get(
-			config,
-			'contextPath',
-			_.get(global, 'xcapModuleSettings.contextPath', STACKEND_DEFAULT_CONTEXT_PATH)
-		)
-	);
+
+  // FIXME: Duplicate of nex function
+  let c = config;
+  if (!config.server || !config.contextPath) {
+    c = _constructConfig();
+  }
+
+  return c.server + c.contextPath;
 }
 
 /**
  * Server domain address with ContextPath
  */
 export function _getServerWithContextPath(config: Config): string {
-	return (
-		_.get(config, 'server', _.get(global, 'xcapModuleSettings.server', STACKEND_DEFAULT_SERVER)) +
-		_.get(
-			config,
-			'contextPath',
-			_.get(global, 'xcapModuleSettings.contextPath', STACKEND_DEFAULT_CONTEXT_PATH)
-		)
-	);
+  let c = config;
+  if (!config.server || !config.contextPath) {
+    c = _constructConfig();
+  }
+
+  return c.server + c.contextPath;
 }
 
 /**
@@ -552,7 +635,7 @@ export function getEffectiveCommunityPath(): Thunk<string> {
 		const state = getState();
 		if (/\/stacks\//.exec(_.get(state, 'request.location.pathname', ''))) {
 			// Ignore /stacks/xxx
-			return _.get(state, 'config.contextPath', global.xcapModuleSettings.contextPath);
+      return _getContextPath(state.config);
 		}
 
 		// Outside stackend
@@ -561,7 +644,7 @@ export function getEffectiveCommunityPath(): Thunk<string> {
 			return p;
 		}
 
-		return _.get(state, 'config.contextPath', global.xcapModuleSettings.contextPath);
+		return _getContextPath(state.config);
 	};
 }
 
@@ -574,17 +657,11 @@ export function getAbsoluteApiBaseUrl(community: string): Thunk<string> {
 	return (dispatch, getState) => {
 		const state = getState();
 
-		const pfx =
-			_.get(
-				state,
-				'config.server',
-				_.get(global, 'xcapModuleSettings.server', STACKEND_DEFAULT_SERVER)
-			) +
-			_.get(
-				state,
-				'config.contextPath',
-				_.get(global, 'xcapModuleSettings.contextPath', STACKEND_DEFAULT_CONTEXT_PATH)
-			);
+		let server = _getServer(state.config);
+		let contextPath = _getContextPath(state.config);
+
+		const pfx = server + contextPath;
+
 
 		// The default community does not use a prefix
 		if (
@@ -613,13 +690,12 @@ export function _getAbsoluteApiBaseUrl({
 	config: Config,
 	communityPermalink?: string
 }): string {
-	const pfx =
-		_.get(config, 'server', _.get(global, 'xcapModuleSettings.server', STACKEND_DEFAULT_SERVER)) +
-		_.get(
-			config,
-			'contextPath',
-			_.get(global, 'xcapModuleSettings.contextPath', STACKEND_DEFAULT_CONTEXT_PATH)
-		);
+
+
+  let server = _getServer(config);
+  let contextPath = _getContextPath(config);
+
+  const pfx = server + contextPath;
 
 	// The default community does not use a prefix
 	if (
@@ -702,21 +778,22 @@ export function _getApiUrl({
 
 	if (!notFromApi) {
 		/* Calls to /api/*  (just don't code like this ok) */
-		// FIXME: global.xcapModuleSettings is a fallback for the initial load
 		const server = _getConfig({
 			config: state.config || {},
 			componentName,
 			context,
 			key: 'server',
-			defaultValue: _.get(global, 'xcapModuleSettings.server', STACKEND_DEFAULT_SERVER)
+			defaultValue: _getServer(state.config)
 		});
+
 		const contextPath = _getConfig({
 			config: state.config || {},
 			componentName,
 			context,
 			key: 'contextPath',
-			defaultValue: _.get(global, 'xcapModuleSettings.contextPath', STACKEND_DEFAULT_CONTEXT_PATH)
+			defaultValue: _getContextPath(state.config)
 		});
+
 		const apiUrlOverride = _getConfig({
 			config: state.config || {},
 			componentName,
@@ -847,11 +924,10 @@ export function getJson({
 
 			let c: string | undefined | null = cookie;
 
+      let runningServerSide = isRunningServerSide();
+
 			// The client will supply the cookie automatically. Server side will not, so pass it along
-			if (
-				(typeof c === 'undefined' || c == null) &&
-				typeof __xcapRunningServerSide !== 'undefined'
-			) {
+			if ((typeof c === 'undefined' || c == null) && runningServerSide) {
 				let request: Request = await dispatch(getRequest());
 				c = request.cookie;
 			}
@@ -859,7 +935,7 @@ export function getJson({
 			let requestStartTime = Date.now();
 			const result: XcapJsonResult = await LoadJson({ url: p, cookie: c });
 			let t = Date.now() - requestStartTime;
-			if (t > 500 && typeof __xcapRunningServerSide !== 'undefined') {
+			if (t > 500 && runningServerSide) {
 				console.warn('Slow API request: ' + t + 'ms:', p);
 			}
 
@@ -1474,11 +1550,6 @@ export async function logJsError(error: any /* Error */): Promise<any> {
 		return;
 	}
 
-	if (!window.xcapModuleSettings) {
-		console.error(error);
-		return;
-	}
-
 	let communityId = 0;
 	let store = '';
 	/* FIXME: Re add this
@@ -1509,8 +1580,7 @@ export async function logJsError(error: any /* Error */): Promise<any> {
 		pageUrl: document.location.href
 	};
 
-	let url =
-		window.xcapModuleSettings.server + window.xcapModuleSettings.contextPath + '/api/js-log';
+	let url = _getServer(null) + _getContextPath(null) + + '/api/js-log';
 
 	let r = null;
 	try {

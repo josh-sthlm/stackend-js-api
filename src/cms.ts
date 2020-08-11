@@ -4,7 +4,7 @@ import {
 	getJson,
 	post,
 	XcapJsonResult,
-	ModerationStatus, XcapObject, Thunk
+	ModerationStatus, XcapObject, Thunk, isRunningServerSide
 } from './api'
 import { generatePermalink } from './permalink';
 import { User } from './user';
@@ -13,8 +13,6 @@ import { Insertion, Category } from './category';
 import { Order } from './search';
 import { Tree, Node, newTree, newTreeNode } from './tree';
 
-
-declare var __xcapRunningServerSide: any;
 
 /**
  * Xcap Cms api constants and methods.
@@ -670,8 +668,8 @@ export function addContentToDom(parent: Element, content: Content) {
 		return;
 	}
 
-	if (typeof __xcapRunningServerSide !== 'undefined') {
-		throw 'addContentToDom can not be executed serverside';
+	if (isRunningServerSide()) {
+		throw 'Stackend: addContentToDom can not be executed serverside';
 	}
 
 	const { htmlValue, javascriptValue, cssValue } = extractContentValues(content);

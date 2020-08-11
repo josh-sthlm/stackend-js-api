@@ -447,7 +447,8 @@ export function uploadMediaFile({
 }): UploadMediaFileResult {
 	// Allows the use of COMMUNITY_PARAMETER as well
 	if (typeof communityPermalink === 'undefined') {
-		communityPermalink = arguments[COMMUNITY_PARAMETER];
+		// @ts-ignore
+    communityPermalink = arguments[COMMUNITY_PARAMETER];
 	}
 
 	let url = getContextMediaUploadUrl({

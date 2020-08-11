@@ -2,17 +2,17 @@
 import _ from 'lodash';
 import { Request } from './request';
 import {
-	XcapJsonResult,
-	_getServerWithContextPath,
-	Config,
-	post,
-	_getApiUrl,
-	Thunk
-} from './api';
+  XcapJsonResult,
+  _getServerWithContextPath,
+  Config,
+  post,
+  _getApiUrl,
+  Thunk, isRunningInBrowser
+} from './api'
 
 
 declare var browserHistory: { push: (location:string) => any }; // FIXME: for backward compability with react-router
-declare var xcapModuleSettings: any; // FIXME: For backward compatibility
+declare var window: any; // FIXME: For client side stuff
 
 /**
  * Ways to log in.
@@ -179,15 +179,10 @@ export function _getLogoutUrl({
 function _getReturnUrl({ request, returnUrl }: { request: Request, returnUrl?: string }): string {
 	let pfx = '';
 	if (!returnUrl) {
-		// FIXME: Old stuff
-		if (xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.loginRedirectUrl) {
-			return encodeURIComponent(xcapModuleSettings.qna.loginRedirectUrl);
-		} else {
 			returnUrl = '';
 			returnUrl += _.get(request, 'location.href', '');
 			returnUrl += _.get(request, 'location.search', '');
 			return encodeURIComponent(returnUrl);
-		}
 	} else {
 		// No proto
 		if (returnUrl.indexOf('//') === -1) {
@@ -269,7 +264,9 @@ export function login({
 		case AuthenticationType.GOOGLE:
 		case AuthenticationType.OAUTH2: {
 			let url = _getLoginUrl({ provider, returnUrl, config, request, communityPermalink });
-			window.location = url;
+			if (isRunningInBrowser()) {
+			  window.location = url;
+      }
 			return () => url;
 		}
 
@@ -279,7 +276,7 @@ export function login({
 }
 
 /**
- * Handle the redirects when loggin in.
+ * Handle the redirects when logging in.
  * @param loginResult Response from the login or verifyEmail method.
  * @param request
  * @param email
@@ -306,7 +303,7 @@ export function performLoginRedirect({
 			browserHistory.push(
 				request.contextPath +
 					'/register/verify?email=' +
-					encodeURIComponent(email) +
+          (email ? encodeURIComponent(email) : '') +
 					'&provider=' +
 					encodeURIComponent(loginResult.provider ? loginResult.provider : AuthenticationType.XCAP)
 			);
@@ -319,9 +316,9 @@ export function performLoginRedirect({
 			browserHistory.push(
 				request.contextPath +
 					'/register/details?email=' +
-					encodeURIComponent(loginResult.email) +
+          (loginResult.email ? encodeURIComponent(loginResult.email) : '') +
 					'&provider=' +
-					encodeURIComponent(loginResult.provider) +
+          (loginResult.provider ? encodeURIComponent(loginResult.provider) : '') +
 					(loginResult.firstName ? '&firstName=' + encodeURIComponent(loginResult.firstName) : '') +
 					(loginResult.lastName ? '&lastName=' + encodeURIComponent(loginResult.lastName) : '') +
 					(returnUrl ? '&returnUrl=' + encodeURIComponent(returnUrl) : '') +
@@ -343,11 +340,13 @@ export function performLoginRedirect({
 			// Reload desired
 			let r = typeof returnUrl === 'string' ? returnUrl : request.absoluteCommunityUrl;
 
-			if (window.location.href === r) {
-				window.location.reload();
-			} else {
-				window.location = r;
-			}
+			if (isRunningInBrowser()) {
+        if (window.location.href === r) {
+          window.location.reload();
+        } else {
+          window.location = r;
+        }
+      }
 			break;
 		}
 	}

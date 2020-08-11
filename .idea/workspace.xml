@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/tests/like.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/login.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/permalink.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/poll.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/search.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/shop.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/user.spec.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/vote.spec.ts" afterDir="false" />
+    <list default="true" id="fae8a80f-6fb9-44b3-8d25-5a276c097818" name="Default Changelist" comment="More tests">
+      <change afterPath="$PROJECT_DIR$/.npmignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/default.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/develop.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/config/test.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/blog.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/blog.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cms.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/cms.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/comments.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/comments.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/configReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/configReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/login.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/login.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/media.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/media.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/qna/qnaAction.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/qna/qnaAction.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/search/searchActions.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/search/searchActions.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shop/shopReducer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shop/shopReducer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/api.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/api.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/setup-redux.ts" beforeDir="false" afterPath="$PROJECT_DIR$/tests/setup-redux.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,7 +48,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/tests" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/config" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
@@ -58,13 +68,14 @@
     <property name="ts.external.directory.path" value="$PROJECT_DIR$/node_modules/typescript/lib" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/config" />
+      <recent name="$PROJECT_DIR$/tests" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/request" />
       <recent name="$PROJECT_DIR$/src" />
       <recent name="$PROJECT_DIR$/src/poll" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/tests" />
     </key>
   </component>
   <component name="RunManager" selected="Jest.API.templateReplaceUrl">
@@ -131,7 +142,8 @@
       <workItem from="1596553555279" duration="39252000" />
       <workItem from="1596719474166" duration="6658000" />
       <workItem from="1597041337761" duration="13261000" />
-      <workItem from="1597064976536" duration="6086000" />
+      <workItem from="1597064976536" duration="6999000" />
+      <workItem from="1597144479980" duration="8036000" />
     </task>
     <task id="LOCAL−00001" summary="Added to GIT">
       <created>1596468255316</created>
@@ -241,7 +253,13 @@
       <option name="presentableId" value="LOCAL−00018" />
       <updated>1597069237022</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL−00019" summary="More tests">
+      <created>1597071252151</created>
+      <option name="number" value="LOCAL−00019" />
+      <option name="presentableId" value="LOCAL−00019" />
+      <updated>1597071252151</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -275,10 +293,10 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1107" y="661" width="1055" height="523" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.46.2928.1784@0.46.2928.1784" timestamp="1596722417797" />
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1597069236893">
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2" timestamp="1597071390667">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1597069236893" />
+    <state x="761" y="303" width="1396" height="1313" key="CommitChangelistDialog2/0.46.2928.1784@0.46.2928.1784" timestamp="1597071390667" />
     <state width="2891" height="485" key="GridCell.Tab.0.bottom" timestamp="1597061779405">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
@@ -299,25 +317,25 @@
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="594" y="273" width="1739" height="1299" key="SettingsEditor/0.46.2928.1784@0.46.2928.1784" timestamp="1596627927412" />
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1597069238424">
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2" timestamp="1597071253736">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1597069238424" />
+    <state x="759" y="487" width="1400" height="946" key="Vcs.Push.Dialog.v2/0.46.2928.1784@0.46.2928.1784" timestamp="1597071253736" />
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog" timestamp="1596533562889">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
     <state x="1047" y="501" width="814" height="961" key="com.intellij.openapi.vcs.changes.SpecificFilesViewDialog/0.46.2928.1784@0.46.2928.1784" timestamp="1596533562889" />
-    <state x="955" y="418" width="1538" height="1160" key="find.popup" timestamp="1597045608272">
+    <state x="955" y="418" width="1538" height="1160" key="find.popup" timestamp="1597153013969">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="955" y="418" width="1538" height="1160" key="find.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597045608272" />
-    <state x="875" y="404" key="run.anything.popup" timestamp="1597061519303">
+    <state x="955" y="418" width="1538" height="1160" key="find.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597153013969" />
+    <state x="875" y="404" key="run.anything.popup" timestamp="1597148949964">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="875" y="404" key="run.anything.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597061519303" />
-    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup" timestamp="1597061438814">
+    <state x="875" y="404" key="run.anything.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597148949964" />
+    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup" timestamp="1597153086555">
       <screen x="0" y="46" width="2928" height="1784" />
     </state>
-    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597061438814" />
+    <state x="873" y="46" width="1177" height="1976" key="search.everywhere.popup/0.46.2928.1784@0.46.2928.1784" timestamp="1597153086555" />
   </component>
 </project>

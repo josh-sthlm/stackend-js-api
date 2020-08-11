@@ -1,12 +1,18 @@
 // @flow
-import { getJson, post, SortOrder, XcapJsonResult, XcapObject, Thunk } from './api'
+import {
+  getJson,
+  post,
+  SortOrder,
+  XcapJsonResult,
+  XcapObject,
+  Thunk,
+  isRunningInBrowser
+} from './api'
 //import * as groupApi from './group';
 import * as user from './user';
-//import * as gaFunctions from '../functions/gaFunctions.js';
+//import * as gaFunctions from '../functions/gaFunctions';
 import { LikesByCurrentUser } from './like';
 import { PaginatedCollection } from './PaginatedCollection';
-
-declare var __xcapRunningServerSide: any;
 
 /**
  * Comment class name
@@ -206,7 +212,7 @@ export function postComment({
 	referenceUrl?: string
 }): Thunk<PostCommentResult> {
 	// Add referenceUrl, if not set
-	if (!referenceUrl && typeof __xcapRunningServerSide === 'undefined') {
+	if (!referenceUrl && isRunningInBrowser()) {
 		arguments[0].referenceUrl = window.location.href;
 	}
 

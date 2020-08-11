@@ -39,7 +39,6 @@ type UpdateSelectedType = {
 };
 
 declare var browserHistory: { push: (log:string) => any };
-declare var __xcapRunningServerSide: string;
 
 //Change Filter
 export function updateSelectedType({

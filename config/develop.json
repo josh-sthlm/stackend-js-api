@@ -1,0 +1,6 @@
+{
+  "stackend": {
+    "server": "http://localhost:8080",
+    "contextPath": "/stackend"
+  }
+}

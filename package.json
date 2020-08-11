@@ -16,14 +16,15 @@
   "sideEffects": true,
   "dependencies": {
     "@babel/runtime": "^7.9.2",
+    "config": "3.3.1",
     "es6-promise": "^3.3.1",
     "immutability-helper": "^2.9.1",
     "immutable": "^3.8.2",
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.15",
+    "moment": "^2.22.0",
     "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0",
-    "moment": "^2.22.0"
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
@@ -44,6 +45,7 @@
     "@types/node": "^10.17.28",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
+    "@types/config": "^0.0.36",
     "eslint": "^6.8.0",
     "eslint-config-react-app": "^5.2.1",
     "eslint-import-resolver-typescript": "^2.2.0",
