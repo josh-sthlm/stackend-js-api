@@ -210,7 +210,7 @@ export function getBlogEntryUrl({
  * Create a new blogEntry that is ok to save.
  * @returns BlogEntry
  */
-export function newBlogEntry(blogKey: string): BlogEntry {
+export function newBlogEntry(blogKey: string): any {
 	//FIXME: a lot of hardcoded stuff, not sure what is necessary
 	return {
 		id: 0,

@@ -92,7 +92,7 @@ interface State {
 }
 
 //Reducer
-export function GroupComments(state: State = {}, action: Action) {
+export function GroupComments(state: State = {}, action: commentsAction) {
 	let key = '';
 	switch (action.type) {
 		case REQUEST_GROUP_COMMENTS:
