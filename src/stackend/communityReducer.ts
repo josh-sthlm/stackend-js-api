@@ -1,6 +1,7 @@
 // @flow
 import update from 'immutability-helper';
 import { Community } from '../stackend';
+import { isRunningInBrowser } from '../api'
 
 export const KEY: string = 'COMMUNITIES';
 
@@ -11,6 +12,8 @@ export const SET_COMMUNITY_SETTINGS: string = 'SET_COMMUNITY_SETTINGS';
 export const REMOVE_COMMUNITIES: string = 'REMOVE_COMMUNITIES';
 export const REMOVE_COMMUNITY: string = 'REMOVE_COMMUNITY';
 export const RECEIVE_RESOURCE_USAGE: string = 'RECEIVE_RESOURCE_USAGE';
+
+declare var window: any;
 
 export interface CommunityState {
 	community?: any,
@@ -88,8 +91,10 @@ export default function communityReducer(
 		case SET_COMMUNITY_SETTINGS: {
 			if (!!action.community) {
 				// FIXME: Use of window still needed for xcap.js and old javascripts
-				window.xcapCommunityName = action.community.name;
-				window.xcapCommunityPermalink = action.community.permalink;
+        if (isRunningInBrowser()) {
+          window.xcapCommunityName = action.community.name;
+          window.xcapCommunityPermalink = action.community.permalink;
+        }
 			}
 
 			let x = {

@@ -294,6 +294,9 @@ export function performLoginRedirect({
 	email?: string,
 	returnUrl?: string
 }): boolean {
+
+  // FIXME: Move this browser functionality to frontend project
+
 	if (loginResult.error || loginResult.loginFailed) {
 		return false;
 	}

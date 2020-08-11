@@ -3,7 +3,6 @@ import { find } from 'lodash';
 import {
 	QnaSearchType,
 	ContentType,
-	getQnaUrl,
 	getCategories,
 	search as _search,
 	QnaTypeConverter
@@ -19,7 +18,6 @@ import {
 import { isRunningInBrowser, Thunk } from '../api'
 import { Request, getRequest } from '../request';
 
-declare var browserHistory: { push: (location:string) => any };
 
 //Action Creator to change qnaPage using pageType, eg. "ViewForumThread" and permalink to question
 export function changeQnaPage(pageType: string, forumThreadPermalink: string) {
@@ -61,9 +59,8 @@ export function changeFilter({
 		let request: Request = dispatch(getRequest());
 
 		if (filter.updateUrl === 'qna') {
-			const filterUrlString = !!filter.searchType ? filter.searchType.toLocaleLowerCase() : '';
-
-			browserHistory.push(getQnaUrl({ request }) + '/' + filterUrlString);
+			//const filterUrlString = !!filter.searchType ? filter.searchType.toLocaleLowerCase() : '';
+			//browserHistory.push(getQnaUrl({ request }) + '/' + filterUrlString);
 		} else if (filter.updateUrl === 'search') {
 			const { search, qnaSelectedFilters } = getState();
 
@@ -97,7 +94,8 @@ export function changeFilter({
 			const newPath = Search.getSearchBaseUrl({ request }) + type + sortOrder + _filter;
 
 			if (!!filter.updateUrl && isRunningInBrowser() && newPath !== request.location.pathname) {
-				browserHistory.push(newPath);
+			  // FIXME: browserHistor
+				//browserHistory.push(newPath);
 			}
 
 			//Also dispatch a new search
@@ -213,7 +211,7 @@ export function searchQna({ searchString, selectedFilters, game }: any) {
 	}
 }
 
-function generateQueryObject(searchString = '', selectedFilters, availableFilters) {
+function generateQueryObject(searchString = '', selectedFilters:any, availableFilters:any) {
 	let qo = {};
 	const searchType = !!selectedFilters.searchType
 		? QnaTypeConverter(

@@ -8,7 +8,7 @@ import {
 	Order,
 	OrderBy,
 	getActiveSearchTypes,
-	search as _search, getSearchBaseUrl
+	search as _search,
 } from '../search'
 import * as qnaApi from '../qna';
 import * as groupApi from '../group';
@@ -38,7 +38,6 @@ type UpdateSelectedType = {
 	p?: number //pageNumber
 };
 
-declare var browserHistory: { push: (log:string) => any };
 
 //Change Filter
 export function updateSelectedType({
@@ -49,8 +48,8 @@ export function updateSelectedType({
 
 	return async (dispatch, getState) => {
 		if (updateUrl) {
-			const request = await dispatch(getRequest());
-			browserHistory.push(getSearchBaseUrl({ request }) + '/' + type.toLocaleLowerCase());
+			//const request = await dispatch(getRequest());
+			//browserHistory.push(getSearchBaseUrl({ request }) + '/' + type.toLocaleLowerCase());
 		}
 		dispatch(_updateSelectedType({ selectedType: type, p }));
 	};
