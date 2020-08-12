@@ -5,6 +5,7 @@ import replace from '@rollup/plugin-replace'
 import typescript from 'rollup-plugin-typescript2'
 import { terser } from 'rollup-plugin-terser'
 import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
 
 const NAME = "stackend";
 import pkg from './package.json'
@@ -39,6 +40,7 @@ export default [
         extensions,
       }),
       commonjs(),
+      json(),
       typescript({ useTsconfigDeclarationDir: true }),
       babel({
         extensions,
@@ -63,6 +65,7 @@ export default [
         extensions,
       }),
       commonjs(),
+      json(),
       typescript({ tsconfigOverride: noDeclarationFiles }),
       babel({
         extensions,
@@ -86,6 +89,7 @@ export default [
         extensions,
       }),
       commonjs(),
+      json(),
       replace({
         'process.env.NODE_ENV': JSON.stringify('production'),
       }),
@@ -119,6 +123,7 @@ export default [
         extensions,
       }),
       commonjs(),
+      json(),
       typescript({ tsconfigOverride: noDeclarationFiles }),
       babel({
         extensions,
@@ -144,6 +149,7 @@ export default [
         extensions,
       }),
       commonjs(),
+      json(),
       typescript({ tsconfigOverride: noDeclarationFiles }),
       babel({
         extensions,

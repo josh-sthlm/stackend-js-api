@@ -15,7 +15,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import { CurrentUserType } from './login/loginReducer';
 import { Community } from './stackend';
-import { AuthObject, PrivilegeTypeIds } from './privileges'
+import { privileges } from './privileges'
+
 
 /**
  * Xcap User api constants and methods.
@@ -29,50 +30,50 @@ export const TYPE_USER: string = 'net.josh.community.user.backend.xcap.XcapUser'
  * Definition of a user
  */
 export interface User {
-	id: number,
-	__type: 'net.josh.community.user.backend.xcap.XcapUser',
-	name: string,
-	permalink: string,
-	createdDate: number,
-	obfuscatedReference: string,
-	alias: string,
-	firstName: string,
-	lastName: string,
-	userName: string,
+  id: number,
+  __type: 'net.josh.community.user.backend.xcap.XcapUser',
+  name: string,
+  permalink: string,
+  createdDate: number,
+  obfuscatedReference: string,
+  alias: string,
+  firstName: string,
+  lastName: string,
+  userName: string,
 
-	/** Full name, or the alias if not set */
-	nameOrAlias: string,
-	/** Birth date or null if not set*/
-	birthDate: number | null,
-	cityId: number,
+  /** Full name, or the alias if not set */
+  nameOrAlias: string,
+  /** Birth date or null if not set*/
+  birthDate: number | null,
+  cityId: number,
 
-	/** City name, if set */
-	city: string | null,
-	online: boolean,
+  /** City name, if set */
+  city: string | null,
+  online: boolean,
 
-	/** Profile image url, or null if not set */
-	profileImage: string | null,
+  /** Profile image url, or null if not set */
+  profileImage: string | null,
 
-	/** Additional profile data */
-	profile: {
-		[key:string]: string
-	}
+  /** Additional profile data */
+  profile: {
+    [key: string]: string
+  }
 
-	/** Privileges. using the format: context,componentName,privilegeType */
-	privileges: Array<string>,
+  /** Privileges. using the format: context,componentName,privilegeType */
+  privileges: Array<string>,
 
-	/* Gender. Not present if unknown */
-	gender?: GenderType | null
+  /* Gender. Not present if unknown */
+  gender?: GenderType | null
 }
 
 /**
  * User fields only available to privileged users
  */
 export interface UserPrivateDataType extends User {
-	email: string,
-	status?: StatusIdType,
-	zipCode?: string | null,
-	nrOfLogins?: number | null,
+  email: string,
+  status?: StatusIdType,
+  zipCode?: string | null,
+  nrOfLogins?: number | null,
 }
 
 /**
@@ -80,11 +81,11 @@ export interface UserPrivateDataType extends User {
  * @type {{OK: number, NOT_VERIFIED: number, BLOCKED: number, DELETED_BY_USER: number, DELETED_BY_ADMIN: number}}
  */
 export enum Status {
-	OK = 0,
-	NOT_VERIFIED = 5,
-	BLOCKED = 10,
-	DELETED_BY_USER = 15,
-	DELETED_BY_ADMIN = 20
+  OK = 0,
+  NOT_VERIFIED = 5,
+  BLOCKED = 10,
+  DELETED_BY_USER = 15,
+  DELETED_BY_ADMIN = 20
 }
 
 /**
@@ -93,11 +94,11 @@ export enum Status {
 export type StatusIdType = 0 | 5 | 10 | 15 | 20;
 
 const STATUS_NAMES = {
-	[Status.BLOCKED]: 'Blocked',
-	[Status.DELETED_BY_ADMIN]: 'Deleted by admin',
-	[Status.DELETED_BY_USER]: 'Deleted',
-	[Status.NOT_VERIFIED]: 'Not verified',
-	[Status.OK]: 'OK'
+  [Status.BLOCKED]: 'Blocked',
+  [Status.DELETED_BY_ADMIN]: 'Deleted by admin',
+  [Status.DELETED_BY_USER]: 'Deleted',
+  [Status.NOT_VERIFIED]: 'Not verified',
+  [Status.OK]: 'OK'
 };
 
 /**
@@ -106,50 +107,50 @@ const STATUS_NAMES = {
  * @returns string
  */
 export function getStatusName(statusId: StatusIdType): string {
-	if (typeof statusId === 'undefined') {
-		return '?';
-	}
+  if (typeof statusId === 'undefined') {
+    return '?';
+  }
 
-	return STATUS_NAMES[statusId] || '?';
+  return STATUS_NAMES[statusId] || '?';
 }
 
 /**
  * Gender
  */
 export enum GenderId {
-	UNKNOWN = 0,
-	FEMALE = 1,
-	MALE = 2
+  UNKNOWN = 0,
+  FEMALE = 1,
+  MALE = 2
 }
 
 export type GenderIdType = 0 | 1 | 2;
 
 export const Gender = {
-	UNKNOWN: 'UNKNOWN',
-	FEMALE: 'FEMALE',
-	MALE: 'MALE',
+  UNKNOWN: 'UNKNOWN',
+  FEMALE: 'FEMALE',
+  MALE: 'MALE',
 
-	getByGenderId: function(id: GenderIdType) {
-		switch (id) {
-			case GenderId.FEMALE:
-				return Gender.FEMALE;
-			case GenderId.MALE:
-				return Gender.MALE;
-			default:
-				return Gender.UNKNOWN;
-		}
-	},
+  getByGenderId: function(id: GenderIdType) {
+    switch (id) {
+      case GenderId.FEMALE:
+        return Gender.FEMALE;
+      case GenderId.MALE:
+        return Gender.MALE;
+      default:
+        return Gender.UNKNOWN;
+    }
+  },
 
-	getGenderId: function(gender: string | null) {
-		switch (gender) {
-			case Gender.FEMALE:
-				return Gender.FEMALE;
-			case Gender.MALE:
-				return Gender.MALE;
-			default:
-				return Gender.UNKNOWN;
-		}
-	}
+  getGenderId: function(gender: string | null) {
+    switch (gender) {
+      case Gender.FEMALE:
+        return Gender.FEMALE;
+      case Gender.MALE:
+        return Gender.MALE;
+      default:
+        return Gender.UNKNOWN;
+    }
+  }
 }
 
 export type GenderType = "FEMALE" | "MALE" | "UNKNOWN";
@@ -176,18 +177,18 @@ export const COMPONENT_CLASS: string = 'net.josh.community.user.UserManager';
  * Sort order for user search
  */
 export enum OrderBy {
-	ALIAS = 'ALIAS',
-	CREATED = 'CREATED',
-	CITY = 'CITY',
-	AGE = 'AGE',
-	LAST_LOGIN = 'LAST_LOGIN',
-	GENDER = 'GENDER',
-	LAST_MODIFIED = 'LAST_MODIFIED',
-	STATUS = 'STATUS'
+  ALIAS = 'ALIAS',
+  CREATED = 'CREATED',
+  CITY = 'CITY',
+  AGE = 'AGE',
+  LAST_LOGIN = 'LAST_LOGIN',
+  GENDER = 'GENDER',
+  LAST_MODIFIED = 'LAST_MODIFIED',
+  STATUS = 'STATUS'
 }
 
 export interface GetUserResult extends XcapJsonResult {
-	user: User | null
+  user: User | null
 }
 
 /**
@@ -197,8 +198,8 @@ export interface GetUserResult extends XcapJsonResult {
  * @return {Thunk}
  */
 export function getCurrentUser(): Thunk<GetUserResult> {
-	// TODO: Implement caching here
-	return getJson({ url: '/user/get', componentName: COMPONENT_NAME, context: CONTEXT });
+  // TODO: Implement caching here
+  return getJson({ url: '/user/get', componentName: COMPONENT_NAME, context: CONTEXT });
 }
 
 /**
@@ -209,21 +210,21 @@ export function getCurrentUser(): Thunk<GetUserResult> {
  * @param absolute
  */
 export function getProfilePageUrl({
-	request,
-	userId,
-	userName,
-	absolute
-}: {
-	request: Request,
-	userId: number,
-	userName: string,
-	absolute?: boolean
+                                    request,
+                                    userId,
+                                    userName,
+                                    absolute
+                                  }: {
+  request: Request,
+  userId: number,
+  userName: string,
+  absolute?: boolean
 }): string {
-	return createCommunityUrl({
-		request,
-		path: `/user/${userId}/${encodeURIComponent(userName)}`,
-		absolute
-	});
+  return createCommunityUrl({
+    request,
+    path: `/user/${userId}/${encodeURIComponent(userName)}`,
+    absolute
+  });
 }
 
 /**
@@ -233,29 +234,29 @@ export function getProfilePageUrl({
  * @param community
  */
 export function getProfileLink(
-	request: Request,
-	user: User,
-	community: Community | null
+  request: Request,
+  user: User,
+  community: Community | null
 ): {
-	url: string,
-	isRemote: boolean
+  url: string,
+  isRemote: boolean
 } {
-	const useRemoteProfileLink = _.get(community, 'settings.useRemoteProfileLink', false);
-	let profileLink = null;
-	let isRemote = false;
-	if (useRemoteProfileLink && user.profile && user.profile.remoteProfileUrl) {
-		profileLink = user.profile.remoteProfileUrl;
-		isRemote = true;
-	}
+  const useRemoteProfileLink = _.get(community, 'settings.useRemoteProfileLink', false);
+  let profileLink = null;
+  let isRemote = false;
+  if (useRemoteProfileLink && user.profile && user.profile.remoteProfileUrl) {
+    profileLink = user.profile.remoteProfileUrl;
+    isRemote = true;
+  }
 
-	if (!profileLink) {
-		profileLink = getProfilePageUrl({ request, userId: user.id, userName: user.userName });
-	}
+  if (!profileLink) {
+    profileLink = getProfilePageUrl({ request, userId: user.id, userName: user.userName });
+  }
 
-	return {
-		url: profileLink,
-		isRemote
-	};
+  return {
+    url: profileLink,
+    isRemote
+  };
 }
 
 /**
@@ -264,38 +265,38 @@ export function getProfileLink(
  * @param currentUser
  * @param componentContext {String} Context name, for example "members", "news", "cms"
  * @param componentClass {String} Component, for example "net.josh.community.user.UserManager", "net.josh.community.blog.BlogManager",
- * 	"se.josh.xcap.cms.CmsManager", "net.josh.community.forum.ForumManager"
+ *  "se.josh.xcap.cms.CmsManager", "net.josh.community.forum.ForumManager"
  * @param privilegeType {number} Minimum required privilege
  */
 export function hasElevatedPrivilege(
-	currentUser: CurrentUserType | null,
-	componentContext: string,
-	componentClass: string,
-	privilegeType: number
+  currentUser: CurrentUserType | null,
+  componentContext: string,
+  componentClass: string,
+  privilegeType: number
 ): boolean {
-	if (!currentUser || !currentUser.user) {
-		return false;
-	}
+  if (!currentUser || !currentUser.user) {
+    return false;
+  }
 
-	const privs = currentUser.user.privileges;
-	if (typeof privs === 'undefined') {
-		return false;
-	}
+  const privs = currentUser.user.privileges;
+  if (typeof privs === 'undefined') {
+    return false;
+  }
 
-	let prefix = componentContext + ',' + componentClass;
-	for (let i = 0; i < privs.length; i++) {
-		let p = privs[i];
-		if (!p.startsWith(prefix)) {
-			continue;
-		}
+  let prefix = componentContext + ',' + componentClass;
+  for (let i = 0; i < privs.length; i++) {
+    let p = privs[i];
+    if (!p.startsWith(prefix)) {
+      continue;
+    }
 
-		let pt = parseInt(p.split(',')[2]);
-		if (pt >= privilegeType) {
-			return true;
-		}
-	}
+    let pt = parseInt(p.split(',')[2]);
+    if (pt >= privilegeType) {
+      return true;
+    }
+  }
 
-	return false;
+  return false;
 }
 
 /**
@@ -307,11 +308,11 @@ export function hasElevatedPrivilege(
  * @returns {Promise}
  */
 export function getUser({ id, alias }: { id?: number, alias?: string }): Thunk<GetUserResult> {
-	return getJson({ url: '/user/get', parameters: arguments });
+  return getJson({ url: '/user/get', parameters: arguments });
 }
 
 export interface GetUsersResult extends XcapJsonResult {
-	users: Array<User>
+  users: Array<User>
 }
 
 /**
@@ -320,7 +321,7 @@ export interface GetUsersResult extends XcapJsonResult {
  * @returns {Promise}
  */
 export function getUsers({ id }: { id: Array<number> }): Thunk<GetUsersResult> {
-	return getJson({ url: '/user/get-multiple', parameters: arguments });
+  return getJson({ url: '/user/get-multiple', parameters: arguments });
 }
 
 /**
@@ -328,37 +329,37 @@ export function getUsers({ id }: { id: Array<number> }): Thunk<GetUsersResult> {
  * @param user
  */
 export function getMutableUser(user: User): any {
-	let birthYear = undefined,
-		birthMonth = undefined,
-		birthDay = undefined;
+  let birthYear = undefined,
+    birthMonth = undefined,
+    birthDay = undefined;
 
-	let profileEntries = _.get(user, 'profile', {});
-	if (user && user.birthDate) {
-		let d = moment(user.birthDate);
-		birthYear = d.year();
-		birthMonth = d.month() + 1;
-		birthDay = d.date();
-	}
+  let profileEntries = _.get(user, 'profile', {});
+  if (user && user.birthDate) {
+    let d = moment(user.birthDate);
+    birthYear = d.year();
+    birthMonth = d.month() + 1;
+    birthDay = d.date();
+  }
 
-	return {
-		id: _.get(user, 'id'),
-		email: _.get(user, 'email'),
-		firstName: _.get(user, 'firstName', ''),
-		lastName: _.get(user, 'lastName', ''),
-		gender: _.get(user, 'gender', GenderId.UNKNOWN),
-		cityId: _.get(user, 'cityId', 0),
-		birthYear,
-		birthMonth,
-		birthDay,
-		showBirthDay: birthYear ? true : false,
-		zipCode: _.get(user, 'zipCode', undefined),
-		termsAccept: true,
-		...profileEntries
-	};
+  return {
+    id: _.get(user, 'id'),
+    email: _.get(user, 'email'),
+    firstName: _.get(user, 'firstName', ''),
+    lastName: _.get(user, 'lastName', ''),
+    gender: _.get(user, 'gender', GenderId.UNKNOWN),
+    cityId: _.get(user, 'cityId', 0),
+    birthYear,
+    birthMonth,
+    birthDay,
+    showBirthDay: birthYear ? true : false,
+    zipCode: _.get(user, 'zipCode', undefined),
+    termsAccept: true,
+    ...profileEntries
+  };
 }
 
-export interface StoreUserResult extends XcapJsonResult  {
-	user: User | null
+export interface StoreUserResult extends XcapJsonResult {
+  user: User | null
 }
 
 /**
@@ -382,79 +383,79 @@ export interface StoreUserResult extends XcapJsonResult  {
  * @param profileEntries Other entries
  */
 export function storeUser({
-	id,
-	alias,
-	email,
-	firstName,
-	lastName,
-	gender,
-	cityId,
-	birthYear,
-	birthMonth,
-	birthDay,
-	showBirthDay,
-	zipCode,
-	termsAccept,
-	...profileEntries
-}: {
-	id?: number,
-	alias?: string,
-	email?: string,
-	firstName?: string,
-	lastName?: string,
-	gender?: string,
-	cityId?: number,
-	birthYear?: number,
-	birthMonth?: number,
-	birthDay?: number,
-	showBirthDay?: boolean,
-	zipCode?: number,
-	termsAccept?: boolean,
-	profileEntries?: any
+                            id,
+                            alias,
+                            email,
+                            firstName,
+                            lastName,
+                            gender,
+                            cityId,
+                            birthYear,
+                            birthMonth,
+                            birthDay,
+                            showBirthDay,
+                            zipCode,
+                            termsAccept,
+                            ...profileEntries
+                          }: {
+  id?: number,
+  alias?: string,
+  email?: string,
+  firstName?: string,
+  lastName?: string,
+  gender?: string,
+  cityId?: number,
+  birthYear?: number,
+  birthMonth?: number,
+  birthDay?: number,
+  showBirthDay?: boolean,
+  zipCode?: number,
+  termsAccept?: boolean,
+  profileEntries?: any
 }): Thunk<StoreUserResult> {
-	return post({ url: '/user/store', parameters: arguments });
+  return post({ url: '/user/store', parameters: arguments });
 }
 
 export interface GetUserPrivilegesResult extends XcapJsonResult {
-	auth: AuthObject,
-	privilegeType: PrivilegeTypeIds
+  auth: privileges.AuthObject,
+  privilegeType: privileges.PrivilegeTypeIds
 }
 
 /**
  * Get the current users privileges for a given component/context
  * @param componentContext {String} Context name, for example "members", "news", "cms"
  * @param componentClass {String} Component, for example "net.josh.community.user.UserManager", "net.josh.community.blog.BlogManager",
- * 	"se.josh.xcap.cms.CmsManager", "net.josh.community.forum.ForumManager"
+ *  "se.josh.xcap.cms.CmsManager", "net.josh.community.forum.ForumManager"
  * @param externalTypeId {number}
  * @returns {Promise}
  */
 export function getUserPrivileges({
-	componentContext,
-	componentClass,
-	externalTypeId
-}: {
-	componentContext: string,
-	componentClass: string,
-	externalTypeId: number
+                                    componentContext,
+                                    componentClass,
+                                    externalTypeId
+                                  }: {
+  componentContext: string,
+  componentClass: string,
+  externalTypeId: number
 }): Thunk<GetUserPrivilegesResult> {
-	return getJson({ url: '/user/get-privileges', parameters: arguments });
+  return getJson({ url: '/user/get-privileges', parameters: arguments });
 }
 
 const ORDER_MAPPING = {
-	[OrderBy.ALIAS + Order.DESCENDING]: 1,
-	[OrderBy.ALIAS + Order.ASCENDING]: 2,
-	[OrderBy.CREATED + Order.DESCENDING]: 3,
-	[OrderBy.CREATED + Order.ASCENDING]: 4,
-	[OrderBy.CITY + Order.ASCENDING]: 5,
-	[OrderBy.CITY + Order.DESCENDING]: 6,
-	[OrderBy.AGE + Order.ASCENDING]: 7,
-	[OrderBy.AGE + Order.DESCENDING]: 8,
-	[OrderBy.LAST_LOGIN + Order.ASCENDING]: 9,
-	[OrderBy.LAST_LOGIN + Order.DESCENDING]: 10,
-	[OrderBy.GENDER + Order.DESCENDING]: 11,
-	[OrderBy.GENDER + Order.ASCENDING]: 12,
-	[OrderBy.LAST_MODIFIED + Order.DESCENDING]: 13,
-	[OrderBy.STATUS + Order.ASCENDING]: 14
+  [OrderBy.ALIAS + Order.DESCENDING]: 1,
+  [OrderBy.ALIAS + Order.ASCENDING]: 2,
+  [OrderBy.CREATED + Order.DESCENDING]: 3,
+  [OrderBy.CREATED + Order.ASCENDING]: 4,
+  [OrderBy.CITY + Order.ASCENDING]: 5,
+  [OrderBy.CITY + Order.DESCENDING]: 6,
+  [OrderBy.AGE + Order.ASCENDING]: 7,
+  [OrderBy.AGE + Order.DESCENDING]: 8,
+  [OrderBy.LAST_LOGIN + Order.ASCENDING]: 9,
+  [OrderBy.LAST_LOGIN + Order.DESCENDING]: 10,
+  [OrderBy.GENDER + Order.DESCENDING]: 11,
+  [OrderBy.GENDER + Order.ASCENDING]: 12,
+  [OrderBy.LAST_MODIFIED + Order.DESCENDING]: 13,
+  [OrderBy.STATUS + Order.ASCENDING]: 14
 };
 
 /**
@@ -464,24 +465,24 @@ const ORDER_MAPPING = {
  * @returns {number}
  */
 function convertSortOrder(orderBy: OrderBy | null, order: Order | null): number {
-	let k = (orderBy || OrderBy.ALIAS) + (order || Order.ASCENDING);
-	let v = ORDER_MAPPING[k];
-	if (v) {
-		return v;
-	}
+  let k = (orderBy || OrderBy.ALIAS) + (order || Order.ASCENDING);
+  let v = ORDER_MAPPING[k];
+  if (v) {
+    return v;
+  }
 
-	// Order may not be supported. Try the inverted order
-	k = (orderBy || OrderBy.ALIAS) + invertOrder(order || Order.ASCENDING);
-	v = ORDER_MAPPING[k];
-	if (v) {
-		return v;
-	}
+  // Order may not be supported. Try the inverted order
+  k = (orderBy || OrderBy.ALIAS) + invertOrder(order || Order.ASCENDING);
+  v = ORDER_MAPPING[k];
+  if (v) {
+    return v;
+  }
 
-	return ORDER_MAPPING[OrderBy.ALIAS + Order.ASCENDING];
+  return ORDER_MAPPING[OrderBy.ALIAS + Order.ASCENDING];
 }
 
 export interface SearchResult extends XcapJsonResult {
-	users: PaginatedCollection<User>
+  users: PaginatedCollection<User>
 }
 
 /**
@@ -494,35 +495,35 @@ export interface SearchResult extends XcapJsonResult {
  * @param pageSie Page size
  */
 export function search({
-	q = null,
-	allowEmptySearch = true,
-	excludeCurrentUser = false,
-	p = 1,
-	pageSize = 10,
-	orderBy = OrderBy.ALIAS,
-	order = Order.ASCENDING,
-	community
-}: {
-	q?: any,
-	allowEmptySearch?: boolean,
-	excludeCurrentUser?: boolean,
-	p?: number,
-	pageSize?: number,
-	orderBy?: OrderBy | null,
-	order?: Order | null,
-	community?: string
+                         q = null,
+                         allowEmptySearch = true,
+                         excludeCurrentUser = false,
+                         p = 1,
+                         pageSize = 10,
+                         orderBy = OrderBy.ALIAS,
+                         order = Order.ASCENDING,
+                         community
+                       }: {
+  q?: any,
+  allowEmptySearch?: boolean,
+  excludeCurrentUser?: boolean,
+  p?: number,
+  pageSize?: number,
+  orderBy?: OrderBy | null,
+  order?: Order | null,
+  community?: string
 }): Thunk<SearchResult> {
-	const sortOrder = convertSortOrder(orderBy, order);
+  const sortOrder = convertSortOrder(orderBy, order);
 
-	return getJson({
-		url: '/user/search',
-		parameters: { q, allowEmptySearch, excludeCurrentUser, p, pageSize, orderBy: sortOrder },
-		community
-	});
+  return getJson({
+    url: '/user/search',
+    parameters: { q, allowEmptySearch, excludeCurrentUser, p, pageSize, orderBy: sortOrder },
+    community
+  });
 }
 
 export interface SetProfileImageResult extends XcapJsonResult {
-	imageId: number
+  imageId: number
 }
 
 /**
@@ -533,17 +534,17 @@ export interface SetProfileImageResult extends XcapJsonResult {
  * @returns {Promise}
  */
 export function setProfileImage({
-	imageId,
-	community
-}: {
-	imageId: number,
-	community?: string
+                                  imageId,
+                                  community
+                                }: {
+  imageId: number,
+  community?: string
 }): Thunk<SetProfileImageResult> {
-	return post({
-		url: '/user/set-profile-image',
-		parameters: { imageId: imageId },
-		community
-	});
+  return post({
+    url: '/user/set-profile-image',
+    parameters: { imageId: imageId },
+    community
+  });
 }
 
 /**
@@ -552,10 +553,10 @@ export function setProfileImage({
  * @returns {Promise}
  */
 export function removeProfileImage({ community }: { community?: string }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/user/remove-profile-image',
-		community
-	});
+  return post({
+    url: '/user/remove-profile-image',
+    community
+  });
 }
 
 /**
@@ -564,15 +565,15 @@ export function removeProfileImage({ community }: { community?: string }): Thunk
  * @returns {String}
  */
 export function getUserFeedUrl({ userId }: { userId: number }): Thunk<string> {
-	return getApiUrl({
-		url: '/user/feed',
-		parameters: arguments
-	});
+  return getApiUrl({
+    url: '/user/feed',
+    parameters: arguments
+  });
 }
 
 export interface IsEmailFreeResult extends XcapJsonResult {
-	email: string|null,
-	isEmailFree: boolean
+  email: string | null,
+  isEmailFree: boolean
 }
 
 /**
@@ -580,15 +581,15 @@ export interface IsEmailFreeResult extends XcapJsonResult {
  * @param email
  */
 export function isEmailFree({ email }: { email: string }): Thunk<IsEmailFreeResult> {
-	return getJson({
-		url: '/user/register/is-email-free',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/user/register/is-email-free',
+    parameters: arguments
+  });
 }
 
 export interface IsAliasFreeResult extends XcapJsonResult {
-	alias: string | null,
-	isAliasFree: boolean
+  alias: string | null,
+  isAliasFree: boolean
 }
 
 /**
@@ -596,47 +597,47 @@ export interface IsAliasFreeResult extends XcapJsonResult {
  * @param email
  */
 export function isAliasFree({ alias }: { alias: string }): Thunk<IsAliasFreeResult> {
-	return getJson({
-		url: '/user/register/is-alias-free',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/user/register/is-alias-free',
+    parameters: arguments
+  });
 }
 
 export interface GetRegistrationDataResult extends XcapJsonResult {
-	/** Email, if available */
-	email: string | null,
+  /** Email, if available */
+  email: string | null,
 
-	/** Should the user be able to edit the email? */
-	isEmailEditable: boolean,
+  /** Should the user be able to edit the email? */
+  isEmailEditable: boolean,
 
-	/** Unique alias (generated) */
-	alias: string | null,
+  /** Unique alias (generated) */
+  alias: string | null,
 
-	/** Non unique user name */
-	username: string | null,
+  /** Non unique user name */
+  username: string | null,
 
-	/** Should the user be able to edit the user name? */
-	isUsernameEditable: boolean,
+  /** Should the user be able to edit the user name? */
+  isUsernameEditable: boolean,
 
-	/** Id in the remote system */
-	referenceId: number,
+  /** Id in the remote system */
+  referenceId: number,
 
-	/** */
-	authenticationType: AuthenticationType,
+  /** */
+  authenticationType: AuthenticationType,
 
-	cityId: number,
+  cityId: number,
 
-	/** Gender  */
-	gender: GenderIdType | null,
+  /** Gender  */
+  gender: GenderIdType | null,
 
-	/** First name */
-	firstName: string | null,
+  /** First name */
+  firstName: string | null,
 
-	/** Last name */
-	lastName: string | null,
+  /** Last name */
+  lastName: string | null,
 
-	/** Birth date, if available */
-	birthDate: number | null
+  /** Birth date, if available */
+  birthDate: number | null
 }
 
 /**
@@ -645,10 +646,10 @@ export interface GetRegistrationDataResult extends XcapJsonResult {
  * @returns {Thunk<GetRegistrationDataResult>}
  */
 export function getFacebookRegistrationData({}: {}): Thunk<GetRegistrationDataResult> {
-	return getJson({
-		url: '/user/register/facebook',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/user/register/facebook',
+    parameters: arguments
+  });
 }
 
 /**
@@ -665,28 +666,28 @@ export function getFacebookRegistrationData({}: {}): Thunk<GetRegistrationDataRe
  * @returns {Thunk<XcapJsonResult>}
  */
 export function registerFacebookUser({
-	email,
-	username,
-	firstName,
-	lastName,
-	gender,
-	birthDate,
-	termsAccept,
-	returnUrl
-}: {
-	email?: string,
-	username?: string,
-	firstName?: string,
-	lastName?: string,
-	gender?: GenderIdType,
-	birthDate?: string,
-	termsAccept?: boolean,
-	returnUrl?: string
+                                       email,
+                                       username,
+                                       firstName,
+                                       lastName,
+                                       gender,
+                                       birthDate,
+                                       termsAccept,
+                                       returnUrl
+                                     }: {
+  email?: string,
+  username?: string,
+  firstName?: string,
+  lastName?: string,
+  gender?: GenderIdType,
+  birthDate?: string,
+  termsAccept?: boolean,
+  returnUrl?: string
 }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/user/register/facebook/save',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/register/facebook/save',
+    parameters: arguments
+  });
 }
 
 /**
@@ -695,14 +696,14 @@ export function registerFacebookUser({
  * @returns {Thunk<XcapJsonResult>}
  */
 export function removeFacebookReference({
-	facebookId
-}: {
-	facebookId?: string | null
+                                          facebookId
+                                        }: {
+  facebookId?: string | null
 }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/user/auth/facebook/remove',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/auth/facebook/remove',
+    parameters: arguments
+  });
 }
 
 /**
@@ -711,14 +712,14 @@ export function removeFacebookReference({
  * @returns {Thunk<XcapJsonResult>}
  */
 export function removeGoogleReference({
-	userReferenceId
-}: {
-	userReferenceId?: string | null
+                                        userReferenceId
+                                      }: {
+  userReferenceId?: string | null
 }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/user/auth/google/remove',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/auth/google/remove',
+    parameters: arguments
+  });
 }
 
 /**
@@ -735,28 +736,28 @@ export function removeGoogleReference({
  * @returns {Thunk<XcapJsonResult>}
  */
 export function registerGoogleUser({
-	email,
-	username,
-	firstName,
-	lastName,
-	gender,
-	birthDate,
-	termsAccept,
-	returnUrl
-}: {
-	email?: string,
-	username?: string,
-	firstName?: string,
-	lastName?: string,
-	gender?: GenderIdType,
-	birthDate?: string,
-	termsAccept?: boolean,
-	returnUrl?: string
+                                     email,
+                                     username,
+                                     firstName,
+                                     lastName,
+                                     gender,
+                                     birthDate,
+                                     termsAccept,
+                                     returnUrl
+                                   }: {
+  email?: string,
+  username?: string,
+  firstName?: string,
+  lastName?: string,
+  gender?: GenderIdType,
+  birthDate?: string,
+  termsAccept?: boolean,
+  returnUrl?: string
 }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/user/register/google',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/register/google',
+    parameters: arguments
+  });
 }
 
 /**
@@ -773,40 +774,40 @@ export function registerGoogleUser({
  * @returns {Thunk<XcapJsonResult>}
  */
 export function registerOAuth2User({
-	email,
-	username,
-	firstName,
-	lastName,
-	gender,
-	birthDate,
-	termsAccept,
-	returnUrl
-}: {
-	email?: string,
-	username?: string,
-	firstName?: string,
-	lastName?: string,
-	gender?: GenderIdType,
-	birthDate?: string,
-	termsAccept?: boolean,
-	returnUrl?: string
+                                     email,
+                                     username,
+                                     firstName,
+                                     lastName,
+                                     gender,
+                                     birthDate,
+                                     termsAccept,
+                                     returnUrl
+                                   }: {
+  email?: string,
+  username?: string,
+  firstName?: string,
+  lastName?: string,
+  gender?: GenderIdType,
+  birthDate?: string,
+  termsAccept?: boolean,
+  returnUrl?: string
 }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/user/register/oauth2',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/register/oauth2',
+    parameters: arguments
+  });
 }
 
 export interface VerifyEmailResult extends XcapJsonResult {
-	/** Was the validation successful? */
-	valid: boolean,
+  /** Was the validation successful? */
+  valid: boolean,
 
-	/** Does the user need to enter additional data? */
-	register: boolean,
-	returnUrl: string | null,
+  /** Does the user need to enter additional data? */
+  register: boolean,
+  returnUrl: string | null,
 
-	/** Permalink of the users first, automatically created community */
-	firstCommunityPermalink?: string | null
+  /** Permalink of the users first, automatically created community */
+  firstCommunityPermalink?: string | null
 }
 
 /**
@@ -820,18 +821,18 @@ export interface VerifyEmailResult extends XcapJsonResult {
  * @see verifyEmail
  */
 export function sendVerificationEmail({
-	email,
-	authenticationType = AuthenticationType.FACEBOOK,
-	returnUrl
-}: {
-	email: string,
-	authenticationType?: string,
-	returnUrl?: string
+                                        email,
+                                        authenticationType = AuthenticationType.FACEBOOK,
+                                        returnUrl
+                                      }: {
+  email: string,
+  authenticationType?: string,
+  returnUrl?: string
 }): Thunk<VerifyEmailResult> {
-	return post({
-		url: '/user/register/send-verification-email',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/register/send-verification-email',
+    parameters: arguments
+  });
 }
 
 /**
@@ -845,24 +846,24 @@ export function sendVerificationEmail({
  * @see sendVerificationEmail
  */
 export function verifyEmail({
-	email,
-	code,
-	login,
-	returnUrl
-}: {
-	email: string,
-	code: string,
-	login?: boolean,
-	returnUrl?: string
+                              email,
+                              code,
+                              login,
+                              returnUrl
+                            }: {
+  email: string,
+  code: string,
+  login?: boolean,
+  returnUrl?: string
 }): Thunk<VerifyEmailResult> {
-	return post({
-		url: '/user/register/verify-email',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/register/verify-email',
+    parameters: arguments
+  });
 }
 
 export interface RegisterUserResult extends XcapJsonResult {
-	user: User
+  user: User
 }
 
 /**
@@ -882,52 +883,52 @@ export interface RegisterUserResult extends XcapJsonResult {
  * @returns {Thunk<RegisterUserResult>}
  */
 export function registerUser({
-	email,
-	username,
-	firstName,
-	lastName,
-	gender,
-	birthYear,
-	birthMonth,
-	birthDay,
-	showBirthDay,
-	termsAccept,
-	returnUrl
-}: {
-	email?: string,
-	username?: string,
-	firstName?: string,
-	lastName?: string,
-	gender?: GenderIdType,
-	birthYear?: number,
-	birthMonth?: number,
-	birthDay?: number,
-	showBirthDay?: boolean,
-	termsAccept?: boolean,
-	returnUrl?: string
+                               email,
+                               username,
+                               firstName,
+                               lastName,
+                               gender,
+                               birthYear,
+                               birthMonth,
+                               birthDay,
+                               showBirthDay,
+                               termsAccept,
+                               returnUrl
+                             }: {
+  email?: string,
+  username?: string,
+  firstName?: string,
+  lastName?: string,
+  gender?: GenderIdType,
+  birthYear?: number,
+  birthMonth?: number,
+  birthDay?: number,
+  showBirthDay?: boolean,
+  termsAccept?: boolean,
+  returnUrl?: string
 }): Thunk<RegisterUserResult> {
-	return post({
-		url: '/user/register/email',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/register/email',
+    parameters: arguments
+  });
 }
 
 /**
  * Activity statistics for a user. If any of the counts equals -1, that feature is disabled.
  */
 export interface UserStatistics {
-	userId: number,
-	numberOfPosts: number,
-	numberOfComments: number,
-	numberOfForumEntries: number,
-	numberOfQuestions: number,
-	numberOfAnswers: number,
-	numberOfLikes: number
+  userId: number,
+  numberOfPosts: number,
+  numberOfComments: number,
+  numberOfForumEntries: number,
+  numberOfQuestions: number,
+  numberOfAnswers: number,
+  numberOfLikes: number
 }
 
 export interface GetUserStatisticsResult extends XcapJsonResult {
-	user: User | null,
-	userStatistics: UserStatistics | null
+  user: User | null,
+  userStatistics: UserStatistics | null
 }
 
 /**
@@ -936,10 +937,10 @@ export interface GetUserStatisticsResult extends XcapJsonResult {
  * @returns {*}
  */
 export function getStatistics({ id }: { id: number }): Thunk<GetUserStatisticsResult> {
-	return getJson({
-		url: '/user/statistics',
-		parameters: { id }
-	});
+  return getJson({
+    url: '/user/statistics',
+    parameters: { id }
+  });
 }
 
 /**
@@ -948,13 +949,13 @@ export function getStatistics({ id }: { id: number }): Thunk<GetUserStatisticsRe
  * @returns {string|boolean|(Array<string>&{index: number, input: string, groups})}
  */
 export function isPasswordAcceptable(password: string | null): boolean {
-	return !!password && password.length >= 6 && !!password.match(/[0-9]/);
+  return !!password && password.length >= 6 && !!password.match(/[0-9]/);
 }
 
 export interface ListAutenticationOptionsResult extends XcapJsonResult {
-	user: User | null,
-	availableOptions: Array<AuthenticationType>,
-	enabledOptions: Array<AuthenticationType>
+  user: User | null,
+  availableOptions: Array<AuthenticationType>,
+  enabledOptions: Array<AuthenticationType>
 }
 
 /**
@@ -962,10 +963,10 @@ export interface ListAutenticationOptionsResult extends XcapJsonResult {
  * @returns {Thunk<XcapJsonResult>}
  */
 export function listAutenticationOptions({}: any): Thunk<ListAutenticationOptionsResult> {
-	return getJson({
-		url: '/user/auth/list-options',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/user/auth/list-options',
+    parameters: arguments
+  });
 }
 
 /**
@@ -976,23 +977,26 @@ export function listAutenticationOptions({}: any): Thunk<ListAutenticationOption
  * @returns {Thunk<XcapJsonResult>}
  */
 export function setBlocked({
-	id,
-	block,
-	comment
-}: {
-	id: number,
-	block: boolean,
-	comment?: string | null
+                             id,
+                             block,
+                             comment
+                           }: {
+  id: number,
+  block: boolean,
+  comment?: string | null
 }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/user/set-blocked',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/set-blocked',
+    parameters: arguments
+  });
 }
 
 export function listOnline() {
-	return getJson({
-		url: '/user/list-online',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/user/list-online',
+    parameters: arguments
+  });
 }
+
+
+

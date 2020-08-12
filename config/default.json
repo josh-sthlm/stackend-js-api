@@ -2,5 +2,10 @@
   "stackend": {
     "server": "https://api.stackend.com",
     "contextPath": ""
+  },
+  "logging": {
+    "categories": {
+      "default": "warn"
+    }
   }
 }

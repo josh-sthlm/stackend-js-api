@@ -9,11 +9,39 @@ import { Community, Module } from './stackend';
 import { User } from './user';
 import { setLoadingThrobberVisible } from './throbber/throbberActions';
 import { Content, Page, SubSite } from './cms';
-import { Privilege } from './privileges'
+import { Privilege } from './privileges';
 import config from 'config';
-import { XCAP_SET_CONFIG } from './configReducer'
+import { XCAP_SET_CONFIG } from './configReducer';
+import log4js, { Configuration } from 'log4js'
+
+
 
 declare var __xcapRunningServerSide: any;
+
+// Configure using
+let lc:any = config.get("log4js");
+if (typeof lc === "object") {
+  log4js.configure(lc);
+} else if (typeof lc === "undefined") {
+  let logConfig: Configuration = {
+    appenders: {
+      'console': { type: 'console' }
+    },
+    categories: {
+      default: {
+        appenders: [ 'console' ],
+        level: 'info'
+      }
+    }
+  };
+  log4js.configure(logConfig);
+}
+
+
+/**
+ * Stackend logger
+ */
+export const logger = log4js.getLogger("Stackend");
 
 export const STACKEND_DEFAULT_SERVER: string = 'https://api.stackend.com';
 export const STACKEND_DEFAULT_CONTEXT_PATH: string = '';
@@ -34,7 +62,7 @@ export interface Config {
 	/** Deploy profile */
 	deployProfile: string,
 
-	/** Recaptch site key */
+	/** Recaptcha site key */
 	recaptchaSiteKey: string | null,
 
 	/** Google Analytics key */
@@ -440,7 +468,7 @@ export function getServer(): Thunk<string> {
 
 	  let s = undefined;
 		if (typeof getState !== 'function') {
-			console.error('getServer: Wrong invocation');
+			logger.error('getServer: Wrong invocation');
 		}
 		else
     {
@@ -474,7 +502,7 @@ export function _getServer(config: Config | null): string {
 export function getDeployProfile(): Thunk<string> {
 	return (dispatch: any, getState: any) => {
 		if (typeof getState !== 'function') {
-			console.error('getDeployProfile: Wrong invocation');
+			logger.error('getDeployProfile: Wrong invocation');
 		}
 		else
     {
@@ -507,7 +535,7 @@ export function _getDeployProfile(config: Config | null): string {
 export function getContextPath(): Thunk<string> {
 	return (dispatch: any, getState: any) => {
 		if (typeof getState !== 'function') {
-			console.error('Stackend: getContextPath: Wrong invocation');
+			logger.error('getContextPath: Wrong invocation');
 		}
 		else
     {
@@ -543,7 +571,7 @@ export function getServerWithContextPath(): Thunk<string> {
 	  let server, contextPath;
 
 		if (typeof getState !== 'function') {
-			console.error('getServerWithContextPath: Wrong invocation');
+			logger.error('getServerWithContextPath: Wrong invocation');
 		}
 		else
     {
@@ -908,10 +936,12 @@ export function getJson({
 	cookie?: string
 }): Thunk<XcapJsonResult> {
 	return async (dispatch: any /*,getState: any*/) => {
+
+    let p = url;
 		try {
 			dispatch(setLoadingThrobberVisible(true));
 
-			const p = await dispatch(
+			p = await dispatch(
 				getApiUrl({
 					url,
 					parameters: argsToObject(parameters),
@@ -933,19 +963,20 @@ export function getJson({
 			}
 
 			let requestStartTime = Date.now();
+			logger.debug("GET " + p);
 			const result: XcapJsonResult = await LoadJson({ url: p, cookie: c });
 			let t = Date.now() - requestStartTime;
 			if (t > 500 && runningServerSide) {
-				console.warn('Slow API request: ' + t + 'ms:', p);
+				logger.warn('Slow API request: ' + t + 'ms:' + p);
 			}
 
 			if (!!result) {
 				if (!!result.error) {
-					console.error(getJsonErrorText(result), p);
+					logger.error(getJsonErrorText(result) + " " + p);
 					dispatch(setLoadingThrobberVisible(false));
 					if (result.status === 403) {
 						// Unauthorized
-						console.warn('Stackend: Session has expired');
+						logger.warn('Session has expired: ' + p);
 						/* FIXME: At this point the user should be prompted to login again. Prefferably using a popup
 						dispatch(refreshLoginData({ force : true })); // Breaks because of circular dependencies
 						*/
@@ -960,7 +991,7 @@ export function getJson({
 				return r;
 			}
 
-			console.error('No result received: ', p);
+			logger.error('No result received: ' + p);
 			dispatch(setLoadingThrobberVisible(false));
 			return {
 				error: {
@@ -969,7 +1000,7 @@ export function getJson({
 			};
 		} catch (e) {
 			// 404, connection refused etc
-			console.error("Couldn't getJson: " + url, e);
+			logger.error(Error(e), "Couldn't getJson: " + p);
 			dispatch(setLoadingThrobberVisible(false));
 			return {
 				error: {
@@ -1000,7 +1031,7 @@ export function getJsonOutsideApi({
 
 		if (!!result) {
 			if (!!result.error) {
-				console.warn(getJsonErrorText(result), p);
+				logger.warn(getJsonErrorText(result) + p);
 				return result;
 			}
 			const r = postProcessApiResult(result);
@@ -1068,14 +1099,19 @@ export function post({
 
 		if (!!result) {
 			if (!!result.error) {
-				console.warn(getJsonErrorText(result), p);
+				logger.warn(getJsonErrorText(result) + p);
 				return result;
 			}
 			const r = postProcessApiResult(result);
 			addRelatedObjectsToStore(dispatch, r);
 			return r;
 		}
-		return {}; // FIXME: report error
+
+		return {
+      error: {
+        actionErrors: ["Post failed: no response"]
+      }
+    };
 	};
 }
 
@@ -1151,7 +1187,7 @@ export function _getConfig({
 	defaultValue?: any
 }): any {
 	if (typeof config === 'undefined') {
-		console.warn('getConfig: config is not present in store');
+		logger.warn('getConfig: config is not present in store');
 		return defaultValue;
 	}
 
@@ -1331,7 +1367,7 @@ function _postProcessApiResult(result: XcapJsonResult, relatedObjects: any, like
 	}
 
 	if (!relatedObjects) {
-	  console.error("Stackend: no related objects in result", result);
+	  logger.error("So related objects in result: " + JSON.stringify(result));
   }
 
 	let d = result;
@@ -1353,7 +1389,7 @@ function _postProcessApiResult(result: XcapJsonResult, relatedObjects: any, like
 				let r = relatedObjects[v];
 				result[n] = r;
 				if (r === null) {
-					console.error('Stackend: Could not resolve related object ' + n + '=' + v);
+					logger.error('Could not resolve related object ' + n + '=' + v);
 				} else {
 					result[n] = _postProcessApiResult(r, relatedObjects, likes);
 				}
@@ -1363,7 +1399,7 @@ function _postProcessApiResult(result: XcapJsonResult, relatedObjects: any, like
 					let r = relatedObjects[ref] || ref;
 					v[i] = r;
 					if (r === null) {
-						console.error('Stackend: Could not resolve related object ' + ref);
+						logger.error('Could not resolve related object ' + ref);
 					}
 				}
 			}
@@ -1590,7 +1626,7 @@ export async function logJsError(error: any /* Error */): Promise<any> {
 			parameters: params
 		});
 	} catch (e) {
-		console.error('Failed to log: ', params, '\nCause: ', e);
+		logger.error('Failed to log: ' + JSON.stringify(params), '\nCause: ' + JSON.stringify(e));
 	}
 	return r;
 }

@@ -27,7 +27,7 @@ import throbber from "./throbber/throbberReducer";
 /**
  * Minimum set of reducers with their expected names
  */
-export const BASE_REDUCERS = {
+export const BASE_REDUCERS:any = {
     config,
     currentUser,
     references,

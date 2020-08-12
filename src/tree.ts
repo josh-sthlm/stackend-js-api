@@ -68,7 +68,7 @@ export function newTreeNode(name: string): Node {
  * @returns {Node}
  */
 export function cloneTree(tree: Tree): Tree {
-	return cloneNode(tree);
+	return (cloneNode(tree) as Tree);
 }
 
 /**
@@ -162,7 +162,8 @@ export function moveTreeNode(
 	} // Before or after
 	else {
 		let parents = getTreePath(tree, relativeTo);
-		let insertionParent = parents[parents.length - 2];
+		// @ts-ignore
+    let insertionParent = parents[parents.length - 2];
 
 		let idx = insertionParent.children.findIndex(c => c === relativeTo);
 		if (idx === -1) {
@@ -202,7 +203,7 @@ export function findNode(tree: Tree, test: (node: Node) => boolean): Node | null
 			return n;
 		}
 
-		let f = findNode(n, test);
+		let f = findNode((n as Tree), test);
 		if (f) {
 			return f;
 		}

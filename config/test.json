@@ -2,5 +2,17 @@
   "stackend": {
     "server": "https://api.stackend.com",
     "contextPath": ""
+  },
+
+  "log4js": {
+    "appenders": {
+      "console": { "type": "console" }
+    },
+    "categories": {
+      "default": {
+        "appenders": [ "console" ],
+        "level": "info"
+      }
+    }
   }
 }

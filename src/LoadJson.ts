@@ -1,7 +1,11 @@
 //@flow
 
+import log4js from 'log4js';
+
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
+
+let logger = log4js.getLogger("Stackend");
 
 /**
  * Content type for json data
@@ -48,6 +52,7 @@ export async function LoadJson({
 }) {
 	//console.log("Fetching json: ",url);
 	//console.trace("Fetching json: ",url);
+
 	let headers;
 	if (typeof Headers === 'function') {
 		headers = new Headers();
@@ -117,11 +122,11 @@ export async function LoadJson({
 			response = await fetch(url, opts);
 		}
 
-		// FIXME: Should throw to encorage proper error handling and not cause any weird errors in the data layer.
+		// FIXME: Should throw to encourage proper error handling and not cause any weird errors in the data layer.
 		if (!response.ok) {
 			if (response.status === 401 || response.status === 404 || response.status === 500) {
-				console.error(
-					'The Fetch request of ' + url + ' failed: ' + response.status,
+				logger.error(
+					'The Fetch request of ' + url + ' failed: ' + response.status +
 					response.statusText
 				);
 				return {
@@ -130,10 +135,10 @@ export async function LoadJson({
 				};
 			} else {
 				const status = !!response.status ? 'Error Status:' + response.status : '';
-				console.error(
-					status + ' The Fetch request of ' + url + ' failed.',
-					typeof request !== 'undefined' ? request : null,
-					response
+				logger.error(
+					status + ' The Fetch request of ' + url + ' failed: '
+          + JSON.stringify(typeof request !== 'undefined' ? request : null)
+          + JSON.stringify(response)
 				);
 				return {
 					error: response.status + ': ' + response.statusText,
@@ -146,19 +151,19 @@ export async function LoadJson({
 		if (contentType && contentType.indexOf(CONTENT_TYPE_JSON) > -1) {
 			return response.json();
 		} else {
-			console.error(
-				'Error Status:500 The Fetch request of ' + url + ' failed, Wrong content-type',
-				typeof request !== 'undefined' ? request : null,
-				response
+			logger.error(
+				'Error Status:500 The Fetch request of ' + url + ' failed, Wrong content-type.'
+        + JSON.stringify(typeof request !== 'undefined' ? request : null)
+        + JSON.stringify(response)
 			);
 			return { error: 'Response is not a json object', status: 200 };
 		}
 	} catch (e) {
-		console.error(e, request);
+		logger.error(e, JSON.stringify(request));
 		if (e.message === 'Failed to fetch') {
 			return {
 				error:
-					"Can't fetch stackend module. Please make sure you've allowed this domain in your stack settings."
+					"Can't access stackend api. Please make sure you've allowed this domain in your stack settings."
 			};
 		}
 		return { error: e };
