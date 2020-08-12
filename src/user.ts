@@ -15,7 +15,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import { CurrentUserType } from './login/loginReducer';
 import { Community } from './stackend';
-import { AuthObject, PrivilegeTypeIds } from './privileges'
+import { AuthObject, PrivilegeTypeId, PrivilegeTypeIds } from './privileges'
 
 
 /**
@@ -269,17 +269,24 @@ export function getProfileLink(
  * @param privilegeType {number} Minimum required privilege
  */
 export function hasElevatedPrivilege(
-  currentUser: CurrentUserType | null,
+  currentUser: CurrentUserType | User | null,
   componentContext: string,
   componentClass: string,
-  privilegeType: number
+  privilegeType: PrivilegeTypeId
 ): boolean {
-  if (!currentUser || !currentUser.user) {
+  if (!currentUser) {
     return false;
   }
 
-  const privs = currentUser.user.privileges;
-  if (typeof privs === 'undefined') {
+  let privs:Array<string> | null = null;
+  if (typeof (currentUser as User).privileges !== "undefined") {
+    privs = (currentUser as User).privileges;
+  } else if ((currentUser as CurrentUserType).user) {
+     // @ts-ignore
+    privs = (currentUser as CurrentUserType).user.privileges;
+  }
+
+  if (typeof privs === 'undefined' || !privs) {
     return false;
   }
 

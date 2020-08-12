@@ -1,11 +1,12 @@
 //@flow
 import nodeResolve from '@rollup/plugin-node-resolve'
 import babel from 'rollup-plugin-babel'
-import replace from '@rollup/plugin-replace'
+//import replace from '@rollup/plugin-replace'
 import typescript from 'rollup-plugin-typescript2'
-import { terser } from 'rollup-plugin-terser'
+//import { terser } from 'rollup-plugin-terser'
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
+import multiInput from 'rollup-plugin-multi-input';
 
 const NAME = "stackend";
 import pkg from './package.json'
@@ -28,6 +29,7 @@ const makeExternalPredicate = (externalArr) => {
 
 export default [
   // CommonJS
+  /*
   {
     input: 'src/api.ts',
     output: { file: 'lib/api.ts', format: 'cjs', indent: false },
@@ -51,11 +53,11 @@ export default [
       }),
     ],
   },
-
+  */
   // ES
   {
-    input: 'src/api.ts',
-    output: { file: 'es/api.ts', format: 'es', indent: false },
+    input: ['src/**/*.ts'],
+    output: {  format: 'es', indent: false, preserveModules: true, dir: 'es' },
     external: makeExternalPredicate([
       ...Object.keys(pkg.dependencies || {}),
       ...Object.keys(pkg.peerDependencies || {}),
@@ -66,6 +68,7 @@ export default [
       }),
       commonjs(),
       json(),
+      multiInput(),
       typescript({ tsconfigOverride: noDeclarationFiles }),
       babel({
         extensions,
@@ -78,94 +81,5 @@ export default [
         runtimeHelpers: true,
       }),
     ],
-  },
-
-  // ES for Browsers
-  {
-    input: 'src/api.ts',
-    output: { file: 'es/api.mjs', format: 'es', indent: false },
-    plugins: [
-      nodeResolve({
-        extensions,
-      }),
-      commonjs(),
-      json(),
-      replace({
-        'process.env.NODE_ENV': JSON.stringify('production'),
-      }),
-      typescript({ tsconfigOverride: noDeclarationFiles }),
-      babel({
-        extensions,
-        exclude: 'node_modules/**',
-      }),
-      terser({
-        compress: {
-          pure_getters: true,
-          unsafe: true,
-          unsafe_comps: true,
-          warnings: false,
-        },
-      }),
-    ],
-  },
-
-  // UMD Development
-  {
-    input: 'src/api.ts',
-    output: {
-      file: 'dist/api.ts',
-      format: 'umd',
-      name: NAME,
-      indent: false,
-    },
-    plugins: [
-      nodeResolve({
-        extensions,
-      }),
-      commonjs(),
-      json(),
-      typescript({ tsconfigOverride: noDeclarationFiles }),
-      babel({
-        extensions,
-        exclude: 'node_modules/**',
-      }),
-      replace({
-        'process.env.NODE_ENV': JSON.stringify('development'),
-      }),
-    ],
-  },
-
-  // UMD Production
-  {
-    input: 'src/api.ts',
-    output: {
-      file: 'dist/stackend.min.js',
-      format: 'umd',
-      name: NAME,
-      indent: false,
-    },
-    plugins: [
-      nodeResolve({
-        extensions,
-      }),
-      commonjs(),
-      json(),
-      typescript({ tsconfigOverride: noDeclarationFiles }),
-      babel({
-        extensions,
-        exclude: 'node_modules/**',
-      }),
-      replace({
-        'process.env.NODE_ENV': JSON.stringify('production'),
-      }),
-      terser({
-        compress: {
-          pure_getters: true,
-          unsafe: true,
-          unsafe_comps: true,
-          warnings: false,
-        },
-      }),
-    ],
-  },
+  }
 ]

@@ -102,14 +102,14 @@ export interface AuthObject {
 
 export function isSuperUser({ user }: { user: User | null }) {
   return hasElevatedPrivilege(
-    { user: user },
+    user,
     'groups',
     groupApi.COMPONENT_CLASS,
-    Privilege.TRUSTED
+    PrivilegeTypeId.TRUSTED
   );
 }
 
 export function isAdminUser({ user }: { user: User | null }) {
-  return hasElevatedPrivilege({ user }, 'cms', CMS_COMPONENT_CLASS, Privilege.TRUSTED);
+  return hasElevatedPrivilege(user, 'cms', CMS_COMPONENT_CLASS, PrivilegeTypeId.TRUSTED);
 }
 
