@@ -15,7 +15,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import { CurrentUserType } from './login/loginReducer';
 import { Community } from './stackend';
-import { privileges } from './privileges'
+import { AuthObject, PrivilegeTypeIds } from './privileges'
 
 
 /**
@@ -417,8 +417,8 @@ export function storeUser({
 }
 
 export interface GetUserPrivilegesResult extends XcapJsonResult {
-  auth: privileges.AuthObject,
-  privilegeType: privileges.PrivilegeTypeIds
+  auth: AuthObject,
+  privilegeType: PrivilegeTypeIds
 }
 
 /**

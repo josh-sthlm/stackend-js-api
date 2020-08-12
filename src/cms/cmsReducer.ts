@@ -1,8 +1,8 @@
 //@flow
 
-import { Content } from '../cms';
-import { Action } from 'redux';
+import { Content, GetContentResult } from '../cms'
 import { getJsonErrorText } from '../api';
+import { AnyAction } from 'redux'
 
 export const REQUEST_CONTENT: string = 'REQUEST_CONTENT';
 export const RECIEVE_CONTENT: string = 'RECIEVE_CONTENT';
@@ -12,9 +12,9 @@ export const SET_CONTENT: string = 'SET_CONTENT';
 export interface State {
 	/** Cms content by id */
 	[id: string]: Content
-};
+}
 
-export default function(state: State = {}, action: Action) {
+export default function(state: State = {}, action: AnyAction) {
 	switch (action.type) {
 		case RECIEVE_CONTENT:
 			if (action.json.error) {

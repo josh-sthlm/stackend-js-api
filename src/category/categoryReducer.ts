@@ -20,23 +20,23 @@ export type categoriesActionType =
 type State = any;
 
 export type categoriesAction =
-	| { type: 'REQUEST_AVAILABLE_CATEGORIES', context: categoryApi.Context }
+	| { type: 'REQUEST_AVAILABLE_CATEGORIES', context: string }
 	| {
 			type: 'RECIEVE_AVAILABLE_CATEGORIES',
-			context: categoryApi.Context,
+			context: string,
 			available: { categories: Array<categoryApi.Category> }
 	  }
-	| { type: 'INVALIDATE_AVAILABLE_CATEGORIES', context: categoryApi.Context }
+	| { type: 'INVALIDATE_AVAILABLE_CATEGORIES', context: string }
 	| {
 			type: 'CATEGORIES_TOGGLE_SELECTED',
-			context: categoryApi.Context,
-			reference: String,
+			context: string,
+			reference: string,
 			category: categoryApi.Category
 	  }
-	| { type: 'CATEGORIES_REMOVE_SELECTION', context: categoryApi.Context, reference: String };
+	| { type: 'CATEGORIES_REMOVE_SELECTION', context: string, reference: string };
 
 //Reducer
-function categories(state: State = {}, action: Action) {
+function categories(state: State = {}, action: categoriesAction) {
 	switch (action.type) {
 		case REQUEST_AVAILABLE_CATEGORIES:
 			return update(state, {

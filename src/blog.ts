@@ -9,11 +9,11 @@ import {
   logger
 } from './api'
 import * as event from './event';
-import poll from './poll';
+import { Poll } from './poll'
 import * as group from './group';
 //import * as gaFunctions from '../functions/gaFunctions';
 import { Request } from './request';
-import category from './category';
+import { Category } from './category'
 import { VoteSummary } from './vote';
 import { Image } from './media';
 import { AuthObject } from './privileges'
@@ -116,7 +116,7 @@ export interface BlogEntry extends XcapObject {
   categoryRef: Array<any>,
   slideshow?: Slideshow,
   eventRef?: event.Event,
-  pollRef?: poll.Poll,
+  pollRef?: Poll,
   numberOfComments: number,
   numberOfLikes: number
 }
@@ -261,7 +261,7 @@ export interface GetEntriesResult extends BlogEntryListingResult {
 
   likesByCurrentUser: Map<string, any>,
 
-  categories: Array<category.Category>,
+  categories: Array<Category>,
   blog: Blog | null,
   authBlog: AuthObject | null
 }
@@ -397,7 +397,7 @@ export function getRecommendedEntries({
 export interface GetBlogEntryResult extends XcapJsonResult {
   likes: LikeDataMap,
   tags: Array<string>,
-  categories: Array<category.Category>,
+  categories: Array<Category>,
   voteSummary: VoteSummary,
   pinned: boolean,
   numberOfComments: number,
@@ -430,7 +430,7 @@ export function getEntry({
 
 export interface SetEntryStatusResult extends XcapJsonResult {
   entry: BlogEntry,
-  categories: Array<category.Category>,
+  categories: Array<Category>,
   blog: Blog,
   authBlog: AuthBlog
 }

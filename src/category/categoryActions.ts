@@ -5,7 +5,7 @@ import * as searchActions from '../search/searchActions';
 import * as reducer from './categoryReducer';
 
 interface ContextObject {
-	context: Category
+	context: string
 }
 
 export function fetchCategories({ context }: ContextObject) {

@@ -10,7 +10,7 @@ import {
 	RECIEVE_SUB_SITES
 } from './pageReducer';
 
-import { getPages, GetPagesResult, getSubSite, Page, SubSiteNode } from '../cms';
+import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode } from '../cms'
 import { getPermalink } from '../tree';
 
 /**
@@ -53,8 +53,8 @@ export function requestMissingPages({
 	communityPermalink?: string | null
 }): Thunk<GetPagesResult> {
 	return async (dispatch, getState) => {
-		let fetchPageIds = [];
-		let fetchPermalinks = [];
+		let fetchPageIds:Array<number> = [];
+		let fetchPermalinks:Array<string> = [];
 		let { pages } = getState();
 
 		//console.log('Pages: ', pages);
@@ -92,7 +92,7 @@ export function requestMissingPages({
 	};
 }
 
-export function shouldFetchPage(p: Page, now: number): boolean {
+export function shouldFetchPage(p: Page | null, now: number): boolean {
 	if (!p) {
 		return true;
 	}
@@ -158,7 +158,7 @@ export function recievePages(json: any): Thunk<any> {
 	};
 }
 
-export function requestSubSite(id: number): Thunk<any> {
+export function requestSubSite(id: number): Thunk<GetSubSiteResult> {
 	return async (dispatch) => {
 		let r = await dispatch(getSubSite({ id }));
 		if (!r.error && r.tree) {

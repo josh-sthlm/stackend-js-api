@@ -1,5 +1,5 @@
 //@flow
-import { Action } from 'redux';
+import { AnyAction } from 'redux';
 import { getJsonErrorText } from '../api';
 import { Page, SubSite } from '../cms';
 
@@ -21,7 +21,7 @@ export default function(
 		idByPermalink: {},
 		subSiteById: {}
 	},
-	action: Action
+	action: AnyAction
 ): PagesState {
 	switch (action.type) {
 		case RECIEVE_PAGES:

@@ -18,9 +18,6 @@ import {
 	getMultipleComments,
 	getComments,
 	postComment as _postComment,
-	gaReplyEventObject,
-	gaCommentEventObject,
-	gaEditCommentEventObject
 } from '../comments';
 import { Thunk } from '../api';
 import { Dispatch } from 'redux';
@@ -254,7 +251,8 @@ export function postComment({
 				updateComment(id, module, referenceId, referenceGroupId, response.comment)
 			);
 			dispatch(toggleEditComment({ id }));
-			dispatch(sendEventToGA(gaEditCommentEventObject({ comment: response.comment })));
+			// FIXME: readd ga
+			//dispatch(sendEventToGA(gaEditCommentEventObject({ comment: response.comment })));
 			typeOfComment = 'edit';
 			return { ...commentJson, typeOfComment };
 		} else {
@@ -284,12 +282,13 @@ export function postComment({
 					likesByCurrentUser: {}
 				})
 			);
+			// FIXME: Readd ga
 			if (isFinite(parentId) && response.comment.id !== parentId) {
 				//This is a reply and close the reply editor
-				dispatch(sendEventToGA(gaReplyEventObject({ comment: response.comment })));
+				//dispatch(sendEventToGA(gaReplyEventObject({ comment: response.comment })));
 			} else {
 				//This is a plain new comment (not a reply)
-				dispatch(sendEventToGA(gaCommentEventObject({ comment: response.comment })));
+				//dispatch(sendEventToGA(gaCommentEventObject({ comment: response.comment })));
 			}
 			return { ...commentJson, typeOfComment };
 		}
