@@ -263,7 +263,7 @@ export interface GroupMemberAuth {
  * @return {Promise}
  */
 export function getCss({ groupPermalink, groupId }: { groupPermalink?: string, groupId?: number }) {
-	throw 'not implemented';
+	throw Error('not implemented');
 	// FIXME: Returns text/css
 	//return xcapApi.getJson('/group/css', arguments);
 }
@@ -276,7 +276,7 @@ export function getCss({ groupPermalink, groupId }: { groupPermalink?: string, g
  */
 export function getGroupType({ request, url }: { request: Request, url: string }): string {
 	try {
-		const groupsRegExp = new RegExp(`${request.communityUrl}\/([^\/]*)`);
+		const groupsRegExp = new RegExp(`${request.communityUrl}/([^/]*)`);
 		let r = url.match(groupsRegExp);
 		if (r) {
 			return r[1];

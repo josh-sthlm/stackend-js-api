@@ -237,7 +237,7 @@ export function getModuleInfo(moduleType: ModuleType): ModuleInfo | null {
 export function getXcapModuleType(moduleType: ModuleType): string {
 	let i = MODULE_INFO[moduleType];
 	if (typeof i === 'undefined' || i.xcapModuleType === null) {
-		throw 'Module type ' + moduleType + ' has no corresponding xcap type';
+		throw Error('Module type ' + moduleType + ' has no corresponding xcap type');
 	}
 	return i.xcapModuleType;
 }
@@ -249,7 +249,7 @@ export function getXcapModuleType(moduleType: ModuleType): string {
 export function getDefaultComponentContext(moduleType: ModuleType): string {
 	let i = MODULE_INFO[moduleType];
 	if (typeof i === 'undefined' || i.defaultContext === null) {
-		throw 'Module type ' + moduleType + ' has no default component context';
+		throw Error('Module type ' + moduleType + ' has no default component context');
 	}
 	return i.defaultContext;
 }

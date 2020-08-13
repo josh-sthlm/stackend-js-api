@@ -375,6 +375,7 @@ export interface GetCommunityPrivateSettingsResult extends XcapJsonResult {};
  * Get the community's private settings that are not exposed to the frontend
  * @param key Get a specific setting
  * @param prefix Get settings with a specific prefix ("" for all)
+ * @param community
  */
 export function getCommunityPrivateSettings({
 	key,
@@ -686,7 +687,7 @@ export function isCommunityAdmin(community: Community|null, userId?: number|null
 		return true;
 	}
 
-	return typeof community.adminUserIds !== 'undefined' && community.adminUserIds.includes(<number>userId);
+	return typeof community.adminUserIds !== 'undefined' && community.adminUserIds.includes(userId as number);
 }
 
 /**
@@ -879,15 +880,15 @@ export function newModule({
 	name: string
 }): any {
 	if (!communityId) {
-		throw 'communityId required';
+		throw Error('communityId required');
 	}
 
 	if (!componentClass) {
-		throw 'componentClass required';
+		throw Error('componentClass required');
 	}
 
 	if (!componentContext) {
-		throw 'componentContext required';
+		throw Error('componentContext required');
 	}
 
 	return {

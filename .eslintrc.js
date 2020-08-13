@@ -23,10 +23,13 @@ module.exports = {
 
   rules: {
     'jsx-a11y/href-no-hash': 'off',
-    'no-unused-vars': 'off',
+    //'no-unused-vars': 'off',
+    'no-empty-pattern': 'off',
     '@typescript-eslint/no-unused-expressions': 'off',
+    '@typescript-eslint/no-unused-vars': 'off'
+    /*
     '@typescript-eslint/no-unused-vars': [
-      'error',
+      'warn',
       {
         vars: 'all',
         args: 'after-used',
@@ -34,5 +37,6 @@ module.exports = {
         argsIgnorePattern: '^_' // ignore unused variables whose name is '_'
       }
     ]
+     */
   }
 }

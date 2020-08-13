@@ -24,8 +24,7 @@ export interface Category extends XcapObject {
   description: string,
   permalink: string,
   createdDate: number,
-  order: number /** Sort order, if different from natural ordering */
-  ,
+  order: number, /** Sort order, if different from natural ordering */
   obfuscatedReference: string,
   parentId: number,
   parentRef: Category,
@@ -33,8 +32,7 @@ export interface Category extends XcapObject {
   rootRef: Category,
   referenceCount: number,
   childCount: number,
-  partOfPermalink: string /** Last part of the permalink */
-  ,
+  partOfPermalink: string, /** Last part of the permalink */
   fullName: string
 }
 
@@ -83,7 +81,7 @@ export function get({
   permaLink?: string
 }): Thunk<GetCategoryResult> {
   if (typeof categoryId === 'undefined' && typeof permaLink === 'undefined') {
-    throw 'categoryId or permaLink must be specified';
+    throw Error('categoryId or permaLink must be specified');
   }
   return getJson({
     url: '/category/get',

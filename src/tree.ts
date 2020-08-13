@@ -26,7 +26,7 @@ export interface Tree extends XcapObject, Node {
 export function newTree(name: string): Tree {
 	let permalink = generatePermalink(name);
 	if (!permalink) {
-		throw "Could not generate permalink";
+		throw Error("Could not generate permalink");
 	}
 
 	return {
@@ -49,7 +49,7 @@ export function newTree(name: string): Tree {
 export function newTreeNode(name: string): Node {
 	let permalink = generatePermalink(name);
 	if (!permalink) {
-		throw "Could not generate permalink";
+		throw Error("Could not generate permalink");
 	}
 	return {
 		name,

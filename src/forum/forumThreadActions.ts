@@ -211,13 +211,13 @@ export function likeForumThreadEntry({
 			id: referenceId
 		});
 		if (!forumThreadEntry) {
-			throw "Can't find forumThreadEntry in redux Store";
+			throw Error("Can't find forumThreadEntry in redux Store");
 		}
 		const obfuscatedReference = _.get(forumThreadEntry, `.obfuscatedReference`);
 		const forumPermalink = _.get(forumThreadEntry, `.forumRef.permalink`, undefined);
 		let receivedLikes;
 		if (!obfuscatedReference) {
-			throw "can't get obfuscatedReference from forumThreadEntry in redux";
+			throw Error("can't get obfuscatedReference from forumThreadEntry in redux");
 		}
 
 		// FIXME: re add ga

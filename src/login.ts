@@ -143,7 +143,7 @@ export function _getLoginUrl({
 			);
 
 		default:
-			throw '_getLoginUrl() provider "' + provider + '" not supported';
+			throw Error('_getLoginUrl() provider "' + provider + '" not supported');
 	}
 }
 
@@ -271,7 +271,7 @@ export function login({
 		}
 
 		default:
-			throw 'login(): provider "' + provider + '" not supported';
+			throw Error('login(): provider "' + provider + '" not supported');
 	}
 }
 

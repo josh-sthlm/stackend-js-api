@@ -367,7 +367,7 @@ export function getModerationStatus(n: number): ModerationStatus {
 		case 5:
 			return ModerationStatus.POST;
 		default:
-			throw n + ' is not a moderation status';
+			throw Error(n + ' is not a moderation status');
 	}
 }
 
@@ -628,7 +628,7 @@ export function _getServerWithContextPath(config: Config): string {
 export function getCommunityPath(): Thunk<string> {
 	return (dispatch: any, getState: any) => {
 		if (typeof getState !== 'function') {
-			throw 'getCommunityPath : Wrong invocation';
+			throw Error('getCommunityPath : Wrong invocation');
 		}
 		return _.get(getState(), 'request.communityUrl', '');
 	};
@@ -652,7 +652,7 @@ export function getCommunityPathFromStore({ request }: { request: Request }): st
 export function getAbsoluteCommunityPath(): Thunk<string> {
 	return (dispatch: any, getState: any) => {
 		if (typeof getState !== 'function') {
-			throw 'getAbsoluteCommunityPath: Wrong invocation';
+			throw Error('getAbsoluteCommunityPath: Wrong invocation');
 		}
 		return _.get(getState(), 'request.absoluteCommunityUrl', '');
 	};
@@ -1704,7 +1704,7 @@ export function constructReference(
 	let c = xcapCommunityName + ':' + context;
 	let cc = parseCommunityContext(c);
 	if (!cc) {
-		throw 'Invalid communityContext: ' + c;
+		throw Error('Invalid communityContext: ' + c);
 	}
 
 	return {

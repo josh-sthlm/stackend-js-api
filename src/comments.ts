@@ -116,7 +116,7 @@ export function getComments({
 	useVotes = false
 }: any): Thunk<GetCommentsResult> {
 	if (isNaN(referenceId)) {
-		throw 'Parameter referenceId is required';
+		throw Error('Parameter referenceId is required');
 	}
 
 	return getJson({
@@ -158,7 +158,7 @@ export function getMultipleComments({
 	order = SortOrder.DESCENDING
 }: any): Thunk<GetMultipleCommentsResult> {
 	if (!Array.isArray(referenceIds)) {
-		throw 'Parameter referenceIds is required';
+		throw Error('Parameter referenceIds is required');
 	}
 
 	return getJson({

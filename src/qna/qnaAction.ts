@@ -182,33 +182,30 @@ function recieveSearchResult(result: {
 
 export function searchQna({ searchString, selectedFilters, game }: any) {
 	//Load questions using search and filters from King Care
-	try {
-		return async (dispatch: any, getState: any) => {
-			const qo = generateQueryObject(searchString, selectedFilters, getState().qnaAvailableFilters);
-			const searchResult = await dispatch(_search({ ...qo, game }));
-			if (typeof searchResult.error !== 'undefined') {
-				return dispatch(
-					recieveSearchResult({
-						entries: [],
-						relatedObjects: [],
-						categoryCounts: {},
-						error: searchResult.error
-					})
-				);
-			} else {
-				return dispatch(
-					recieveSearchResult({
-						entries: searchResult.results.entries,
-						relatedObjects: searchResult.__relatedObjects,
-						categoryCounts: searchResult.categoryCounts,
-						error: false
-					})
-				);
-			}
-		};
-	} catch (e) {
-		console.error('Error Searching QnA: ', e);
-	}
+  return async (dispatch: any, getState: any) => {
+    const qo = generateQueryObject(searchString, selectedFilters, getState().qnaAvailableFilters);
+    const searchResult = await dispatch(_search({ ...qo, game }));
+    if (typeof searchResult.error !== 'undefined') {
+      return dispatch(
+        recieveSearchResult({
+          entries: [],
+          relatedObjects: [],
+          categoryCounts: {},
+          error: searchResult.error
+        })
+      );
+    } else {
+      return dispatch(
+        recieveSearchResult({
+          entries: searchResult.results.entries,
+          relatedObjects: searchResult.__relatedObjects,
+          categoryCounts: searchResult.categoryCounts,
+          error: false
+        })
+      );
+    }
+  };
+
 }
 
 function generateQueryObject(searchString = '', selectedFilters:any, availableFilters:any) {

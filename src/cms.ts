@@ -669,7 +669,7 @@ export function addContentToDom(parent: Element, content: Content) {
 	}
 
 	if (isRunningServerSide()) {
-		throw 'Stackend: addContentToDom can not be executed serverside';
+		throw Error('Stackend: addContentToDom can not be executed serverside');
 	}
 
 	const { htmlValue, javascriptValue, cssValue } = extractContentValues(content);

@@ -67,10 +67,11 @@
   },
   "scripts": {
     "build": "tsc",
+    "pretest": "npm run build",
     "test": "jest",
     "check-types": "tsc --noEmit",
     "lint": "eslint --ext js,ts src tests",
-    "clean": "rimraf build lib dist es coverage types",
+    "clean": "rimraf build coverage types",
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
     "prepublishOnly": "npm run clean && npm run check-types && npm run format:check && npm run lint && npm test"
   },

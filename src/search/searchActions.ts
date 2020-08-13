@@ -165,7 +165,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 				} else if (filter === 'faq') {
 					try {
 						if (!parsedSearchParams.gameId) {
-							throw 'No gameId selected';
+							throw Error('No gameId selected');
 						}
 						const json = await dispatch(
 							faqApi.search({
