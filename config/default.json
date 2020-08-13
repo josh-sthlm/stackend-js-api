@@ -3,9 +3,15 @@
     "server": "https://api.stackend.com",
     "contextPath": ""
   },
-  "logging": {
+  "log4js": {
+    "appenders": {
+      "console": { "type": "console" }
+    },
     "categories": {
-      "default": "warn"
+      "default": {
+        "appenders": [ "console" ],
+        "level": "warn"
+      }
     }
   }
 }

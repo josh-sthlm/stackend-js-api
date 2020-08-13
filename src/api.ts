@@ -21,6 +21,7 @@ declare var __xcapRunningServerSide: any;
 // Configure using
 let lc:any = config.get("log4js");
 if (typeof lc === "object") {
+  //console.debug("Stackend: Using configured log4js settings", lc);
   log4js.configure(lc);
 } else if (typeof lc === "undefined") {
   let logConfig: Configuration = {
@@ -34,7 +35,10 @@ if (typeof lc === "object") {
       }
     }
   };
+  //console.debug("Stackend: Using built in log4js config");
   log4js.configure(logConfig);
+} else {
+  //console.debug("Stackend: Skipping log4js config");
 }
 
 
