@@ -33,7 +33,7 @@ function requestLoginData() {
  * @returns
  */
 export function refreshLoginData(params?: any): Thunk<any> {
-	return async (dispatch, getState) => {
+	return async (dispatch:any, getState) => {
 		try {
 			const { currentUser } = getState();
 

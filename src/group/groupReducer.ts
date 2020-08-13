@@ -1,8 +1,8 @@
 // @flow
 import update from 'immutability-helper';
-import * as xcapApi from '../api';
-import * as groupApi from '../group';
-import { Action } from 'redux';
+import { GroupActions } from './groupActions'
+import { Group, GroupMemberAuth } from '../group'
+import { AuthObject } from '../privileges'
 export const REQUEST_GROUPS = 'REQUEST_GROUPS';
 export const RECIEVE_GROUPS = 'RECIEVE_GROUPS';
 export const INVALIDATE_GROUPS = 'INVALIDATE_GROUPS';
@@ -13,9 +13,9 @@ interface State {
 	isFetching: boolean,
 	didInvalidate: boolean,
 	lastUpdated: number,
-	entries: { [key: number]: groupApi.Group }, //entries is an object with group id: group
-	auth: { [key: number]: xcapApi.AuthObject }, //object with group-ids maped to auth object
-	groupMembers: { [key: number]: Array<groupApi.GroupMemberAuth> }
+	entries: { [key: number]: Group }, //entries is an object with group id: group
+	auth: { [key: number]: AuthObject }, //object with group-ids maped to auth object
+	groupMembers: { [key: number]: Array<GroupMemberAuth> }
 }
 
 const initialState:State = {
@@ -27,7 +27,8 @@ const initialState:State = {
 	groupMembers: {}
 };
 
-export default function groups(state: State = initialState, action: Action): State {
+
+export default function groups(state: State = initialState, action: GroupActions): State {
 	switch (action.type) {
 		case REQUEST_GROUPS:
 			return update(state, {
@@ -37,8 +38,9 @@ export default function groups(state: State = initialState, action: Action): Sta
 		case RECIEVE_GROUPS:
 			// FIXME: action.errors not passed on
 			if (!!action.entries) {
-				let uniqueGroupEntries = {};
-				[].concat(action.entries).map(group => (uniqueGroupEntries[group.id] = group));
+				let uniqueGroupEntries:{[groupId:number]: Group} = {};
+				// @ts-ignore
+        [].concat(action.entries).map((group:Group) => (uniqueGroupEntries[group.id] = group));
 
 				return update(state, {
 					isFetching: { $set: false },
@@ -59,6 +61,7 @@ export default function groups(state: State = initialState, action: Action): Sta
 			return update(state, {
 				didInvalidate: { $set: true }
 			});
+
 		case RECIEVE_GROUPS_AUTH:
 			return update(state, {
 				isFetching: { $set: false },
@@ -66,6 +69,7 @@ export default function groups(state: State = initialState, action: Action): Sta
 				lastUpdated: { $set: Date.now() },
 				auth: { $set: action.entries }
 			});
+
 		case RECIEVE_GROUP_MEMBERS:
 			return update(state, {
 				isFetching: { $set: false },

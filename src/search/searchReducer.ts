@@ -21,7 +21,8 @@ type Actions = UpdateSearchString | UpdateSelectedType;
 
 type SearchReducer = {
 	q: string, // searchString/queryString
-	p: number //pageNumber
+	p: number //pageNumber,
+  filter: string
 };
 
 const initSearchReducer = {
@@ -35,12 +36,12 @@ export default function searchReducer(state: SearchReducer = initSearchReducer, 
 		case UPDATE_SEARCH_STRING:
 			return update(state, {
 				q: { $set: action.q },
-				p: { $set: action.p }
+				p: { $set: action.p || state.p }
 			});
 		case UPDATE_SELECTED_TYPE:
 			return update(state, {
 				filter: { $set: action.selectedType },
-				p: { $set: action.p }
+				p: { $set: action.p || state.p }
 			});
 		default:
 			return state;

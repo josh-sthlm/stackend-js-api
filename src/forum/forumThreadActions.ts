@@ -4,14 +4,12 @@ import * as forumApi from '../forum';
 import * as likeApi from '../like';
 import * as api from '../api';
 import * as forumActions from './forumActions';
-import { Dispatch} from 'redux';
 import * as reducer from './forumThreadReducer';
-//import { sendEventToGA } from '../analytics/analyticsFunctions';
-import { ForumThreadEntry, removeForumThreadEntry } from '../forum'
+import { Forum, ForumThreadEntry, removeForumThreadEntry } from '../forum'
 import { Thunk } from '../api'
-//import { handleAccordionStatus } from '../Accordion/accordionReducer';
+//import { sendEventToGA } from '../analytics/analyticsFunctions';
 
-interface FetchForumThreads {
+export interface FetchForumThreads {
 	forumPermalink: string,
 	pageSize?: number,
 	page?: number
@@ -25,7 +23,7 @@ export function fetchForumThreads({
 	page,
 	pageSize = 25
 }: FetchForumThreads): api.Thunk<any> {
-	return async (dispatch: Dispatch /*, getState: GetState*/) => {
+	return async (dispatch: any /*, getState: GetState*/) => {
 		dispatch(requestForumThreads());
 		const json = await dispatch(forumApi.listThreads({ forumPermalink, pageSize, p: page }));
 		if (json.error) {
@@ -44,13 +42,17 @@ export function fetchForumThreads({
 			})
 		);
 		dispatch(
-			receiveForumThreads({ entries: _.get(json, 'threadsPaginated.entries', []), forumPermalink })
+			receiveForumThreads({
+        entries: _.get(json, 'threadsPaginated.entries', []),
+        pageSize,
+        forumPermalink
+			})
 		);
 		return json;
 	};
 }
 
-interface FetchForumThreadEntries {
+export interface FetchForumThreadEntries {
 	forumPermalink: string,
 	forumThreadPermalink: string,
 	entryId?: number,
@@ -69,7 +71,7 @@ export function fetchForumThreadEntries({
 	pageSize = 15,
 	p
 }: FetchForumThreadEntries): Thunk<any> {
-	return async (dispatch: Dispatch /*, getState: GetState*/) => {
+	return async (dispatch: any /*, getState: GetState*/) => {
 		try {
 			const data = await dispatch(
 				forumApi.listEntries({
@@ -111,20 +113,25 @@ export function fetchForumThreadEntries({
 }
 
 export function requestForumThreads(): reducer.Request {
-	return { type: reducer.actionTypes.REQUEST_FORUM_THREADS };
+	// @ts-ignore
+  return { type: reducer.actionTypes.REQUEST_FORUM_THREADS };
 }
 
 export function receiveForumThreads({
 	entries,
-	forumPermalink
+	forumPermalink,
+  pageSize
 }: {
 	entries: Array<forumApi.ForumThreadEntry>,
-	forumPermalink: string
+	forumPermalink: string,
+  pageSize: number
 }): reducer.Recieve {
-	return {
+	// @ts-ignore
+  return {
 		type: reducer.actionTypes.RECIEVE_FORUM_THREADS,
 		entries,
-		forumPermalink
+		forumPermalink,
+    pageSize
 	};
 }
 
@@ -143,7 +150,7 @@ export function updateForumThreadEntry({
 }
 
 /**
- * Requests and recieve comments and store them in redux-state
+ * Requests and receive comments and store them in redux-state
  */
 export function rateForumThreadEntry({
 	forumThreadEntry,
@@ -155,11 +162,11 @@ export function rateForumThreadEntry({
 	/**Id of the forum thread entry to be liked, can also be a forumEntry*/
 	forumThreadEntry: forumApi.ForumThreadEntry
 }): Thunk<any> {
-	return async (dispatch, getState) => {
+	return async (dispatch:any, getState) => {
 		const forumId = forumThreadEntry.forumRef.id;
 		const voteJson = await dispatch(forumApi.vote({ forumThreadEntry, score }));
 		const currentForum = getState().forums.entries.filter(
-			forum => !!forum && forum.id === forumId
+      (forum:Forum) => !!forum && forum.id === forumId
 		)[0];
 		/* FIXME: re add this
 		if (score === 2) {
@@ -179,7 +186,8 @@ export function recieveVoteForumThread({
 	voteJson: forumApi.VoteReturn,
 	forumPermalink: string
 }): reducer.Rate {
-	return {
+	// @ts-ignore
+  return {
 		type: reducer.actionTypes.RECIEVE_VOTE_FORUM_THREAD,
 		voteJson,
 		forumPermalink
@@ -197,7 +205,7 @@ export function likeForumThreadEntry({
 	likedByCurrentUser,
 	context
 }: LikeForumThreadEntry): Thunk<any> {
-	return async (dispatch, getState) => {
+	return async (dispatch:any, getState) => {
 		const forumThreadEntry = forumApi.getThreadEntryFromRedux({
 			forumThreads: getState().forumThreads,
 			id: referenceId
@@ -256,9 +264,9 @@ export function deleteForumThreadEntry({
 	forumThreadEntryId,
 	modalName
 }: DeleteForumThreadEntry): api.Thunk<void> {
-	return async (dispatch: Dispatch /*, getState: GetState*/) => {
+	return async (dispatch: any /*, getState: GetState*/) => {
 		//dispatch(handleAccordionStatus({ name: modalName, isOpen: true }));
-		const json = await removeForumThreadEntry({ entryId: forumThreadEntryId });
+		const json = await dispatch(removeForumThreadEntry({ entryId: forumThreadEntryId }));
 		!!json.entry && dispatch(_deleteForumThreadEntry({ entry: json.entry }));
 	};
 }

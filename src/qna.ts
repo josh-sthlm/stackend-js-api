@@ -36,7 +36,8 @@ export enum QnaSearchType {
 	Solved  = 'Solved',
 	Answered = 'Answered',
 	Recent = 'Recent',
-	Posted = 'Posted'
+	Posted = 'Posted',
+  Search = 'search' // FIXME: Hack
 }
 
 export const COMPONENT_NAME: string = 'forum';
@@ -65,7 +66,7 @@ function post(args:any): Thunk<XcapJsonResult> {
 	};
 }
 
-export function QnaTypeConverter(type: QnaSearchType) {
+export function QnaTypeConverter(type: QnaSearchType):string {
 	return type ? type.toLowerCase() : 'search';
 }
 
@@ -87,9 +88,12 @@ export function getQnaUrl({
 	article?: string
 }): string {
 	if (!!section && !article) {
-		return searchApi.getSearchUrl({
+
+    return searchApi.getSearchUrl({
 			request,
 			type: SearchAbleType.QUESTION,
+      // FIXME: What is this
+      // @ts-ignore
 			searchType: 'search',
 			filter: section
 		});

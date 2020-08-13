@@ -1,6 +1,7 @@
 // @flow
 import update from 'immutability-helper';
 import createReducer from '../createReducer';
+import { Action } from 'redux'
 
 export type EditForumThreadActions = Edit | Set | AddQuote | ToggleEdit;
 
@@ -11,22 +12,22 @@ export const actionTypes = {
 	FORUM_THREAD_TOGGLE_EDIT: 'FORUM_THREAD_TOGGLE_EDIT'
 };
 
-export type Edit = {
+export type Edit = Action & {
 	type: 'EDIT_FORUM_ENTRY_TEXT',
 	text: string
 };
 
-export type Set = {
+export type Set = Action & {
 	type: 'SET_FORUM_ENTRY_TEXT',
 	text: string
 };
 
-export type AddQuote = {
+export type AddQuote = Action & {
 	type: 'ADD_QUOTE',
 	quote: string
 };
 
-export type ToggleEdit = {
+export type ToggleEdit = Action & {
 	type: 'FORUM_THREAD_TOGGLE_EDIT',
 	forumPermalink: string,
 	editThreadId: number

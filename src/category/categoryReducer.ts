@@ -1,7 +1,7 @@
 // @flow
 import update from 'immutability-helper';
 import * as categoryApi from '../category';
-import { Action } from 'redux';
+import { Category } from '../category'
 
 ////Action Type
 export const REQUEST_AVAILABLE_CATEGORIES = 'REQUEST_AVAILABLE_CATEGORIES';
@@ -17,14 +17,25 @@ export type categoriesActionType =
 	| 'CATEGORIES_TOGGLE_SELECTED'
 	| 'CATEGORIES_REMOVE_SELECTION';
 
-type State = any;
+type State = {
+  [context:string]: {
+    isFetching: boolean,
+    didInvalidate: boolean,
+    available: any,
+    lastUpdated: number,
+    selected?: {
+      [reference: string]: any
+    }
+  }
+};
 
 export type categoriesAction =
 	| { type: 'REQUEST_AVAILABLE_CATEGORIES', context: string }
 	| {
 			type: 'RECIEVE_AVAILABLE_CATEGORIES',
 			context: string,
-			available: { categories: Array<categoryApi.Category> }
+			available: { categories: Array<categoryApi.Category> },
+      json: any
 	  }
 	| { type: 'INVALIDATE_AVAILABLE_CATEGORIES', context: string }
 	| {
@@ -38,11 +49,13 @@ export type categoriesAction =
 //Reducer
 function categories(state: State = {}, action: categoriesAction) {
 	switch (action.type) {
-		case REQUEST_AVAILABLE_CATEGORIES:
+    case REQUEST_AVAILABLE_CATEGORIES:
+      // @ts-ignore
 			return update(state, {
 				[action.context]: {
-					$apply: context =>
+					$apply: (context:string) =>
 						update(context || { selected: {} }, {
+              // @ts-ignore
 							isFetching: { $set: true },
 							didInvalidate: { $set: false },
 							available: { $set: !!state[action.context] ? state[action.context].available : '' }
@@ -50,10 +63,12 @@ function categories(state: State = {}, action: categoriesAction) {
 				}
 			});
 		case RECIEVE_AVAILABLE_CATEGORIES:
+      // @ts-ignore
 			return update(state, {
 				[action.context]: {
-					$apply: context =>
+					$apply: (context:string) =>
 						update(context || { selected: {} }, {
+              // @ts-ignore
 							isFetching: { $set: false },
 							didInvalidate: { $set: false },
 							available: { $set: action.json },
@@ -74,9 +89,10 @@ function categories(state: State = {}, action: categoriesAction) {
 			const categories =
 				!!state[action.context] &&
 				!!state[action.context].selected &&
+        // @ts-ignore
 				state[action.context].selected[action.reference];
 			const idOfClickedCategory = !!categories
-				? categories.map(category => category.id).indexOf(action.category.id)
+				? categories.map((category:Category) => category.id).indexOf(action.category.id)
 				: -1;
 			if (idOfClickedCategory !== -1) {
 				//category clicked is selected -> remove selection
@@ -84,9 +100,10 @@ function categories(state: State = {}, action: categoriesAction) {
 					[action.context]: {
 						$apply: context =>
 							update(context || { selected: {} }, {
+                // @ts-ignore
 								selected: {
 									[action.reference]: {
-										$apply: reference =>
+										$apply: (reference:string) =>
 											update(reference || [], { $splice: [[idOfClickedCategory, 1]] })
 									}
 								}
@@ -99,8 +116,10 @@ function categories(state: State = {}, action: categoriesAction) {
 					[action.context]: {
 						$apply: context =>
 							update(context || { selected: {} }, {
+                // @ts-ignore
 								selected: {
 									[action.reference]: {
+                    // @ts-ignore
 										$apply: reference => update(reference || [], { $push: [action.category] })
 									}
 								}
@@ -109,13 +128,15 @@ function categories(state: State = {}, action: categoriesAction) {
 				});
 			}
 		case CATEGORIES_REMOVE_SELECTION:
-			return update(state, {
+
+      return update(state, {
 				[action.context]: {
 					$apply: context =>
 						update(context || { selected: {} }, {
+              // @ts-ignore
 							selected: {
 								[action.reference]: {
-									$apply: reference => update(reference || [], { $set: [] })
+									$apply: (reference:string) => update(reference || [], { $set: [] })
 								}
 							}
 						})

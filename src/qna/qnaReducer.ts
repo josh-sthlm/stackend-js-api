@@ -35,14 +35,16 @@ const qnaReducer = (
 type XcapModuleSettings = {
 	qna: {
 		server: string,
-		game: { id: number, name: string }
+		game: { id: number, name: string },
+    styling: any
 	}
 };
 
 const xcapModuleSettings: XcapModuleSettings = {
 	qna: {
 		server: '',
-			game: { id: 0, name: '' }
+    game: { id: 0, name: '' },
+    styling: {  }
 	}
 };
 
@@ -64,10 +66,10 @@ const qnaServer = (
 
 export function qnaAvailableFilters(
 	state: {
-		filterGames: [any],
-		filterPlatforms: [any],
-		filterIssues: [any],
-		filterDevices: [any],
+		filterGames: Array<any>,
+		filterPlatforms: Array<any>,
+		filterIssues: Array<any>,
+		filterDevices: Array<any>,
 		filterError: any
 	} = {
 		filterGames: [],
@@ -116,7 +118,7 @@ type QnaSelectedFiltersChangeFilter = {
 	type: 'CHANGE_FILTER',
 	contentType: QNA.ContentType,
 	filter: {
-		(filterName: QNA.FilterTypes): QNA.IssueTypes,
+		(filterName: string): '',
 		updateUrl?: boolean //if true, reducer will use browserHistory to push url of new filter
 	}
 };
@@ -156,9 +158,9 @@ const qnaSelectedFilters = (
 
 export function qnaSearchResult(
 	state: {
-		entries: [any],
-		relatedObjects: [any],
-		categoryCounts: [any],
+		entries: Array<any>,
+		relatedObjects: Array<any>,
+		categoryCounts: Array<any>,
 		error: boolean
 	} = {
 		entries: [],

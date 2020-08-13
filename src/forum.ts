@@ -315,12 +315,15 @@ export function closeForumThread({ threadId }: { threadId: number }): Thunk<Xcap
 	return post({ url: '/forum/thread/close', parameters: arguments });
 }
 
+export interface RemoveForumThreadEntryResult extends XcapJsonResult {
+  entry: ForumThreadEntry | null
+}
 /**
  * Remove a forum thread entry using moderation.
- * Requires admin access or that user is ownder of entry.
+ * Requires admin access or that user is owner of entry.
  * @param v {number} Forum thread entry id.
  */
-export function removeForumThreadEntry({ entryId }: { entryId: number }): Thunk<XcapJsonResult> {
+export function removeForumThreadEntry({ entryId }: { entryId: number }): Thunk<RemoveForumThreadEntryResult> {
 	return post({ url: '/forum/thread/remove', parameters: arguments });
 }
 
@@ -626,7 +629,7 @@ export function getGALabels({ forumThreadEntry }: GaTrackForumThread) {
 	//If this is a new parentThread, it has no threadRef
 	const threadRef = !!forumThreadEntry.threadRef ? forumThreadEntry.threadRef : forumThreadEntry;
 
-	const forumLink = _.get(threadRef, `forumRef.permalink`, 'undefined');
+	//const forumLink = _.get(threadRef, `forumRef.permalink`, 'undefined');
 	const forumId = _.get(threadRef, `forumRef.id`, 'undefined');
 	const threadLink = _.get(threadRef, `permalink`, 'undefined');
 	const threadId = _.get(threadRef, `id`, 'undefined');
@@ -664,14 +667,19 @@ export function getThreadEntryFromRedux({
 	forumThreadPermalink?: string
 }): ForumThreadEntry | null {
 	if (!!id) {
+	  // FIXME: What is this? Fix
+    // @ts-ignore
 		return _.find(_.flatten(Object.values(forumThreads.forums)), {
 			id /*, __type:FTE_COMPONENT_CLASS*/
 		});
 	}
-	return _.get(
+
+  return _.get(
 		_.get(forumThreads, `forums[${!!forumPermalink ? forumPermalink : ''}]`, []).filter(
-			thread =>
+      (thread:ForumThreadEntry) =>
 				_.get(thread, 'threadRef.permalink') === forumThreadPermalink &&
+        // @ts-ignore
+        // FIXME: Type definition
 				thread.threadId === thread.id
 		),
 		'[0]'
@@ -697,13 +705,15 @@ export function getThreadFromRedux({
 	forumThreadPermalink?: string
 }): ForumThreadEntry | null {
 	if (!!id) {
+    // @ts-ignore
 		return _.find(_.flatten(Object.values(forumThreads.forums)), {
 			id /*, __type:FT_COMPONENT_CLASS*/
 		});
 	}
 	const forumThread = _.get(forumThreads, `forums[${forumPermalink}]`, []).filter(
-		thread =>
+    (thread:ForumThreadEntry) =>
 			(_.get(thread, 'threadRef.permalink') === forumThreadPermalink &&
+        // @ts-ignore
 				thread.threadId === thread.id) ||
 			_.get(thread, 'permalink') === forumThreadPermalink
 	);

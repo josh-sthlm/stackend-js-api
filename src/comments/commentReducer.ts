@@ -4,7 +4,8 @@ import { List } from 'immutable';
 import update from 'immutability-helper';
 import * as commentAction from './commentAction';
 import * as commentsApi from '../comments';
-import { emptyPaginatedCollection } from '../PaginatedCollection';
+import { Comment } from '../comments';
+import { emptyPaginatedCollection, PaginatedCollection } from '../PaginatedCollection'
 
 //Action Type
 export const REQUEST_GROUP_COMMENTS = 'REQUEST_GROUP_COMMENTS';
@@ -35,6 +36,7 @@ export type commentsAction =
 			type: 'RECIEVE_GROUP_COMMENTS',
 			module: string,
 			referenceGroupId: number,
+      receievedAt: number,
 			json: {
 				comments: any,
 				likesByCurrentUser: any
@@ -47,6 +49,7 @@ export type commentsAction =
 			module: string,
 			referenceId: number,
 			referenceGroupId: number,
+      receievedAt: number,
 			json: commentAction.RecieveCommentsJson
 	  }
 	| {
@@ -55,6 +58,7 @@ export type commentsAction =
 			module: string,
 			referenceId: number,
 			referenceGroupId: number,
+      receievedAt: number,
 			json: commentsApi.Comment
 	  };
 
@@ -92,10 +96,11 @@ interface State {
 
 //Reducer
 export function GroupComments(state: State = {}, action: commentsAction) {
-	let key = '';
+	let key:string = '';
 	switch (action.type) {
 		case REQUEST_GROUP_COMMENTS:
-			key = commentAction._getCommentsStateKey(action);
+      // @ts-ignore
+      key = commentAction._getCommentsStateKey(action);
 
 			return Object.assign({}, state, {
 				[key]: {
@@ -106,9 +111,11 @@ export function GroupComments(state: State = {}, action: commentsAction) {
 			});
 
 		case RECIEVE_GROUP_COMMENTS:
-			key = commentAction._getCommentsStateKey(action);
+      // @ts-ignore
+      key = commentAction._getCommentsStateKey(action);
 
-			if (!!state[key].json && state[key].json !== '') {
+      // @ts-ignore
+      if (!!state[key].json && state[key].json !== '') {
 				let json = state[key].json;
 				json.comments = Object.assign({}, state[key].json.comments, action.json.comments);
 				json.likesByCurrentUser = Object.assign(
@@ -137,7 +144,8 @@ export function GroupComments(state: State = {}, action: commentsAction) {
 			}
 
 		case REQUEST_COMMENTS: {
-			key = commentAction._getCommentsStateKey(action);
+			// @ts-ignore
+      key = commentAction._getCommentsStateKey(action);
 
 			const requestBlogEntryComments = Object.assign(
 				{},
@@ -173,9 +181,11 @@ export function GroupComments(state: State = {}, action: commentsAction) {
 
 		case RECIEVE_COMMENTS: {
 			const { referenceId } = action;
-			key = commentAction._getCommentsStateKey(action);
+			// @ts-ignore
+      key = commentAction._getCommentsStateKey(action);
 			if (action.json.error) {
-				return update(state, {
+				// @ts-ignore
+        return update(state, {
 					[key]: {
 						isFetching: { $set: false },
 						didInvalidate: { $set: false },
@@ -196,10 +206,11 @@ export function GroupComments(state: State = {}, action: commentsAction) {
 				});
 			}
 
-			let origComments = _.get(state, `[${key}].json.comments[${referenceId}].entries`, []);
+			// @ts-ignore
+      let origComments:Array<Comment> = _.get(state, `[${key}].json.comments[${referenceId}].entries`, []);
 			let newComments: Array<Comment> = [];
 			action.json.comments.entries.forEach(e => {
-				let orig = origComments.find(o => o.id === e.id);
+				let orig = origComments.find((o:Comment) => o.id === e.id);
 				if (orig) {
 					_.assign(orig, e);
 				} else {
@@ -207,20 +218,23 @@ export function GroupComments(state: State = {}, action: commentsAction) {
 				}
 			});
 
-			const referenceIdUniqueComments = _.concat(origComments, newComments);
-
-			const pagination = _.get(
+			const referenceIdUniqueComments:Array<Comment> = _.concat(origComments, newComments);
+      // @ts-ignore
+			const pagination:PaginatedCollection<Comment> = _.get(
 				state,
 				`[${key}].json.comments[${referenceId}]`,
 				emptyPaginatedCollection()
 			);
-			delete pagination['entries'];
+
+			// @ts-ignore
+      delete pagination['entries'];
 			pagination.totalSize += action.json.comments.entries.length;
 
 			let x = update(action.json.comments, {
 				isFetching: { $set: false },
 				didInvalidate: { $set: false },
 				lastUpdated: { $set: action.receievedAt },
+        // @ts-ignore
 				entries: { $set: referenceIdUniqueComments }
 			});
 
@@ -251,6 +265,7 @@ export function GroupComments(state: State = {}, action: commentsAction) {
 		}
 
 		case UPDATE_COMMENT: {
+      // @ts-ignore
 			key = commentAction._getCommentsStateKey(action);
 			const updatedComment = action.json;
 			const indexOfUpdatedComment = state[key].json.comments[action.referenceId].entries
@@ -275,6 +290,7 @@ export function GroupComments(state: State = {}, action: commentsAction) {
 		}
 
 		case INVALIDATE_GROUP_COMMENTS:
+      // @ts-ignore
 			key = commentAction._getCommentsStateKey(action);
 			return Object.assign({}, state, {
 				[key]: {

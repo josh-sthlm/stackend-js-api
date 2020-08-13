@@ -6,6 +6,8 @@ import * as blogApi from '../blog';
 import createReducer from '../createReducer';
 import { getJsonErrorText } from '../api';
 import { REACT_ROUTER_REDUX_LOCATION_CHANGE } from '../request/requestReducers'
+import { logger } from '../api';
+import { BlogEntry, GetEntriesResult } from '../blog'
 
 //Action Type
 export const REQUEST_GROUP_BLOG_ENTRIES = 'REQUEST_GROUP_BLOG_ENTRIES';
@@ -45,15 +47,7 @@ interface Recieve {
 	type: 'RECIEVE_GROUP_BLOG_ENTRIES',
 	blogKey: BlogKey,
 	receievedAt: number,
-	json: {
-		blogId: number,
-		resultPaginated: {
-			entries: Array<blogApi.BlogEntry>
-		},
-		userRsvpStatuses: any,
-		likesByCurrentUser: any,
-		error?: string
-	}
+	json: GetEntriesResult
 }
 
 interface Update {
@@ -91,25 +85,29 @@ export const groupBlogEntries = createReducer(
 						update(context || {}, {
 							isFetching: { $set: true },
 							didInvalidate: { $set: false },
+              // @ts-ignore
 							json: { $set: _.get(state, `[${action.blogKey}].json`, {}) }
 						})
 				}
 			}),
+
 		RECIEVE_GROUP_BLOG_ENTRIES: (state: State, action: Recieve) => {
 			if (!!action.json.error) {
-				console.warn(
+        logger.warn(
 					RECIEVE_GROUP_BLOG_ENTRIES,
 					'Error:',
 					action.blogKey,
 					getJsonErrorText(action.json)
 				);
-				return update(state, {
+
+        return update(state, {
 					[action.blogKey]: {
 						$apply: context =>
 							update(context || {}, {
 								isFetching: { $set: false },
 								didInvalidate: { $set: false },
 								lastUpdated: { $set: action.receievedAt },
+                // @ts-ignore
 								json: { $merge: { resultPagined: { page: 1, totalSize: 0, entries: [] } } },
 								error: { $set: action.json.error }
 							})
@@ -118,8 +116,9 @@ export const groupBlogEntries = createReducer(
 			}
 
 			// Combine the existing and new entries, update the existing if needed
-			let origEntries = _.get(state, `[${action.blogKey}].json.resultPaginated.entries`, []);
-			let addEntries = [];
+      // @ts-ignore
+      let origEntries:Array<BlogEntry> = _.get(state, `[${action.blogKey}].json.resultPaginated.entries`, []);
+			let addEntries:Array<BlogEntry> = [];
 			action.json.resultPaginated.entries.forEach(e => {
 				let existingEntry = origEntries.find(o => o.id === e.id);
 				if (existingEntry) {

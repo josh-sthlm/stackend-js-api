@@ -12,7 +12,7 @@ import { getContent, Content } from '../cms';
  * @returns {Function}
  */
 export function fetchContent({ id, permalink }: { id: number, permalink?: string }): Thunk<any> {
-	return async (dispatch) => {
+	return async (dispatch:any) => {
 		dispatch({
 			type: REQUEST_CONTENT,
 			id,
@@ -48,7 +48,7 @@ export function setContent(content: Content) {
  * @param contents
  */
 export function recieveContents(contents: Map<number, Content>): Thunk<any> {
-	return async (dispatch: Dispatch /*, getState: any*/) => {
+	return async (dispatch: any) => {
 		return await dispatch({
 			type: RECIEVE_CONTENTS,
 			contents

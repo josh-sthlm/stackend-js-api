@@ -1,21 +1,12 @@
 // @flow
-import _ from 'lodash';
-import * as loadJsonActions from '../LoadJson';
-import * as groupActions from '../group/groupActions';
-import * as xcapApi from '../api';
-import {
-	SearchAbleType,
-	Order,
-	OrderBy,
-	getActiveSearchTypes,
-	search as _search,
-} from '../search'
-import * as qnaApi from '../qna';
-import * as groupApi from '../group';
-import { Dispatch} from 'redux';
-import * as reducer from './searchReducer';
-import { getRequest } from '../request'
-import { Thunk } from '../api'
+import _ from 'lodash'
+import * as groupActions from '../group/groupActions'
+import { getCurrentCommunityPermalink, Thunk } from '../api'
+import { getActiveSearchTypes, Order, OrderBy, search as _search, SearchAbleType } from '../search'
+import * as qnaApi from '../qna'
+import * as groupApi from '../group'
+import * as reducer from './searchReducer'
+import { Category } from '../category'
 
 //Change Text
 type UpdateSearchString = {
@@ -87,11 +78,11 @@ type Search = {
 };
 
 // Convert qna style ordering to search ordering
-function convertSearchTypeToOrderBy(params: { searchType?: string }) {
-	let { searchType: orderBy } = params;
+function convertSearchTypeToOrderBy(params: { searchType?: string, orderBy?: string }) {
+	let { searchType, orderBy } = params;
 	const newParams = Object.assign({}, params);
 
-	switch (orderBy) {
+	switch (searchType) {
 		case 'All':
 			orderBy = 'SCORE';
 			break;
@@ -116,7 +107,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 		q = q.substring(0, start) + q.substring(end, q.length);
 	}
 
-	const qnaSearchType =
+	const qnaSearchType:string =
 		!!searchParams.selectedFilters && searchParams.selectedFilters.searchType
 			? qnaApi.QnaTypeConverter(searchParams.selectedFilters.searchType)
 			: 'search';
@@ -125,7 +116,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 	searchParams = Object.assign({}, searchParams, { ...searchParams.selectedFilters });
 	delete searchParams.selectedFilters;
 
-	return (dispatch: Dispatch, getState: GetState) => {
+	return (dispatch: any, getState: any) => {
 		let { type } = searchParams;
 		const filters =
 			!!singleTypeSearch && !!type
@@ -138,20 +129,21 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 				if (filter !== _.get(type, '[0]')) {
 					parsedSearchParams.p = 1;
 				}
-				const storageName = reduxStorageUrl + '-' + filter;
-				dispatch(loadJsonActions.requestJson(storageName));
+				//const storageName = reduxStorageUrl + '-' + filter;
 
 				if (filter === 'question') {
 					try {
-						const game = await dispatch(xcapApi.getCurrentCommunityPermalink());
+						const game = await dispatch(getCurrentCommunityPermalink());
+
 						const json = await dispatch(
 							qnaApi.search({
 								...parsedSearchParams,
+                // @ts-ignore
+                // FIXME: Clean up this mess
 								searchType: qnaSearchType,
 								game
 							})
 						);
-						dispatch(loadJsonActions.recieveJson(storageName, json));
 						return json;
 					} catch (e) {
 						console.error('searchApi.search question caught an error: ', e);
@@ -159,11 +151,13 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 				} else if (filter === 'forumthreads') {
 					// rename searchType variable
 					try {
-						const game = await dispatch(xcapApi.getCurrentCommunityPermalink());
-						let json = await dispatch(
-							_search({ ...convertSearchTypeToOrderBy(parsedSearchParams), type: 'forumthreads' })
+						await dispatch(getCurrentCommunityPermalink());
+						await dispatch(
+              // @ts-ignore
+							_search({ ...convertSearchTypeToOrderBy(parsedSearchParams),
+                type: SearchAbleType.FORUM_THREADS
+							})
 						);
-						return dispatch(loadJsonActions.recieveJson(storageName, json));
 					} catch (e) {
 						console.error('searchApi.search question caught an error: ', e);
 					}
@@ -179,25 +173,25 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 								searchQuery: parsedSearchParams.q
 							})
 						);
-						dispatch(loadJsonActions.recieveJson(storageName, json));
 					} catch (e) {
 						console.error('searchApi.search faq caught an error: ', e);
 					}
 				*/
 				} else if (filter === 'blog-article') {
 					const categoryId = _.get(getState(), 'categories.news.selected.search-input', []).map(
-						category => category.id
+            (category:Category) => category.id
 					)[0];
 					try {
-						let json = await dispatch(
+
+            await dispatch(
+              // @ts-ignore
 							_search({
 								...convertSearchTypeToOrderBy(parsedSearchParams),
-								type: 'blog-article',
+								type: SearchAbleType.BLOG_ARTICLE,
 								categoryId
 							})
 						);
 
-						return dispatch(loadJsonActions.recieveJson(storageName, json));
 					} catch (e) {
 						console.error('searchApi.search blog-article caught an error: ', e);
 					}
@@ -219,6 +213,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 
 					try {
 						let json = await dispatch(
+              // @ts-ignore
 							_search({
 								...convertSearchTypeToOrderBy(parsedSearchParams),
 								community: filter === 'user' ? '' : undefined,
@@ -229,7 +224,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 						if (filter === 'group' || filter[0] === 'group') {
 							dispatch(groupActions.recieveGroups({ entries: _.get(json, 'results.entries') }));
 						}
-						return dispatch(loadJsonActions.recieveJson(storageName, json));
+						//return dispatch(loadJsonActions.recieveJson(storageName, json));
 					} catch (e) {
 						console.error('searchApi.search search caught an error: ', e);
 					}

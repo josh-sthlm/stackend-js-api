@@ -2,6 +2,8 @@
 import update from 'immutability-helper';
 import { Community } from '../stackend';
 import { isRunningInBrowser } from '../api'
+import { AnyAction } from 'redux'
+import { PaginatedCollection } from '../PaginatedCollection'
 
 export const KEY: string = 'COMMUNITIES';
 
@@ -16,10 +18,10 @@ export const RECEIVE_RESOURCE_USAGE: string = 'RECEIVE_RESOURCE_USAGE';
 declare var window: any;
 
 export interface CommunityState {
-	community?: any,
-	communities?: Community & {
-		objectsRequiringModeration?: number
-	},
+	community?: Community & {
+    objectsRequiringModeration?: number
+  } | null,
+	communities?: PaginatedCollection<Community>,
 	resourceUsage?: {
 		maximumUseBeforeCharge: any | null,
 		resourceUsageLast30Days: any | null,
@@ -34,12 +36,7 @@ export interface CommunityState {
 //Reducer
 export default function communityReducer(
 	state: CommunityState = {},
-	action: {
-		type: string,
-		json: {
-			result: [any]
-		}
-	}
+	action: AnyAction
 ) {
 	switch (action.type) {
 		case REQUEST_COMMUNITIES:
@@ -58,14 +55,14 @@ export default function communityReducer(
 			});
 
 		case UPDATE_COMMUNITY: {
-			const u = action.json;
+			const u = action.community;
 
-			if (!!state.json.result) {
-				let entries = state.json.result.entries;
+			if (!!state.communities) {
+				let entries = state.communities.entries;
 				let found = false;
 				for (let i = 0; i < entries.length; i++) {
 					let e = entries[i];
-					if (e.id === update.id) {
+					if (e.id === u.id) {
 						found = true;
 						e.name = u.name;
 						e.description = u.description;
@@ -76,16 +73,21 @@ export default function communityReducer(
 				}
 
 				if (!found) {
-					entries.push(action.json);
+					entries.push(action.community);
 				}
+
+        let newCommunities = Object.assign({}, state.communities);
+
+        return update(state, {
+          isFetching: { $set: false },
+          didInvalidate: { $set: false },
+          lastUpdated: { $set: action.receievedAt },
+          communities: { $set: newCommunities }
+        });
 			}
 
-			return update(state, {
-				isFetching: { $set: false },
-				didInvalidate: { $set: false },
-				lastUpdated: { $set: action.receievedAt },
-				json: { $set: action.json }
-			});
+			return state;
+
 		}
 
 		case SET_COMMUNITY_SETTINGS: {

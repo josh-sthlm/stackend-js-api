@@ -13,14 +13,14 @@ export const actionTypes = {
 	INVALIDATE_FORUMS: 'INVALIDATE_FORUMS'
 };
 
-export type Request = {
+export type Request = Action & {
 	type: 'REQUEST_FORUMS'
 };
-export type Recieve = {
+export type Recieve = Action & {
 	type: 'RECIEVE_FORUMS',
 	entries: Array<forumApi.Forum>
 };
-export type Invalidate = {
+export type Invalidate = Action & {
 	type: 'INVALIDATE_FORUMS'
 };
 

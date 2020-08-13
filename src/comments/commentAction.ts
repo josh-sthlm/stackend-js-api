@@ -14,15 +14,13 @@ import {
 } from './commentReducer';
 import * as blogActions from '../blog/groupBlogEntriesActions';
 import {
-	Comment,
-	getMultipleComments,
-	getComments,
-	postComment as _postComment,
-} from '../comments';
+  Comment,
+  getMultipleComments,
+  getComments,
+  postComment as _postComment, GetMultipleCommentsResult, CommentModule
+} from '../comments'
 import { Thunk } from '../api';
-import { Dispatch } from 'redux';
 //import { sendEventToGA } from '../analytics/analyticsFunctions';
-import { commentModule } from '../comments';
 import { recieveVotes } from '../vote/voteActions';
 
 const DEFAULT_PAGE_SIZE = 3;
@@ -86,8 +84,8 @@ export function fetchMultipleComments({
 	referenceGroupId: number, // Reference group id, for example blog id (optional)
 	p?: number, //page number in paginated collection
 	pageSize?: number
-}): Thunk<any> {
-	return async (dispatch /*, getState: any*/) => {
+}): Thunk<GetMultipleCommentsResult> {
+	return async (dispatch:any /*, getState: any*/) => {
 		dispatch(requestGroupComments(module, referenceGroupId));
 		let json = await dispatch(getMultipleComments({ module, referenceIds, pageSize, p }));
 		dispatch(recieveGroupComments(module, referenceGroupId, json));
@@ -99,7 +97,8 @@ export interface RecieveCommentsJson {
 	comments: {
 		entries: [Comment]
 	},
-	likesByCurrentUser: any
+	likesByCurrentUser: any,
+  error?: any
 }
 
 
@@ -164,8 +163,8 @@ function updateComment(
 	};
 }
 
-interface FetchComments {
-	module: commentModule,
+export interface FetchComments {
+	module: CommentModule,
 	referenceId: number, // Reference id to fetch comments for ex: blogEntryId
 	referenceGroupId?: number, // Reference group id, for example blog id (optional)
 	p?: number, //page number in paginated collection
@@ -184,7 +183,7 @@ export function fetchComments({
 	pageSize = DEFAULT_PAGE_SIZE,
 	useVotes = false
 }: FetchComments): Thunk<any> {
-	return async (dispatch: Dispatch /*, getState: any*/) => {
+	return async (dispatch: any /*, getState: any*/) => {
 		dispatch(requestComments(module, referenceId, referenceGroupId));
 		try {
 			const {
@@ -227,11 +226,11 @@ export function postComment({
 	id?: number, // Post id
 	referenceId: number, // Reference id to fetch comments for
 	referenceGroupId: number, // Reference group id, for example blog id  (optional)
-	module: string, // Module See Comments.CommentModule
+	module: CommentModule, // Module See Comments.CommentModule
 	body: string, //The body text
 	parentId?: number //The id of the comment you want to reply on
 }): Thunk<any> {
-	return async (dispatch: Dispatch, getState: any) => {
+	return async (dispatch: any, getState) => {
 		dispatch(blogActions.closeWriteCommentOrEdit());
 
 		let typeOfComment = '';
@@ -258,9 +257,9 @@ export function postComment({
 		} else {
 			typeOfComment = 'new';
 			//This is a new comment
-			if (isFinite(parentId) && getState().openReplyBoxes.indexOf(parentId) !== -1) {
+			if (parentId && isFinite(parentId) && getState().openReplyBoxes.indexOf(parentId) !== -1) {
 				//This is a reply and close the reply editor. This needs to be done before postcomment...
-				dispatch(toggleReplyEditor({ parentId: parseInt(parentId) }));
+				dispatch(toggleReplyEditor({ parentId: parseInt(parentId + '') }));
 				typeOfComment = 'reply';
 			}
 			const response = await dispatch(
@@ -283,7 +282,7 @@ export function postComment({
 				})
 			);
 			// FIXME: Readd ga
-			if (isFinite(parentId) && response.comment.id !== parentId) {
+			if (parentId && isFinite(parentId) && response.comment.id !== parentId) {
 				//This is a reply and close the reply editor
 				//dispatch(sendEventToGA(gaReplyEventObject({ comment: response.comment })));
 			} else {

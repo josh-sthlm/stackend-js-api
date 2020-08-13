@@ -218,28 +218,38 @@ function generateQueryObject(searchString = '', selectedFilters:any, availableFi
 				selectedFilters.searchType.substring(selectedFilters.searchType.lastIndexOf('/') + 1)
 		  )
 		: undefined;
-	const platform = !!selectedFilters.platform
+
+	// FIXME: Fix this
+  const platform = !!selectedFilters.platform
+    // @ts-ignore
 		? find(
 				availableFilters.filterPlatforms,
 				{ id: selectedFilters.platform },
+      // @ts-ignore
 				{ partOfPermalink: undefined }
 		  ).partOfPermalink
 		: undefined;
 	const issue = !!selectedFilters.issue
+    // @ts-ignore
 		? find(
 				availableFilters.filterIssues,
 				{ id: selectedFilters.issue },
+      // @ts-ignore
 				{ partOfPermalink: undefined }
 		  ).partOfPermalink
 		: undefined;
 	const device = !!selectedFilters.device
+    // @ts-ignore
 		? find(
 				availableFilters.filterDevices,
 				{ id: selectedFilters.device },
+      // @ts-ignore
 				{ partOfPermalink: undefined }
 		  ).partOfPermalink
 		: undefined;
 
+	// FIXME:
+  // @ts-ignore
 	qo.q = searchString;
 
 	return { ...qo, ...selectedFilters, searchType, platform, issue, device };

@@ -10,9 +10,13 @@ export const RECIEVE_SUB_SITES: string = 'RECIEVE_SUB_SITES';
 export const CLEAR_SUB_SITES: string = 'CLEAR_SUB_SITES';
 
 export interface PagesState {
-	byId: { [id: string]: Page },
+	byId: { [id: string]: PageAndLoadedState },
 	idByPermalink: { [permalink: string]: number },
 	subSiteById: { [id: string]: SubSite }
+}
+
+export interface PageAndLoadedState extends Page {
+  loaded: number // Time when loaded
 }
 
 export default function(
@@ -34,8 +38,9 @@ export default function(
 				let s: PagesState = Object.assign({}, state);
 				let now = new Date().getTime();
 				Object.entries(action.json.pages).forEach(([id, page]) => {
-					s.byId[id] = Object.assign(page, { loaded: now });
-					s.idByPermalink[page.permalink] = page.id;
+				  let p = (page as Page);
+					s.byId[id] = Object.assign(p, { loaded: now });
+					s.idByPermalink[p.permalink] = p.id;
 				});
 
 				//console.log('Recieved pages', s);
@@ -73,7 +78,7 @@ export default function(
 
 			let s: PagesState = Object.assign({}, state);
 			for (let [subSiteId, subSite] of Object.entries(action.json.subSites)) {
-				s.subSiteById[subSiteId] = subSite;
+				s.subSiteById[subSiteId] = (subSite as SubSite);
 			}
 
 			return s;

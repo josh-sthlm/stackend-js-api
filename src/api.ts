@@ -785,9 +785,9 @@ export function _getApiUrl({
 	url: string, //extra url
 	parameters?: any, //extra parameters
 	notFromApi?: boolean, //if the url is not in the api
-	community?: string, //community name
-	componentName?: string, //Component name used to look up config
-	context?: string //Context name used to look up config
+	community?: string | null, //community name
+	componentName?: string | null, //Component name used to look up config
+	context?: string | null //Context name used to look up config
 }): string {
 	//the api url
 	let params = argsToObject(parameters);
@@ -877,9 +877,9 @@ export function getApiUrl({
 	url: string,
 	parameters?: any,
 	notFromApi?: boolean,
-	community?: string,
-	componentName?: string,
-	context?: string
+	community?: string|null,
+	componentName?: string|null,
+	context?: string|null
 }): Thunk<string> {
 	return (dispatch, getState) => {
 		return _getApiUrl({
@@ -930,10 +930,10 @@ export function getJson({
 	url: string,
 	parameters?: any,
 	notFromApi?: boolean,
-	community?: string,
-	componentName?: string,
-	context?: string,
-	cookie?: string
+	community?: string|null,
+	componentName?: string|null,
+	context?: string|null,
+	cookie?: string|null
 }): Thunk<XcapJsonResult> {
 	return async (dispatch: any /*,getState: any*/) => {
 
@@ -1063,9 +1063,9 @@ export function post({
 }: {
 	url: string,
 	parameters?: any,
-	community?: string,
-	componentName?: string,
-	context?: string
+	community?: string | null,
+	componentName?: string | null,
+	context?: string | null
 }): Thunk<XcapJsonResult> {
 	return async (dispatch: any) => {
 		const params = argsToObject(parameters);
@@ -1128,9 +1128,9 @@ export function getXpressToken({
 	componentName,
 	context
 }: {
-	community?: string,
-	componentName?: string,
-	context?: string
+	community?: string | null,
+	componentName?: string | null,
+	context?: string | null
 }): Thunk<GetExpressTokenResult> {
 	return getJson({
 		url: '/xpresstoken',
@@ -1182,8 +1182,8 @@ export function _getConfig({
 }: {
 	config: Config,
 	key: string,
-	componentName?: string,
-	context?: string,
+	componentName?: string | null,
+	context?: string | null,
 	defaultValue?: any
 }): any {
 	if (typeof config === 'undefined') {

@@ -11,6 +11,7 @@ import {
 
 import * as Stackend from '../stackend';
 import { Thunk } from '../api';
+import { Community } from '../stackend'
 
 /**
  * Load communities
@@ -92,11 +93,11 @@ export function fetchCommunities({
 	};
 }
 
-function updateCommunity(json: any): any {
+function updateCommunity(community: Community): any {
 	return {
 		type: UPDATE_COMMUNITY,
 		receievedAt: Date.now(),
-		json
+    community
 	};
 }
 

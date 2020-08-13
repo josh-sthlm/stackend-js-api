@@ -13,6 +13,7 @@ import { hasElevatedPrivilege, User } from './user';
 import { PaginatedCollection } from './PaginatedCollection';
 import { CurrentUserType } from './login/loginReducer';
 import { PrivilegeTypeId, PrivilegeTypeIds } from './privileges'
+import { Image } from './media'
 
 /**
  * Stackend API constants and methods.
@@ -51,19 +52,20 @@ export interface Community extends XcapObject {
 	name: string,
 	description: string,
 	status: string /** CommunityStatus */,
-	logotypeId: any,
-	logotype: null,
-	domains: [string],
-	adminUserIds: [number],
-	moderatorUserIds: [number],
+	logotype: Image | null,
+	domains: Array<string>,
+	adminUserIds: Array<number>,
+	moderatorUserIds: Array<number>,
 	locale: string,
 	xcapCommunityName: string,
 	creatorUserId: number,
-	creatorUserRef: any,
+	creatorUserRef: User | null,
 	createdDate: number,
 	modStatus: string,
 	expiresDate: number,
 	theme: string,
+  settings: any,
+  style: any
 }
 
 /**
@@ -409,11 +411,11 @@ export function storeCommunityPrivateSettings({
 	values?: Map<string, any>,
 	community?: string | null
 }): Thunk<XcapJsonResult> {
-	let x = { key: key, values: null };
+	let x = {
+	  key: key,
+    values: values ? JSON.stringify(values) : null
+	};
 
-	if (values) {
-		x.values = JSON.stringify(values);
-	}
 
 	return post({
 		url: '/stackend/community/private/store-settings',
@@ -684,11 +686,7 @@ export function isCommunityAdmin(community: Community|null, userId?: number|null
 		return true;
 	}
 
-	if (typeof community.adminUserIds !== 'undefined' && community.adminUserIds.includes(userId)) {
-		return true;
-	}
-
-	return false;
+	return typeof community.adminUserIds !== 'undefined' && community.adminUserIds.includes(<number>userId);
 }
 
 /**

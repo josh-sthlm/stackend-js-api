@@ -8,7 +8,6 @@ import { listMyGroups } from '../group';
 import { getJsonErrorText, XcapJsonResult, Thunk } from '../api'
 import * as commentActions from '../comments/commentAction';
 import * as commentApi from '../comments';
-import { Dispatch } from 'redux';
 
 import {
 	INVALIDATE_GROUP_BLOG_ENTRIES,
@@ -20,15 +19,15 @@ import {
 } from './groupBlogEntriesReducer';
 
 import {
-	BlogEntry,
-	getEntry,
-	getEntries,
-	saveEntry,
-	SetEntryStatus,
-	setEntryStatus,
-	//gaPostEventObject,
-	//gaEditPostEventObject
-} from '../blog';
+  BlogEntry,
+  getEntry,
+  getEntries,
+  saveEntry,
+  SetEntryStatus,
+  setEntryStatus, GetEntriesResult
+  //gaPostEventObject,
+  //gaEditPostEventObject
+} from '../blog'
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**
@@ -41,7 +40,7 @@ import {
 //When loading comments recieve is run when the server has responded
 function recieveBlogEntries(
 	blogKey: string,
-	json: { resultPaginated: { entries: [BlogEntry] } }
+	json: GetEntriesResult
 ): any {
 	return {
 		type: RECIEVE_GROUP_BLOG_ENTRIES,
@@ -100,7 +99,7 @@ export function fetchBlogEntries({
 	invalidatePrevious = false,
 	goToBlogEntry
 }: FetchBlogEntries): Thunk<any> {
-	return async (dispatch: Dispatch, getState: any) => {
+	return async (dispatch: any, getState: any) => {
 		const categoryId = _.get(categories, '[0].id', null);
 
 		try {
@@ -216,7 +215,7 @@ export function fetchBlogEntriesWithComments({
 				);
 				return null;
 			}
-			const referenceIds = response.json.resultPaginated.entries.map(entry => entry.id);
+			const referenceIds = response.json.resultPaginated.entries.map((entry:BlogEntry) => entry.id);
 
 			return dispatch(
 				commentActions.fetchMultipleComments({
@@ -281,8 +280,9 @@ function _fetchBlogEntry(blogKey: string, json:any) {
 			dispatch(blogActions.recieveBlogs({ entries: blogRef }));
 		}
 
-		return dispatch(
+    return dispatch(
 			recieveBlogEntries(blogKey, {
+        // @ts-ignore
 				resultPaginated: {
 					entries: [json.blogEntry]
 				},
@@ -346,7 +346,8 @@ export function postBlogEntry({
 			//Add new blogEntry
       // FIXME: Re add ga
 			//dispatch(sendEventToGA(gaPostEventObject({ blogEntry: response.entry })));
-			return dispatch(recieveBlogEntries(blogKey, state));
+			// @ts-ignore
+      return dispatch(recieveBlogEntries(blogKey, state));
 		}
 	};
 }

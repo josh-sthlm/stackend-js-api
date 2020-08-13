@@ -20,15 +20,22 @@ export const loginReducer = (
 	let now = new Date().getTime();
 	switch (action.type) {
 		case LOGIN:
-			return (state = { isLoggedIn: true, lastUpdated: now });
+      // @ts-ignore
+      return (state = { isLoggedIn: true, lastUpdated: now });
+
 		case LOGOUT:
+      // @ts-ignore
 			return (state = { isLoggedIn: false, lastUpdated: now });
+
 		case REQUEST_LOGIN_DATA:
 			return state;
+
 		case UPDATE_LOGIN_DATA:
 			if (_.get(action, 'json.user')) {
 				return Object.assign({}, { isLoggedIn: true, lastUpdate: now }, action.json);
-			} else return (state = { isLoggedIn: false, lastUpdated: now });
+			}
+      // @ts-ignore
+      return (state = { isLoggedIn: false, lastUpdated: now });
 		default:
 			return state;
 	}

@@ -4,6 +4,7 @@ import update from 'immutability-helper';
 import { Action } from 'redux';
 import createReducer from '../createReducer';
 import * as forumApi from '../forum';
+import { ForumThreadEntry } from '../forum'
 
 export type ForumThreadActions = Request | Recieve | Invalidate | Rate | Like | DeleteEntry;
 
@@ -17,38 +18,40 @@ export const actionTypes = {
 	DELETE_FORUM_THREAD: 'DELETE_FORUM_THREAD'
 };
 
-export type Request = {
+export type Request = Action & {
 	type: 'REQUEST_FORUM_THREADS'
 };
-export type Recieve = {
+export type Recieve = Action & {
 	type: 'RECIEVE_FORUM_THREADS',
 	entries: Array<forumApi.ForumThreadEntry>,
-	forumPermalink: string
+	forumPermalink: string,
+  pageSize: number
 };
-export type Update = {
+export type Update = Action & {
 	type: 'UPDATE_FORUM_THREAD_ENTRY',
 	entry: forumApi.ForumThreadEntry,
 	forumPermalink: string
 };
-export type Invalidate = {
+export type Invalidate = Action & {
 	type: 'INVALIDATE_FORUM_THREADS'
 };
-export type Rate = {
+export type Rate = Action & {
 	type: 'RECIEVE_VOTE_FORUM_THREAD',
 	voteJson: forumApi.VoteReturn,
 	forumPermalink: string
 };
-export type Like = {
+export type Like = Action & {
 	type: 'RECIEVE_LIKE_FORUM_THREAD',
+  referenceId: number,
 	recievedLikes: any,
 	forumPermalink: string
 };
-export type DeleteEntry = {
+export type DeleteEntry = Action & {
 	type: 'DELETE_FORUM_THREAD',
 	entry: forumApi.ForumThreadEntry
 };
 
-interface State {
+export interface State {
 	isFetching: boolean,
 	didInvalidate: boolean,
 	lastUpdated: number, //Date
@@ -77,15 +80,19 @@ export default createReducer(initialState, {
 			.groupBy('id')
 			.map(_.spread(_.merge))
 			.value()
-			.sort((a, b) => a.sticky < b.sticky);
+			.sort((a:ForumThreadEntry, b:ForumThreadEntry) => (a.sticky ? 1: 0) - (b.sticky ? 1 : 0));
 
-		return update(state, {
+
+    return update(state, {
 			isFetching: { $set: false },
 			didInvalidate: { $set: false },
 			lastUpdated: { $set: Date.now() },
+      // @ts-ignore
 			forums: {
 				[action.forumPermalink]: {
-					$apply: forumPermalink => update(forumPermalink || [], { $set: uniqueForumThreads })
+          // @ts-ignore
+          // FIXME: Error?
+					$apply: (forumPermalink:string) => update(forumPermalink || [], { $set: uniqueForumThreads })
 				}
 			}
 		});
@@ -116,11 +123,14 @@ export default createReducer(initialState, {
 		update(state, {
 			didInvalidate: { $set: true }
 		}),
+
 	RECIEVE_VOTE_FORUM_THREAD: (state: State, action: Rate) => {
 		const forumThreadKey = state.forums[action.forumPermalink].findIndex(
 			thread => thread.id === action.voteJson.referenceId
 		);
-		return update(state, {
+
+    return update(state, {
+      // @ts-ignore
 			forums: {
 				[action.forumPermalink]: {
 					[forumThreadKey]: {
@@ -131,21 +141,23 @@ export default createReducer(initialState, {
 			}
 		});
 	},
+
 	RECIEVE_LIKE_FORUM_THREAD: (state: State, action: Like) => {
 		const forumThreadKey = state.forums[action.forumPermalink].findIndex(
 			thread => thread.id === action.referenceId
 		);
 		return update(state, {
+      // @ts-ignore
 			forums: {
 				[action.forumPermalink]: {
 					[forumThreadKey]: {
-						numberOfLikes: { $set: action.receivedLikes.numberOfLikes },
+						numberOfLikes: { $set: action.recievedLikes.numberOfLikes },
 						likedByCurrentUser: {
-							$apply: context =>
+							$apply: (context:string) =>
 								update(context || {}, {
-									likes: { $set: action.receivedLikes.numberOfLikes },
+									likes: { $set: action.recievedLikes.numberOfLikes },
 									likedByCurrentUser: {
-										$set: !action.receivedLikes.remove
+										$set: !action.recievedLikes.remove
 									}
 								})
 						}

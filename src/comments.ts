@@ -73,25 +73,20 @@ export enum CommentSortCriteria {
 	CREATED_WITH_REPLIES = 'CREATED_WITH_REPLIES'
 }
 
-export type commentModule = '' | 'blog';
-
 /**
  *
  */
-export const CommentModule: {
-	GENERIC: commentModule,
-	BLOG: commentModule
-} = {
+export enum CommentModule {
 	/**
 	 * Generic comment module
 	 */
-	GENERIC: '',
+	GENERIC= '',
 
 	/**
 	 * Blog comment module
 	 */
-	BLOG: 'blog'
-};
+	BLOG = 'blog'
+}
 
 export interface GetCommentsResult extends XcapJsonResult {
 	likesByCurrentUser: LikesByCurrentUser,
@@ -204,7 +199,7 @@ export function postComment({
 	commentId?: number,
 	referenceId: number,
 	referenceGroupId?: number,
-	module: commentModule,
+	module: CommentModule,
 	parentId?: number,
 	subject?: string,
 	body: string,

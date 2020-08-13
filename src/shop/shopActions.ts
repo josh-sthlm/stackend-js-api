@@ -1,15 +1,15 @@
 //@flow
 
 import {
-	Product,
-	getProduct,
-	listProducts,
-	listProductTypes,
-	listProductsAndTypes,
-	GetProductRequest,
-	ListProductsRequest,
-	ListProductTypesResult
-} from '../shop';
+  Product,
+  getProduct,
+  listProducts,
+  listProductTypes,
+  listProductsAndTypes,
+  GetProductRequest,
+  ListProductsRequest,
+  ListProductTypesResult, ListProductTypesRequest
+} from '../shop'
 import {
 	ADD_TO_BASKET,
 	RECIEVE_PRODUCT,
@@ -18,7 +18,7 @@ import {
 } from './shopReducer';
 import { Thunk } from '../api'
 
-export const requestProductTypes = (req: ListProductTypesResult):Thunk<ListProductTypesResult> => async (dispatch) => {
+export const requestProductTypes = (req: ListProductTypesRequest):Thunk<ListProductTypesResult> => async (dispatch:any) => {
 	let r = await dispatch(listProductTypes(req));
 	await dispatch({ type: RECIEVE_PRODUCT_TYPES, json: r });
 	return r;

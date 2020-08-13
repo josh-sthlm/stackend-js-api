@@ -444,7 +444,7 @@ export function uploadMediaFile({
 	maxWidth?: number,
 	maxHeight?: number,
 	responsive?: boolean
-}): UploadMediaFileResult {
+}): Promise<UploadMediaFileResult> {
 	// Allows the use of COMMUNITY_PARAMETER as well
 	if (typeof communityPermalink === 'undefined') {
 		// @ts-ignore

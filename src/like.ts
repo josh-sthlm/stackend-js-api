@@ -50,6 +50,10 @@ export function getLikeData(likes: LikeDataMap, object: any): LikeData {
 	};
 }
 
+export interface LikeResult extends XcapJsonResult {
+  numberOfLikes: number,
+
+}
 /**
  * Like an object.
  *
@@ -67,7 +71,7 @@ export function like({
 	obfuscatedReference?: string,
 	reference?: string,
 	context: string
-}): Thunk<XcapJsonResult> {
+}): Thunk<LikeResult> {
 	return post({
 		url: '/like/like',
 		parameters: { obfuscatedReference, reference },

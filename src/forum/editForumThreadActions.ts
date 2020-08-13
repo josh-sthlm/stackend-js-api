@@ -2,13 +2,15 @@
 import * as reducer from './editForumThreadReducer';
 
 export function editForumEntyText({ text }: { text: string }): reducer.Edit {
-	return {
+	// @ts-ignore
+  return {
 		type: reducer.actionTypes.EDIT_FORUM_ENTRY_TEXT,
 		text
 	};
 }
 
 export function setForumEntyText({ text }: { text: string }): reducer.Set {
+  // @ts-ignore
 	return {
 		type: reducer.actionTypes.SET_FORUM_ENTRY_TEXT,
 		text
@@ -16,6 +18,7 @@ export function setForumEntyText({ text }: { text: string }): reducer.Set {
 }
 
 export function addForumEntryQuote({ quote }: { quote: string }): reducer.AddQuote {
+  // @ts-ignore
 	return {
 		type: reducer.actionTypes.ADD_QUOTE,
 		quote

@@ -80,7 +80,7 @@ export enum SearchAbleType {
 	QUESTION = 'question', //Qna-questions
 	ANSWER = 'answer', //Qna-answers
 	CMS = 'cms', //Cms-object
-	BLOG_group = 'blog-group',
+	BLOG_GROUP = 'blog-group',
 	BLOG_ARTICLE = 'blog-article',
 	FORUM_THREADS = 'forumthreads'
 }
@@ -91,7 +91,7 @@ interface GetActiveSearchTypes {
 	group?: boolean,
 	forum?: boolean,
 	blog?: boolean
-};
+}
 
 export function getActiveSearchTypes({
 	qna,

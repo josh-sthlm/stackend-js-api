@@ -3,12 +3,12 @@
 import { Thunk } from '../api';
 
 import {
-	CLEAR_PAGE,
-	CLEAR_PAGES,
-	RECIEVE_PAGES,
-	PagesState,
-	RECIEVE_SUB_SITES
-} from './pageReducer';
+  CLEAR_PAGE,
+  CLEAR_PAGES,
+  RECIEVE_PAGES,
+  PagesState,
+  RECIEVE_SUB_SITES, PageAndLoadedState
+} from './pageReducer'
 
 import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode } from '../cms'
 import { getPermalink } from '../tree';
@@ -25,7 +25,7 @@ export function requestPages({
 	permalinks?: Array<string>,
 	communityPermalink?: string | null
 }): Thunk<GetPagesResult> {
-	return async (dispatch /*, getState: any*/) => {
+	return async (dispatch:any) => {
 		let r = await dispatch(getPages({ pageIds, permalinks, communityPermalink }));
 		await dispatch({
 			type: RECIEVE_PAGES,
@@ -52,7 +52,7 @@ export function requestMissingPages({
 	permalinks?: Array<string>,
 	communityPermalink?: string | null
 }): Thunk<GetPagesResult> {
-	return async (dispatch, getState) => {
+	return async (dispatch:any, getState) => {
 		let fetchPageIds:Array<number> = [];
 		let fetchPermalinks:Array<string> = [];
 		let { pages } = getState();
@@ -92,16 +92,17 @@ export function requestMissingPages({
 	};
 }
 
-export function shouldFetchPage(p: Page | null, now: number): boolean {
+export function shouldFetchPage(p: Page | PageAndLoadedState | null, now: number): boolean {
 	if (!p) {
 		return true;
 	}
 
-	if (!p.loaded) {
+	let s = (p as PageAndLoadedState);
+	if (!s.loaded) {
 		return true;
 	}
 
-	let age = now - p.loaded;
+	let age = now - s.loaded;
 	return age > 60000;
 }
 
@@ -159,10 +160,10 @@ export function recievePages(json: any): Thunk<any> {
 }
 
 export function requestSubSite(id: number): Thunk<GetSubSiteResult> {
-	return async (dispatch) => {
+	return async (dispatch:any) => {
 		let r = await dispatch(getSubSite({ id }));
 		if (!r.error && r.tree) {
-			let pages = {};
+			let pages:{[id:number]: Page} = {};
 			Object.keys(r.referencedObjects).forEach(k => {
 				let p = r.referencedObjects[k];
 				if (p) {

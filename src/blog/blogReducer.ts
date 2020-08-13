@@ -34,8 +34,8 @@ export default function blogs(state: State = {
         didInvalidate: { $set: false }
       });
     case RECIEVE_BLOGS:
-      let newBlogs = {};
-      [].concat(action.entries).map(group => (newBlogs[group.id] = group));
+      let newBlogs:{[id:number]: Blog} = {};
+        ((action.entries) as Array<Blog>).map(group => (newBlogs[group.id] = group));
 
       return update(state, {
         isFetching: { $set: false },
