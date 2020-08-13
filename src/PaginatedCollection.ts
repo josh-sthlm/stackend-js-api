@@ -2,16 +2,16 @@
 
 
 export interface PaginatedCollection<T> {
-	page: number,
-	pageSize: number,
-	totalSize: number,
-	hasNextPage: boolean,
-	hasPreviousPage: boolean,
-	lastPage: number,
-	firstPage: number,
-	nextPage: number,
-	previousPage: number,
-	entries: Array<T>
+	page: number;
+	pageSize: number;
+	totalSize: number;
+	hasNextPage: boolean;
+	hasPreviousPage: boolean;
+	lastPage: number;
+	firstPage: number;
+	nextPage: number;
+	previousPage: number;
+	entries: Array<T>;
 }
 
 
@@ -29,18 +29,18 @@ export function newPaginatedCollection<T>({
 	pageSize = 10,
 	totalSize = 0
 }: {
-	entries?: Array<T>,
-	page?: number,
-	pageSize?: number,
-	totalSize?: number
+	entries?: Array<T>;
+	page?: number;
+	pageSize?: number;
+	totalSize?: number;
 }): PaginatedCollection<T> {
-	let e = entries || [];
-	let tz = totalSize || e.length;
-	let hasPreviousPage = page > 1;
-	let previousPage = page > 1 ? page - 1 : 1;
-	let hasNextPage = pageSize * page < tz;
-	let nextPage = hasNextPage ? page + 1 : 1;
-	let lastPage = hasNextPage ? Math.max(1, Math.ceil(tz / pageSize)) : 1;
+	const e = entries || [];
+	const tz = totalSize || e.length;
+	const hasPreviousPage = page > 1;
+	const previousPage = page > 1 ? page - 1 : 1;
+	const hasNextPage = pageSize * page < tz;
+	const nextPage = hasNextPage ? page + 1 : 1;
+	const lastPage = hasNextPage ? Math.max(1, Math.ceil(tz / pageSize)) : 1;
 
 	return {
 		page: page,
@@ -60,6 +60,6 @@ export function newPaginatedCollection<T>({
  * Construct a new empty paginated collection.
  * @param pageSize
  */
-export function emptyPaginatedCollection<T>(pageSize: number = 10): PaginatedCollection<T> {
+export function emptyPaginatedCollection<T>(pageSize = 10): PaginatedCollection<T> {
 	return newPaginatedCollection({ pageSize });
 }

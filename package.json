@@ -46,6 +46,7 @@
     "@typescript-eslint/parser": "^2.34.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
+    "eslint-config-prettier": "6.11.0",
     "eslint-config-react-app": "^5.2.1",
     "eslint-import-resolver-typescript": "^2.2.0",
     "eslint-plugin-flowtype": "^4.7.0",
@@ -53,17 +54,12 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^2.5.1",
+    "eslint-plugin-prettier": "^3.1.4",
     "jest": "^26.4.0",
     "prettier": "^2.0.5",
     "rimraf": "^3.0.2",
     "typescript": "^3.9.7",
     "typings-tester": "^0.3.2"
-  },
-  "prettier": {
-    "useTabs": true,
-    "jsxBracketSameLine": true,
-    "singleQuote": true,
-    "printWidth": 100
   },
   "scripts": {
     "build": "tsc",
@@ -73,6 +69,7 @@
     "lint": "eslint --ext js,ts src tests",
     "clean": "rimraf build coverage types",
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
+    "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
     "prepublishOnly": "npm run clean && npm run check-types && npm run format:check && npm run lint && npm test"
   },
   "jest": {

@@ -5,9 +5,9 @@ import { post, XcapJsonResult, Thunk } from './api';
 /**
  * Component name
  */
-export const COMPONENT_NAME: string = 'abuse';
+export const COMPONENT_NAME = 'abuse';
 
-export const TYPE_ABUSE: string = 'net.josh.community.abuse.ReferencedAbuse';
+export const TYPE_ABUSE = 'net.josh.community.abuse.ReferencedAbuse';
 
 /**
  * Send an abuse report for an object.
@@ -25,10 +25,10 @@ export function report({
                          context = null,
                          componentName = null
                        }: {
-  obfuscatedReference: string,
-  abuseText: string,
-  context?: string | null,
-  componentName?: string | null
+  obfuscatedReference: string;
+  abuseText: string;
+  context?: string | null;
+  componentName?: string | null;
 }): Thunk<XcapJsonResult> {
   return post({
     url: '/abuse/report',
