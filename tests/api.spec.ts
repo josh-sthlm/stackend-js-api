@@ -9,12 +9,12 @@ import {
   invertOrder,
   Order, parseCommunityContext, parseReference,
   STACKEND_DEFAULT_SERVER, templateReplace, templateReplaceUrl, _constructConfig,
-  STACKEND_DEFAULT_CONTEXT_PATH, DeployProfile, setConfiguration
-} from '../src/api'
+  STACKEND_DEFAULT_CONTEXT_PATH, DeployProfile, setConfiguration, newXcapJsonResult
+} from '../src/api';
 import { Community, CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
 
 describe('API', () => {
-  let store = createTestStore();
+  const store = createTestStore();
 
 
 	describe('invertOrder', () => {
@@ -27,7 +27,7 @@ describe('API', () => {
 
   describe("getConfiguration", () => {
     it("Should get stackend configuration from redux state", async () => {
-      let c:Config = await store.dispatch(getConfiguration());
+      const c: Config = await store.dispatch(getConfiguration());
       expect(c).toBeDefined();
       expect(c.server).toBe(STACKEND_DEFAULT_SERVER);
       expect(c.contextPath).toBe(STACKEND_DEFAULT_CONTEXT_PATH);
@@ -47,7 +47,7 @@ describe('API', () => {
   describe("argsToObject", () => {
     it("Converts Arguments to an object", () => {
 
-      let r:any = (function(x:any) {
+      const r: any = (function(x: any) {
         return argsToObject(arguments);
       })({ a: 'hello', b: 1, c: true });
 
@@ -67,11 +67,11 @@ describe('API', () => {
 
   describe("getInitialStoreValues", () => {
     it("Loads initial information about a community into the redux store", async () => {
-      let r = await store.dispatch(getInitialStoreValues({ permalink: STACKEND_COM_COMMUNITY_PERMALINK }));
+      const r = await store.dispatch(getInitialStoreValues({ permalink: STACKEND_COM_COMMUNITY_PERMALINK }));
       expect(r.__resultCode).toBe("success");
       expect(r.stackendCommunity).toBeDefined();
 
-      let c:Community = r.stackendCommunity;
+      const c: Community = r.stackendCommunity;
       expect(c.id).toBe(55);
       expect(c.permalink).toBe(STACKEND_COM_COMMUNITY_PERMALINK);
       expect(c.name).toBe("stackend.com");
@@ -151,7 +151,7 @@ describe('API', () => {
 
   describe("_constructConfig", () => {
     it("Creates a default configuration", () => {
-      let c = _constructConfig();
+      const c = _constructConfig();
       expect(c).toBeDefined();
       expect(c.server).toBe(STACKEND_DEFAULT_SERVER);
       expect(c.contextPath).toBe(STACKEND_DEFAULT_CONTEXT_PATH);
@@ -169,13 +169,20 @@ describe('API', () => {
         server: "http://localhost:8080/"
       }));
 
-      let c:Config = store.dispatch(getConfiguration());
+      const c: Config = store.dispatch(getConfiguration());
       expect(c).toBeDefined();
       expect(c.server).toBe("http://localhost:8080/");
       expect(c.apiUrl).toBe(STACKEND_DEFAULT_SERVER + "" + STACKEND_DEFAULT_CONTEXT_PATH + "/api");
     });
   });
 
+  describe("newXcapJsonResult", () => {
+    it("Construts a new result", async () => {
+      const r = newXcapJsonResult('success');
+      expect(r.__resultCode).toBe("success");
+      expect(r.error).toBeUndefined();
+    });
+  })
 });
 
 

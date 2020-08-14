@@ -5,17 +5,17 @@ import * as categoryApi from '../category';
 import * as groupActions from '../group/groupActions';
 import * as blogActions from './blogActions';
 import { listMyGroups } from '../group';
-import { getJsonErrorText, XcapJsonResult, Thunk } from '../api'
+import { getJsonErrorText, Thunk } from '../api';
 import * as commentActions from '../comments/commentAction';
 import * as commentApi from '../comments';
 
 import {
-	INVALIDATE_GROUP_BLOG_ENTRIES,
-	RECIEVE_GROUP_BLOG_ENTRIES,
-	REQUEST_GROUP_BLOG_ENTRIES,
-	TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
-	CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY,
-	UPDATE_GROUP_BLOG_ENTRY
+  INVALIDATE_GROUP_BLOG_ENTRIES,
+  RECIEVE_GROUP_BLOG_ENTRIES,
+  REQUEST_GROUP_BLOG_ENTRIES,
+  TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
+  CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY,
+  UPDATE_GROUP_BLOG_ENTRY,
 } from './groupBlogEntriesReducer';
 
 import {
@@ -24,10 +24,12 @@ import {
   getEntries,
   saveEntry,
   SetEntryStatus,
-  setEntryStatus, GetEntriesResult
+  setEntryStatus,
+  GetEntriesResult, GetBlogEntryResult
   //gaPostEventObject,
   //gaEditPostEventObject
-} from '../blog'
+} from '../blog';
+import { AnyAction } from 'redux';
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**
@@ -38,258 +40,229 @@ import {
  */
 
 //When loading comments recieve is run when the server has responded
-function recieveBlogEntries(
-	blogKey: string,
-	json: GetEntriesResult
-): any {
-	return {
-		type: RECIEVE_GROUP_BLOG_ENTRIES,
-		blogKey,
-		json,
-		receievedAt: Date.now()
-	};
+function recieveBlogEntries(blogKey: string, json: GetEntriesResult): AnyAction {
+  return {
+    type: RECIEVE_GROUP_BLOG_ENTRIES,
+    blogKey,
+    json,
+    receievedAt: Date.now(),
+  };
 }
 
 //When loading comments recieve is run when the server has responded
-export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): any {
-	return {
-		type: INVALIDATE_GROUP_BLOG_ENTRIES,
-		blogKey,
-		receievedAt: Date.now()
-	};
+export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): AnyAction {
+  return {
+    type: INVALIDATE_GROUP_BLOG_ENTRIES,
+    blogKey,
+    receievedAt: Date.now(),
+  };
 }
 
 //Request comments from the server
-function requestBlogEntries(blogKey: string): any {
-	return {
-		type: REQUEST_GROUP_BLOG_ENTRIES,
-		blogKey
-	};
+function requestBlogEntries(blogKey: string): AnyAction {
+  return {
+    type: REQUEST_GROUP_BLOG_ENTRIES,
+    blogKey,
+  };
 }
 //Update already existing blog entry
-function updateBlogEntry(
-	blogKey: string,
-	json: { resultPaginated: { entries: [BlogEntry] } }
-): any {
-	return {
-		type: UPDATE_GROUP_BLOG_ENTRY,
-		blogKey,
-		json,
-		receievedAt: Date.now()
-	};
+function updateBlogEntry(blogKey: string, json: { resultPaginated: { entries: [BlogEntry] } }): AnyAction {
+  return {
+    type: UPDATE_GROUP_BLOG_ENTRY,
+    blogKey,
+    json,
+    receievedAt: Date.now(),
+  };
 }
 
-type FetchBlogEntries = {
-	blogKey: string, //The id of the blogKey that you want to store the data in redux
-	pageSize?: number,
-	p?: number, //page number in paginated collection
-	categories?: Array<categoryApi.Category>,
-	invalidatePrevious?: boolean, //if true, invalidates previous blog-entries in this blog,
-	goToBlogEntry?: string // Start the pagination at the specified entry permalink
-};
+export interface FetchBlogEntries {
+  blogKey: string; //The id of the blogKey that you want to store the data in redux
+  pageSize?: number;
+  p?: number; //page number in paginated collection
+  categories?: Array<categoryApi.Category>;
+  invalidatePrevious?: boolean; //if true, invalidates previous blog-entries in this blog,
+  goToBlogEntry?: string; // Start the pagination at the specified entry permalink
+}
 
 /*
  * Requests and receive blog entries and store them in redux-state
  */
 export function fetchBlogEntries({
-	blogKey,
-	pageSize = 15,
-	p = 1,
-	categories,
-	invalidatePrevious = false,
-	goToBlogEntry
+  blogKey,
+  pageSize = 15,
+  p = 1,
+  categories,
+  invalidatePrevious = false,
+  goToBlogEntry,
 }: FetchBlogEntries): Thunk<any> {
-	return async (dispatch: any, getState: any) => {
-		const categoryId = _.get(categories, '[0].id', null);
+  return async (dispatch: any, getState): Promise<any> => {
+    const categoryId = _.get(categories, '[0].id', null);
 
-		try {
-			dispatch(requestBlogEntries(blogKey));
-			const { currentUser, groups } = getState();
-			const auth = _.get(groups, 'auth', {});
-			try {
-				if (
-					_.get(currentUser, 'isLoggedIn', false) &&
-					(auth == null || Object.keys(auth).length === 0)
-				) {
-					const myGroups = await dispatch(listMyGroups());
-					dispatch(groupActions.recieveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
-				}
-			} catch (e) {
-				console.error("Couldn't recieveGroupsAuth in fetchBlogEntries for " + blogKey + ': ', e);
-			}
+    try {
+      dispatch(requestBlogEntries(blogKey));
+      const { currentUser, groups } = getState();
+      const auth = _.get(groups, 'auth', {});
+      try {
+        if (_.get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
+          const myGroups = await dispatch(listMyGroups());
+          dispatch(groupActions.recieveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
+        }
+      } catch (e) {
+        console.error("Couldn't recieveGroupsAuth in fetchBlogEntries for " + blogKey + ': ', e);
+      }
 
-			const blogEntries = await dispatch(
-				getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry })
-			);
-			// FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
-			const groupRef = _.get(blogEntries, 'blog.groupRef');
-			if (!!groupRef) {
-				await dispatch(groupActions.recieveGroups({ entries: groupRef }));
-			} else {
-				console.error(
-					"Couldn't recieveGroups in fetchBlogEntries for " + blogKey + '. Entries: ',
-					blogEntries
-				);
-			}
-			const blogRef = _.get(blogEntries, 'blog');
-			if (!!blogRef) {
-				await dispatch(blogActions.recieveBlogs({ entries: blogRef }));
-			} else {
-				console.error(
-					"Couldn't recieveBlogs in fetchBlogEntries for " + blogKey + '. Entries: ',
-					blogEntries
-				);
-			}
-			if (invalidatePrevious) {
-				await dispatch(cleanCacheBlogEntries({ blogKey }));
-			}
-			return dispatch(recieveBlogEntries(blogKey, blogEntries));
-		} catch (e) {
-			console.error("Couldn't fetchBlogEntries for " + blogKey + ': ', e);
-		}
-	};
+      const blogEntries = await dispatch(getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry }));
+      // FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
+      const groupRef = _.get(blogEntries, 'blog.groupRef');
+      if (groupRef) {
+        await dispatch(groupActions.recieveGroups({ entries: groupRef }));
+      } else {
+        console.error("Couldn't recieveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
+      }
+      const blogRef = _.get(blogEntries, 'blog');
+      if (blogRef) {
+        await dispatch(blogActions.recieveBlogs({ entries: blogRef }));
+      } else {
+        console.error("Couldn't recieveBlogs in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
+      }
+      if (invalidatePrevious) {
+        await dispatch(cleanCacheBlogEntries({ blogKey }));
+      }
+      return dispatch(recieveBlogEntries(blogKey, blogEntries));
+    } catch (e) {
+      console.error("Couldn't fetchBlogEntries for " + blogKey + ': ', e);
+    }
+  };
 }
 
 /**
  * Requests and receive entries and store them in redux-state
  */
 export function fetchBlogEntry({
-	id,
-	permalink,
-	blogKey
+  id,
+  permalink,
+  blogKey,
 }: {
-	id?: number,
-	permalink?: string,
-	blogKey: string
-}): Thunk<XcapJsonResult> {
-	return async (dispatch: any, getState: any) => {
-		try {
-			await dispatch(requestBlogEntries(blogKey));
-			const { currentUser, groups } = getState();
-			const auth = _.get(groups, 'auth', {});
-			if (
-				_.get(currentUser, 'isLoggedIn', false) &&
-				(auth == null || Object.keys(auth).length === 0)
-			) {
-				let json = await dispatch(listMyGroups());
-				await dispatch(groupActions.recieveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
-			}
+  id?: number;
+  permalink?: string;
+  blogKey: string;
+}): Thunk<GetBlogEntryResult> {
+  return async (dispatch: any, getState): Promise<GetBlogEntryResult|null> => { // FIXME: error handling
+    try {
+      await dispatch(requestBlogEntries(blogKey));
+      const { currentUser, groups } = getState();
+      const auth = _.get(groups, 'auth', {});
+      if (_.get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
+        const json = await dispatch(listMyGroups());
+        await dispatch(groupActions.recieveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
+      }
 
-			let json = await dispatch(getEntry({ id, entryPermaLink: permalink, blogKey }));
-			await dispatch(_fetchBlogEntry(blogKey, json));
-			return json;
-		} catch (e) {
-			console.log(
-				'Error fetchBlogEntry ' +
-					(id ? id : !!permalink ? permalink : '') +
-					' from ' +
-					blogKey +
-					':',
-				e
-			);
-		}
-	};
-};
+      const json = await dispatch(getEntry({ id, entryPermaLink: permalink, blogKey }));
+      await dispatch(_fetchBlogEntry(blogKey, json));
+      return json;
+    } catch (e) {
+      console.log('Error fetchBlogEntry ' + (id ? id : permalink ? permalink : '') + ' from ' + blogKey + ':', e);
+      return null;
+    }
+  };
+}
 
 interface FetchBlogEntriesWithComments {
-	blogKey: string,
-	page?: number,
-	categories?: Array<categoryApi.Category>,
-	goToBlogEntry?: string
+  blogKey: string;
+  page?: number;
+  categories?: Array<categoryApi.Category>;
+  goToBlogEntry?: string;
 }
 
 export function fetchBlogEntriesWithComments({
-	blogKey,
-	page = 1,
-	categories,
-	goToBlogEntry
+  blogKey,
+  page = 1,
+  categories,
+  goToBlogEntry,
 }: FetchBlogEntriesWithComments): Thunk<any> {
-	return async (dispatch: any, getState: any) => {
-		let response;
-		try {
-			response = await dispatch(fetchBlogEntries({ blogKey, p: page, categories, goToBlogEntry }));
-			if (!!response.json.error) {
-				console.error(
-					'Could not get blog entries for ' + blogKey + ': ',
-					getJsonErrorText(response.json)
-				);
-				return null;
-			}
-			const referenceIds = response.json.resultPaginated.entries.map((entry:BlogEntry) => entry.id);
+  return async (dispatch: any): Promise<any> => {
+    let response = null;
+    try {
+      response = await dispatch(fetchBlogEntries({ blogKey, p: page, categories, goToBlogEntry }));
+      if (response.json.error) {
+        console.error('Could not get blog entries for ' + blogKey + ': ', getJsonErrorText(response.json));
+        return null;
+      }
+      const referenceIds = response.json.resultPaginated.entries.map((entry: BlogEntry) => entry.id);
 
-			return dispatch(
-				commentActions.fetchMultipleComments({
-					module: commentApi.CommentModule.BLOG,
-					referenceIds,
-					referenceGroupId: response.json.blogId
-				})
-			);
-		} catch (e) {
-			//FIXME: Probably a private group but need fail-check
-			console.error("Couldn't fetchBlogEntriesWithComments for " + blogKey + ': ', response, e);
-		}
-	};
+      return dispatch(
+        commentActions.fetchMultipleComments({
+          module: commentApi.CommentModule.BLOG,
+          referenceIds,
+          referenceGroupId: response.json.blogId,
+        })
+      );
+    } catch (e) {
+      //FIXME: Probably a private group but need fail-check
+      console.error("Couldn't fetchBlogEntriesWithComments for " + blogKey + ': ', response, e);
+    }
+  };
 }
 
 export function fetchBlogEntryWithComments({
-	id,
-	permalink,
-	blogKey
+  id,
+  permalink,
+  blogKey,
 }: {
-	id?: number,
-	permalink?: string,
-	blogKey: string
+  id?: number;
+  permalink?: string;
+  blogKey: string;
 }): Thunk<any> {
-	return async (dispatch: any, getState: any) => {
-		try {
-			const response = await dispatch(fetchBlogEntry({ id, permalink, blogKey }));
-			const blogEntry = response.blogEntry;
-			if (blogEntry) {
-				return dispatch(
-					commentActions.fetchComments({
-						module: commentApi.CommentModule.BLOG,
-						referenceId: blogEntry.id,
-						referenceGroupId: blogEntry.blogId,
-					})
-				);
-			} else {
-				console.warn(
-					'No such blog entry. id=' +
-						(!!id ? id : '?') +
-						', permalink=' +
-						(!!permalink ? permalink : '?') +
-						', blogKey=' +
-						blogKey
-				);
-			}
-		} catch (e) {
-			//FIXME: Probably a private group but need fail-check
-			console.warn(e);
-		}
-	};
+  return async (dispatch: any, getState: any): Promise<any> => {
+    try {
+      const response = await dispatch(fetchBlogEntry({ id, permalink, blogKey }));
+      const blogEntry = response.blogEntry;
+      if (blogEntry) {
+        return dispatch(
+          commentActions.fetchComments({
+            module: commentApi.CommentModule.BLOG,
+            referenceId: blogEntry.id,
+            referenceGroupId: blogEntry.blogId,
+          })
+        );
+      } else {
+        console.warn(
+          'No such blog entry. id=' +
+            (id ? id : '?') +
+            ', permalink=' +
+            (permalink ? permalink : '?') +
+            ', blogKey=' +
+            blogKey
+        );
+      }
+    } catch (e) {
+      //FIXME: Probably a private group but need fail-check
+      console.warn(e);
+    }
+  };
 }
 
-function _fetchBlogEntry(blogKey: string, json:any) {
-	return (dispatch: any, getState: any) => {
-		const groupRef = _.get(json, 'blog.groupRef', _.get(json, 'blogEntry.blogRef.groupRef'));
-		if (groupRef) {
-			dispatch(groupActions.recieveGroups({ entries: groupRef }));
-		}
-		const blogRef = _.get(json, 'blog', _.get(json, 'blogEntry.blogRef'));
-		if (blogRef) {
-			dispatch(blogActions.recieveBlogs({ entries: blogRef }));
-		}
+function _fetchBlogEntry(blogKey: string, json: any): Thunk<any> {
+  return (dispatch: any): Promise<any> => {
+    const groupRef = _.get(json, 'blog.groupRef', _.get(json, 'blogEntry.blogRef.groupRef'));
+    if (groupRef) {
+      dispatch(groupActions.recieveGroups({ entries: groupRef }));
+    }
+    const blogRef = _.get(json, 'blog', _.get(json, 'blogEntry.blogRef'));
+    if (blogRef) {
+      dispatch(blogActions.recieveBlogs({ entries: blogRef }));
+    }
 
     return dispatch(
-			recieveBlogEntries(blogKey, {
+      recieveBlogEntries(blogKey, {
         // @ts-ignore
-				resultPaginated: {
-					entries: [json.blogEntry]
-				},
-				likes: json.likes
-			})
-		);
-	};
+        resultPaginated: {
+          entries: [json.blogEntry],
+        },
+        likes: json.likes,
+      })
+    );
+  };
 }
 
 /**
@@ -301,79 +274,76 @@ function _fetchBlogEntry(blogKey: string, json:any) {
  * @param blogKey
  */
 export function postBlogEntry({
-	blogEntryJson,
-	type,
-	draftId,
-	blogKey
+  blogEntryJson,
+  type,
+  draftId,
+  blogKey,
 }: {
-	blogEntryJson: any,
-	type: 'PUBLISHED' | '',
-	blogKey: string, //The id of the blogKey that you want to store the data in redux
-	draftId?: number
+  blogEntryJson: any;
+  type: 'PUBLISHED' | '';
+  blogKey: string; //The id of the blogKey that you want to store the data in redux
+  draftId?: number;
 }): Thunk<any> {
-	return async (dispatch: any, getState: any) => {
-		dispatch(requestBlogEntries(blogKey));
+  return async (dispatch: any, getState): Promise<any> => {
+    dispatch(requestBlogEntries(blogKey));
 
-		const response = await dispatch(
-			saveEntry({
-				blogEntryJson,
-				type,
-				draftId,
-				blogKey
-			})
-		);
+    const response = await dispatch(
+      saveEntry({
+        blogEntryJson,
+        type,
+        draftId,
+        blogKey,
+      })
+    );
 
-		if (response.error) {
-			return response;
-		}
+    if (response.error) {
+      return response;
+    }
 
-		//In order to keep pagination-object we need to merge with current state
-		const resultPaginated = update(
-			_.get(getState(), `groupBlogEntries[${blogKey}].json.resultPaginated`),
-			{
-				entries: { $push: [response.entry] }
-			}
-		);
-		const state = { resultPaginated };
+    //In order to keep pagination-object we need to merge with current state
+    const resultPaginated = update(_.get(getState(), `groupBlogEntries[${blogKey}].json.resultPaginated`), {
+      entries: { $push: [response.entry] },
+    });
+    const state = { resultPaginated };
 
-		if (!!blogEntryJson.id && blogEntryJson.id > 0) {
-			//Edit an blogEntry
-			dispatch(toggleWriteCommentOrEdit({ blogEntryId: response.entry.id, editorType: 'EDIT' }));
-			// FIXME: Re add ga
-			//dispatch(sendEventToGA(gaEditPostEventObject({ blogEntry: response.entry })));
-			return dispatch(updateBlogEntry(blogKey, state));
-		} else {
-			//Add new blogEntry
+    if (!!blogEntryJson.id && blogEntryJson.id > 0) {
+      //Edit an blogEntry
+      dispatch(toggleWriteCommentOrEdit({ blogEntryId: response.entry.id, editorType: 'EDIT' }));
       // FIXME: Re add ga
-			//dispatch(sendEventToGA(gaPostEventObject({ blogEntry: response.entry })));
-			// @ts-ignore
+      //dispatch(sendEventToGA(gaEditPostEventObject({ blogEntry: response.entry })));
+      return dispatch(updateBlogEntry(blogKey, state));
+    } else {
+      //Add new blogEntry
+      // FIXME: Re add ga
+      //dispatch(sendEventToGA(gaPostEventObject({ blogEntry: response.entry })));
+      // @ts-ignore
       return dispatch(recieveBlogEntries(blogKey, state));
-		}
-	};
+    }
+  };
 }
 
 export function changeBlogEntryStatus({ blogKey, id, status }: SetEntryStatus): Thunk<void> {
-	return async (dispatch: any /*, getState: any*/) => {
-		let response = await dispatch(setEntryStatus({ blogKey, id, status }));
-		dispatch(updateBlogEntry(blogKey, { resultPaginated: { entries: [response.entry] } }));
-	};
+  return async (dispatch: any): Promise<void> => {
+    const response = await dispatch(setEntryStatus({ blogKey, id, status }));
+    dispatch(updateBlogEntry(blogKey, { resultPaginated: { entries: [response.entry] } }));
+  };
 }
 
 //Toggle Reply editor for selected parent comment id
 export function toggleWriteCommentOrEdit({
-	blogEntryId,
-	editorType
+  blogEntryId,
+  editorType,
 }: {
-	blogEntryId: number, //BlogEntry id
-	editorType: 'EDIT' | 'COMMENT'
-}): any {
-	return {
-		type: TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
-		blogEntryId,
-		editorType
-	};
+  blogEntryId: number; //BlogEntry id
+  editorType: 'EDIT' | 'COMMENT';
+}): AnyAction {
+  return {
+    type: TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
+    blogEntryId,
+    editorType,
+  };
 }
 
-export function closeWriteCommentOrEdit() {
-	return { type: CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY };
+export function closeWriteCommentOrEdit(): AnyAction {
+  return { type: CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY };
 }

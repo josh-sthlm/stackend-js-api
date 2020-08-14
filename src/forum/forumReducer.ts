@@ -8,58 +8,58 @@ import * as forumApi from '../forum';
 export type ForumActions = Request | Recieve | Invalidate;
 
 export const actionTypes = {
-	RECIEVE_FORUMS: 'RECIEVE_FORUMS',
-	REQUEST_FORUMS: 'REQUEST_FORUMS',
-	INVALIDATE_FORUMS: 'INVALIDATE_FORUMS'
+  RECIEVE_FORUMS: 'RECIEVE_FORUMS',
+  REQUEST_FORUMS: 'REQUEST_FORUMS',
+  INVALIDATE_FORUMS: 'INVALIDATE_FORUMS',
 };
 
 export type Request = Action & {
-	type: 'REQUEST_FORUMS'
+  type: 'REQUEST_FORUMS';
 };
 export type Recieve = Action & {
-	type: 'RECIEVE_FORUMS',
-	entries: Array<forumApi.Forum>
+  type: 'RECIEVE_FORUMS';
+  entries: Array<forumApi.Forum>;
 };
 export type Invalidate = Action & {
-	type: 'INVALIDATE_FORUMS'
+  type: 'INVALIDATE_FORUMS';
 };
 
 interface State {
-	isFetching: boolean,
-	didInvalidate: boolean,
-	lastUpdated: number, //Date
-	entries: Array<forumApi.Forum>
+  isFetching: boolean;
+  didInvalidate: boolean;
+  lastUpdated: number; //Date
+  entries: Array<forumApi.Forum>;
 }
 
-const initialState:State = {
-	isFetching: false,
-	didInvalidate: false,
-	lastUpdated: 0,
-	entries: []
+const initialState: State = {
+  isFetching: false,
+  didInvalidate: false,
+  lastUpdated: 0,
+  entries: [],
 };
 
 export default createReducer(initialState, {
-	REQUEST_FORUMS: (state: State, action: Action) =>
-		update(state, {
-			isFetching: { $set: true },
-			didInvalidate: { $set: false }
-		}),
-	RECIEVE_FORUMS: (state: State, action: Recieve) => {
-		const uniqueForums = _(action.entries)
-			.concat(_.get(state, `entries`, []))
-			.groupBy('id')
-			.map(_.spread(_.merge))
-			.value();
+  REQUEST_FORUMS: (state: State, action: Action) =>
+    update(state, {
+      isFetching: { $set: true },
+      didInvalidate: { $set: false },
+    }),
+  RECIEVE_FORUMS: (state: State, action: Recieve) => {
+    const uniqueForums = _(action.entries)
+      .concat(_.get(state, `entries`, []))
+      .groupBy('id')
+      .map(_.spread(_.merge))
+      .value();
 
-		return update(state, {
-			isFetching: { $set: false },
-			didInvalidate: { $set: false },
-			lastUpdated: { $set: Date.now() },
-			entries: { $set: uniqueForums }
-		});
-	},
-	INVALIDATE_FORUMS: (state: State, action: Action) =>
-		update(state, {
-			didInvalidate: { $set: true }
-		})
+    return update(state, {
+      isFetching: { $set: false },
+      didInvalidate: { $set: false },
+      lastUpdated: { $set: Date.now() },
+      entries: { $set: uniqueForums },
+    });
+  },
+  INVALIDATE_FORUMS: (state: State, action: Action) =>
+    update(state, {
+      didInvalidate: { $set: true },
+    }),
 });
