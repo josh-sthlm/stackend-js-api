@@ -7,15 +7,15 @@ import { COMMUNITY_PARAMETER } from '../src/api';
 
 describe('Blog', () => {
 
-  let store = createTestStore();
-  let state = store.getState();
+  const store = createTestStore();
+  const state = store.getState();
   expect(state.blogs).toBeDefined();
 
 
   describe('getEntries', () => {
     it("List entries", async () => {
 
-      let r:GetEntriesResult = await store.dispatch(getEntries({blogId : 1, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK }));
+      const r: GetEntriesResult = await store.dispatch(getEntries({blogId : 1, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK }));
       expect(r.__resultCode).toBe("success");
       expect(r.blog).toBeDefined();
       expect(r.resultPaginated).toBeDefined();
@@ -26,12 +26,15 @@ describe('Blog', () => {
 
   describe("getEntry", () => {
     it("Fetches an entry", async () => {
-      let r:GetBlogEntryResult = await store.dispatch(getEntry({blogId : 1, id: 17, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK }));
+      const r: GetBlogEntryResult = await store.dispatch(getEntry({blogId : 1, id: 17, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK }));
       expect(r.__resultCode).toBe("success");
-      expect(r.blogEntry).toBeDefined();
-      expect(r.blogEntry.id).toBe(17);
-      expect(r.blogEntry.permalink).toBe('get-started-with-article-comments');
-      expect(r.blogEntry.slideshow).toBeDefined();
+
+      const e = r.blogEntry;
+      expect(e).toBeDefined();
+      expect(e.id).toBe(17);
+      expect(e.permalink).toBe('get-started-with-article-comments');
+      expect(e.slideshow).toBeDefined();
+
       expect(r.voteSummary).toBeDefined();
 
     })
@@ -39,7 +42,7 @@ describe('Blog', () => {
 
   describe("newEntry", () => {
     it("Constructs, but does not save a new blog entry", () => {
-      let e = newBlogEntry("my-blog");
+      const e = newBlogEntry("my-blog");
       expect(e).toBeDefined();
       expect(e.id).toBe(0);
     })

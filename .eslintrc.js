@@ -34,6 +34,7 @@ module.exports = {
     'no-empty-pattern': 'off',
     'prefer-const': ['warn'],
     'prefer-rest-params': "warn",
+    "@typescript-eslint/ban-ts-ignore": "warn",
     '@typescript-eslint/no-unused-expressions': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/type-annotation-spacing': 'warn',

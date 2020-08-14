@@ -1,7 +1,7 @@
 {
   "stackend": {
     "server": "http://localhost:8080",
-    "contextPath": "/stackend",
+    "contextPath": "/stackend"
   },
   "log4js": {
     "appenders": {

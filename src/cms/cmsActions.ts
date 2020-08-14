@@ -1,6 +1,5 @@
 //@flow
 
-import { Dispatch} from 'redux';
 import { Thunk } from '../api';
 import { REQUEST_CONTENT, RECIEVE_CONTENT, RECIEVE_CONTENTS, SET_CONTENT } from './cmsReducer';
 import { getContent, Content } from '../cms';
@@ -11,8 +10,8 @@ import { getContent, Content } from '../cms';
  * @param permalink
  * @returns {Function}
  */
-export function fetchContent({ id, permalink }: { id: number, permalink?: string }): Thunk<any> {
-	return async (dispatch:any) => {
+export function fetchContent({ id, permalink }: { id: number; permalink?: string }): Thunk<any> {
+	return async (dispatch: any): Promise<any> => {
 		dispatch({
 			type: REQUEST_CONTENT,
 			id,
@@ -20,7 +19,7 @@ export function fetchContent({ id, permalink }: { id: number, permalink?: string
 		});
 
 		try {
-			let r = await dispatch(getContent({ id, permalink }));
+			const r = await dispatch(getContent({ id, permalink }));
 
 			return dispatch({
 				type: RECIEVE_CONTENT,
@@ -34,8 +33,8 @@ export function fetchContent({ id, permalink }: { id: number, permalink?: string
 	};
 }
 
-export function setContent(content: Content) {
-	return (dispatch: Dispatch /*, getState: any*/) => {
+export function setContent(content: Content): Thunk<any> {
+	return (dispatch /*, getState: any*/): any => {
 		return dispatch({
 			type: SET_CONTENT,
 			content
@@ -44,11 +43,11 @@ export function setContent(content: Content) {
 }
 
 /**
- * Recieve multiple content objects
+ * Receive multiple content objects
  * @param contents
  */
 export function recieveContents(contents: Map<number, Content>): Thunk<any> {
-	return async (dispatch: any) => {
+	return async (dispatch: any): Promise<any> => {
 		return await dispatch({
 			type: RECIEVE_CONTENTS,
 			contents

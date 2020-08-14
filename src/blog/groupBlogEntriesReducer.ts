@@ -82,7 +82,7 @@ export const groupBlogEntries = createReducer(
     REQUEST_GROUP_BLOG_ENTRIES: (state: GroupBlogEntriesState, action: Request) =>
       update(state, {
         [action.blogKey]: {
-          $apply: context =>
+          $apply: (context): any =>
             update(context || {}, {
               isFetching: { $set: true },
               didInvalidate: { $set: false },
@@ -98,7 +98,7 @@ export const groupBlogEntries = createReducer(
 
         return update(state, {
           [action.blogKey]: {
-            $apply: context =>
+            $apply: (context): any =>
               update(context || {}, {
                 isFetching: { $set: false },
                 didInvalidate: { $set: false },
@@ -130,13 +130,13 @@ export const groupBlogEntries = createReducer(
 
       return update(state, {
         [action.blogKey]: {
-          $apply: context =>
+          $apply: (context): any =>
             update(context || {}, {
               isFetching: { $set: false },
               didInvalidate: { $set: false },
               lastUpdated: { $set: action.receievedAt },
               json: {
-                $apply: context =>
+                $apply: (context): any =>
                   update(Object.assign({}, context, action.json), {
                     resultPaginated: {
                       entries: { $set: uniqueBlogEntries },

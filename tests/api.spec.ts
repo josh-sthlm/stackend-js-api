@@ -47,7 +47,7 @@ describe('API', () => {
   describe("argsToObject", () => {
     it("Converts Arguments to an object", () => {
 
-      const r: any = (function(x: any) {
+      const r: any = (function(x: any): any {
         return argsToObject(arguments);
       })({ a: 'hello', b: 1, c: true });
 
