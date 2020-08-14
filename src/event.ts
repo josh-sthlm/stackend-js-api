@@ -11,43 +11,43 @@ import { post, getJson, XcapObject, XcapJsonResult, Thunk } from './api';
  * Event definition
  */
 export interface Event extends XcapObject {
-	__type: 'net.josh.community.eventcalendar.Event',
-	calendarId: number,
-	calendarRef: EventCalendar,
-	createdDate: number,
-	modifiedDate: number,
-	locationId: number,
-	creatorUserId: number,
-	creatorUserRef: any,
-	categoryId: number,
-	categoryRef: any,
-	startDate: number,
-	endDate: number,
-	obfuscatedReference: string,
-	copyOf: number,
-	eventDescriptionId: number,
-	multipleDays: boolean,
-	modStatus: string,
-	ttl: number,
-	data: any
+  __type: 'net.josh.community.eventcalendar.Event';
+  calendarId: number;
+  calendarRef: EventCalendar;
+  createdDate: number;
+  modifiedDate: number;
+  locationId: number;
+  creatorUserId: number;
+  creatorUserRef: any;
+  categoryId: number;
+  categoryRef: any;
+  startDate: number;
+  endDate: number;
+  obfuscatedReference: string;
+  copyOf: number;
+  eventDescriptionId: number;
+  multipleDays: boolean;
+  modStatus: string;
+  ttl: number;
+  data: any;
 }
 
 export interface EventCalendar extends XcapObject {
-	__type: 'net.josh.community.eventcalendar.EventCalendar',
-	name: string,
-	referenceId: number,
-	obfuscatedReference: string,
-	createdDate: number,
-	modifiedDate: number,
-	modStatus: string,
-	ttl: number
+  __type: 'net.josh.community.eventcalendar.EventCalendar';
+  name: string;
+  referenceId: number;
+  obfuscatedReference: string;
+  createdDate: number;
+  modifiedDate: number;
+  modStatus: string;
+  ttl: number;
 }
 
 export enum RSVPStatus {
-	UNKNOWN = 'UNKNOWN',
-	ACCEPTED = 'ACCEPTED',
-	INTERESTED = 'INTERESTED',
-	DECLINED = 'DECLINED'
+  UNKNOWN = 'UNKNOWN',
+  ACCEPTED = 'ACCEPTED',
+  INTERESTED = 'INTERESTED',
+  DECLINED = 'DECLINED',
 }
 
 /**
@@ -55,8 +55,8 @@ export enum RSVPStatus {
  * @param eventId
  * @param status
  */
-export function rsvp({ eventId, status }: { eventId: number, status: RSVPStatus }): Thunk<XcapJsonResult> {
-	return post({ url: '/blog/event/rsvp', parameters: arguments });
+export function rsvp({ eventId, status }: { eventId: number; status: RSVPStatus }): Thunk<XcapJsonResult> {
+  return post({ url: '/blog/event/rsvp', parameters: arguments });
 }
 
 /**
@@ -69,15 +69,15 @@ export function rsvp({ eventId, status }: { eventId: number, status: RSVPStatus 
  * @returns {Promise}
  */
 export function listRsvpUsers({
-	eventId,
-	status,
-	p,
-	pageSize
+  eventId,
+  status,
+  p,
+  pageSize,
 }: {
-	eventId: number,
-	status: RSVPStatus,
-	p?: number,
-	pageSize?: number
+  eventId: number;
+  status: RSVPStatus;
+  p?: number;
+  pageSize?: number;
 }): Thunk<XcapJsonResult> {
-	return getJson({ url: '/blog/event/list-rsvp-users', parameters: arguments });
+  return getJson({ url: '/blog/event/list-rsvp-users', parameters: arguments });
 }

@@ -11,8 +11,8 @@ import {
 } from './api'
 
 
-declare var browserHistory: { push: (location:string) => any }; // FIXME: for backward compability with react-router
-declare var window: any; // FIXME: For client side stuff
+declare let browserHistory: { push: (location: string) => any }; // FIXME: for backward compatibility with react-router
+declare let window: any; // FIXME: For client side stuff
 
 /**
  * Ways to log in.
@@ -39,14 +39,14 @@ export enum AuthenticationType {
 	OAUTH2 = 'OAUTH2'
 }
 
-const AUTH_NAMES: {[key:string]: string} = {
+const AUTH_NAMES: {[key: string]: string} = {
 	[AuthenticationType.FACEBOOK]: 'Facebook',
 	[AuthenticationType.GOOGLE]: 'Google',
 	[AuthenticationType.XCAP]: 'E-mail & password',
 	[AuthenticationType.OAUTH2]: 'OAuth2'
 };
 
-export function getAuthenticationTypeName(type: AuthenticationType) {
+export function getAuthenticationTypeName(type: AuthenticationType): string {
 	if (AUTH_NAMES[type]) {
 		return AUTH_NAMES[type];
 	}
@@ -89,11 +89,11 @@ export function _getLoginUrl({
 	communityPermalink,
 	provider
 }: {
-	config: Config,
-	request?: Request|null,
-	returnUrl?: string|null,
-	communityPermalink?: string|null,
-	provider: AuthenticationType
+	config: Config;
+	request?: Request|null;
+	returnUrl?: string|null;
+	communityPermalink?: string|null;
+	provider: AuthenticationType;
 }): string {
 	const pfx = _getServerWithContextPath(config);
 
@@ -107,7 +107,7 @@ export function _getLoginUrl({
 			);
 
 		case AuthenticationType.XCAP: {
-			let parameters:any = {};
+			const parameters: any = {};
 			if (returnUrl) {
 				parameters.returnUrl = returnUrl;
 			}
@@ -147,6 +147,31 @@ export function _getLoginUrl({
 	}
 }
 
+
+function _getReturnUrl({ request, returnUrl }: { request: Request; returnUrl?: string }): string {
+  let pfx = '';
+  if (!returnUrl) {
+    returnUrl = '';
+    returnUrl += _.get(request, 'location.href', '');
+    returnUrl += _.get(request, 'location.search', '');
+    return encodeURIComponent(returnUrl);
+  } else {
+    // No proto
+    if (returnUrl.indexOf('//') === -1) {
+      // Special case for /stacks
+      if (request.location.pathname.indexOf('/stacks/') !== -1) {
+        pfx = request.absoluteUrl + request.contextPath;
+      } else {
+        pfx = request.absoluteCommunityUrl;
+      }
+    } else {
+      pfx = '';
+    }
+  }
+
+  return encodeURIComponent(pfx + returnUrl);
+}
+
 /**
  * Get the logout url.
  * @param config
@@ -160,9 +185,9 @@ export function _getLogoutUrl({
 	request,
 	returnUrl
 }: {
-	config: Config,
-	request: Request,
-	returnUrl?: string
+	config: Config;
+	request: Request;
+	returnUrl?: string;
 }): string {
 	const ru = _getReturnUrl({ request, returnUrl });
 
@@ -176,29 +201,6 @@ export function _getLogoutUrl({
 	//return pfx + '/logout?redirectUrl=' + ru;
 }
 
-function _getReturnUrl({ request, returnUrl }: { request: Request, returnUrl?: string }): string {
-	let pfx = '';
-	if (!returnUrl) {
-			returnUrl = '';
-			returnUrl += _.get(request, 'location.href', '');
-			returnUrl += _.get(request, 'location.search', '');
-			return encodeURIComponent(returnUrl);
-	} else {
-		// No proto
-		if (returnUrl.indexOf('//') === -1) {
-			// Special case for /stacks
-			if (request.location.pathname.indexOf('/stacks/') !== -1) {
-				pfx = request.absoluteUrl + request.contextPath;
-			} else {
-				pfx = request.absoluteCommunityUrl;
-			}
-		} else {
-			pfx = '';
-		}
-	}
-
-	return encodeURIComponent(pfx + returnUrl);
-}
 
 /**
  * Logout
@@ -213,12 +215,12 @@ export function logout({ redirectUrl }: { redirectUrl?: string|null }): Thunk<Xc
 }
 
 export interface LoginResult extends XcapJsonResult {
-	loginFailed: boolean,
-	redirectUrl: string,
-	email?: string | null,
-	firstName?: string | null,
-	lastName?: string | null,
-	provider?: string | null
+	loginFailed: boolean;
+	redirectUrl: string;
+	email?: string | null;
+	firstName?: string | null;
+	lastName?: string | null;
+	provider?: string | null;
 }
 
 /**
@@ -236,17 +238,17 @@ export function login({
 	communityPermalink,
 	...any
 }: {
-	provider: AuthenticationType,
-	returnUrl?: string,
-	config: Config,
-	request: Request,
-	communityPermalink?: string
+	provider: AuthenticationType;
+	returnUrl?: string;
+	config: Config;
+	request: Request;
+	communityPermalink?: string;
 }): Thunk<LoginResult> {
 	switch (provider) {
 		case AuthenticationType.XCAP: {
-			let p = arguments[0];
-			let xcap_email = p.email;
-			let xcap_password = p.password;
+			const p = arguments[0];
+			const xcap_email = p.email;
+			const xcap_password = p.password;
 
 			return post({
 				url: '/user/login',
@@ -263,11 +265,11 @@ export function login({
 		case AuthenticationType.FACEBOOK:
 		case AuthenticationType.GOOGLE:
 		case AuthenticationType.OAUTH2: {
-			let url = _getLoginUrl({ provider, returnUrl, config, request, communityPermalink });
+			const url = _getLoginUrl({ provider, returnUrl, config, request, communityPermalink });
 			if (isRunningInBrowser()) {
 			  window.location = url;
       }
-			return () => url;
+			return (): string => url;
 		}
 
 		default:
@@ -289,10 +291,10 @@ export function performLoginRedirect({
 	email,
 	returnUrl
 }: {
-	loginResult: LoginResult,
-	request: Request,
-	email?: string,
-	returnUrl?: string
+	loginResult: LoginResult;
+	request: Request;
+	email?: string;
+	returnUrl?: string;
 }): boolean {
 
   // FIXME: Move this browser functionality to frontend project
@@ -341,7 +343,7 @@ export function performLoginRedirect({
 
 		default: {
 			// Reload desired
-			let r = typeof returnUrl === 'string' ? returnUrl : request.absoluteCommunityUrl;
+			const r = typeof returnUrl === 'string' ? returnUrl : request.absoluteCommunityUrl;
 
 			if (isRunningInBrowser()) {
         if (window.location.href === r) {
@@ -369,7 +371,7 @@ export function sendPasswordChangeToken({ email }: { email: string }): Thunk<Xca
 }
 
 export interface ChangePasswordResult extends XcapJsonResult {
-	returnUrl: string|null
+	returnUrl: string|null;
 }
 
 /**
@@ -393,11 +395,11 @@ export function changePassword({
 	password,
 	returnUrl
 }: {
-	email: string,
-	checkCode?: string,
-	oldPassword?: string,
-	password: string,
-	returnUrl?: string
+	email: string;
+	checkCode?: string;
+	oldPassword?: string;
+	password: string;
+	returnUrl?: string;
 }): Thunk<ChangePasswordResult> {
 	return post({
 		url: '/user/change-password',

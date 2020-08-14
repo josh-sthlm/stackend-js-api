@@ -19,7 +19,7 @@ const TITLES = {
 	USER
 };
 
-export function findSearchTitle(searchKey:string) {
+export function findSearchTitle(searchKey: string): string|null|undefined {
 	const title = _.find(TITLES, item => searchKey === item.key);
 	return _.get(title, 'value', undefined);
 }

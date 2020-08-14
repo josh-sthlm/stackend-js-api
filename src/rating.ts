@@ -6,17 +6,11 @@ import { XcapJsonResult, post, getJson, Thunk } from './api';
  * @param reference
  * @param value
  */
-export function rate({
-	reference,
-	value
-}: {
-	reference: string,
-	value: number
-}): Thunk<XcapJsonResult> {
-	return post({
-		url: '/rating/rate',
-		parameters: arguments
-	});
+export function rate({ reference, value }: { reference: string; value: number }): Thunk<XcapJsonResult> {
+  return post({
+    url: '/rating/rate',
+    parameters: arguments,
+  });
 }
 
 /**
@@ -25,8 +19,8 @@ export function rate({
  * @returns {Thunk<XcapJsonResult>}
  */
 export function getAverateRating({ reference }: { reference: string }): Thunk<XcapJsonResult> {
-	return getJson({
-		url: '/rating/get-average',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/rating/get-average',
+    parameters: arguments,
+  });
 }

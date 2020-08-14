@@ -1,5 +1,5 @@
 //@flow
-import { getJson, post, XcapJsonResult, XcapObject, Thunk } from './api'
+import { getJson, post, XcapJsonResult, XcapObject, Thunk } from './api';
 import { VoteSummary } from './vote';
 
 /**
@@ -8,45 +8,43 @@ import { VoteSummary } from './vote';
  * @since 23 mar 2017
  */
 
-
 export interface Answer {
-  id: number,
-  answerId: number,
-  order: number,
-  answer: string,
-  votes: number,
-  votesPercent: number
+  id: number;
+  answerId: number;
+  order: number;
+  answer: string;
+  votes: number;
+  votesPercent: number;
 }
 
-
 export interface Poll extends XcapObject {
-  __type: 'se.josh.xcap.poll.Poll',
-  description: string,
-  creatorUserId: number,
-  creatorUserRef: any,
-  createdDate: number,
-  modifiedDate: number,
-  startDate: number,
-  endDate: number,
-  referenceId: number,
-  referenceRef: number,
-  obfuscatedReference: string,
-  view: string,
-  open: boolean,
-  visible: boolean,
-  votes: number,
-  answers: Array<Answer>
+  __type: 'se.josh.xcap.poll.Poll';
+  description: string;
+  creatorUserId: number;
+  creatorUserRef: any;
+  createdDate: number;
+  modifiedDate: number;
+  startDate: number;
+  endDate: number;
+  referenceId: number;
+  referenceRef: number;
+  obfuscatedReference: string;
+  view: string;
+  open: boolean;
+  visible: boolean;
+  votes: number;
+  answers: Array<Answer>;
 }
 
 export interface GetPollResult extends XcapJsonResult {
-  voteSummary: VoteSummary,
-  poll: Poll,
-  hasVoted: boolean,
-  pollAnswerVote: number,
-  canVote: boolean,
-  votesByAnswer: Map<string, number>,
-  votesPercentByAnswer: Map<string, number>,
-  hidden: false
+  voteSummary: VoteSummary;
+  poll: Poll;
+  hasVoted: boolean;
+  pollAnswerVote: number;
+  canVote: boolean;
+  votesByAnswer: Map<string, number>;
+  votesPercentByAnswer: Map<string, number>;
+  hidden: false;
 }
 
 /**
@@ -54,7 +52,11 @@ export interface GetPollResult extends XcapJsonResult {
  *
  * @param referenceId {number} Reference id. Required.
  */
-export function getPoll({ referenceId }: { referenceId: number }): Thunk<GetPollResult> {
+export function getPoll({
+  referenceId,
+}: {
+  referenceId: number;
+}): Thunk<GetPollResult> {
   return getJson({ url: '/poll/get', parameters: arguments });
 }
 
@@ -67,11 +69,11 @@ export function getPoll({ referenceId }: { referenceId: number }): Thunk<GetPoll
  * @param answerId {number} The answer id. Required.
  */
 export function vote({
-                       referenceId,
-                       answerId
-                     }: {
-  referenceId: number,
-  answerId: number
+  referenceId,
+  answerId,
+}: {
+  referenceId: number;
+  answerId: number;
 }): Thunk<XcapJsonResult> {
   return post({ url: '/poll/vote', parameters: arguments });
 }
@@ -90,21 +92,21 @@ export function vote({
  * @return {Promise}
  */
 export function edit({
-                       referenceId,
-                       startDate,
-                       endDate,
-                       description,
-                       view,
-                       pollAnswers
-                     }: {
-  referenceId: number,
-  startDate?: string,
-  endDate?: string,
-  description: string,
-  view?: string,
-  pollAnswers: any
+  referenceId,
+  startDate,
+  endDate,
+  description,
+  view,
+  pollAnswers,
+}: {
+  referenceId: number;
+  startDate?: string;
+  endDate?: string;
+  description: string;
+  view?: string;
+  pollAnswers: any;
 }): Thunk<XcapJsonResult> {
-  let ans = JSON.stringify(pollAnswers);
+  const ans = JSON.stringify(pollAnswers);
 
   return post({
     url: '/poll/edit',
@@ -114,8 +116,7 @@ export function edit({
       endDate,
       description,
       view,
-      pollAnswers: ans
-    }
+      pollAnswers: ans,
+    },
   });
 }
-

@@ -1,26 +1,27 @@
 //@flow
 import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginReducer';
-import { getCurrentUser } from '../user';
+import { getCurrentUser, User } from '../user';
 import { Thunk } from '../api';
 import _ from 'lodash';
+import { AnyAction } from 'redux';
 
 const LOGIN_TTL: number = 60 * 1000;
 
 //Action Creator
-export function reduxLogin() {
+export function reduxLogin(): AnyAction {
 	return {
 		type: LOGIN
 	};
 }
 
-export function reduxLogout() {
+export function reduxLogout(): AnyAction {
 	return {
 		type: LOGOUT
 	};
 }
 
 //Action Creator
-function requestLoginData() {
+function requestLoginData(): AnyAction {
 	return {
 		type: REQUEST_LOGIN_DATA
 	};
@@ -33,7 +34,7 @@ function requestLoginData() {
  * @returns
  */
 export function refreshLoginData(params?: any): Thunk<any> {
-	return async (dispatch:any, getState) => {
+	return async (dispatch: any, getState): Promise<any> => {
 		try {
 			const { currentUser } = getState();
 
@@ -59,7 +60,7 @@ export function refreshLoginData(params?: any): Thunk<any> {
 	};
 }
 
-export function recieveLoginData(json: any) {
+export function recieveLoginData(json: { user: User | null }): AnyAction {
 	return {
 		type: UPDATE_LOGIN_DATA,
 		json

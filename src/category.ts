@@ -1,5 +1,5 @@
 //@flow
-import { getJson, post, XcapJsonResult, XcapObject, Thunk } from './api'
+import { getJson, post, XcapJsonResult, XcapObject, Thunk } from './api';
 
 /**
  * Xcap category api constants and methods.
@@ -8,7 +8,7 @@ import { getJson, post, XcapJsonResult, XcapObject, Thunk } from './api'
  */
 
 export const References = {
-  BLOGEDITOR: 'BlogEditor'
+  BLOGEDITOR: 'BlogEditor',
 };
 
 export type Context = string; // Context name, for example "news"
@@ -18,22 +18,22 @@ export type Reference = 'BlogEditor' | string; // Name of the redux store for th
  * Definition of a category
  */
 export interface Category extends XcapObject {
-  __type: 'net.josh.community.category.Category',
-  id: number,
-  name: string,
-  description: string,
-  permalink: string,
-  createdDate: number,
-  order: number, /** Sort order, if different from natural ordering */
-  obfuscatedReference: string,
-  parentId: number,
-  parentRef: Category,
-  rootId: number,
-  rootRef: Category,
-  referenceCount: number,
-  childCount: number,
-  partOfPermalink: string, /** Last part of the permalink */
-  fullName: string
+  __type: 'net.josh.community.category.Category';
+  id: number;
+  name: string;
+  description: string;
+  permalink: string;
+  createdDate: number;
+  order: number /** Sort order, if different from natural ordering */;
+  obfuscatedReference: string;
+  parentId: number;
+  parentRef: Category;
+  rootId: number;
+  rootRef: Category;
+  referenceCount: number;
+  childCount: number;
+  partOfPermalink: string /** Last part of the permalink */;
+  fullName: string;
 }
 
 /**
@@ -46,22 +46,22 @@ export enum Insertion {
   BEFORE_REFERENCE_ID = 'BEFORE_REFERENCE_ID',
   AFTER_REFERENCE_ID = 'AFTER_REFERENCE_ID',
   MOVE_UP = 'MOVE_UP',
-  MOVE_DOWN = 'MOVE_DOWN'
+  MOVE_DOWN = 'MOVE_DOWN',
 }
 
 /**
  * Component class (used to look up privileges, etc)
  */
-export const COMPONENT_CLASS: string = 'net.josh.community.category.CategoryManager';
+export const COMPONENT_CLASS = 'net.josh.community.category.CategoryManager';
 
 /**
  * Component class
  */
-export const COMPONENT_NAME: string = 'category';
+export const COMPONENT_NAME = 'category';
 
 export interface GetCategoryResult extends XcapJsonResult {
-  category: Category | null,
-  branch: Array<Category>
+  category: Category | null;
+  branch: Array<Category>;
 }
 
 /**
@@ -72,13 +72,13 @@ export interface GetCategoryResult extends XcapJsonResult {
  * @param permaLink {string} Category permalink, for example "sport/football"
  */
 export function get({
-                      context,
-                      categoryId,
-                      permaLink
-                    }: {
-  context: string,
-  categoryId?: number,
-  permaLink?: string
+  context,
+  categoryId,
+  permaLink,
+}: {
+  context: string;
+  categoryId?: number;
+  permaLink?: string;
 }): Thunk<GetCategoryResult> {
   if (typeof categoryId === 'undefined' && typeof permaLink === 'undefined') {
     throw Error('categoryId or permaLink must be specified');
@@ -87,13 +87,13 @@ export function get({
     url: '/category/get',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME
+    componentName: COMPONENT_NAME,
   });
 }
 
 export interface GetByReferenceIdResult extends XcapJsonResult {
-  referencedCategory: Category | null,
-  referencedCategories: Array<Category>
+  referencedCategory: Category | null;
+  referencedCategories: Array<Category>;
 }
 
 /**
@@ -103,24 +103,24 @@ export interface GetByReferenceIdResult extends XcapJsonResult {
  * @param referenceId {number} Id of referencing object
  */
 export function getByReferenceId({
-                                   context,
-                                   referenceId
-                                 }: {
-  context: string,
-  referenceId: number
+  context,
+  referenceId,
+}: {
+  context: string;
+  referenceId: number;
 }): Thunk<GetByReferenceIdResult> {
   return getJson({
     url: '/category/get-by-reference-id',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME
+    componentName: COMPONENT_NAME,
   });
 }
 
 export interface ListCategoriesResult extends XcapJsonResult {
   /** Non null if the category exists */
-  category: Category | null,
-  categories: Array<Category>
+  category: Category | null;
+  categories: Array<Category>;
 }
 
 /**
@@ -133,19 +133,19 @@ export interface ListCategoriesResult extends XcapJsonResult {
  * @param permaLink {string} Category permalink, for example "sport/football" (optional)
  */
 export function list({
-                       context,
-                       categoryId,
-                       permaLink
-                     }: {
-  context: string,
-  categoryId?: number,
-  permaLink?: string
+  context,
+  categoryId,
+  permaLink,
+}: {
+  context: string;
+  categoryId?: number;
+  permaLink?: string;
 }): Thunk<ListCategoriesResult> {
   return getJson({
     url: '/category/list',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME
+    componentName: COMPONENT_NAME,
   });
 }
 
@@ -163,25 +163,25 @@ export function list({
  * @returns {Promise}
  */
 export function edit({
-                       context,
-                       categoryId,
-                       name,
-                       description,
-                       parentCategoryId,
-                       sortOrder
-                     }: {
-  context: string,
-  categoryId?: number,
-  name: string,
-  description?: string,
-  parentCategoryId?: number,
-  sortOrder?: number
+  context,
+  categoryId,
+  name,
+  description,
+  parentCategoryId,
+  sortOrder,
+}: {
+  context: string;
+  categoryId?: number;
+  name: string;
+  description?: string;
+  parentCategoryId?: number;
+  sortOrder?: number;
 }): Thunk<XcapObject> {
   return post({
     url: '/category/edit',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME
+    componentName: COMPONENT_NAME,
   });
 }
 
@@ -193,12 +193,11 @@ export function edit({
  * @param context {string} Context name, for example "news"
  * @param id {number} Category id (optional)
  */
-export function remove({ context, id }: { context: string, id: number }): Thunk<XcapObject> {
+export function remove({ context, id }: { context: string; id: number }): Thunk<XcapObject> {
   return post({
     url: '/category/remove',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME
+    componentName: COMPONENT_NAME,
   });
 }
-

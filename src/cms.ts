@@ -1,18 +1,20 @@
 //@flow
 import {
-	COMMUNITY_PARAMETER,
-	getJson,
-	post,
-	XcapJsonResult,
-	ModerationStatus, XcapObject, Thunk, isRunningServerSide
-} from './api'
+  COMMUNITY_PARAMETER,
+  getJson,
+  post,
+  XcapJsonResult,
+  ModerationStatus,
+  XcapObject,
+  Thunk,
+  isRunningServerSide,
+} from './api';
 import { generatePermalink } from './permalink';
 import { User } from './user';
 import { PaginatedCollection } from './PaginatedCollection';
 import { Insertion, Category } from './category';
 import { Order } from './search';
 import { Tree, Node, newTree, newTreeNode } from './tree';
-
 
 /**
  * Xcap Cms api constants and methods.
@@ -24,45 +26,45 @@ import { Tree, Node, newTree, newTreeNode } from './tree';
  * Css Class for elements containing rich content
  * @type {string}
  */
-export const RICH_CONTENT_CSS_CLASS: string = 'stackend-rich-content';
+export const RICH_CONTENT_CSS_CLASS = 'stackend-rich-content';
 
 /**
  * A content object
  */
 export interface Content extends XcapObject {
-	__type: 'se.josh.xcap.cms.Content',
-	permalink: string,
-	name: string,
-	body: string,
-	publishDate?: any,
-	modStatus: number,
-	ttl: number,
-	creatorUserId: number,
-	creatorUserRef?: User,
-	createdDate: any,
-	modifiedDate?: any,
-	modifiedByUserId: number,
-	modifiedByUserRef?: User | null
+  __type: 'se.josh.xcap.cms.Content';
+  permalink: string;
+  name: string;
+  body: string;
+  publishDate?: any;
+  modStatus: number;
+  ttl: number;
+  creatorUserId: number;
+  creatorUserRef?: User;
+  createdDate: any;
+  modifiedDate?: any;
+  modifiedByUserId: number;
+  modifiedByUserRef?: User | null;
 }
 
 /**
  * Component class (used to look up privileges, etc)
  */
-export const COMPONENT_CLASS: string = 'se.josh.xcap.cms.CmsManager';
+export const COMPONENT_CLASS = 'se.josh.xcap.cms.CmsManager';
 
 /**
  * Component name
  */
-export const COMPONENT_NAME: string = 'cms';
+export const COMPONENT_NAME = 'cms';
 
 /**
  * Default context
  * @type {string}
  */
-export const DEFAULT_CMS_CONTEXT: string = 'cms';
+export const DEFAULT_CMS_CONTEXT = 'cms';
 
 export interface GetContentResult extends XcapJsonResult {
-	content: Content | null
+  content: Content | null;
 }
 
 /**
@@ -70,18 +72,12 @@ export interface GetContentResult extends XcapJsonResult {
  * @param id Content id (required)
  * @param permalink Content permalink (optional)
  */
-export function getContent({
-	id,
-	permalink
-}: {
-	id?: number,
-	permalink?: string
-}): Thunk<GetContentResult> {
-	return getJson({ url: '/cms/get', parameters: arguments });
+export function getContent({ id, permalink }: { id?: number; permalink?: string }): Thunk<GetContentResult> {
+  return getJson({ url: '/cms/get', parameters: arguments });
 }
 
 export interface PopulateTemplateContent extends XcapJsonResult {
-	result: string | null
+  result: string | null;
 }
 
 /**
@@ -91,19 +87,19 @@ export interface PopulateTemplateContent extends XcapJsonResult {
  * @param permalink Content permalink (optional)
  */
 export function populateTemplateContent({
-	id,
-	permalink
+  id,
+  permalink,
 }: {
-	id?: number,
-	permalink?: string
+  id?: number;
+  permalink?: string;
 }): Thunk<PopulateTemplateContent> {
-	return getJson({ url: '/cms/populate-template', parameters: arguments });
+  return getJson({ url: '/cms/populate-template', parameters: arguments });
 }
 
 export interface ListContentResult extends XcapJsonResult {
-	contentPaginated: PaginatedCollection<Content>,
-	isPage: boolean,
-	childCategories: Array<Category>
+  contentPaginated: PaginatedCollection<Content>;
+  isPage: boolean;
+  childCategories: Array<Category>;
 }
 
 /**
@@ -113,27 +109,27 @@ export interface ListContentResult extends XcapJsonResult {
  * @param pageSize Page size (optional)
  */
 export function listContent({
-	permalink,
-	p = 1,
-	pageSize
+  permalink,
+  p = 1,
+  pageSize,
 }: {
-	permalink?: string,
-	p?: number,
-	pageSize?: number
+  permalink?: string;
+  p?: number;
+  pageSize?: number;
 }): Thunk<ListContentResult> {
-	return getJson({
-		url: '/cms/list',
-		parameters: {
-			permalink,
-			getPermalinkFromUrl: false,
-			p,
-			pageSize
-		}
-	});
+  return getJson({
+    url: '/cms/list',
+    parameters: {
+      permalink,
+      getPermalinkFromUrl: false,
+      p,
+      pageSize,
+    },
+  });
 }
 
 export interface SearchResult extends XcapJsonResult {
-	results: PaginatedCollection<Content>
+  results: PaginatedCollection<Content>;
 }
 
 /**
@@ -144,76 +140,76 @@ export interface SearchResult extends XcapJsonResult {
  * @param orderBy Order by (optional)
  */
 export function search({
-	q,
-	p = 1,
-	pageSize,
-	orderBy
+  q,
+  p = 1,
+  pageSize,
+  orderBy,
 }: {
-	q?: string,
-	p?: number,
-	pageSize?: number,
-	orderBy?: 'CREATED' | 'MODIFIED' | 'SORT'
+  q?: string;
+  p?: number;
+  pageSize?: number;
+  orderBy?: 'CREATED' | 'MODIFIED' | 'SORT';
 }): Thunk<SearchResult> {
-	return getJson({
-		url: '/cms/search',
-		parameters: {
-			q,
-			p,
-			pageSize,
-			orderBy
-		}
-	});
+  return getJson({
+    url: '/cms/search',
+    parameters: {
+      q,
+      p,
+      pageSize,
+      orderBy,
+    },
+  });
 }
 
 export interface Page {
-	id: number,
-	parentPageId: number,
-	name: string,
-	permalink: string,
-	/** Number of sub pages */
-	childCount: number,
-	/** Is the page visible? */
-	enabled: boolean,
-	ogImageUrl: string | null ,
-	metaDescription: string | null,
-	content: Array<PageContent>
+  id: number;
+  parentPageId: number;
+  name: string;
+  permalink: string;
+  /** Number of sub pages */
+  childCount: number;
+  /** Is the page visible? */
+  enabled: boolean;
+  ogImageUrl: string | null;
+  metaDescription: string | null;
+  content: Array<PageContent>;
 }
 
 export interface PageContent {
-	name: string,
-	/** Simple reference type name */
-	type: string,
+  name: string;
+  /** Simple reference type name */
+  type: string;
 
-	/** Is this content visible? */
-	visible: boolean,
+  /** Is this content visible? */
+  visible: boolean;
 
-	/** Reference in string format */
-	reference: string,
+  /** Reference in string format */
+  reference: string;
 
-	/** Referenced object */
-	referenceRef: any
+  /** Referenced object */
+  referenceRef: any;
 }
 
 export enum MenuVisibility {
-	HORIZONTAL= 'HORIZONTAL',
-	VERTICAL = 'VERTICAL',
-	OFF = 'OFF'
+  HORIZONTAL = 'HORIZONTAL',
+  VERTICAL = 'VERTICAL',
+  OFF = 'OFF',
 }
 
 export function parseMenuVisibility(v: string): MenuVisibility {
-	if (!v) {
-		return MenuVisibility.HORIZONTAL;
-	} else if (v === 'false') {
-		return MenuVisibility.OFF;
-	} else if (v.toUpperCase() === MenuVisibility.VERTICAL) {
-		return MenuVisibility.VERTICAL;
-	}
+  if (!v) {
+    return MenuVisibility.HORIZONTAL;
+  } else if (v === 'false') {
+    return MenuVisibility.OFF;
+  } else if (v.toUpperCase() === MenuVisibility.VERTICAL) {
+    return MenuVisibility.VERTICAL;
+  }
 
-	return MenuVisibility.HORIZONTAL;
+  return MenuVisibility.HORIZONTAL;
 }
 
 export interface EditContentResult extends XcapJsonResult {
-	content:  Content | null
+  content: Content | null;
 }
 
 /**
@@ -230,21 +226,21 @@ export interface EditContentResult extends XcapJsonResult {
  * @returns {Promise}
  */
 export function editContent({
-	id,
-	permalink,
-	headline,
-	teaser,
-	body,
-	categoryId
+  id,
+  permalink,
+  headline,
+  teaser,
+  body,
+  categoryId,
 }: {
-	id?: number,
-	permalink?: string,
-	headline?: string,
-	teaser?: string,
-	body: string,
-	categoryId?: number
+  id?: number;
+  permalink?: string;
+  headline?: string;
+  teaser?: string;
+  body: string;
+  categoryId?: number;
 }): Thunk<EditContentResult> {
-	return post({ url: '/cms/edit', parameters: arguments });
+  return post({ url: '/cms/edit', parameters: arguments });
 }
 
 /**
@@ -253,13 +249,13 @@ export function editContent({
  * @param moderationStatus
  */
 export function setModerationStatus({
-	id,
-	moderationStatus
+  id,
+  moderationStatus,
 }: {
-	id: number,
-	moderationStatus: ModerationStatus
+  id: number;
+  moderationStatus: ModerationStatus;
 }): Thunk<XcapJsonResult> {
-	return post({ url: '/cms/set-modstatus', parameters: arguments });
+  return post({ url: '/cms/set-modstatus', parameters: arguments });
 }
 
 /**
@@ -269,7 +265,7 @@ export function setModerationStatus({
  * @returns {Promise}
  */
 export function removeContent({ id }: { id: number }): Thunk<XcapJsonResult> {
-	return post({ url: '/cms/remove', parameters: arguments });
+  return post({ url: '/cms/remove', parameters: arguments });
 }
 
 /**
@@ -277,28 +273,28 @@ export function removeContent({ id }: { id: number }): Thunk<XcapJsonResult> {
  * @returns {Thunk<XcapJsonResult>}
  */
 export function moveContent({
-	id,
-	newCategoryId,
-	oldCategoryId,
-	insertion,
-	insertionPoint
+  id,
+  newCategoryId,
+  oldCategoryId,
+  insertion,
+  insertionPoint,
 }: {
-	id: number,
-	newCategoryId: number,
-	oldCategoryId?: number,
-	insertion: Insertion,
-	insertionPoint: number
+  id: number;
+  newCategoryId: number;
+  oldCategoryId?: number;
+  insertion: Insertion;
+  insertionPoint: number;
 }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/cms/move',
-		parameters: {
-			referenceId: id,
-			newCategoryId,
-			oldCategoryId,
-			insertion,
-			insertionPoint
-		}
-	});
+  return post({
+    url: '/cms/move',
+    parameters: {
+      referenceId: id,
+      newCategoryId,
+      oldCategoryId,
+      insertion,
+      insertionPoint,
+    },
+  });
 }
 
 /**
@@ -307,42 +303,36 @@ export function moveContent({
  * @param permalink
  */
 export function newPage(name: string, permalink?: string): Page {
-	let pl = '/' + (permalink ? permalink : generatePermalink(name));
+  const pl = '/' + (permalink ? permalink : generatePermalink(name));
 
-	return {
-		id: 0,
-		name,
-		permalink: pl,
-		enabled: true,
-		metaDescription: null,
-		ogImageUrl: null,
-		content: [],
-		parentPageId: 0,
-		childCount: 0
-	};
+  return {
+    id: 0,
+    name,
+    permalink: pl,
+    enabled: true,
+    metaDescription: null,
+    ogImageUrl: null,
+    content: [],
+    parentPageId: 0,
+    childCount: 0,
+  };
 }
 
-export interface EditPageResult extends XcapJsonResult {}
+export type EditPageResult = XcapJsonResult
 
 /**
  * Edit a cms page
  *
  * @returns {Thunk<EditPageResult>}
  */
-export function editPage({
-	page,
-	parentPageId
-}: {
-	page: Page,
-	parentPageId?: number
-}): Thunk<EditPageResult> {
-	return post({
-		url: '/cms/pages/edit',
-		parameters: {
-			page: JSON.stringify(page),
-			parentPageId
-		}
-	});
+export function editPage({ page, parentPageId }: { page: Page; parentPageId?: number }): Thunk<EditPageResult> {
+  return post({
+    url: '/cms/pages/edit',
+    parameters: {
+      page: JSON.stringify(page),
+      parentPageId,
+    },
+  });
 }
 
 /**
@@ -351,11 +341,11 @@ export function editPage({
  * @returns {Thunk<XcapJsonResult>}
  */
 export function removePage({ id }: { id: number }): Thunk<XcapJsonResult> {
-	return post({ url: '/cms/pages/remove', parameters: arguments });
+  return post({ url: '/cms/pages/remove', parameters: arguments });
 }
 
 export interface GetPageResult extends XcapJsonResult {
-	page: Page | null
+  page: Page | null;
 }
 
 /**
@@ -367,25 +357,25 @@ export interface GetPageResult extends XcapJsonResult {
  * @returns {Thunk<GetPageResult>}
  */
 export function getPage({
-	id,
-	permalink,
-	p = 1,
-	pageSize = 100
+  id,
+  permalink,
+  p = 1,
+  pageSize = 100,
 }: {
-	id: number,
-	permalink?: string,
-	p?: number,
-	pageSize?: number
+  id: number;
+  permalink?: string;
+  p?: number;
+  pageSize?: number;
 }): Thunk<GetPageResult> {
-	return getJson({
-		url: '/cms/pages/get',
-		parameters: {
-			id,
-			permalink,
-			p,
-			pageSize
-		}
-	});
+  return getJson({
+    url: '/cms/pages/get',
+    parameters: {
+      id,
+      permalink,
+      p,
+      pageSize,
+    },
+  });
 }
 
 /**
@@ -396,26 +386,26 @@ export function getPage({
  * @returns {Thunk<SearchPagesResult>}
  */
 export function searchContentUse({
-	contentId,
-	p = 1,
-	pageSize = 10
+  contentId,
+  p = 1,
+  pageSize = 10,
 }: {
-	contentId: number,
-	p?: number,
-	pageSize?: number
+  contentId: number;
+  p?: number;
+  pageSize?: number;
 }): Thunk<SearchPagesResult> {
-	return getJson({
-		url: '/cms/find-uses',
-		parameters: {
-			contentId,
-			p,
-			pageSize
-		}
-	});
+  return getJson({
+    url: '/cms/find-uses',
+    parameters: {
+      contentId,
+      p,
+      pageSize,
+    },
+  });
 }
 
 export interface SearchPagesResult extends XcapJsonResult {
-	result: PaginatedCollection<Page>
+  result: PaginatedCollection<Page>;
 }
 
 /*
@@ -428,26 +418,26 @@ export interface SearchPagesResult extends XcapJsonResult {
  * @returns {Thunk<SearchPagesResult>}
  */
 export function searchPages({
-	q,
-	p,
-	pageSize,
-	orderBy,
-	order
+  q,
+  p,
+  pageSize,
+  orderBy,
+  order,
 }: {
-	q: string,
-	p: number|null,
-	pageSize: number|null,
-	orderBy: 'name' | 'createdDate' | null,
-	order: Order | null
+  q: string;
+  p: number | null;
+  pageSize: number | null;
+  orderBy: 'name' | 'createdDate' | null;
+  order: Order | null;
 }): Thunk<SearchPagesResult> {
-	return getJson({
-		url: '/cms/pages/search',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/cms/pages/search',
+    parameters: arguments,
+  });
 }
 
 export interface GetPagesResult extends XcapJsonResult {
-	pages: { [id: string]: Page }
+  pages: { [id: string]: Page };
 }
 
 /**
@@ -458,26 +448,26 @@ export interface GetPagesResult extends XcapJsonResult {
  * @returns {Thunk<GetPagesResult>}
  */
 export function getPages({
-	pageIds,
-	permalinks,
-	communityPermalink
+  pageIds,
+  permalinks,
+  communityPermalink,
 }: {
-	pageIds?: Array<number>,
-	permalinks?: Array<string>,
-	communityPermalink?: string|null
+  pageIds?: Array<number>;
+  permalinks?: Array<string>;
+  communityPermalink?: string | null;
 }): Thunk<GetPagesResult> {
-	return getJson({
-		url: '/cms/pages/get-multiple',
-		parameters: {
-			pageId: pageIds,
-			permalink: permalinks,
-			[COMMUNITY_PARAMETER]: communityPermalink
-		}
-	});
+  return getJson({
+    url: '/cms/pages/get-multiple',
+    parameters: {
+      pageId: pageIds,
+      permalink: permalinks,
+      [COMMUNITY_PARAMETER]: communityPermalink,
+    },
+  });
 }
 
 export interface SearchPageContentResult extends XcapJsonResult {
-	result: { [key:string] : Array<PageContent> }
+  result: { [key: string]: Array<PageContent> };
 }
 
 /**
@@ -487,20 +477,20 @@ export interface SearchPageContentResult extends XcapJsonResult {
  * @returns {Thunk<SearchPageContentResult>}
  */
 export function searchPageContent({
-	q,
-	codeBinOnly
+  q,
+  codeBinOnly,
 }: {
-	q: string,
-	codeBinOnly: boolean
+  q: string;
+  codeBinOnly: boolean;
 }): Thunk<SearchPageContentResult> {
-	return getJson({
-		url: '/cms/pages/search-page-content',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/cms/pages/search-page-content',
+    parameters: arguments,
+  });
 }
 
 export interface GetAvailablePagePermalinkResult extends XcapJsonResult {
-	availablePermalink: string
+  availablePermalink: string;
 }
 
 /**
@@ -510,84 +500,84 @@ export interface GetAvailablePagePermalinkResult extends XcapJsonResult {
  * @returns {Thunk<XcapJsonResult>}
  */
 export function getAvailablePagePermalink({
-	pageId,
-	permalink
+  pageId,
+  permalink,
 }: {
-	pageId?: number | null,
-	permalink: string
+  pageId?: number | null;
+  permalink: string;
 }): Thunk<GetAvailablePagePermalinkResult> {
-	return getJson({
-		url: '/cms/pages/get-available-permalink',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/cms/pages/get-available-permalink',
+    parameters: arguments,
+  });
 }
 
 export type SubSiteNode = Node;
 export type SubSite = Tree;
 
 export interface GetSubSiteResult extends XcapJsonResult {
-	tree: SubSite | null,
-	referencedObjects: Map<string, any>
+  tree: SubSite | null;
+  referencedObjects: Map<string, any>;
 }
 
 export function getSubSite({ id }: { id: number }): Thunk<GetSubSiteResult> {
-	return getJson({
-		url: '/cms/subsite/get',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/cms/subsite/get',
+    parameters: arguments,
+  });
 }
 
 export function storeSubSite({ subSite }: { subSite: SubSite }): Thunk<GetSubSiteResult> {
-	return post({
-		url: '/cms/subsite/store',
-		parameters: {
-			tree: JSON.stringify(subSite)
-		}
-	});
+  return post({
+    url: '/cms/subsite/store',
+    parameters: {
+      tree: JSON.stringify(subSite),
+    },
+  });
 }
 
 export interface RemoveSubSiteResult extends XcapJsonResult {
-	removed: boolean
+  removed: boolean;
 }
 
 export function removeSubSite({ id }: { id: number }): Thunk<RemoveSubSiteResult> {
-	return post({
-		url: '/cms/subsite/remove',
-		parameters: arguments
-	});
+  return post({
+    url: '/cms/subsite/remove',
+    parameters: arguments,
+  });
 }
 
 export interface SearchSubSiteResult extends XcapJsonResult {
-	trees: PaginatedCollection<SubSite>
+  trees: PaginatedCollection<SubSite>;
 }
 
 export function searchSubSites({
-	q,
-	p,
-	pageSize
+  q,
+  p,
+  pageSize,
 }: {
-	q?: string | null,
-	p?: number,
-	pageSize?: number
+  q?: string | null;
+  p?: number;
+  pageSize?: number;
 }): Thunk<SearchSubSiteResult> {
-	return getJson({
-		url: '/cms/subsite/list',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/cms/subsite/list',
+    parameters: arguments,
+  });
 }
 
 /**
  * Create, but does not store a new subsite
  */
 export function newSubSite(name: string): SubSite {
-	return newTree(name);
+  return newTree(name);
 }
 
 /**
  * Create, but does not store a new subsite node
  */
 export function newSubSiteNode(name: string): SubSiteNode {
-	return newTreeNode(name);
+  return newTreeNode(name);
 }
 
 /**
@@ -596,22 +586,22 @@ export function newSubSiteNode(name: string): SubSiteNode {
  * @returns {number}
  */
 export function getDefaultPageId(subSite: SubSite): number {
-	if (!subSite) {
-		return 0;
-	}
+  if (!subSite) {
+    return 0;
+  }
 
-	if (subSite.referenceId) {
-		return subSite.referenceId;
-	}
+  if (subSite.referenceId) {
+    return subSite.referenceId;
+  }
 
-	for (let i = 0; i < subSite.children.length; i++) {
-		let c = subSite.children[i];
-		if (c.referenceId) {
-			return c.referenceId;
-		}
-	}
+  for (let i = 0; i < subSite.children.length; i++) {
+    const c = subSite.children[i];
+    if (c.referenceId) {
+      return c.referenceId;
+    }
+  }
 
-	return 0;
+  return 0;
 }
 
 /**
@@ -623,75 +613,72 @@ export function getDefaultPageId(subSite: SubSite): number {
  * @param parent
  */
 export function _addContentToDom(
-	parent: Element,
-	contentId: number,
-	html: string | null,
-	css: string | null,
-	javascript: string | null
-) {
-	const document = parent.ownerDocument;
-	if (parent && (html || css)) {
-		const addHtml = (css ? css : '') + (html ? html : '');
-		try {
-			const x = document.createRange().createContextualFragment(addHtml);
-			// Replace children
-			while (parent.childNodes.length > 0) {
-				parent.removeChild(parent.childNodes[0]);
-			}
-			parent.appendChild(x);
-		} catch (x) {
-			console.warn('Error in javascript tag: ', addHtml, ' from cms module: ', contentId);
-		}
-	}
+  parent: Element,
+  contentId: number,
+  html: string | null,
+  css: string | null,
+  javascript: string | null
+): void {
+  const document = parent.ownerDocument;
+  if (parent && (html || css)) {
+    const addHtml = (css ? css : '') + (html ? html : '');
+    try {
+      const x = document.createRange().createContextualFragment(addHtml);
+      // Replace children
+      while (parent.childNodes.length > 0) {
+        parent.removeChild(parent.childNodes[0]);
+      }
+      parent.appendChild(x);
+    } catch (x) {
+      console.warn('Error in javascript tag: ', addHtml, ' from cms module: ', contentId);
+    }
+  }
 
-	if (javascript) {
-		try {
-			const range = document.createRange();
-			range.setStart(document.getElementsByTagName('BODY')[0], 0);
-			document
-				.getElementsByTagName('BODY')[0]
-				.appendChild(range.createContextualFragment(javascript));
-		} catch (x) {
-			console.warn('Error in javascript: ', x, ' from cms module: ', contentId);
-		}
-	}
+  if (javascript) {
+    try {
+      const range = document.createRange();
+      range.setStart(document.getElementsByTagName('BODY')[0], 0);
+      document.getElementsByTagName('BODY')[0].appendChild(range.createContextualFragment(javascript));
+    } catch (x) {
+      console.warn('Error in javascript: ', x, ' from cms module: ', contentId);
+    }
+  }
 }
-
 
 /**
  * Add content to the dom. Client side only
  * @param parent
  * @param content
  */
-export function addContentToDom(parent: Element, content: Content) {
-	if (!parent || !content) {
-		return;
-	}
+export function addContentToDom(parent: Element, content: Content): void {
+  if (!parent || !content) {
+    return;
+  }
 
-	if (isRunningServerSide()) {
-		throw Error('Stackend: addContentToDom can not be executed serverside');
-	}
+  if (isRunningServerSide()) {
+    throw Error('Stackend: addContentToDom can not be executed serverside');
+  }
 
-	const { htmlValue, javascriptValue, cssValue } = extractContentValues(content);
+  const { htmlValue, javascriptValue, cssValue } = extractContentValues(content);
 
-	let style = `<style type="text/css">${cssValue}</style>`;
-	let javascript = '';
-	if (javascriptValue !== '') {
-		javascript = `<script type="text/javascript" id="stackend-cms-js-${content.id}">${javascriptValue}</script>`;
-	}
-	let html = style + `<div class='${RICH_CONTENT_CSS_CLASS}'>${htmlValue}</div>`;
+  const style = `<style type="text/css">${cssValue}</style>`;
+  let javascript = '';
+  if (javascriptValue !== '') {
+    javascript = `<script type="text/javascript" id="stackend-cms-js-${content.id}">${javascriptValue}</script>`;
+  }
+  const html = style + `<div class='${RICH_CONTENT_CSS_CLASS}'>${htmlValue}</div>`;
 
-	_addContentToDom(parent, content.id, html, '', javascript);
+  _addContentToDom(parent, content.id, html, '', javascript);
 }
 
 /**
  * Remove all child nodes of an element
  * @param element
  */
-export function removeAllChildNodes(element: any) {
-	while (element.childNodes.length > 0) {
-		element.removeChild(element.childNodes[0]);
-	}
+export function removeAllChildNodes(element: any): void {
+  while (element.childNodes.length > 0) {
+    element.removeChild(element.childNodes[0]);
+  }
 }
 
 /**
@@ -701,13 +688,13 @@ export function removeAllChildNodes(element: any) {
  * @param js
  */
 export function createContentValue(html: string, css: string, js: string): string {
-	const stringStyle = `<style type="text/css" data-stackend-cms="css">${css}</style>`;
-	const stringJavascript = `<script type="text/javascript" data-stackend-cms="js">${js}</script>`;
-	const stringHtml = `<div data-stackend-cms="html">${html}</div>`;
+  const stringStyle = `<style type="text/css" data-stackend-cms="css">${css}</style>`;
+  const stringJavascript = `<script type="text/javascript" data-stackend-cms="js">${js}</script>`;
+  const stringHtml = `<div data-stackend-cms="html">${html}</div>`;
 
-	// HTML should be the last one to not mess up the other two in case of backend tag balancing.
-	// However, javascript needs to be last for preview to work
-	return `${stringStyle}${stringHtml}${stringJavascript}`;
+  // HTML should be the last one to not mess up the other two in case of backend tag balancing.
+  // However, javascript needs to be last for preview to work
+  return `${stringStyle}${stringHtml}${stringJavascript}`;
 }
 
 /**
@@ -717,87 +704,62 @@ export function createContentValue(html: string, css: string, js: string): strin
  * @returns {{htmlValue: (*|string), javascriptValue: (*|string), cssValue: (*|string)}}
  */
 export function extractContentValues(
-	content: Content | null
+  content: Content | null
 ): {
-	htmlValue: string,
-	javascriptValue: string,
-	cssValue: string
+  htmlValue: string;
+  javascriptValue: string;
+  cssValue: string;
 } {
-	let html:Element|null = null;
-	let javascript:Element  | null = null;
-	let css:Element | null = null;
+  let html: Element | null = null;
+  let javascript: Element | null = null;
+  let css: Element | null = null;
 
-	if (content && content.body) {
-		let xmlDoc = new DOMParser().parseFromString(content.body, 'text/html');
+  if (content && content.body) {
+    const xmlDoc = new DOMParser().parseFromString(content.body, 'text/html');
 
-		css = (xmlDoc.evaluate(
-			'//style[@data-stackend-cms="css"]',
-			xmlDoc,
-			null,
-			XPathResult.FIRST_ORDERED_NODE_TYPE,
-			null
-		).singleNodeValue as Element);
+    css = xmlDoc.evaluate('//style[@data-stackend-cms="css"]', xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+      .singleNodeValue as Element;
 
-		javascript = (xmlDoc.evaluate(
-			'//script[@data-stackend-cms="js"]',
-			xmlDoc,
-			null,
-			XPathResult.FIRST_ORDERED_NODE_TYPE,
-			null
-		).singleNodeValue as Element);
+    javascript = xmlDoc.evaluate(
+      '//script[@data-stackend-cms="js"]',
+      xmlDoc,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null
+    ).singleNodeValue as Element;
 
-		html = (xmlDoc.evaluate(
-			'//div[@data-stackend-cms="html"]',
-			xmlDoc,
-			null,
-			XPathResult.FIRST_ORDERED_NODE_TYPE,
-			null
-		).singleNodeValue as Element);
+    html = xmlDoc.evaluate('//div[@data-stackend-cms="html"]', xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+      .singleNodeValue as Element;
 
-		// Fall backs to old style code
+    // Fall backs to old style code
 
-		if (css === null) {
-			css = (xmlDoc.evaluate(
-				'/html/head/style',
-				xmlDoc,
-				null,
-				XPathResult.FIRST_ORDERED_NODE_TYPE,
-				null
-			).singleNodeValue as Element);
-		}
+    if (css === null) {
+      css = xmlDoc.evaluate('/html/head/style', xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+        .singleNodeValue as Element;
+    }
 
-		if (html == null) {
-			html = (xmlDoc.evaluate(
-				'/html/body/div',
-				xmlDoc,
-				null,
-				XPathResult.FIRST_ORDERED_NODE_TYPE,
-				null
-			).singleNodeValue as Element);
-		}
+    if (html == null) {
+      html = xmlDoc.evaluate('/html/body/div', xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+        .singleNodeValue as Element;
+    }
 
-		if (javascript == null) {
-			javascript = (xmlDoc.evaluate(
-				'/html/body/script',
-				xmlDoc,
-				null,
-				XPathResult.FIRST_ORDERED_NODE_TYPE,
-				null
-			).singleNodeValue as Element);
-		}
-	}
+    if (javascript == null) {
+      javascript = xmlDoc.evaluate('/html/body/script', xmlDoc, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null)
+        .singleNodeValue as Element;
+    }
+  }
 
-	return {
-		htmlValue: html ? html.innerHTML : '',
-		javascriptValue: javascript ? javascript.innerHTML : '',
-		cssValue: css ? css.innerHTML : ''
-	};
+  return {
+    htmlValue: html ? html.innerHTML : '',
+    javascriptValue: javascript ? javascript.innerHTML : '',
+    cssValue: css ? css.innerHTML : '',
+  };
 }
 
 export interface ContentValues {
-	[id: string]: {
-		html: string | null,
-		javascript: string | null,
-		style: string | null
-	}
+  [id: string]: {
+    html: string | null;
+    javascript: string | null;
+    style: string | null;
+  };
 }

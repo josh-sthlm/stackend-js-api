@@ -1,10 +1,10 @@
 //@flow
 
 import {
-	XCAP_MODAL_THROBBER_INCREASE,
-	XCAP_MODAL_THROBBER_DECREASE,
-	XCAP_LOADING_THROBBER_INCREASE,
-	XCAP_LOADING_THROBBER_DECREASE
+  XCAP_MODAL_THROBBER_INCREASE,
+  XCAP_MODAL_THROBBER_DECREASE,
+  XCAP_LOADING_THROBBER_INCREASE,
+  XCAP_LOADING_THROBBER_DECREASE,
 } from './throbberReducer';
 import { Thunk } from '../api';
 
@@ -13,11 +13,11 @@ import { Thunk } from '../api';
  * @param visible
  */
 export function setModalThrobberVisible(visible: boolean): Thunk<void> {
-	return async (dispatch) => {
-		dispatch({
-			type: visible ? XCAP_MODAL_THROBBER_INCREASE : XCAP_MODAL_THROBBER_DECREASE
-		});
-	};
+  return (dispatch): void => {
+    dispatch({
+      type: visible ? XCAP_MODAL_THROBBER_INCREASE : XCAP_MODAL_THROBBER_DECREASE,
+    });
+  };
 }
 
 /**
@@ -26,9 +26,9 @@ export function setModalThrobberVisible(visible: boolean): Thunk<void> {
  * @returns {Function}
  */
 export function setLoadingThrobberVisible(visible: boolean): Thunk<void> {
-	return async (dispatch) => {
-		dispatch({
-			type: visible ? XCAP_LOADING_THROBBER_INCREASE : XCAP_LOADING_THROBBER_DECREASE
-		});
-	};
+  return (dispatch): void => {
+    dispatch({
+      type: visible ? XCAP_LOADING_THROBBER_INCREASE : XCAP_LOADING_THROBBER_DECREASE,
+    });
+  };
 }

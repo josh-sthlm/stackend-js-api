@@ -1,9 +1,6 @@
 //@flow
-import { User, hasElevatedPrivilege
-} from './user';
+import { User, hasElevatedPrivilege } from './user';
 import * as groupApi from './group';
-
-
 
 export const CMS_COMPONENT_CLASS = 'se.josh.xcap.cms.CmsManager';
 
@@ -19,7 +16,7 @@ export enum Privilege {
   BLOCKED = 'BLOCKED',
   TRUSTED = 'TRUSTED',
   ADMIN = 'ADMIN',
-  SUPER_ADMIN = 'SUPER_ADMIN'
+  SUPER_ADMIN = 'SUPER_ADMIN',
 }
 
 export enum PrivilegeTypeId {
@@ -29,7 +26,7 @@ export enum PrivilegeTypeId {
   BLOCKED = 8,
   TRUSTED = 16,
   ADMIN = 32,
-  SUPER_ADMIN = 64
+  SUPER_ADMIN = 64,
 }
 
 /**
@@ -42,29 +39,29 @@ export const PRIVILEGE_TYPE_IDS = {
   [Privilege.BLOCKED]: 8,
   [Privilege.TRUSTED]: 16,
   [Privilege.ADMIN]: 32,
-  [Privilege.SUPER_ADMIN]: 64
-}
+  [Privilege.SUPER_ADMIN]: 64,
+};
 
 export type PrivilegeTypeIds = 1 | 2 | 4 | 8 | 16 | 32 | 64;
 
 /**
  * Privilege type names
  */
-const PRIVILEGE_NAMES: {[id:string]: string} = {
+const PRIVILEGE_NAMES: { [id: string]: string } = {
   '1': 'Visitor',
   '2': 'Identified',
   '4': 'Verified',
   '8': 'Blocked',
   '16': 'Author',
   '32': 'Admin',
-  '64': 'Super-Admin'
+  '64': 'Super-Admin',
 };
 
 /**
  * Get the name of a privilege type
  */
 export function getPrivilegeName(privilegeTypeId: number): string {
-  let s = PRIVILEGE_NAMES[String(privilegeTypeId)];
+  const s = PRIVILEGE_NAMES[String(privilegeTypeId)];
   return s || 'Visitor';
 }
 
@@ -73,34 +70,34 @@ export function getPrivilegeName(privilegeTypeId: number): string {
  */
 export interface AuthObject {
   /** Users privilege */
-  userPrivilege: Privilege,
+  userPrivilege: Privilege;
 
   /** Is comment allowed? */
-  comment: boolean,
+  comment: boolean;
 
   /** Is create allowed? */
-  create: boolean,
+  create: boolean;
 
   /** Is moderate allowed? */
-  moderate: boolean,
+  moderate: boolean;
 
   /** Is read allowed? */
-  read: boolean,
+  read: boolean;
 
   /** Is post moderation required? */
-  postModerateRequired: boolean,
+  postModerateRequired: boolean;
 
   /** Will objects caught by the text filter cause it to be pre-moderated? */
-  textFilteredPre: boolean,
+  textFilteredPre: boolean;
 
   /** Is text filtering required? */
-  textFilteringRequired: boolean,
+  textFilteringRequired: boolean;
 
   /** Rule in effect */
-  ruleId: number
+  ruleId: number;
 }
 
-export function isSuperUser({ user }: { user: User | null }) {
+export function isSuperUser({ user }: { user: User | null }): boolean {
   return hasElevatedPrivilege(
     user,
     'groups',
@@ -109,7 +106,11 @@ export function isSuperUser({ user }: { user: User | null }) {
   );
 }
 
-export function isAdminUser({ user }: { user: User | null }) {
-  return hasElevatedPrivilege(user, 'cms', CMS_COMPONENT_CLASS, PrivilegeTypeId.TRUSTED);
+export function isAdminUser({ user }: { user: User | null }): boolean {
+  return hasElevatedPrivilege(
+    user,
+    'cms',
+    CMS_COMPONENT_CLASS,
+    PrivilegeTypeId.TRUSTED
+  );
 }
-

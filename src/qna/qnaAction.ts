@@ -15,12 +15,13 @@ import {
 	SET_QNA_AVAILABLE_FILTERS,
 	RECIEVE_SEARCH_RESULT
 } from './qnaReducer';
-import { isRunningInBrowser, Thunk } from '../api'
+import { isRunningInBrowser, Thunk, XcapJsonResult } from '../api';
 import { Request, getRequest } from '../request';
+import { AnyAction } from 'redux';
 
 
 //Action Creator to change qnaPage using pageType, eg. "ViewForumThread" and permalink to question
-export function changeQnaPage(pageType: string, forumThreadPermalink: string) {
+export function changeQnaPage(pageType: string, forumThreadPermalink: string): AnyAction {
 	return {
 		type: CHANGE_QNA_PAGE,
 		pageType,
@@ -37,14 +38,14 @@ export function changeQnaPage(pageType: string, forumThreadPermalink: string) {
  }*/
 export interface ChangeFilter {
 	filter: {
-		(filterName: string): string, //filterName is the filter group (currently only issue), and the value is selected filter
-		searchType?: QnaSearchType,
-		updateUrl?: 'qna' | 'search', //if qna or search, reducer will use browserHistory to push url of new filter
+		(filterName: string): string; //filterName is the filter group (currently only issue), and the value is selected filter
+		searchType?: QnaSearchType;
+		updateUrl?: 'qna' | 'search'; //if qna or search, reducer will use browserHistory to push url of new filter
 
-		issue?: string //not-really needed,
-	},
-	contentType: ContentType,
-	triggerSearch?: boolean //option to disable search trigger
+		issue?: string; //not-really needed,
+	};
+	contentType: ContentType;
+	triggerSearch?: boolean; //option to disable search trigger
 }
 
 //Action Creator to change selected filter in reduxStoreName
@@ -52,11 +53,11 @@ export function changeFilter({
 	filter,
 	contentType,
 	triggerSearch = true
-}: ChangeFilter): Thunk<any> {
-	return (dispatch: any, getState: any) => {
+}: ChangeFilter): Thunk<void> {
+	return (dispatch: any, getState: any): void => {
 		dispatch(_changeFilter({ filter, contentType }));
 
-		let request: Request = dispatch(getRequest());
+		const request: Request = dispatch(getRequest());
 
 		if (filter.updateUrl === 'qna') {
 			//const filterUrlString = !!filter.searchType ? filter.searchType.toLocaleLowerCase() : '';
@@ -65,7 +66,7 @@ export function changeFilter({
 			const { search, qnaSelectedFilters } = getState();
 
 			//On SearchPage when changing qnaSortOrder get the full url and update it with the new filter
-			const type = !!search.filter ? '/' + search.filter : '';
+			const type = search.filter ? '/' + search.filter : '';
 
 			let sortOrder = '';
 			if (
@@ -75,10 +76,10 @@ export function changeFilter({
 			) {
 				//set using new searchType
 				sortOrder = '/' + filter.searchType.toLocaleLowerCase();
-			} else if (!!qnaSelectedFilters.searchSearchInput.searchType) {
+			} else if (qnaSelectedFilters.searchSearchInput.searchType) {
 				//set using previous state
 				sortOrder = '/' + qnaSelectedFilters.searchSearchInput.searchType.toLocaleLowerCase();
-			} else if (!!filter.searchType) {
+			} else if (filter.searchType) {
 				sortOrder = '/' + filter.searchType.toLocaleLowerCase();
 			}
 
@@ -86,7 +87,7 @@ export function changeFilter({
 			if (!!filter.issue && filter.issue !== qnaSelectedFilters.searchSearchInput.issue) {
 				//set using new issue
 				_filter = '/' + filter.issue;
-			} else if (!!qnaSelectedFilters.searchSearchInput.issue) {
+			} else if (qnaSelectedFilters.searchSearchInput.issue) {
 				//set using previous state
 				_filter = '/' + qnaSelectedFilters.searchSearchInput.issue.toLocaleLowerCase();
 			}
@@ -116,7 +117,7 @@ export function changeFilter({
 	};
 }
 
-function _changeFilter({ filter, contentType }: ChangeFilter) {
+function _changeFilter({ filter, contentType }: ChangeFilter): AnyAction {
 	return {
 		type: CHANGE_FILTER,
 		filter,
@@ -125,8 +126,8 @@ function _changeFilter({ filter, contentType }: ChangeFilter) {
 }
 
 export function getAvailableFilters() {
-	return async (dispatch: any, getState: any) => {
-		let categoryInfo = await dispatch(getCategories());
+	return async (dispatch: any, getState: any): Promise<XcapJsonResult> => {
+		const categoryInfo = await dispatch(getCategories());
 
 		if (typeof categoryInfo.error !== 'undefined') {
 			dispatch(
@@ -156,12 +157,12 @@ export function getAvailableFilters() {
 
 //Action Creator to change selected filter in reduxStoreName
 function setAvailableFilters(filters: {
-	filterGames: Array<any>,
-	filterPlatforms: Array<any>,
-	filterIssues: Array<any>,
-	filterDevices: Array<any>,
-	filterError: any
-}) {
+	filterGames: Array<any>;
+	filterPlatforms: Array<any>;
+	filterIssues: Array<any>;
+	filterDevices: Array<any>;
+	filterError: any;
+}): AnyAction {
 	return {
 		type: SET_QNA_AVAILABLE_FILTERS,
 		filters
@@ -169,11 +170,11 @@ function setAvailableFilters(filters: {
 }
 
 function recieveSearchResult(result: {
-	entries: Array<any>,
-	relatedObjects: Array<any>,
-	categoryCounts: { [key: number]: any },
-	error: boolean
-}) {
+	entries: Array<any>;
+	relatedObjects: Array<any>;
+	categoryCounts: { [key: number]: any };
+	error: boolean;
+}): AnyAction {
 	return {
 		type: RECIEVE_SEARCH_RESULT,
 		result
@@ -182,7 +183,7 @@ function recieveSearchResult(result: {
 
 export function searchQna({ searchString, selectedFilters, game }: any) {
 	//Load questions using search and filters from King Care
-  return async (dispatch: any, getState: any) => {
+  return async (dispatch: any, getState: any): Promise<any> => {
     const qo = generateQueryObject(searchString, selectedFilters, getState().qnaAvailableFilters);
     const searchResult = await dispatch(_search({ ...qo, game }));
     if (typeof searchResult.error !== 'undefined') {
@@ -208,16 +209,16 @@ export function searchQna({ searchString, selectedFilters, game }: any) {
 
 }
 
-function generateQueryObject(searchString = '', selectedFilters:any, availableFilters:any) {
-	let qo = {};
-	const searchType = !!selectedFilters.searchType
+function generateQueryObject(searchString = '', selectedFilters: any, availableFilters: any): any {
+	const qo = {};
+	const searchType = selectedFilters.searchType
 		? QnaTypeConverter(
 				selectedFilters.searchType.substring(selectedFilters.searchType.lastIndexOf('/') + 1)
 		  )
 		: undefined;
 
 	// FIXME: Fix this
-  const platform = !!selectedFilters.platform
+  const platform = selectedFilters.platform
     // @ts-ignore
 		? find(
 				availableFilters.filterPlatforms,
@@ -226,7 +227,7 @@ function generateQueryObject(searchString = '', selectedFilters:any, availableFi
 				{ partOfPermalink: undefined }
 		  ).partOfPermalink
 		: undefined;
-	const issue = !!selectedFilters.issue
+	const issue = selectedFilters.issue
     // @ts-ignore
 		? find(
 				availableFilters.filterIssues,
@@ -235,7 +236,7 @@ function generateQueryObject(searchString = '', selectedFilters:any, availableFi
 				{ partOfPermalink: undefined }
 		  ).partOfPermalink
 		: undefined;
-	const device = !!selectedFilters.device
+	const device = selectedFilters.device
     // @ts-ignore
 		? find(
 				availableFilters.filterDevices,

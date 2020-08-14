@@ -8,6 +8,7 @@ export const SET_REQUEST_INFO = 'SET_REQUEST_INFO';
 // Hack to access this action
 export const REACT_ROUTER_REDUX_LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
 
+
 /**
  * Sets up an implementation neutral object that keeps track of the current url
  */
@@ -35,7 +36,7 @@ export const requestReducer = (
 		referenceUrlId: 0
 	},
 	action: any
-) => {
+): Request => {
 	let location = undefined;
 	let communityUrl = undefined;
 	let absoluteUrl = undefined;
@@ -55,7 +56,7 @@ export const requestReducer = (
 
 			// Show the content when the css is loaded
 			if (document) {
-				let p = document.getElementById('xcapPage');
+				const p = document.getElementById('xcapPage');
 				if (p && p.style.display === 'none') {
 					p.style.display = 'block';
 				}
@@ -80,7 +81,7 @@ export const requestReducer = (
 			} else {
 				// Extract community url
 				if (action.request.location.pathname) {
-					let pathname = action.request.location.pathname;
+					const pathname = action.request.location.pathname;
 					if (pathname !== state.location.pathname) {
 						// Skip context path
 						let pfx = pathname;
@@ -89,7 +90,7 @@ export const requestReducer = (
 						}
 
 						// Skip extra path info
-						let i = pfx.indexOf('/', 1);
+						const i = pfx.indexOf('/', 1);
 						if (i !== -1) {
 							pfx = pfx.substr(0, i);
 						}
@@ -119,11 +120,11 @@ export const requestReducer = (
 			location = action.request.location || state.location;
 			absoluteUrl = action.request.absoluteUrl || state.absoluteUrl;
 			absoluteCommunityUrl = action.request.absoluteCommunityUrl || state.absoluteCommunityUrl;
-			let cookie = action.request.cookie || state.cookie;
-			let communityFromDomain = action.request.communityFromDomain || state.communityFromDomain;
-			let contextPath = action.request.contextPath || state.contextPath;
+			const cookie = action.request.cookie || state.cookie;
+			const communityFromDomain = action.request.communityFromDomain || state.communityFromDomain;
+			const contextPath = action.request.contextPath || state.contextPath;
 			communityUrl = action.request.communityUrl || state.communityUrl;
-			let anchor = action.request.anchor || state.anchor;
+			const anchor = action.request.anchor || state.anchor;
 
 			return update(state, {
 				location: { $merge: location },

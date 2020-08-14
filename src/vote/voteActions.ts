@@ -4,6 +4,7 @@ import { XCAP_VOTES_RECIEVED, XCAP_VOTES_UPDATE } from './voteReducer';
 import { Vote, VoteSummary } from '../vote';
 import { VoteInfo } from './voteReducer';
 import { Comment } from '../comments';
+import { AnyAction } from 'redux';
 
 export function recieveVotes(
 	context: string,
@@ -11,7 +12,7 @@ export function recieveVotes(
 	votes: Map<number, Vote>,
 	hasVoted?: boolean,
 	myReview?: Comment | null
-) {
+): AnyAction {
 	return {
 		type: XCAP_VOTES_RECIEVED,
 		context,
@@ -28,7 +29,7 @@ export function updateVotes(
 	voteSummary: VoteSummary,
 	hasVoted?: boolean,
 	myReview?: Comment | null
-) {
+): AnyAction {
 	return {
 		type: XCAP_VOTES_UPDATE,
 		context,
@@ -39,44 +40,47 @@ export function updateVotes(
 	};
 }
 
-export function getVoteSummary(state: any, context: string, referenceId: number): VoteSummary | null {
-	let vi = getVoteInfo(state, context, referenceId);
-	return vi ? vi.voteSummary : null;
-}
 
-export function getVotes(state: any, context: string, referenceId: number): { [referenceGroupId:number] : Vote } | null {
-	let vi = getVoteInfo(state, context, referenceId);
-	return vi ? vi.votes : null;
-}
 
-export function getVote(
-	state: any,
-	context: string,
-	referenceId: number,
-	referenceGroupId: number
-): Vote | null {
-	let vi = getVoteInfo(state, context, referenceId);
-	if (!vi) {
-		return null;
-	}
-
-	let v = vi.votes[referenceGroupId];
-	return v ? v : null;
-}
 
 export function getVoteInfo(state: any, context: string, referenceId: number): VoteInfo | null {
 	if (!state || !referenceId || !context) {
 		return null;
 	}
 
-	let x = state[context];
+	const x = state[context];
 	if (!x) {
 		return null;
 	}
 
-	let y = x[referenceId];
+	const y = x[referenceId];
 	if (!y) {
 		return null;
 	}
 	return y;
+}
+
+export function getVote(
+  state: any,
+  context: string,
+  referenceId: number,
+  referenceGroupId: number
+): Vote | null {
+  const vi = getVoteInfo(state, context, referenceId);
+  if (!vi) {
+    return null;
+  }
+
+  const v = vi.votes[referenceGroupId];
+  return v ? v : null;
+}
+
+export function getVoteSummary(state: any, context: string, referenceId: number): VoteSummary | null {
+  const vi = getVoteInfo(state, context, referenceId);
+  return vi ? vi.voteSummary : null;
+}
+
+export function getVotes(state: any, context: string, referenceId: number): { [referenceGroupId: number]: Vote } | null {
+  const vi = getVoteInfo(state, context, referenceId);
+  return vi ? vi.votes : null;
 }

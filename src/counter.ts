@@ -15,14 +15,8 @@ import { post, XcapJsonResult, Thunk } from './api';
  * @param context Context (Required)
  * @param referenceId Reference id, for example a blog entry id (Required)
  */
-export function increment({
-	context,
-	referenceId
-}: {
-	context: string,
-	referenceId: number
-}): Thunk<XcapJsonResult> {
-	return post({ url: '/counter/increment', parameters: arguments });
+export function increment({ context, referenceId }: { context: string; referenceId: number }): Thunk<XcapJsonResult> {
+  return post({ url: '/counter/increment', parameters: arguments });
 }
 
 /**
@@ -35,11 +29,11 @@ export function increment({
 
  */
 export function putFootprint({
-	context,
-	referenceId
+  context,
+  referenceId,
 }: {
-	context: string,
-	referenceId: number
+  context: string;
+  referenceId: number;
 }): Thunk<XcapJsonResult> {
-	return post({ url: '/counter/footprint', parameters: arguments });
+  return post({ url: '/counter/footprint', parameters: arguments });
 }

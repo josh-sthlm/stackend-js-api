@@ -1,13 +1,5 @@
 // @flow
-import {
-  getJson,
-  post,
-  SortOrder,
-  XcapJsonResult,
-  XcapObject,
-  Thunk,
-  isRunningInBrowser
-} from './api'
+import { getJson, post, SortOrder, XcapJsonResult, XcapObject, Thunk, isRunningInBrowser } from './api';
 //import * as groupApi from './group';
 import * as user from './user';
 //import * as gaFunctions from '../functions/gaFunctions';
@@ -17,82 +9,82 @@ import { PaginatedCollection } from './PaginatedCollection';
 /**
  * Comment class name
  */
-export const COMMENT_CLASS: string = 'se.josh.xcap.comment.impl.CommentImpl';
+export const COMMENT_CLASS = 'se.josh.xcap.comment.impl.CommentImpl';
 
 /**
  * Comment manager component class name
  */
-export const COMPONENT_CLASS: string = 'se.josh.xcap.comment.CommentManager';
+export const COMPONENT_CLASS = 'se.josh.xcap.comment.CommentManager';
 
 /**
  * Component name
  */
-export const COMPONENT_NAME: string = 'comment';
+export const COMPONENT_NAME = 'comment';
 
 /**
  * Definition of a comment
  */
 export interface Comment extends XcapObject {
-	__type: 'se.josh.xcap.comment.impl.CommentImpl',
-	parentId: number /** parent id if reply */,
-	permalink: string,
-	creatorUserId: number,
-	creatorUserRef: user.User,
-	createdDate: Date,
-	modifiedDate: number,
-	modifiedByUserId: number,
-	modifiedByUserRef?: user.User,
-	referenceGroupId: number,
-	referenceId: number /** For instance blogEntryId */,
-	referenceRef: any,
-	userApprovalStatus: string,
-	modStatus: string,
-	ttl: number,
-	expiresDate: number,
-	obfuscatedReference: string,
-	subject: string,
-	body: string,
-	plainTextBody: string,
-	numberOfLikes: number,
-	type?: string // (hack) Used in CommentList to add a editor to the list of comments
+  __type: 'se.josh.xcap.comment.impl.CommentImpl';
+  parentId: number /** parent id if reply */;
+  permalink: string;
+  creatorUserId: number;
+  creatorUserRef: user.User;
+  createdDate: Date;
+  modifiedDate: number;
+  modifiedByUserId: number;
+  modifiedByUserRef?: user.User;
+  referenceGroupId: number;
+  referenceId: number /** For instance blogEntryId */;
+  referenceRef: any;
+  userApprovalStatus: string;
+  modStatus: string;
+  ttl: number;
+  expiresDate: number;
+  obfuscatedReference: string;
+  subject: string;
+  body: string;
+  plainTextBody: string;
+  numberOfLikes: number;
+  type?: string; // (hack) Used in CommentList to add a editor to the list of comments
 }
 
 /**
  * Sort criteria
  */
 export enum CommentSortCriteria {
-	/**
-	 * Sort by creation date.
-	 */
-	CREATED = 'CREATED',
+  /**
+   * Sort by creation date.
+   */
+  CREATED = 'CREATED',
 
-	/**
-	 * Sort after creation date, but preserving replies. The commenting system
-	 * supports one level of replies.
-	 */
-	CREATED_WITH_REPLIES = 'CREATED_WITH_REPLIES'
+  /**
+   * Sort after creation date, but preserving replies. The commenting system
+   * supports one level of replies.
+   */
+  CREATED_WITH_REPLIES = 'CREATED_WITH_REPLIES',
 }
 
 /**
  *
  */
 export enum CommentModule {
-	/**
-	 * Generic comment module
-	 */
-	GENERIC= '',
+  /**
+   * Generic comment module
+   */
+  GENERIC = '',
 
-	/**
-	 * Blog comment module
-	 */
-	BLOG = 'blog'
+  /**
+   * Blog comment module
+   */
+  BLOG = 'blog',
 }
 
 export interface GetCommentsResult extends XcapJsonResult {
-	likesByCurrentUser: LikesByCurrentUser,
-	comments: PaginatedCollection<Comment>,
-	minutesToEdit: number,
-	commentsAllowed: boolean
+  likesByCurrentUser: LikesByCurrentUser;
+  comments: PaginatedCollection<Comment>;
+  minutesToEdit: number;
+  commentsAllowed: boolean;
 }
 
 /**
@@ -107,31 +99,31 @@ export interface GetCommentsResult extends XcapJsonResult {
  * @param useVotes Fetch votes (optional)
  */
 export function getComments({
-	module = CommentModule.GENERIC,
-	referenceId,
-	p = null,
-	pageSize = null,
-	sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
-	order = SortOrder.DESCENDING,
-	useVotes = false
+  module = CommentModule.GENERIC,
+  referenceId,
+  p = null,
+  pageSize = null,
+  sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
+  order = SortOrder.DESCENDING,
+  useVotes = false,
 }: any): Thunk<GetCommentsResult> {
-	if (isNaN(referenceId)) {
-		throw Error('Parameter referenceId is required');
-	}
+  if (isNaN(referenceId)) {
+    throw Error('Parameter referenceId is required');
+  }
 
-	return getJson({
-		url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/list',
-		parameters: arguments
-	});
+  return getJson({
+    url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/list',
+    parameters: arguments,
+  });
 }
 
 export interface GetMultipleCommentsResult extends XcapJsonResult {
-	likesByCurrentUser: LikesByCurrentUser,
+  likesByCurrentUser: LikesByCurrentUser;
 
-	/** Maps from reference id to comments */
-	comments: Map<string, PaginatedCollection<Comment>>,
+  /** Maps from reference id to comments */
+  comments: Map<string, PaginatedCollection<Comment>>;
 
-	minutesToEdit: number
+  minutesToEdit: number;
 }
 
 /**
@@ -151,24 +143,24 @@ export interface GetMultipleCommentsResult extends XcapJsonResult {
  * @param pageSize
  */
 export function getMultipleComments({
-	module = CommentModule.GENERIC,
-	referenceIds,
-	pageSize = null,
-	sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
-	order = SortOrder.DESCENDING
+  module = CommentModule.GENERIC,
+  referenceIds,
+  pageSize = null,
+  sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
+  order = SortOrder.DESCENDING,
 }: any): Thunk<GetMultipleCommentsResult> {
-	if (!Array.isArray(referenceIds)) {
-		throw Error('Parameter referenceIds is required');
-	}
+  if (!Array.isArray(referenceIds)) {
+    throw Error('Parameter referenceIds is required');
+  }
 
-	return getJson({
-		url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/list-multiple',
-		parameters: arguments
-	});
+  return getJson({
+    url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/list-multiple',
+    parameters: arguments,
+  });
 }
 
 export interface PostCommentResult extends XcapJsonResult {
-	comment: Comment
+  comment: Comment;
 }
 
 /**
@@ -186,35 +178,35 @@ export interface PostCommentResult extends XcapJsonResult {
  * @returns {Promise}
  */
 export function postComment({
-	commentId,
-	referenceId,
-	referenceGroupId = 0,
-	module = CommentModule.GENERIC,
-	parentId = 0,
-	subject,
-	body,
-	extraInformation,
-	referenceUrl
+  commentId,
+  referenceId,
+  referenceGroupId = 0,
+  module = CommentModule.GENERIC,
+  parentId = 0,
+  subject,
+  body,
+  extraInformation,
+  referenceUrl,
 }: {
-	commentId?: number,
-	referenceId: number,
-	referenceGroupId?: number,
-	module: CommentModule,
-	parentId?: number,
-	subject?: string,
-	body: string,
-	extraInformation?: any,
-	referenceUrl?: string
+  commentId?: number;
+  referenceId: number;
+  referenceGroupId?: number;
+  module: CommentModule;
+  parentId?: number;
+  subject?: string;
+  body: string;
+  extraInformation?: any;
+  referenceUrl?: string;
 }): Thunk<PostCommentResult> {
-	// Add referenceUrl, if not set
-	if (!referenceUrl && isRunningInBrowser()) {
-		arguments[0].referenceUrl = window.location.href;
-	}
+  // Add referenceUrl, if not set
+  if (!referenceUrl && isRunningInBrowser()) {
+    arguments[0].referenceUrl = window.location.href;
+  }
 
-	return post({
-		url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/post',
-		parameters: arguments
-	});
+  return post({
+    url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/post',
+    parameters: arguments,
+  });
 }
 
 /*

@@ -1,6 +1,13 @@
 // @flow
 import _ from 'lodash';
-import { post, getJson,  XcapJsonResult, _getApiUrl, Config, Thunk } from './api';
+import {
+  post,
+  getJson,
+  XcapJsonResult,
+  _getApiUrl,
+  Config,
+  Thunk,
+} from './api';
 import type { PaginatedCollection } from './PaginatedCollection';
 import type { Community } from './stackend';
 
@@ -14,20 +21,20 @@ const CONTEXT = 'like';
  */
 
 export interface LikeData {
-	likes: number,
-	likedByCurrentUser: boolean
+  likes: number;
+  likedByCurrentUser: boolean;
 }
 
 /**
  * Maps from id to boolean if the current user likes this id
  */
-export type LikesByCurrentUser = { [id:string]: boolean };
+export type LikesByCurrentUser = { [id: string]: boolean };
 
 /**
  * Like data map.
  * Maps from obfuscated reference to like data.
  */
-export type LikeDataMap = { [ref:string]: LikeData };
+export type LikeDataMap = { [ref: string]: LikeData };
 
 /**
  * Get like data for an object given a likes object.
@@ -37,22 +44,21 @@ export type LikeDataMap = { [ref:string]: LikeData };
  * @return a like object, never null
  */
 export function getLikeData(likes: LikeDataMap, object: any): LikeData {
-	if (!!likes && !!object && !!object.obfuscatedReference) {
-		let l = likes[object.obfuscatedReference];
-		if (!!l) {
-			return l;
-		}
-	}
+  if (!!likes && !!object && !!object.obfuscatedReference) {
+    const l = likes[object.obfuscatedReference];
+    if (l) {
+      return l;
+    }
+  }
 
-	return {
-		likes: 0,
-		likedByCurrentUser: false
-	};
+  return {
+    likes: 0,
+    likedByCurrentUser: false,
+  };
 }
 
 export interface LikeResult extends XcapJsonResult {
-  numberOfLikes: number,
-
+  numberOfLikes: number;
 }
 /**
  * Like an object.
@@ -64,20 +70,20 @@ export interface LikeResult extends XcapJsonResult {
  * Only authorized users may like an object.
  */
 export function like({
-	obfuscatedReference,
-	reference,
-	context = CONTEXT
+  obfuscatedReference,
+  reference,
+  context = CONTEXT,
 }: {
-	obfuscatedReference?: string,
-	reference?: string,
-	context: string
+  obfuscatedReference?: string;
+  reference?: string;
+  context: string;
 }): Thunk<LikeResult> {
-	return post({
-		url: '/like/like',
-		parameters: { obfuscatedReference, reference },
-		componentName: COMPONENT_NAME,
-		context
-	});
+  return post({
+    url: '/like/like',
+    parameters: { obfuscatedReference, reference },
+    componentName: COMPONENT_NAME,
+    context,
+  });
 }
 
 /**
@@ -89,20 +95,20 @@ export function like({
  *
  */
 export function removeLike({
-	obfuscatedReference,
-	reference,
-	context = CONTEXT
+  obfuscatedReference,
+  reference,
+  context = CONTEXT,
 }: {
-	obfuscatedReference?: string,
-	reference?: string,
-	context: string
+  obfuscatedReference?: string;
+  reference?: string;
+  context: string;
 }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/like/like',
-		parameters: { obfuscatedReference, reference, remove: true },
-		componentName: COMPONENT_NAME,
-		context
-	});
+  return post({
+    url: '/like/like',
+    parameters: { obfuscatedReference, reference, remove: true },
+    componentName: COMPONENT_NAME,
+    context,
+  });
 }
 
 /**
@@ -113,57 +119,57 @@ export function removeLike({
  * The new number of likes will be returned.
  */
 export function setLike({
-	obfuscatedReference,
-	reference,
-	like = true,
-	context = CONTEXT
+  obfuscatedReference,
+  reference,
+  like = true,
+  context = CONTEXT,
 }: {
-	obfuscatedReference?: string,
-	reference?: string,
-	like: boolean,
-	context?: string
+  obfuscatedReference?: string;
+  reference?: string;
+  like: boolean;
+  context?: string;
 }): Thunk<XcapJsonResult> {
-	return post({
-		url: '/like/like',
-		parameters: { obfuscatedReference, reference, remove: !like },
-		componentName: COMPONENT_NAME,
-		context
-	});
+  return post({
+    url: '/like/like',
+    parameters: { obfuscatedReference, reference, remove: !like },
+    componentName: COMPONENT_NAME,
+    context,
+  });
 }
 
 export interface LikeObjectAndCount {
-	object: any,
-	likes: number
+  object: any;
+  likes: number;
 }
 
 export interface GetLikeToplistResult extends XcapJsonResult {
-	/** Toplist of liked objects */
-	toplist: PaginatedCollection<LikeObjectAndCount>,
+  /** Toplist of liked objects */
+  toplist: PaginatedCollection<LikeObjectAndCount>;
 
-	/** Maps from obfuscated reference like data */
-	likes: Map<string, LikeData>,
+  /** Maps from obfuscated reference like data */
+  likes: Map<string, LikeData>;
 
-	/** Actual interval used */
-	interval: string,
+  /** Actual interval used */
+  interval: string;
 
-	/** Like creator user id */
-	creatorUserId: number,
+  /** Like creator user id */
+  creatorUserId: number;
 
-	/** Object context */
-	objectContext: string | null,
+  /** Object context */
+  objectContext: string | null;
 
-	/** Object creator user id */
-	objectCreatorUserId: number
+  /** Object creator user id */
+  objectCreatorUserId: number;
 }
 
 interface GetToplist {
-	creatorUserId?: number,
-	objectCreatorUserId?: number,
-	interval?: string,
-	objectType?: string,
-	objectContext?: string,
-	p?: number,
-	pageSize?: number
+  creatorUserId?: number;
+  objectCreatorUserId?: number;
+  interval?: string;
+  objectType?: string;
+  objectContext?: string;
+  p?: number;
+  pageSize?: number;
 }
 
 /**
@@ -178,48 +184,48 @@ interface GetToplist {
  * @param pageSize Page size
  */
 export function getToplist({
-	creatorUserId,
-	objectCreatorUserId,
-	interval,
-	objectType,
-	objectContext,
-	p,
-	pageSize
+  creatorUserId,
+  objectCreatorUserId,
+  interval,
+  objectType,
+  objectContext,
+  p,
+  pageSize,
 }: GetToplist): Thunk<GetLikeToplistResult> {
-	return getJson({
-		url: '/like/toplist',
-		parameters: arguments
-	});
+  return getJson({
+    url: '/like/toplist',
+    parameters: arguments,
+  });
 }
 
 export function getToplistUrl({
-	creatorUserId,
-	objectCreatorUserId,
-	interval,
-	objectType,
-	objectContext,
-	p,
-	pageSize,
-	community,
-	config
-}: GetToplist & { community: Community, config: Config }) {
-	const url = '/like/toplist';
-	const communityPermalink = _.get(community, 'permalink');
+  creatorUserId,
+  objectCreatorUserId,
+  interval,
+  objectType,
+  objectContext,
+  p,
+  pageSize,
+  community,
+  config,
+}: GetToplist & { community: Community; config: Config }): string {
+  const url = '/like/toplist';
+  const communityPermalink = _.get(community, 'permalink');
 
-	return _getApiUrl({
-		state: { communities: { community }, config },
-		url,
-		parameters: {
-			creatorUserId,
-			objectCreatorUserId,
-			interval,
-			objectType,
-			objectContext,
-			p,
-			pageSize
-		},
-		community: communityPermalink,
-		componentName: COMPONENT_NAME,
-		context: CONTEXT
-	});
+  return _getApiUrl({
+    state: { communities: { community }, config },
+    url,
+    parameters: {
+      creatorUserId,
+      objectCreatorUserId,
+      interval,
+      objectType,
+      objectContext,
+      p,
+      pageSize,
+    },
+    community: communityPermalink,
+    componentName: COMPONENT_NAME,
+    context: CONTEXT,
+  });
 }

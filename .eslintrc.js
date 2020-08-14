@@ -33,10 +33,15 @@ module.exports = {
     //'no-unused-vars': 'off',
     'no-empty-pattern': 'off',
     'prefer-const': ['warn'],
+    'prefer-rest-params': "warn",
     '@typescript-eslint/no-unused-expressions': 'off',
-    ' @typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/type-annotation-spacing': 'warn',
     '@typescript-eslint/explicit-function-return-type': 'error',
+    '@typescript-eslint/camelcase': 'warn',
+    // note you must disable the base rule as it can report incorrect errors
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["warn"],
     '@typescript-eslint/no-unused-vars': 'off',
     /*
     '@typescript-eslint/no-unused-vars': [
@@ -48,6 +53,7 @@ module.exports = {
         argsIgnorePattern: '^_' // ignore unused variables whose name is '_'
       }
     ]
-     */
+    */
+    'no-constant-condition': ["error", { "checkLoops": false }]
   }
 }

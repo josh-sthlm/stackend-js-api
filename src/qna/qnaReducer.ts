@@ -11,218 +11,207 @@ export const CHANGE_FILTER = 'CHANGE_FILTER';
 export const SET_QNA_AVAILABLE_FILTERS = 'SET_QNA_AVAILABLE_FILTERS';
 export const RECIEVE_SEARCH_RESULT = 'RECIEVE_SEARCH_RESULT';
 
+export interface QnaState {
+  pageType: string;
+  forumThreadPermalink?: string;
+}
+
 //Reducer
 const qnaReducer = (
-	state: any = { pageType: 'Search' },
-	action: {
-		type: string,
-		pageType: string,
-		forumThreadPermalink: string
-	}
-) => {
-	switch (action.type) {
-		case CHANGE_QNA_PAGE:
-			return (state = {
-				pageType: action.pageType,
-				forumThreadPermalink: action.forumThreadPermalink
-			});
-		default:
-			return state;
-	}
+  state: QnaState = { pageType: 'Search' },
+  action: {
+    type: string;
+    pageType: string;
+    forumThreadPermalink: string;
+  }
+): QnaState => {
+  switch (action.type) {
+    case CHANGE_QNA_PAGE:
+      return (state = {
+        pageType: action.pageType,
+        forumThreadPermalink: action.forumThreadPermalink,
+      });
+    default:
+      return state;
+  }
 };
 
 // FIXME: Remove this
-type XcapModuleSettings = {
-	qna: {
-		server: string,
-		game: { id: number, name: string },
-    styling: any
-	}
+export type XcapModuleSettings = {
+  qna: {
+    server: string;
+    game: { id: number; name: string };
+    styling: any;
+  };
 };
 
 const xcapModuleSettings: XcapModuleSettings = {
-	qna: {
-		server: '',
+  qna: {
+    server: '',
     game: { id: 0, name: '' },
-    styling: {  }
-	}
+    styling: {},
+  },
 };
-
 
 //Reducer
 const qnaServer = (
-	state: any = xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.server
-		? xcapModuleSettings.qna.server
-		: '',
-	action: { type: string, server: string }
-) => {
-	switch (action.type) {
-		case SET_QNA_SERVER:
-			return (state = action.server);
-		default:
-			return state;
-	}
+  state: any = xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.server
+    ? xcapModuleSettings.qna.server
+    : '',
+  action: { type: string; server: string }
+): any => {
+  switch (action.type) {
+    case SET_QNA_SERVER:
+      return (state = action.server);
+    default:
+      return state;
+  }
 };
 
 export function qnaAvailableFilters(
-	state: {
-		filterGames: Array<any>,
-		filterPlatforms: Array<any>,
-		filterIssues: Array<any>,
-		filterDevices: Array<any>,
-		filterError: any
-	} = {
-		filterGames: [],
-		filterPlatforms: [],
-		filterIssues: [],
-		filterDevices: [],
-		filterError: false
-	},
-	action: { type: string, filters: any }
-) {
-	switch (action.type) {
-		case SET_QNA_AVAILABLE_FILTERS:
-			return (state = action.filters);
-		default:
-			return state;
-	}
+  state: {
+    filterGames: Array<any>;
+    filterPlatforms: Array<any>;
+    filterIssues: Array<any>;
+    filterDevices: Array<any>;
+    filterError: any;
+  } = {
+    filterGames: [],
+    filterPlatforms: [],
+    filterIssues: [],
+    filterDevices: [],
+    filterError: false,
+  },
+  action: { type: string; filters: any }
+): any {
+  switch (action.type) {
+    case SET_QNA_AVAILABLE_FILTERS:
+      return (state = action.filters);
+    default:
+      return state;
+  }
 }
 
 const defaultQnaSelectedFiltersState = {
-	askQuestion: {
-		game:
-			xcapModuleSettings &&
-			xcapModuleSettings.qna &&
-			xcapModuleSettings.qna.game &&
-			xcapModuleSettings.qna.game.id,
-		searchType: 'All'
-	},
-	tags: {
-		game:
-			xcapModuleSettings &&
-			xcapModuleSettings.qna &&
-			xcapModuleSettings.qna.game &&
-			xcapModuleSettings.qna.game.name,
-		searchType: 'Trending'
-	},
-	searchSearchInput: {
-		game:
-			xcapModuleSettings &&
-			xcapModuleSettings.qna &&
-			xcapModuleSettings.qna.game &&
-			xcapModuleSettings.qna.game.name,
-		searchType: 'All'
-	}
+  askQuestion: {
+    game: xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.game && xcapModuleSettings.qna.game.id,
+    searchType: 'All',
+  },
+  tags: {
+    game:
+      xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.game && xcapModuleSettings.qna.game.name,
+    searchType: 'Trending',
+  },
+  searchSearchInput: {
+    game:
+      xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.game && xcapModuleSettings.qna.game.name,
+    searchType: 'All',
+  },
 };
 type QnaSelectedFiltersChangeFilter = {
-	type: 'CHANGE_FILTER',
-	contentType: QNA.ContentType,
-	filter: {
-		(filterName: string): '',
-		updateUrl?: boolean //if true, reducer will use browserHistory to push url of new filter
-	}
+  type: 'CHANGE_FILTER';
+  contentType: QNA.ContentType;
+  filter: {
+    (filterName: string): '';
+    updateUrl?: boolean; //if true, reducer will use browserHistory to push url of new filter
+  };
 };
 
-const qnaSelectedFilters = (
-	state: any = defaultQnaSelectedFiltersState,
-	action: QnaSelectedFiltersChangeFilter
-) => {
-	switch (action.type) {
-		case CHANGE_FILTER:
-			if (typeof state[action.contentType] === 'undefined') {
-				//this is the first request of a specfic contentType, store it in a separate place
-				state[action.contentType] = {};
-			}
+const qnaSelectedFilters = (state: any = defaultQnaSelectedFiltersState, action: QnaSelectedFiltersChangeFilter): any => {
+  switch (action.type) {
+    case CHANGE_FILTER:
+      if (typeof state[action.contentType] === 'undefined') {
+        //this is the first request of a specific contentType, store it in a separate place
+        state[action.contentType] = {};
+      }
 
-			//TODO: Is this realy working? what if action.filter[1] is clicked?
-			if (
-				!!Object.values(action.filter)[0] &&
-				state[action.contentType][Object.keys(action.filter)[0]] ===
-					Object.values(action.filter)[0] &&
-				Object.keys(action.filter)[0] !== 'searchType'
-			) {
-				// the current clicked filter is selected, Un-check current filter selection
-				return update(state, {
-					[action.contentType]: { $merge: { [Object.keys(action.filter)[0]]: '' } }
-				});
-			}
+      //TODO: Is this realy working? what if action.filter[1] is clicked?
+      if (
+        !!Object.values(action.filter)[0] &&
+        state[action.contentType][Object.keys(action.filter)[0]] === Object.values(action.filter)[0] &&
+        Object.keys(action.filter)[0] !== 'searchType'
+      ) {
+        // the current clicked filter is selected, Un-check current filter selection
+        return update(state, {
+          [action.contentType]: { $merge: { [Object.keys(action.filter)[0]]: '' } },
+        });
+      }
 
-			//Check new filter selection
-			return update(state, {
-				[action.contentType]: { $merge: action.filter }
-			});
-		default:
-			return state;
-	}
+      //Check new filter selection
+      return update(state, {
+        [action.contentType]: { $merge: action.filter },
+      });
+    default:
+      return state;
+  }
 };
 
 export function qnaSearchResult(
-	state: {
-		entries: Array<any>,
-		relatedObjects: Array<any>,
-		categoryCounts: Array<any>,
-		error: boolean
-	} = {
-		entries: [],
-		relatedObjects: [],
-		categoryCounts: [],
-		error: false
-	},
-	action: { type: string, result: any }
-) {
-	switch (action.type) {
-		case RECIEVE_SEARCH_RESULT:
-			return (state = action.result);
-		default:
-			return state;
-	}
+  state: {
+    entries: Array<any>;
+    relatedObjects: Array<any>;
+    categoryCounts: Array<any>;
+    error: boolean;
+  } = {
+    entries: [],
+    relatedObjects: [],
+    categoryCounts: [],
+    error: false,
+  },
+  action: { type: string; result: any }
+): any {
+  switch (action.type) {
+    case RECIEVE_SEARCH_RESULT:
+      return (state = action.result);
+    default:
+      return state;
+  }
 }
 
 const qnaGame = (
-	state: any = xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.game
-		? xcapModuleSettings.qna.game
-		: '',
-	action: { type: string, game: string }
-) => {
-	switch (action.type) {
-		case SET_QNA_GAME:
-			return (state = action.game);
-		default:
-			return state;
-	}
+  state: any = xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.game
+    ? xcapModuleSettings.qna.game
+    : '',
+  action: { type: string; game: string }
+): any => {
+  switch (action.type) {
+    case SET_QNA_GAME:
+      return (state = action.game);
+    default:
+      return state;
+  }
 };
 
 const defaultStyle = {
-	mainColor: '',
-	accentColor: '',
-	iconColor: '',
+  mainColor: '',
+  accentColor: '',
+  iconColor: '',
 
-	titleFont: '',
-	titleFontColor: '',
+  titleFont: '',
+  titleFontColor: '',
 
-	bodyFont: '',
-	bodyFontColor: '',
+  bodyFont: '',
+  bodyFontColor: '',
 
-	buttonColor: '',
-	buttonFontColor: '',
+  buttonColor: '',
+  buttonFontColor: '',
 
-	linkColor: '',
-	textDetailColor: ''
+  linkColor: '',
+  textDetailColor: '',
 };
 
-
 const qnaStyling = (
-	state: any = xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.styling
-		? xcapModuleSettings.qna.styling
-		: defaultStyle,
-	action: { type: string, style: string }
-) => {
-	switch (action.type) {
-		case SET_QNA_STYLE:
-			return (state = action.style);
-		default:
-			return state;
-	}
+  state: any = xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.styling
+    ? xcapModuleSettings.qna.styling
+    : defaultStyle,
+  action: { type: string; style: string }
+): any => {
+  switch (action.type) {
+    case SET_QNA_STYLE:
+      return (state = action.style);
+    default:
+      return state;
+  }
 };
 
 export { qnaReducer, qnaServer, qnaSelectedFilters, qnaGame, qnaStyling };
