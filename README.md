@@ -61,8 +61,9 @@ let r = await store.dispatch(getInitialStoreValues({ permalink: 'my-test-communi
 ## Logging and configuration
 
 
-The Stackend library uses [config](https://www.npmjs.com/package/config) to storing project specific settings 
+The Stackend library uses [config](https://www.npmjs.com/package/config) to store project specific settings 
 and [log4js](https://www.npmjs.com/package/log4js) for logging.
+
 The default stackend configuration should be usable by any project. However, you might want to tweak the logging setup:
 
 ```json
