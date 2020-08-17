@@ -78,13 +78,20 @@ The code uses [redux](https://www.npmjs.com/package/redux) to keep application s
 ```javascript
 import { createStore, combineReducers } from 'redux';
 import { ALL_REDUCERS } from '@stackend/api/reducers';
-import { getInitialStoreValues } from '@stackend/api';
+import { loadInitialStoreValues } from '@stackend/api/xcapActions';
+import { getCurrentCommunity } from '@stackend/api';
     
 // Possibly add your own reducers and middleware here
-let reducers = combineReducers(ALL_REDUCERS);    
-let store = createStore(reducers, {});
+const reducers = combineReducers(ALL_REDUCERS);    
+const store = createStore(reducers, {});
     
-// Now you can start using stackend:
-let r = await store.dispatch(getInitialStoreValues({ permalink: 'my-test-community' }));              
+// Initialize stackend with your community permalink
+await store.dispatch(loadInitialStoreValues({
+  permalink: 'stackend-com'
+}));
+
+// Get the community data
+const community = await store.dispatch(getCurrentCommunity());
+console.log("Community": community);
 ```
 
