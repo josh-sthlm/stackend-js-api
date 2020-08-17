@@ -177,7 +177,7 @@ describe('API', () => {
   });
 
   describe("newXcapJsonResult", () => {
-    it("Construts a new result", async () => {
+    it("Constructs a new result", async () => {
       const r = newXcapJsonResult('success');
       expect(r.__resultCode).toBe("success");
       expect(r.error).toBeUndefined();

@@ -409,7 +409,7 @@ export interface Reference {
 export function _constructConfig(): Config {
   const defaults = config.get('stackend');
 
-  const c: Config = Object.assign(
+  return Object.assign(
     {
       server: STACKEND_DEFAULT_SERVER,
       contextPath: STACKEND_DEFAULT_CONTEXT_PATH,
@@ -420,8 +420,6 @@ export function _constructConfig(): Config {
     },
     defaults
   );
-
-  return c;
 }
 
 /**

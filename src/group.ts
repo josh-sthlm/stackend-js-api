@@ -621,13 +621,14 @@ export function setGroupBackgroundImage({
  *
  * Requires group admin.
  *
- * @param groupId				Group id
- * @param permalink				Group permalink (optional)
- * @param lightLogotypeId		Image id of light logotype image
- * @param darkLogotypeId		Image id of dark logotype image
- * @param backgroundImageId		Image id of background image
- * @param backgroundCropX		Background crop position
- * @param backgroundCropY		Background crop position
+ * @param groupId        Group id
+ * @param permalink        Group permalink (optional)
+ * @param lightLogotypeId    Image id of light logotype image
+ * @param darkLogotypeId    Image id of dark logotype image
+ * @param backgroundImageId    Image id of background image
+ * @param backgroundCropX    Background crop position
+ * @param backgroundCropY    Background crop position
+ * @param any
  */
 export function setGroupStyle({
   groupId,

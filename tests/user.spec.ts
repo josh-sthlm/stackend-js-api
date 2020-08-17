@@ -7,11 +7,11 @@ import { getUser, GetUserResult } from '../src/user'
 
 
 describe('User', () => {
-  let store = createTestStore();
+  const store = createTestStore();
 
   describe("getUser", () => {
     it("Get a user", async () => {
-      let r: GetUserResult = await store.dispatch(getUser({
+      const r: GetUserResult = await store.dispatch(getUser({
         id: 1,
         [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK
       }));

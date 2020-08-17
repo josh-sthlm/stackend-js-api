@@ -9,6 +9,6 @@ export default function createReducer<S, A>(
   handlers: { [key: string]: Reducer<S, A> }
 ): Reducer<S, A> {
   return function reducer(state: S = initialState, action: Action): S {
-    return handlers.hasOwnProperty(action.type) ? handlers[action.type](state, action) : state;
+    return Object.prototype.hasOwnProperty.call(handlers, action.type) ? handlers[action.type](state, action) : state;
   };
 }

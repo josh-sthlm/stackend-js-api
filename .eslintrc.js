@@ -42,7 +42,7 @@ module.exports = {
     '@typescript-eslint/camelcase': 'warn',
     // note you must disable the base rule as it can report incorrect errors
     "no-use-before-define": "off",
-    "@typescript-eslint/no-use-before-define": ["warn"],
+    "@typescript-eslint/no-use-before-define": ["off"],
     '@typescript-eslint/no-unused-vars': 'off',
     /*
     '@typescript-eslint/no-unused-vars': [

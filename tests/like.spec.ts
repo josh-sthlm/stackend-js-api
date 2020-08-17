@@ -8,11 +8,11 @@ import { GetLikeToplistResult, getToplist } from '../src/like'
 
 
 describe('Like', () => {
-  let store = createTestStore();
+  const store = createTestStore();
 
   describe("getToplist", () => {
     it("Get a like toplist", async () => {
-      let r:GetLikeToplistResult = await store.dispatch(getToplist({
+      const r: GetLikeToplistResult = await store.dispatch(getToplist({
         interval: "1year",
         objectContext: 'comments',
         [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK }));

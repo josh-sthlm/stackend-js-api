@@ -1,38 +1,40 @@
 //@flow
 
-import { Thunk } from '../api';
+import { newXcapJsonResult, Thunk } from '../api';
 
 import {
   CLEAR_PAGE,
   CLEAR_PAGES,
   RECIEVE_PAGES,
   PagesState,
-  RECIEVE_SUB_SITES, PageAndLoadedState
-} from './pageReducer'
+  RECIEVE_SUB_SITES,
+  PageAndLoadedState,
+} from './pageReducer';
 
-import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode } from '../cms'
+import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode } from '../cms';
 import { getPermalink } from '../tree';
+import { AnyAction } from 'redux';
 
 /**
  * Request multiple pages
  */
 export function requestPages({
-	pageIds,
-	permalinks,
-	communityPermalink
+  pageIds,
+  permalinks,
+  communityPermalink,
 }: {
-	pageIds?: Array<number>,
-	permalinks?: Array<string>,
-	communityPermalink?: string | null
+  pageIds?: Array<number>;
+  permalinks?: Array<string>;
+  communityPermalink?: string | null;
 }): Thunk<GetPagesResult> {
-	return async (dispatch:any) => {
-		let r = await dispatch(getPages({ pageIds, permalinks, communityPermalink }));
-		await dispatch({
-			type: RECIEVE_PAGES,
-			json: r
-		});
-		return r;
-	};
+  return async (dispatch: any): Promise<GetPagesResult> => {
+    const r = await dispatch(getPages({ pageIds, permalinks, communityPermalink }));
+    await dispatch({
+      type: RECIEVE_PAGES,
+      json: r,
+    });
+    return r;
+  };
 }
 
 /**
@@ -41,69 +43,69 @@ export function requestPages({
  * @param permalinks
  * @param communityPermalink
  * @param getMenuForIds
- * @returns {function(Dispatch, *): *}
  */
 export function requestMissingPages({
-	pageIds,
-	permalinks,
-	communityPermalink
+  pageIds,
+  permalinks,
+  communityPermalink,
 }: {
-	pageIds?: Array<number>,
-	permalinks?: Array<string>,
-	communityPermalink?: string | null
+  pageIds?: Array<number>;
+  permalinks?: Array<string>;
+  communityPermalink?: string | null;
 }): Thunk<GetPagesResult> {
-	return async (dispatch:any, getState) => {
-		let fetchPageIds:Array<number> = [];
-		let fetchPermalinks:Array<string> = [];
-		let { pages } = getState();
+  return async (dispatch: any, getState): Promise<GetPagesResult> => {
+    const fetchPageIds: Array<number> = [];
+    const fetchPermalinks: Array<string> = [];
+    const { pages } = getState();
 
-		//console.log('Pages: ', pages);
+    //console.log('Pages: ', pages);
 
-		let now = new Date().getTime();
-		if (pageIds) {
-			pageIds.forEach(id => {
-				let p = pages.byId[id];
-				if (shouldFetchPage(p, now)) {
-					fetchPageIds.push(id);
-				}
-			});
-		}
+    const now = new Date().getTime();
+    if (pageIds) {
+      pageIds.forEach(id => {
+        const p = pages.byId[id];
+        if (shouldFetchPage(p, now)) {
+          fetchPageIds.push(id);
+        }
+      });
+    }
 
-		if (permalinks) {
-			permalinks.forEach(permalink => {
-				let p = getPageByPermalink(pages, permalink);
-				if (shouldFetchPage(p, now)) {
-					fetchPermalinks.push(permalink);
-				}
-			});
-		}
+    if (permalinks) {
+      permalinks.forEach(permalink => {
+        const p = getPageByPermalink(pages, permalink);
+        if (shouldFetchPage(p, now)) {
+          fetchPermalinks.push(permalink);
+        }
+      });
+    }
 
-		if (fetchPageIds.length === 0 && fetchPermalinks.length === 0) {
-			return { pages: {} };
-		}
+    if (fetchPageIds.length === 0 && fetchPermalinks.length === 0) {
+      return newXcapJsonResult('success', { pages: ''}) as GetPagesResult;
+      //return { pages: {} };
+    }
 
-		return await dispatch(
-			requestPages({
-				pageIds: fetchPageIds,
-				permalinks: fetchPermalinks,
-				communityPermalink
-			})
-		);
-	};
+    return await dispatch(
+      requestPages({
+        pageIds: fetchPageIds,
+        permalinks: fetchPermalinks,
+        communityPermalink,
+      })
+    );
+  };
 }
 
 export function shouldFetchPage(p: Page | PageAndLoadedState | null, now: number): boolean {
-	if (!p) {
-		return true;
-	}
+  if (!p) {
+    return true;
+  }
 
-	let s = (p as PageAndLoadedState);
-	if (!s.loaded) {
-		return true;
-	}
+  const s = p as PageAndLoadedState;
+  if (!s.loaded) {
+    return true;
+  }
 
-	let age = now - s.loaded;
-	return age > 60000;
+  const age = now - s.loaded;
+  return age > 60000;
 }
 
 /**
@@ -112,7 +114,7 @@ export function shouldFetchPage(p: Page | PageAndLoadedState | null, now: number
  * @returns {Thunk<GetPagesResult>}
  */
 export function requestPage(pageId: number): Thunk<GetPagesResult> {
-	return requestPages({ pageIds: [pageId] });
+  return requestPages({ pageIds: [pageId] });
 }
 
 /**
@@ -121,19 +123,19 @@ export function requestPage(pageId: number): Thunk<GetPagesResult> {
  * @returns {Thunk<GetPagesResult>}
  */
 export function requestPageByPermalink(permalink: string): Thunk<GetPagesResult> {
-	return requestPages({ permalinks: [permalink] });
+  return requestPages({ permalinks: [permalink] });
 }
 
 /**
  * Clear all pages
  * @returns {Function}
  */
-export function clearPages(): Thunk<any> {
-	return (dispatch /*, getState: any*/) => {
-		dispatch({
-			type: CLEAR_PAGES
-		});
-	};
+export function clearPages(): Thunk<void> {
+  return (dispatch /*, getState: any*/): void => {
+    dispatch({
+      type: CLEAR_PAGES,
+    });
+  };
 }
 
 /**
@@ -141,50 +143,50 @@ export function clearPages(): Thunk<any> {
  * @param pageId
  * @returns {Function}
  */
-export function clearPage(pageId: number): Thunk<any> {
-	return (dispatch /*, getState: any*/) => {
-		dispatch({
-			type: CLEAR_PAGE,
-			id: pageId
-		});
-	};
+export function clearPage(pageId: number): Thunk<void> {
+  return (dispatch /*, getState: any*/): void => {
+    dispatch({
+      type: CLEAR_PAGE,
+      id: pageId,
+    });
+  };
 }
 
 export function recievePages(json: any): Thunk<any> {
-	return (dispatch /*, getState: any*/) => {
-		return dispatch({
-			type: RECIEVE_PAGES,
-			json
-		});
-	};
+  return (dispatch /*, getState: any*/): AnyAction => {
+    return dispatch({
+      type: RECIEVE_PAGES,
+      json,
+    });
+  };
 }
 
 export function requestSubSite(id: number): Thunk<GetSubSiteResult> {
-	return async (dispatch:any) => {
-		let r = await dispatch(getSubSite({ id }));
-		if (!r.error && r.tree) {
-			let pages:{[id:number]: Page} = {};
-			Object.keys(r.referencedObjects).forEach(k => {
-				let p = r.referencedObjects[k];
-				if (p) {
-					pages[p.id] = p;
-				}
-			});
+  return async (dispatch: any): Promise<GetSubSiteResult> => {
+    const r = await dispatch(getSubSite({ id }));
+    if (!r.error && r.tree) {
+      const pages: { [id: number]: Page } = {};
+      Object.keys(r.referencedObjects).forEach(k => {
+        const p = r.referencedObjects[k];
+        if (p) {
+          pages[p.id] = p;
+        }
+      });
 
-			await dispatch(recievePages({ pages }));
-			await dispatch(recieveSubSites({ subSites: { [r.tree.id]: r.tree } }));
-		}
-		return r;
-	};
+      await dispatch(recievePages({ pages }));
+      await dispatch(recieveSubSites({ subSites: { [r.tree.id]: r.tree } }));
+    }
+    return r;
+  };
 }
 
-export function recieveSubSites(json: any): Thunk<any> {
-	return (dispatch /*, getState: any*/) => {
-		return dispatch({
-			type: RECIEVE_SUB_SITES,
-			json
-		});
-	};
+export function recieveSubSites(json: any): Thunk<AnyAction> {
+  return (dispatch /*, getState: any*/): AnyAction => {
+    return dispatch({
+      type: RECIEVE_SUB_SITES,
+      json,
+    });
+  };
 }
 
 /**
@@ -194,17 +196,17 @@ export function recieveSubSites(json: any): Thunk<any> {
  * @returns {null|Page}
  */
 export function getPageByPermalink(pages: PagesState, permalink: string): Page | null {
-	if (!pages) {
-		return null;
-	}
-	let id = pages.idByPermalink[permalink];
-	if (id) {
-		return pages.byId[id];
-	}
-	return null;
+  if (!pages) {
+    return null;
+  }
+  const id = pages.idByPermalink[permalink];
+  if (id) {
+    return pages.byId[id];
+  }
+  return null;
 }
 
-export const SITE_HASH_PREFIX: string = '#/site';
+export const SITE_HASH_PREFIX = '#/site';
 
 /**
  * Get a hash permalink to a subsite page. Specify treePath or permalink
@@ -213,21 +215,21 @@ export const SITE_HASH_PREFIX: string = '#/site';
  * @returns {string|null}
  */
 export function getSubSitePageHashPermalink({
-	treePath,
-	permalink
+  treePath,
+  permalink,
 }: {
-	treePath: Array<SubSiteNode> | null,
-	permalink: string | null
+  treePath: Array<SubSiteNode> | null;
+  permalink: string | null;
 }): string | null {
-	if (treePath) {
-		return SITE_HASH_PREFIX + getPermalink(treePath);
-	}
+  if (treePath) {
+    return SITE_HASH_PREFIX + getPermalink(treePath);
+  }
 
-	if (permalink) {
-		return SITE_HASH_PREFIX + permalink;
-	}
+  if (permalink) {
+    return SITE_HASH_PREFIX + permalink;
+  }
 
-	return null;
+  return null;
 }
 
 /**
@@ -236,20 +238,20 @@ export function getSubSitePageHashPermalink({
  * @returns {null}
  */
 export function getSubSiteNodePermalink(hashPermalink: string | null): string | null {
-	if (!hashPermalink) {
-		return null;
-	}
+  if (!hashPermalink) {
+    return null;
+  }
 
-	let i = hashPermalink.indexOf('#');
-	if (i === -1) {
-		return null;
-	} else if (i > 0) {
-		hashPermalink = hashPermalink.substring(i);
-	}
+  const i = hashPermalink.indexOf('#');
+  if (i === -1) {
+    return null;
+  } else if (i > 0) {
+    hashPermalink = hashPermalink.substring(i);
+  }
 
-	if (!hashPermalink.startsWith(SITE_HASH_PREFIX + '/')) {
-		return null;
-	}
+  if (!hashPermalink.startsWith(SITE_HASH_PREFIX + '/')) {
+    return null;
+  }
 
-	return hashPermalink.substr(SITE_HASH_PREFIX.length);
+  return hashPermalink.substr(SITE_HASH_PREFIX.length);
 }

@@ -8,11 +8,11 @@ import { DEFAULT_CMS_CONTEXT } from '../src/cms'
 
 
 describe('Media', () => {
-  let store = createTestStore();
+  const store = createTestStore();
 
   describe("getMedia", () => {
     it("Gets a media object", async () => {
-      let r: GetMediaResult = await store.dispatch(get({
+      const r: GetMediaResult = await store.dispatch(get({
         id: 2,
         context: DEFAULT_CMS_CONTEXT,
         thumbnailConfigName: ThumbnailSize.MEDIUM,
@@ -32,7 +32,7 @@ describe('Media', () => {
 	describe('list', () => {
 		it("List media files", async () => {
 
-      let r:ListResult = await store.dispatch(list({
+      const r: ListResult = await store.dispatch(list({
         context: DEFAULT_CMS_CONTEXT,
         pageSize: 2,
         order: MediaListOrder.CREATED_ASC,
@@ -45,7 +45,7 @@ describe('Media', () => {
       expect(r.mediaPaginated.totalSize).toBeGreaterThanOrEqual(1);
       expect(r.mediaPaginated.entries).toBeDefined();
 
-      let m = r.mediaPaginated.entries[0];
+      const m = r.mediaPaginated.entries[0];
       expect(m).toBeDefined();
       expect(m.id).toBe(2);
 		})

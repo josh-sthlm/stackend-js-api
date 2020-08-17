@@ -84,12 +84,11 @@ export function vote({
  * Requires an authorized user.
  *
  * @param referenceId {number} Reference id. Required.
- * @parm startDate Start date. (optional).
- * @parm endDate End date. (optional).
+ * @param startDate Start date. (optional).
+ * @param endDate End date. (optional).
  * @param description {String} Description
  * @param view {String} View (optional, default "circle")
  * @param pollAnswers {Object} The answers: Map from id to description. { 1: "Yes", 2: "No", .... }
- * @return {Promise}
  */
 export function edit({
   referenceId,

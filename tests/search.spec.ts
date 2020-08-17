@@ -7,11 +7,11 @@ import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
 
 
 describe('Search', () => {
-  let store = createTestStore();
+  const store = createTestStore();
 
   describe("search", () => {
     it("Search", async () => {
-      let r: SearchResult = await store.dispatch(search({
+      const r: SearchResult = await store.dispatch(search({
         q: '',
         type: SearchAbleType.ARTICLE,
         pageSize: 1,

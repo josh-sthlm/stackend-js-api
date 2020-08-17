@@ -22,6 +22,7 @@ import {
 import { Thunk } from '../api';
 //import { sendEventToGA } from '../analytics/analyticsFunctions';
 import { recieveVotes } from '../vote/voteActions';
+import { AnyAction } from 'redux';
 
 const DEFAULT_PAGE_SIZE = 3;
 
@@ -30,7 +31,7 @@ const DEFAULT_PAGE_SIZE = 3;
  * @param action
  * @returns {string}
  */
-export function _getCommentsStateKey(action: { module: string, referenceGroupId: string }): string {
+export function _getCommentsStateKey(action: { module: string; referenceGroupId: string }): string {
 	return action.module + ':' + action.referenceGroupId;
 }
 
@@ -52,7 +53,7 @@ export function getCommentsStateKey(module: string, referenceGroupId: number): s
  */
 
 //When loading comments recieve is run when the server has responded
-function recieveGroupComments(module: string, referenceGroupId: number, json: string): any {
+function recieveGroupComments(module: string, referenceGroupId: number, json: string): AnyAction {
 	return {
 		type: RECIEVE_GROUP_COMMENTS,
 		module,
@@ -63,7 +64,7 @@ function recieveGroupComments(module: string, referenceGroupId: number, json: st
 }
 
 //Request comments from the server
-function requestGroupComments(module: string, referenceGroupId: number): any {
+function requestGroupComments(module: string, referenceGroupId: number): AnyAction {
 	return {
 		type: REQUEST_GROUP_COMMENTS,
 		module,
@@ -79,15 +80,15 @@ export function fetchMultipleComments({
 	p = 1,
 	pageSize = DEFAULT_PAGE_SIZE
 }: {
-	module: string, // Module See Comments.CommentModule
-	referenceIds: [number], //Array of reference to fetch comments for
-	referenceGroupId: number, // Reference group id, for example blog id (optional)
-	p?: number, //page number in paginated collection
-	pageSize?: number
+	module: string; // Module See Comments.CommentModule
+	referenceIds: [number]; //Array of reference to fetch comments for
+	referenceGroupId: number; // Reference group id, for example blog id (optional)
+	p?: number; //page number in paginated collection
+	pageSize?: number;
 }): Thunk<GetMultipleCommentsResult> {
-	return async (dispatch:any /*, getState: any*/) => {
+	return async (dispatch: any): Promise<GetMultipleCommentsResult> => {
 		dispatch(requestGroupComments(module, referenceGroupId));
-		let json = await dispatch(getMultipleComments({ module, referenceIds, pageSize, p }));
+		const json = await dispatch(getMultipleComments({ module, referenceIds, pageSize, p }));
 		dispatch(recieveGroupComments(module, referenceGroupId, json));
 		return json;
 	};
@@ -95,10 +96,10 @@ export function fetchMultipleComments({
 
 export interface RecieveCommentsJson {
 	comments: {
-		entries: [Comment]
-	},
-	likesByCurrentUser: any,
-  error?: any
+		entries: [Comment];
+	};
+	likesByCurrentUser: any;
+  error?: any;
 }
 
 
@@ -108,7 +109,7 @@ function recieveComments(
 	referenceId: number,
 	referenceGroupId: number,
 	json: RecieveCommentsJson
-): any {
+): AnyAction {
 	return {
 		type: RECIEVE_COMMENTS,
 		module,
@@ -134,8 +135,8 @@ export function invalidateComments({
 	module,
 	referenceGroupId
 }: {
-	module?: string,
-	referenceGroupId: number
+	module?: string;
+	referenceGroupId: number;
 }): any {
 	return {
 		type: INVALIDATE_GROUP_COMMENTS,
@@ -164,12 +165,12 @@ function updateComment(
 }
 
 export interface FetchComments {
-	module: CommentModule,
-	referenceId: number, // Reference id to fetch comments for ex: blogEntryId
-	referenceGroupId?: number, // Reference group id, for example blog id (optional)
-	p?: number, //page number in paginated collection
-	pageSize?: number,
-	useVotes?: boolean
+	module: CommentModule;
+	referenceId: number; // Reference id to fetch comments for ex: blogEntryId
+	referenceGroupId?: number; // Reference group id, for example blog id (optional)
+	p?: number; //page number in paginated collection
+	pageSize?: number;
+	useVotes?: boolean;
 }
 
 /**
@@ -183,7 +184,7 @@ export function fetchComments({
 	pageSize = DEFAULT_PAGE_SIZE,
 	useVotes = false
 }: FetchComments): Thunk<any> {
-	return async (dispatch: any /*, getState: any*/) => {
+	return async (dispatch: any): Promise<any> => {
 		dispatch(requestComments(module, referenceId, referenceGroupId));
 		try {
 			const {
@@ -215,6 +216,15 @@ export function fetchComments({
 	};
 }
 
+/**
+ * Post a comment
+ * @param id
+ * @param referenceId
+ * @param referenceGroupId
+ * @param module
+ * @param parentId
+ * @param body
+ */
 export function postComment({
 	id,
 	referenceId,
@@ -223,14 +233,14 @@ export function postComment({
 	parentId,
 	body
 }: {
-	id?: number, // Post id
-	referenceId: number, // Reference id to fetch comments for
-	referenceGroupId: number, // Reference group id, for example blog id  (optional)
-	module: CommentModule, // Module See Comments.CommentModule
-	body: string, //The body text
-	parentId?: number //The id of the comment you want to reply on
+	id?: number; // Post id
+	referenceId: number; // Reference id to fetch comments for
+	referenceGroupId: number; // Reference group id, for example blog id  (optional)
+	module: CommentModule; // Module See Comments.CommentModule
+	body: string; //The body text
+	parentId?: number; //The id of the comment you want to reply on
 }): Thunk<any> {
-	return async (dispatch: any, getState) => {
+	return async (dispatch: any, getState): Promise<any> => {
 		dispatch(blogActions.closeWriteCommentOrEdit());
 
 		let typeOfComment = '';
@@ -281,7 +291,7 @@ export function postComment({
 					likesByCurrentUser: {}
 				})
 			);
-			// FIXME: Readd ga
+			// FIXME: Re-add ga
 			if (parentId && isFinite(parentId) && response.comment.id !== parentId) {
 				//This is a reply and close the reply editor
 				//dispatch(sendEventToGA(gaReplyEventObject({ comment: response.comment })));
@@ -298,8 +308,8 @@ export function postComment({
 export function toggleEditComment({
 	id
 }: {
-	id: number //Comment Id
-}): any {
+	id: number; //Comment Id
+}): AnyAction {
 	return {
 		type: TOGGLE_EDIT_COMMENT,
 		id
@@ -310,8 +320,8 @@ export function toggleEditComment({
 export function toggleReplyEditor({
 	parentId
 }: {
-	parentId: number //Parent Comment Id
-}): any {
+	parentId: number; //Parent Comment Id
+}): AnyAction {
 	return {
 		type: TOGGLE_REPLY_BOX,
 		parentId
@@ -322,8 +332,8 @@ export function toggleReplyEditor({
 export function openReplyEditor({
 	parentId
 }: {
-	parentId: number //Parent Comment Id
-}): any {
+	parentId: number; //Parent Comment Id
+}): AnyAction {
 	return {
 		type: OPEN_REPLY_BOX,
 		parentId
@@ -334,8 +344,8 @@ export function openReplyEditor({
 export function closeReplyEditor({
 	parentId
 }: {
-	parentId: number //Parent Comment Id
-}): any {
+	parentId: number; //Parent Comment Id
+}): AnyAction {
 	return {
 		type: CLOSE_REPLY_BOX,
 		parentId
@@ -343,7 +353,7 @@ export function closeReplyEditor({
 }
 
 //Toggle Reply editor for selected parent comment id
-export function toggleCommentSection(): any {
+export function toggleCommentSection(): AnyAction {
 	return {
 		type: TOGGLE_COMMENT_SECTION
 	};

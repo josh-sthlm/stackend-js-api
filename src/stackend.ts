@@ -402,6 +402,7 @@ export function getCommunityPrivateSettings({
  * @param key
  * @param value
  * @param values
+ * @param community
  * @returns {Thunk<XcapJsonResult>}
  */
 export function storeCommunityPrivateSettings({
@@ -453,7 +454,7 @@ export interface RemoveCommunityResult extends XcapJsonResult {
  * You can force data to be removed by setting removeData. That requires back office access however.
  *
  * @param id {String}
- * @parm removeData {boolean} Remove the data, even if the community is not empty. Requires back office access.
+ * @param removeData {boolean} Remove the data, even if the community is not empty. Requires back office access.
  */
 export function removeCommunity({
   id,
@@ -875,6 +876,7 @@ export function getModule({
  * Get a singleton module given it's component class
  * @param communityId
  * @param componentClass
+ * @param componentContext
  * @returns {Thunk<GetModuleResult>}
  */
 export function getSingletonModule({

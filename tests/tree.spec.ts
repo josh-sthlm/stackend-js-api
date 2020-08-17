@@ -6,7 +6,7 @@ describe('Tree', () => {
 
   describe("newTree", () => {
     it("Create a tree", () => {
-      let t = newTree('Tree');
+      const t = newTree('Tree');
       expect(t).toBeDefined();
       expect(t.name).toBe("Tree");
       expect(t.permalink).toBe("tree");
@@ -22,7 +22,7 @@ describe('Tree', () => {
 
   describe("newTreeNode", () => {
     it("Creates a new tree node", () => {
-      let n = newTreeNode("Node");
+      const n = newTreeNode("Node");
       expect(n).toBeDefined();
       expect(n.name).toBe("Node");
       expect(n.permalink).toBe("node");
@@ -36,8 +36,8 @@ describe('Tree', () => {
 
   describe("addNode", () => {
     it("Add a node to the tree", () => {
-      let t = newTree('Tree');
-      let n = newTreeNode('Node');
+      const t = newTree('Tree');
+      const n = newTreeNode('Node');
 
       addNode(t, n);
       expect(t.children.length).toBe(1);

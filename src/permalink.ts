@@ -9,6 +9,10 @@ export function getParentPermalink(permalink: string): string | null {
     return null;
   }
 
+  if (permalink.endsWith('/')) {
+    permalink = permalink.substr(0, permalink.length-1);
+  }
+
   const i = permalink.lastIndexOf('/');
   if (i === -1) {
     return null;

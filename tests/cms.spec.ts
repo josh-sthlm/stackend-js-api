@@ -7,28 +7,23 @@ import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
 import {
   getContent,
   GetContentResult,
-  getPage,
-  GetPageResult,
-  getPages,
-  GetPagesResult, getSubSite, GetSubSiteResult,
-  search,
-  SearchResult
+  getSubSite, GetSubSiteResult
 } from '../src/cms'
 
 
 describe('CMS', () => {
-  let store = createTestStore();
+  const store = createTestStore();
 
   describe("getContent", () => {
     it("Get a content object", async () => {
-      let r: GetContentResult = await store.dispatch(getContent({
+      const r: GetContentResult = await store.dispatch(getContent({
         permalink: 'my-first-stack-instructions',
         [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK
       }));
 
       expect(r.__resultCode).toBe("success");
 
-      let c = r.content;
+      const c = r.content;
       expect(c).toBeDefined();
       expect(c.id).toBe(84);
       expect(c.permalink).toBe('my-first-stack-instructions');
@@ -55,7 +50,7 @@ describe('CMS', () => {
 
   describe("getSubSite", () => {
     it("Get CMS sub site", async () => {
-      let r: GetSubSiteResult = await store.dispatch(getSubSite({
+      const r: GetSubSiteResult = await store.dispatch(getSubSite({
         id: 1,
         [COMMUNITY_PARAMETER]: 'husdjur'
       }));

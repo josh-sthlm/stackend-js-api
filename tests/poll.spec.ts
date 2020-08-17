@@ -6,11 +6,11 @@ import { getPoll, GetPollResult } from '../src/poll'
 
 
 describe('Poll', () => {
-  let store = createTestStore();
+  const store = createTestStore();
 
   describe("getPoll", () => {
     it("Gets a poll object", async () => {
-      let r: GetPollResult = await store.dispatch(getPoll({
+      const r: GetPollResult = await store.dispatch(getPoll({
         referenceId: 39,
         [COMMUNITY_PARAMETER]: 'husdjur'
       }));

@@ -8,14 +8,14 @@ import {
 } from '../src/stackend'
 
 describe('Stackend', () => {
-  let store = createTestStore();
+  const store = createTestStore();
 
 	describe('getCommunity', () => {
 		it("Should get a community", async () => {
-      let r:GetCommunityResult = await store.dispatch(getCommunity({ permalink: STACKEND_COM_COMMUNITY_PERMALINK }));
+      const r: GetCommunityResult = await store.dispatch(getCommunity({ permalink: STACKEND_COM_COMMUNITY_PERMALINK }));
       expect(r.__resultCode).toBe("success");
 
-      let c = r.stackendCommunity;
+      const c = r.stackendCommunity;
       expect(c).toBeDefined();
       expect(c.id).toBe(55);
       expect(c.permalink).toBe(STACKEND_COM_COMMUNITY_PERMALINK);
