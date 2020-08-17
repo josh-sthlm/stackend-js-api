@@ -135,7 +135,7 @@ export function getSearchUrl({ request, type, searchType, filter, urlArguments }
   });
 }
 
-type Search = {
+export type Search = {
   q?: string;
   order?: Order;
   orderBy?: OrderBy;
@@ -161,7 +161,7 @@ export interface SearchResult extends XcapJsonResult {
 export function search({ community, ...urlArguments }: Search): Thunk<SearchResult> {
   return getJson({
     url: searchType,
-    parameters: urlArguments,
+    parameters: (urlArguments as any),
     community: community,
     context: CONTEXT,
     componentName: COMPONENT_NAME,

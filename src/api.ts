@@ -92,7 +92,7 @@ export function isRunningServerSide(): boolean {
  * Is the app running in the browser
  */
 export function isRunningInBrowser(): boolean {
-  return typeof __xcapRunningServerSide === 'undefined';
+  return typeof __xcapRunningServerSide === 'undefined' && typeof window !== "undefined";
 }
 
 /**
@@ -774,8 +774,8 @@ export function _getApiUrl({
 
   if (typeof community === 'undefined') {
     if (params) {
-      community = params[COMMUNITY_PARAMETER];
-      delete params[COMMUNITY_PARAMETER];
+      community = (params as any)[COMMUNITY_PARAMETER];
+      delete (params as any)[COMMUNITY_PARAMETER];
     }
     if (typeof community === 'undefined') {
       community = _.get(state, 'communities.community.permalink', DEFAULT_COMMUNITY);
@@ -886,6 +886,36 @@ export function addRelatedObjectsToStore(dispatch: Dispatch, json: any): void {
   }
 }
 
+export type ParameterValue = string | number | boolean | null | undefined | Array<string | number | boolean | null> ;
+export type Parameters = { [name: string]: ParameterValue } | string;
+
+export function x({ stuff }: { stuff?: string }): void {
+  const p: Parameters = {
+    stuff
+  }
+
+  console.log(p);
+}
+
+export interface XcapJsonRequest {
+  /** Path on the api server */
+  url: string;
+  /** Parameters as a js object */
+  parameters?: Parameters | IArguments;
+  /** Community permalink */
+  community?: string | null;
+  /** Component name used for config (for example "like") */
+  componentName?: string | null;
+  /** Community context used for config (for example "forum") */
+  context?: string | null;
+  /** Optional cookie string to pass on */
+  cookie?: string | null;
+  /** if the url is not in the api
+   * @deprecated
+   */
+  notFromApi?: boolean;
+}
+
 /**
  * Get json from the api.
  *
@@ -906,15 +936,7 @@ export function getJson({
   componentName,
   context,
   cookie,
-}: {
-  url: string;
-  parameters?: any;
-  notFromApi?: boolean;
-  community?: string | null;
-  componentName?: string | null;
-  context?: string | null;
-  cookie?: string | null;
-}): Thunk<XcapJsonResult> {
+}: XcapJsonRequest): Thunk<XcapJsonResult> {
   return async (dispatch: any): Promise<XcapJsonResult> => {
     let p = url;
     try {
@@ -1027,7 +1049,7 @@ export function post({
   context,
 }: {
   url: string;
-  parameters?: any;
+  parameters?: Parameters | IArguments;
   community?: string | null;
   componentName?: string | null;
   context?: string | null;
@@ -1035,8 +1057,9 @@ export function post({
   return async (dispatch: any): Promise<XcapJsonResult> => {
     const params = argsToObject(parameters);
 
-    if (typeof community === 'undefined' && params && typeof params[COMMUNITY_PARAMETER] !== 'undefined') {
-      community = params[COMMUNITY_PARAMETER];
+    if (typeof community === 'undefined' && params
+      && typeof (params as any)[COMMUNITY_PARAMETER] !== 'undefined') {
+      community = (params as any)[COMMUNITY_PARAMETER];
     }
 
     const p = dispatch(
@@ -1262,7 +1285,7 @@ export function createCommunityUrl({
  * @param args
  * @return {Object}
  */
-export function argsToObject(args: any): null | { [key: string]: string } {
+export function argsToObject(args: Parameters | IArguments | undefined | null): null | Parameters {
   if (typeof args === 'string') {
     return {
       [args]: args,
@@ -1273,20 +1296,21 @@ export function argsToObject(args: any): null | { [key: string]: string } {
     return null;
   }
 
-  let r: { [key: string]: string } = {};
+  let r: Parameters = {};
   if (typeof args.length === 'undefined') {
-    r = args; // Plain object
+    r = (args as any); // Plain object
   } else {
     // Arguments or Arguments object
-    for (let i = 0; i < args.length; i++) {
-      Object.assign(r, args[i]);
+    for (let i = 0; i < (args as IArguments).length; i++) {
+      Object.assign(r, (args as IArguments)[i]);
     }
   }
 
   // Remove undefined values
-  for (const k in r) {
-    if (Object.prototype.hasOwnProperty.call(r, k) && typeof r[k] === 'undefined') {
-      delete r[k];
+  const o = (r as any);
+  for (const k in o) {
+    if (Object.prototype.hasOwnProperty.call(o, k) && typeof o[k] === 'undefined') {
+      delete o[k];
     }
   }
 

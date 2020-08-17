@@ -1,6 +1,7 @@
 //@flow
 
 import log4js from 'log4js';
+import { Parameters } from './api';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -20,12 +21,14 @@ export const CONTENT_TYPE_JSON = 'application/json';
 export const CONTENT_TYPE_X_WWW_FORM_URLENCODED =
   'application/x-www-form-urlencoded';
 
+
+
 /**
 * Url encode a parameter object.
-* @param parameters {Object}
+* @param parameters
 * @returns {String}
 */
-export function urlEncodeParameters(parameters: any): string {
+export function urlEncodeParameters(parameters: Parameters | null | undefined ): string {
   if (typeof parameters === 'string') {
     return parameters;
   }
@@ -46,7 +49,7 @@ export function urlEncodeParameters(parameters: any): string {
             s += '&';
           }
           s += encodeURIComponent(k);
-          if (typeof p !== 'undefined') {
+          if (typeof p !== 'undefined' && p != null) {
             s += '=' + encodeURIComponent(p);
           }
         }
