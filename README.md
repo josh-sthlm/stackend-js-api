@@ -1,4 +1,6 @@
-<span style="display:block;text-align:center">![Stackend Logo](https://github.com/josh-sthlm/stackend-js-api/blob/master/stackend_logo_dark.png)</span>
+<span style="display:block;text-align:center">
+  ![Stackend Logo](https://github.com/josh-sthlm/stackend-js-api/blob/master/stackend_logo_dark.png)
+</span>
 
 
 # About Stackend
