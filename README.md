@@ -36,7 +36,8 @@ Sites acts as a wrapper for pages and also keep tracks of all your permalinks an
 For more visit https://stackend.com/product/sites
 
 ### User Profiles
-User profiles for registered users. If oAuth2 is activated you can use custom profile links(to support your existing solution from Stackend modules).<br>
+User profiles for registered users. Stackend supports traditional email/password based authentication as well as Facebook, Google and OAuth2. 
+OAuth2 is intended for those who want to have a tight integration with their existing user database. If OAuth2 is activated you can use custom profile links (to support your existing solution from Stackend modules).<br>
 For more visit https://stackend.com/product/login
 
 ## Stackend Admin
