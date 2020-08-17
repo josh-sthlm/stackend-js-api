@@ -1,3 +1,5 @@
+# About Stackend
+Stackend is backend, frontend & hosting in a single line of code, or if you prefer - a downloadable NPM package. 
 
 # Stackend JS API
 
