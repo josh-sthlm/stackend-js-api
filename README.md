@@ -46,29 +46,12 @@ This project contins the lowest level of JS bindings to the JSON endpoints provi
 
 ## Minimal Setup
 
-The code uses [redux](https://www.npmjs.com/package/redux) to keep application state. To get started with stackend, you need to first set up a redux store using the reducers from reducers.ts. **Note:** If your application also uses redux, please do not combine the stores into one single instance.
-
-```javascript
-import { createStore, combineReducers } from 'redux';
-import { ALL_REDUCERS } from '@stackend/api/reducers';
-import { getInitialStoreValues } from '@stackend/api';
-    
-// Possibly add your own reducers and middleware here
-let reducers = combineReducers(ALL_REDUCERS);    
-let store = createStore(reducers, {});
-    
-// Now you can start using stackend:
-let r = await store.dispatch(getInitialStoreValues({ permalink: 'my-test-community' }));              
-```
-
-
-## Logging and configuration
-
-
 The Stackend library uses [config](https://www.npmjs.com/package/config) to store project specific settings 
 and [log4js](https://www.npmjs.com/package/log4js) for logging.
 
-The default stackend configuration should be usable by any project. However, you might want to tweak the logging setup:
+Your project must include the file `config/default.json` to work.
+
+The built in stackend configuration should be usable by any project and may be left out. However, you might want to tweak the logging setup:
 
 ```json
 {
@@ -90,6 +73,18 @@ The default stackend configuration should be usable by any project. However, you
   }
  } 
 ```
+The code uses [redux](https://www.npmjs.com/package/redux) to keep application state. To get started with stackend, you need to first set up a redux store using the reducers from reducers.ts. **Note:** If your application also uses redux, please do not combine the stores into one single instance.
 
-
+```javascript
+import { createStore, combineReducers } from 'redux';
+import { ALL_REDUCERS } from '@stackend/api/reducers';
+import { getInitialStoreValues } from '@stackend/api';
+    
+// Possibly add your own reducers and middleware here
+let reducers = combineReducers(ALL_REDUCERS);    
+let store = createStore(reducers, {});
+    
+// Now you can start using stackend:
+let r = await store.dispatch(getInitialStoreValues({ permalink: 'my-test-community' }));              
+```
 
