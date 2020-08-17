@@ -19,9 +19,8 @@ For more visit https://stackend.com/product/comments
 You can set the comment module in "review mode" and allow your visitors to review something 1-5.<br>
 For more visit https://stackend.com/product/reviews
 
-### Community Feed
-Allows you to add a community feed to you projects for anyone logged in or just selected members.<br>
-For more visit https://stackend.com/product/feed
+### [Community Feed / Blog](https://stackend.com/product/feed)
+Allows you to add a news feed to you projects for anyone logged in or just selected members.<br>
 
 ### Login & Registration
 A complete login/registration solution with email, Google, Facebook and oAuth2 support.<br>
