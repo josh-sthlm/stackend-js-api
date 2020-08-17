@@ -1,4 +1,4 @@
-![Stackend Logo]()
+![Stackend Logo](https://github.com/josh-sthlm/stackend-js-api/blob/master/stackend_logo_dark.png)
 
 # About Stackend
 https://Stackend.com is backend, frontend & hosting in a single line of code, or if you prefer - a downloadable NPM package.
