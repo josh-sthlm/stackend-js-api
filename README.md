@@ -1,4 +1,4 @@
-<p align="center" width="200" height="auto">
+<p align="center" style="width:400px;">
   <img src="https://github.com/josh-sthlm/stackend-js-api/blob/master/stackend_logo_dark.png">
 </p>
 
