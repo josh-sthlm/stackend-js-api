@@ -1,3 +1,5 @@
+![Stackend Logo]()
+
 # About Stackend
 https://Stackend.com is backend, frontend & hosting in a single line of code, or if you prefer - a downloadable NPM package.
 It contains of hosted, pre-made modules that you can add to your new or existing project.
