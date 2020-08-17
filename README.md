@@ -50,7 +50,7 @@ This project contins the lowest level of JS bindings to the JSON endpoints provi
 
 ## Minimal Setup
 
-The code uses redux to keep state. To get started with stackend, you need to first set up a redux store using the reducers from reducers.ts:
+The code uses [redux](https://www.npmjs.com/package/redux) to keep application state. To get started with stackend, you need to first set up a redux store using the reducers from reducers.ts. **Note:** If your application also uses redux, please do not combine the stores into one single instance.
 
 ```javascript
 import { createStore, combineReducers } from 'redux';
