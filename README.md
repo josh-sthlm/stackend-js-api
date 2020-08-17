@@ -2,18 +2,46 @@
 
 # About Stackend
 https://Stackend.com is backend, frontend & hosting in a single line of code, or if you prefer - a downloadable NPM package.
-It contains of hosted, pre-made modules that you can add to your new or existing project.
+It contains of hosted, pre-made modules with focus on community driven features that you can add to your new or existing project.
+To use Stackend you need to create a Stackend account and a Stack (your cloudbased backend, frontend and admin). 
 
-## Modules
+## Stackend Modules
 
-### Code Bins
-Mix HTML/CSS and JS and create just about anything. Instead of limiting WYSIWYG editors with templates on top, you can create whatever you want, wherever you want. For non-coders, you as a developer can add classes to your HTML, allowing administrators to edit content directly from frontend. 
+### Code Bins (CMS for frontend coders)
+Rather than using a traditional WYIWYG editor Stacklend allows you to mix HTML/CSS and JS.<br>
 For more visit https://stackend.com/product/codebin
 
 ### Comments
-Stackend comments are a very flexible module that allows you to add threaded comments to your page, customize them after your preferences and get help from the state of the art AI engine.
+Stackend comments allows you to add threaded comments to your page.<br>
 For more visit https://stackend.com/product/comments
 
+### Reviews
+You can set the comment module in "review mode" and allow your visitors to review something 1-5.<br>
+For more visit https://stackend.com/product/reviews
+
+### Community Feed
+Allows you to add a community feed to you projects for anyone logged in or just selected members.<br>
+For more visit https://stackend.com/product/feed
+
+### Login & Registration
+A complete login/registration solution with email, Google, Facebook and oAuth2 support.<br>
+For more visit https://stackend.com/product/login
+
+### Pages
+Pages allows you to wrap multiple modules into one, single page.<br>
+For more visit https://stackend.com/product/pages
+
+### Sites
+Sites acts as a wrapper for pages and also keep tracks of all your permalinks and generates menus (optional) for you.<br>
+For more visit https://stackend.com/product/sites
+
+### User Profiles
+User profiles for registered users. If oAuth2 is activated you can use custom profile links(to support your existing solution from Stackend modules).<br>
+For more visit https://stackend.com/product/login
+
+## Stackend Admin
+Stackend is very suitable for building dynamic applications with user generated content. In order to keep your content clean Stackend includes great moderation tools.<br>
+For more visit https://stackend.com/product/admin
 
 
 # Stackend JS API
