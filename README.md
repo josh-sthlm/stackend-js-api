@@ -46,13 +46,13 @@ For more visit https://stackend.com/product/admin
 
 # Stackend JS API
 
-This is the lowest level of JS bindings to the JSON endpoints provided by api.stackend.com
+This project contins the lowest level of JS bindings to the JSON endpoints provided by api.stackend.com
 
-## Redux
+## Minimal Setup
 
-The code uses redux to keep state. To use the code, you need to first set up a redux store using the reducers from reducers.ts:
+The code uses redux to keep state. To get started with stackend, you need to first set up a redux store using the reducers from reducers.ts:
 
-```
+```javascript
 import { createStore, combineReducers } from 'redux';
 import { ALL_REDUCERS } from '@stackend/api/reducers';
 import { getInitialStoreValues } from '@stackend/api';
@@ -64,3 +64,35 @@ let store = createStore(reducers, {});
 // Now you can start using stackend:
 let r = await store.dispatch(getInitialStoreValues({ permalink: 'my-test-community' }));              
 ```
+
+
+## Logging and configuration
+
+
+The Stackend library uses [config](https://www.npmjs.com/package/config) to storing project specific settings 
+and [log4js](https://www.npmjs.com/package/log4js) for logging.
+The default stackend configuration should be usable by any project. However, you might want to tweak the logging setup:
+
+```json
+{
+  "stackend": {
+    "server": "https://api.stackend.com",
+    "contextPath": ""
+  },
+  
+ "log4js": {
+    "appenders": {
+      "console": { "type": "console" }
+    },
+    "categories": {
+      "default": {
+        "appenders": [ "console" ],
+        "level": "warn"
+      }
+    }
+  }
+ } 
+```
+
+
+
