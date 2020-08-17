@@ -1,5 +1,5 @@
 <p align="center" style="width:400px;">
-  <a href="#"><img src="https://github.com/josh-sthlm/stackend-js-api/blob/master/stackend_logo_dark.png"></a>
+  <a href="https://stackend.com" target="_blank"><img src="https://github.com/josh-sthlm/stackend-js-api/blob/master/stackend_logo_dark.png"></a>
 </p>
 
 # About Stackend
