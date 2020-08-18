@@ -95,3 +95,27 @@ const community = await store.dispatch(getCurrentCommunity());
 console.log("Community": community);
 ```
 
+A redux store is always required to run Stackend. But it is possible to mostly ignore it and run your the bare API calls directly, if desired.
+However, a call to loadInitialStoreValues is required to tell Stackend which stack to use:
+
+```javascript
+import { createStore, combineReducers } from 'redux';
+import { BASE_REDUCERS } from '@stackend/api/reducers';
+import { getCurrentCommunity } from '@stackend/api';
+import { getEntries } from '@stackend/api/blog';
+
+const reducers = combineReducers(BASE_REDUCERS);    
+const store = createStore(reducers, {});
+
+// Initialize stackend with your community permalink
+await store.dispatch(loadInitialStoreValues({
+  permalink: 'stackend-com'
+}));
+
+// Omit the redux store and directly call an API method
+const comments = await getComments({
+  referenceId: 1
+});
+console.log("Comments: ", comments);
+
+```
