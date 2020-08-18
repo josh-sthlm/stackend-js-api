@@ -44,7 +44,13 @@ Stackend is very suitable for building dynamic applications with user generated 
 
 This project contins the lowest level of JS bindings to the JSON endpoints provided by api.stackend.com
 
-## Minimal Setup
+## Installation
+
+To add Stackend to your project, run:
+
+`npm install --save @stackend/api`
+
+## Initialization and basic setup
 
 The Stackend library uses [config](https://www.npmjs.com/package/config) to store project specific settings 
 and [log4js](https://www.npmjs.com/package/log4js) for logging.
