@@ -6,20 +6,20 @@ export const UPDATE_SEARCH_STRING = 'UPDATE_SEARCH_STRING';
 export const UPDATE_SELECTED_TYPE = 'UPDATE_SELECTED_TYPE';
 
 type UpdateSearchString = {
-  type: 'UPDATE_SEARCH_STRING';
+  type: typeof UPDATE_SEARCH_STRING;
   q: string; // searchString/queryString
   p?: number; //pageNumber
 };
 
 type UpdateSelectedType = {
-  type: 'UPDATE_SELECTED_TYPE';
+  type: typeof UPDATE_SELECTED_TYPE;
   selectedType: search.SearchAbleType; // selected filter
   p?: number; //pageNumber
 };
 
-type Actions = UpdateSearchString | UpdateSelectedType;
+export type SearchActions = UpdateSearchString | UpdateSelectedType;
 
-type SearchReducer = {
+export type SearchState = {
   q: string; // searchString/queryString
   p: number; //pageNumber,
   filter: string;
@@ -31,18 +31,20 @@ const initSearchReducer = {
   p: 1,
 };
 
-export default function searchReducer(state: SearchReducer = initSearchReducer, action: Actions): SearchReducer {
+export default function searchReducer(state: SearchState = initSearchReducer, action: SearchActions): SearchState {
   switch (action.type) {
     case UPDATE_SEARCH_STRING:
       return update(state, {
         q: { $set: action.q },
         p: { $set: action.p || state.p },
       });
+
     case UPDATE_SELECTED_TYPE:
       return update(state, {
         filter: { $set: action.selectedType },
         p: { $set: action.p || state.p },
       });
+
     default:
       return state;
   }

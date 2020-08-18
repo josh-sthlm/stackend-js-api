@@ -1,12 +1,11 @@
 //@flow
-import { AnyAction } from 'redux';
 import { getJsonErrorText } from '../api';
-import { Page, SubSite } from '../cms';
+import { GetPagesResult, Page, SubSite } from '../cms';
 
-export const RECIEVE_PAGES = 'RECIEVE_PAGES';
+export const RECEIVE_PAGES = 'RECEIVE_PAGES';
 export const CLEAR_PAGE = 'CLEAR_PAGE';
 export const CLEAR_PAGES = 'CLEAR_PAGES';
-export const RECIEVE_SUB_SITES = 'RECIEVE_SUB_SITES';
+export const RECEIVE_SUB_SITES = 'RECEIVE_SUB_SITES';
 export const CLEAR_SUB_SITES = 'CLEAR_SUB_SITES';
 
 export interface PagesState {
@@ -19,16 +18,31 @@ export interface PageAndLoadedState extends Page {
   loaded: number; // Time when loaded
 }
 
+export type PageActions = {
+  type: typeof RECEIVE_PAGES;
+  json: GetPagesResult;
+} | {
+  type: typeof CLEAR_PAGE;
+  id: number;
+} | {
+  type: typeof CLEAR_PAGES;
+} | {
+  type: typeof RECEIVE_SUB_SITES;
+  subSites: { [id: string]: SubSite };
+} | {
+  type: typeof CLEAR_SUB_SITES;
+};
+
 export default function (
   state: PagesState = {
     byId: {},
     idByPermalink: {},
     subSiteById: {},
   },
-  action: AnyAction
+  action: PageActions
 ): PagesState {
   switch (action.type) {
-    case RECIEVE_PAGES:
+    case RECEIVE_PAGES:
       if (action.json.error) {
         console.error('Could not get pages ' + getJsonErrorText(action.json));
         return state;
@@ -43,7 +57,7 @@ export default function (
           s.idByPermalink[p.permalink] = p.id;
         });
 
-        //console.log('Recieved pages', s);
+        //console.log('Received pages', s);
         return s;
       }
 
@@ -70,14 +84,10 @@ export default function (
       return state;
     }
 
-    case RECIEVE_SUB_SITES: {
-      if (action.json.error) {
-        console.error('Could not get sub sites ' + getJsonErrorText(action.json));
-        return state;
-      }
+    case RECEIVE_SUB_SITES: {
 
       const s: PagesState = Object.assign({}, state);
-      for (const [subSiteId, subSite] of Object.entries(action.json.subSites)) {
+      for (const [subSiteId, subSite] of Object.entries(action.subSites)) {
         s.subSiteById[subSiteId] = subSite as SubSite;
       }
 

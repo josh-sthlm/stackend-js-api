@@ -2,8 +2,7 @@
 
 import { appendQueryString, LoadJson, urlEncodeParameters } from './LoadJson';
 import _ from 'lodash';
-import { Dispatch } from 'redux';
-import { recieveReferences } from './referenceActions';
+import { receiveReferences } from './referenceActions';
 import { Request, getRequest } from './request';
 import { Community, Module } from './stackend';
 import { User } from './user';
@@ -13,6 +12,7 @@ import { Privilege } from './privileges';
 import config from 'config';
 import { XCAP_SET_CONFIG } from './configReducer';
 import log4js, { Configuration } from 'log4js';
+import { Dispatch } from 'redux';
 
 declare let __xcapRunningServerSide: any;
 
@@ -144,6 +144,13 @@ export enum Order {
  * Base type for api results
  */
 export interface XcapJsonResult {
+
+  /**
+   * Action specific result code.
+   * Common codes includes: "success", "input", "notfound" etc.
+   */
+  __resultCode: string;
+
   /**
    * Error messages. Not present if the API call was successful
    */
@@ -161,11 +168,6 @@ export interface XcapJsonResult {
     };
   };
 
-  /**
-   * Action specific result code.
-   * Common codes includes: "success", "input", "notfound" etc.
-   */
-  __resultCode: string;
 
   /**
    * Additional debug messages (non errors) from the API
@@ -882,7 +884,7 @@ export function getApiUrl({
 export function addRelatedObjectsToStore(dispatch: Dispatch, json: any): void {
   if (!!json[RELATED_OBJECTS] && Object.keys(json[RELATED_OBJECTS]).length > 0) {
     const relatedObjects = json[RELATED_OBJECTS];
-    dispatch(recieveReferences({ entries: relatedObjects }));
+    dispatch(receiveReferences({ entries: relatedObjects }));
   }
 }
 
@@ -1456,7 +1458,7 @@ export function getJsonErrorText(response?: XcapJsonResult): string {
  * @param fieldErrors
  * @param data
  */
-export function _newXcapJsonResult(resultCode: string, actionErrors: undefined|string|Array<string>, fieldErrors: undefined | { [fieldName: string]: string}, ...data: any): XcapJsonResult
+export function _newXcapJsonResult<T extends XcapJsonResult>(resultCode: string, actionErrors: undefined|string|Array<string>, fieldErrors: undefined | { [fieldName: string]: string}, ...data: any): T
 {
   const x =  {
     __resultCode: resultCode,
@@ -1487,17 +1489,18 @@ export function _newXcapJsonResult(resultCode: string, actionErrors: undefined|s
  * @param resultCode
  * @param data
  */
-export function newXcapJsonResult(resultCode: string, ...data: any): XcapJsonResult
+export function newXcapJsonResult<T extends XcapJsonResult>(resultCode: string, ...data: any): T
 {
   return _newXcapJsonResult(resultCode, undefined, undefined, data);
 }
+
 
 /**
  * Construct a new API result
  * @param actionErrors
  * @param fieldErrors
  */
-export function newXcapJsonErrorResult(actionErrors: string|Array<string>, fieldErrors?: { [fieldName: string]: string}): XcapJsonResult
+export function newXcapJsonErrorResult<T extends XcapJsonResult>(actionErrors: string|Array<string>, fieldErrors?: { [fieldName: string]: string}): T
 {
   return _newXcapJsonResult('error', actionErrors, fieldErrors);
 }
@@ -1507,7 +1510,7 @@ export function newXcapJsonErrorResult(actionErrors: string|Array<string>, field
  * @param objectOrClassName
  * @return {String}
  */
-export function getTypeName(objectOrClassName: any): string {
+export function getTypeName(objectOrClassName: string | XcapObject): string {
   if (typeof objectOrClassName === 'string') {
     return typeNames[objectOrClassName];
   } else {
@@ -1544,7 +1547,7 @@ export interface GetInitialStoreValuesResult extends XcapJsonResult {
   user: User | null;
   xcapApiConfiguration: Map<string, any>;
   numberOfUnseen: number;
-  modules: Map<string, Module>;
+  modules: { [id: string]: Module};
 
   /** Maps from id to content */
   cmsContents: Map<string, Content>;

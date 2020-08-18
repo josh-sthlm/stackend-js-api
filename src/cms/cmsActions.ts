@@ -1,7 +1,7 @@
 //@flow
 
 import { Thunk } from '../api';
-import { REQUEST_CONTENT, RECIEVE_CONTENT, RECIEVE_CONTENTS, SET_CONTENT } from './cmsReducer';
+import { REQUEST_CONTENT, RECEIVE_CONTENT, RECEIVE_CONTENTS, SET_CONTENT } from './cmsReducer';
 import { getContent, Content } from '../cms';
 
 /**
@@ -22,7 +22,7 @@ export function fetchContent({ id, permalink }: { id: number; permalink?: string
 			const r = await dispatch(getContent({ id, permalink }));
 
 			return dispatch({
-				type: RECIEVE_CONTENT,
+				type: RECEIVE_CONTENT,
 				id,
 				permalink,
 				json: r
@@ -46,10 +46,10 @@ export function setContent(content: Content): Thunk<any> {
  * Receive multiple content objects
  * @param contents
  */
-export function recieveContents(contents: Map<number, Content>): Thunk<any> {
+export function receiveContents(contents: {[id: number]: Content}): Thunk<any> {
 	return async (dispatch: any): Promise<any> => {
 		return await dispatch({
-			type: RECIEVE_CONTENTS,
+			type: RECEIVE_CONTENTS,
 			contents
 		});
 	};

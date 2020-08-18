@@ -14,20 +14,25 @@ import {
 } from '../group';
 
 import { Thunk, XcapJsonResult } from '../api';
-import * as reducer from './groupReducer';
 
-export type Request = { type: 'REQUEST_GROUPS' };
-export type Recieve = { type: 'RECIEVE_GROUPS'; entries: Array<Group> };
-export type RecieveGroup = { type: 'RECIEVE_GROUP'; entries: Array<Group> };
-export type Invalidate = { type: 'INVALIDATE_GROUPS' };
-export type RecieveAuth = { type: 'RECIEVE_GROUPS_AUTH'; entries: { [id: number]: AuthObject } };
+export const REQUEST_GROUPS = 'REQUEST_GROUPS';
+export const RECEIVE_GROUPS = 'RECEIVE_GROUPS';
+export const INVALIDATE_GROUPS = 'INVALIDATE_GROUPS';
+export const RECEIVE_GROUPS_AUTH = 'RECEIVE_GROUPS_AUTH';
+export const RECEIVE_GROUP_MEMBERS = 'RECEIVE_GROUP_MEMBERS';
 
-export type RecieveMembers = {
-  type: 'RECIEVE_GROUP_MEMBERS';
+export type Request = { type: typeof REQUEST_GROUPS };
+export type Receive = { type: typeof RECEIVE_GROUPS; entries: Array<Group> };
+export type ReceiveGroup = { type: typeof RECEIVE_GROUPS; entries: Array<Group> };
+export type Invalidate = { type: typeof INVALIDATE_GROUPS };
+export type ReceiveAuth = { type: typeof RECEIVE_GROUPS_AUTH; entries: { [id: number]: AuthObject } };
+
+export type ReceiveMembers = {
+  type: typeof RECEIVE_GROUP_MEMBERS;
   groupMembers: { [key: number]: Array<GroupMemberAuth> };
 };
 
-export type GroupActions = Request | Recieve | RecieveGroup | Invalidate | RecieveAuth | RecieveMembers;
+export type GroupActions = Request | Receive | ReceiveGroup | Invalidate | ReceiveAuth | ReceiveMembers;
 
 /**
  * Fetch my groups
@@ -36,7 +41,7 @@ export function fetchMyGroups(): Thunk<void> {
   return async (dispatch: any /*, getState: GetState*/): Promise<void> => {
     dispatch(requestGroups());
     const json = await dispatch(listMyGroups());
-    dispatch(recieveGroups({ entries: json }));
+    dispatch(receiveGroups({ entries: json }));
   };
 }
 
@@ -47,7 +52,7 @@ export function addGroup({ groupPermalink, groupId }: { groupPermalink?: string;
   return async (dispatch: any /*, getState: GetState*/): Promise<void> => {
     dispatch(requestGroups());
     const json = await dispatch(getGroup({ groupPermalink, groupId }));
-    dispatch(recieveGroups({ entries: [json.group] }));
+    dispatch(receiveGroups({ entries: [json.group] }));
   };
 }
 
@@ -68,7 +73,7 @@ export function subscribe({ groupPermalink, groupId }: { groupPermalink?: string
     }
 
     const myGroups = await dispatch(listMyGroups());
-    dispatch(recieveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
+    dispatch(receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
 
     return json;
   };
@@ -95,7 +100,7 @@ export function unsubscribe({
     }
 
     const myGroups = await dispatch(listMyGroups());
-    dispatch(recieveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
+    dispatch(receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
     return json;
   };
 }
@@ -109,53 +114,60 @@ export function applyForMembership({ groupPermalink, groupId }: ApplyForMembersh
   return async (dispatch: any /*, getState: any*/): Promise<XcapJsonResult> => {
     const json = await dispatch(_applyForMembership({ groupPermalink, groupId }));
     const myGroups = await dispatch(listMyGroups());
-    dispatch(recieveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
+    dispatch(receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
     return json;
   };
 }
 
 export function requestGroups(): Request {
-  return { type: reducer.REQUEST_GROUPS };
+  return { type: REQUEST_GROUPS };
 }
 
-export interface RecieveGroups {
+export interface ReceiveGroups {
   entries: Array<Group>;
 }
 
-export function recieveGroups({ entries }: RecieveGroups): Recieve {
+export function receiveGroups({ entries }: ReceiveGroups): Receive {
   return {
-    type: reducer.RECIEVE_GROUPS,
+    type: RECEIVE_GROUPS,
     entries,
   };
 }
 
 export function invalidateGroups(): Invalidate {
-  return { type: reducer.INVALIDATE_GROUPS };
+  return { type: INVALIDATE_GROUPS };
 }
 
-type RecieveGroupsAuth = {
+type ReceiveGroupsAuth = {
   entries: {
     [key: number]: AuthObject;
   };
 };
-//Receives a list of the current users auth-status for all groups the user is part of.
-export function recieveGroupsAuth({ entries }: RecieveGroupsAuth): RecieveAuth {
+
+/**
+ * Receives a list of the current users auth-status for all groups the user is part of.
+ */
+export function receiveGroupsAuth({ entries }: ReceiveGroupsAuth): ReceiveAuth {
   return {
-    type: reducer.RECIEVE_GROUPS_AUTH,
+    type: RECEIVE_GROUPS_AUTH,
     entries,
   };
 }
-type RecieveGroupMembers = {
+
+type ReceiveGroupMembers = {
   groupMembers: { [key: number]: Array<GroupMemberAuth> };
 };
-export function recieveGroupMembers({ groupMembers }: RecieveGroupMembers): RecieveMembers {
+
+export function receiveGroupMembers({ groupMembers }: ReceiveGroupMembers): ReceiveMembers {
   return {
-    type: reducer.RECIEVE_GROUP_MEMBERS,
+    type: RECEIVE_GROUP_MEMBERS,
     groupMembers,
   };
 }
 
-//Requests and recieve comments and store them in redux-state
+/**
+ * Requests and receive comments and store them in redux-state
+ */
 export function fetchGroupMembers({
   groupId,
   groupPermalink,
@@ -165,8 +177,8 @@ export function fetchGroupMembers({
 }): Thunk<ListMembersResult> {
   return async (dispatch: any): Promise<ListMembersResult> => {
     const json = await dispatch(listMembers({ groupId, groupPermalink }));
-    dispatch(recieveGroups({ entries: json.group }));
-    dispatch(recieveGroupMembers({ groupMembers: { [json.groupId]: json.groupMembers } }));
+    dispatch(receiveGroups({ entries: json.group }));
+    dispatch(receiveGroupMembers({ groupMembers: { [json.groupId]: json.groupMembers } }));
     return json;
   };
 }

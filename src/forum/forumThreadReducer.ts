@@ -1,53 +1,55 @@
 // @flow
 import _ from 'lodash';
 import update from 'immutability-helper';
-import { Action } from 'redux';
 import createReducer from '../createReducer';
 import * as forumApi from '../forum';
 import { ForumThreadEntry } from '../forum';
 
-export type ForumThreadActions = Request | Recieve | Invalidate | Rate | Like | DeleteEntry;
+export type ForumThreadActions = Request | Receive | Invalidate | Rate | Like | DeleteEntry | Update;
 
-export const actionTypes = {
-  RECIEVE_FORUM_THREADS: 'RECIEVE_FORUM_THREADS',
-  REQUEST_FORUM_THREADS: 'REQUEST_FORUM_THREADS',
-  INVALIDATE_FORUM_THREADS: 'INVALIDATE_FORUM_THREADS',
-  RECIEVE_VOTE_FORUM_THREAD: 'RECIEVE_VOTE_FORUM_THREAD',
-  RECIEVE_LIKE_FORUM_THREAD: 'RECIEVE_LIKE_FORUM_THREAD',
-  UPDATE_FORUM_THREAD_ENTRY: 'UPDATE_FORUM_THREAD_ENTRY',
-  DELETE_FORUM_THREAD: 'DELETE_FORUM_THREAD',
-};
 
-export type Request = Action & {
-  type: 'REQUEST_FORUM_THREADS';
+export const RECEIVE_FORUM_THREADS ='RECEIVE_FORUM_THREADS';
+export const REQUEST_FORUM_THREADS = 'REQUEST_FORUM_THREADS';
+export const INVALIDATE_FORUM_THREADS = 'INVALIDATE_FORUM_THREADS';
+export const RECEIVE_VOTE_FORUM_THREAD = 'RECEIVE_VOTE_FORUM_THREAD';
+export const RECEIVE_LIKE_FORUM_THREAD = 'RECEIVE_LIKE_FORUM_THREAD';
+export const UPDATE_FORUM_THREAD_ENTRY = 'UPDATE_FORUM_THREAD_ENTRY';
+export const DELETE_FORUM_THREAD = 'DELETE_FORUM_THREAD';
+
+
+export type Request =  {
+  type: typeof REQUEST_FORUM_THREADS;
 };
-export type Recieve = Action & {
-  type: 'RECIEVE_FORUM_THREADS';
+export type Receive =  {
+  type: typeof RECEIVE_FORUM_THREADS;
   entries: Array<forumApi.ForumThreadEntry>;
   forumPermalink: string;
   pageSize: number;
 };
-export type Update = Action & {
-  type: 'UPDATE_FORUM_THREAD_ENTRY';
+
+export type Update = {
+  type: typeof UPDATE_FORUM_THREAD_ENTRY;
   entry: forumApi.ForumThreadEntry;
   forumPermalink: string;
 };
-export type Invalidate = Action & {
-  type: 'INVALIDATE_FORUM_THREADS';
+
+export type Invalidate =  {
+  type: typeof INVALIDATE_FORUM_THREADS;
 };
-export type Rate = Action & {
-  type: 'RECIEVE_VOTE_FORUM_THREAD';
+export type Rate =  {
+  type: typeof RECEIVE_VOTE_FORUM_THREAD;
   voteJson: forumApi.VoteReturn;
   forumPermalink: string;
 };
-export type Like = Action & {
-  type: 'RECIEVE_LIKE_FORUM_THREAD';
+
+export type Like =  {
+  type: typeof RECEIVE_LIKE_FORUM_THREAD;
   referenceId: number;
-  recievedLikes: any;
+  receivedLikes: any;
   forumPermalink: string;
 };
-export type DeleteEntry = Action & {
-  type: 'DELETE_FORUM_THREAD';
+export type DeleteEntry = {
+  type: typeof DELETE_FORUM_THREAD;
   entry: forumApi.ForumThreadEntry;
 };
 
@@ -74,7 +76,7 @@ export default createReducer(initialState, {
       didInvalidate: { $set: false },
     }),
 
-  RECIEVE_FORUM_THREADS: (state: ForumThreadState, action: Recieve) => {
+  RECEIVE_FORUM_THREADS: (state: ForumThreadState, action: Receive) => {
     const uniqueForumThreads = _(action.entries)
       .concat(_.get(state, `forums[${action.forumPermalink}]`, []))
       .groupBy('id')
@@ -116,12 +118,13 @@ export default createReducer(initialState, {
       },
     });
   },
+
   INVALIDATE_FORUM_THREADS: (state: ForumThreadState) =>
     update(state, {
       didInvalidate: { $set: true },
     }),
 
-  RECIEVE_VOTE_FORUM_THREAD: (state: ForumThreadState, action: Rate) => {
+  RECEIVE_VOTE_FORUM_THREAD: (state: ForumThreadState, action: Rate) => {
     const forumThreadKey = state.forums[action.forumPermalink].findIndex(
       thread => thread.id === action.voteJson.referenceId
     );
@@ -139,20 +142,20 @@ export default createReducer(initialState, {
     });
   },
 
-  RECIEVE_LIKE_FORUM_THREAD: (state: ForumThreadState, action: Like) => {
+  RECEIVE_LIKE_FORUM_THREAD: (state: ForumThreadState, action: Like) => {
     const forumThreadKey = state.forums[action.forumPermalink].findIndex(thread => thread.id === action.referenceId);
     return update(state, {
       // @ts-ignore
       forums: {
         [action.forumPermalink]: {
           [forumThreadKey]: {
-            numberOfLikes: { $set: action.recievedLikes.numberOfLikes },
+            numberOfLikes: { $set: action.receivedLikes.numberOfLikes },
             likedByCurrentUser: {
               $apply: (context: string): any =>
                 update(context || {}, {
-                  likes: { $set: action.recievedLikes.numberOfLikes },
+                  likes: { $set: action.receivedLikes.numberOfLikes },
                   likedByCurrentUser: {
-                    $set: !action.recievedLikes.remove,
+                    $set: !action.receivedLikes.remove,
                   },
                 }),
             },
@@ -161,6 +164,7 @@ export default createReducer(initialState, {
       },
     });
   },
+
   DELETE_FORUM_THREAD: (state: ForumThreadState, action: DeleteEntry) => {
     const forumThreadEntryKey = state.forums[action.entry.forumRef.permalink].findIndex(
       thread => thread.id === action.entry.id

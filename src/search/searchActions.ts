@@ -7,7 +7,7 @@ import * as qnaApi from '../qna';
 import * as groupApi from '../group';
 import * as reducer from './searchReducer';
 import { Category } from '../category';
-import { AnyAction } from 'redux';
+import { SearchActions } from './searchReducer';
 
 //Change Text
 export interface UpdateSearchString {
@@ -15,7 +15,7 @@ export interface UpdateSearchString {
   p?: number; //pageNumber
 }
 
-export function updateSearchString({ q, p = 1 }: UpdateSearchString): AnyAction {
+export function updateSearchString({ q, p = 1 }: UpdateSearchString): SearchActions {
   return {
     type: reducer.UPDATE_SEARCH_STRING,
     q,
@@ -34,7 +34,7 @@ type _UpdateSelectedType = {
   selectedType: SearchAbleType; // selected filter
   p?: number; //pageNumber
 };
-function _updateSelectedType({ selectedType, p = 1 }: _UpdateSelectedType): AnyAction {
+function _updateSelectedType({ selectedType, p = 1 }: _UpdateSelectedType): SearchActions {
   return {
     type: reducer.UPDATE_SELECTED_TYPE,
     selectedType,
@@ -193,7 +193,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
           ) {
             try {
               const json = await dispatch(groupApi.listMyGroups());
-              dispatch(groupActions.recieveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
+              dispatch(groupActions.receiveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
             } catch (e) {
               console.error('searchApi.search listMyGroups caught an error: ', e);
             }
@@ -212,7 +212,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
             );
 
             if (filter === 'group' || filter[0] === 'group') {
-              dispatch(groupActions.recieveGroups({ entries: _.get(json, 'results.entries') }));
+              dispatch(groupActions.receiveGroups({ entries: _.get(json, 'results.entries') }));
             }
             //return dispatch(loadJsonActions.recieveJson(storageName, json));
           } catch (e) {

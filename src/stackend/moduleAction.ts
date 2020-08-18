@@ -1,10 +1,9 @@
 // @flow
-import { REQUEST_MODULES, RECIEVE_MODULES, RESET_MODULES } from './moduleReducer';
+import { REQUEST_MODULES, RECEIVE_MODULES, RESET_MODULES, ModuleActions } from './moduleReducer';
 import { Thunk } from '../api';
 
 import * as Stackend from '../stackend';
 import { GetModulesResult, Module, ModuleStats } from '../stackend';
-import { AnyAction } from 'redux';
 
 /**
  * Load communities
@@ -13,7 +12,7 @@ import { AnyAction } from 'redux';
  * @author jens
  */
 
-export function recieveModules(json: {
+export function receiveModules(json: {
   modules: Array<Module>;
   supportedModuleContexts?: Array<{
     context: string;
@@ -21,21 +20,21 @@ export function recieveModules(json: {
     supportsMultipleModules: boolean;
   }>;
   stats?: Map<string, ModuleStats>;
-}): AnyAction {
+}): ModuleActions {
     return {
-      type: RECIEVE_MODULES,
+      type: RECEIVE_MODULES,
       json,
-      receievedAt: Date.now()
+      receivedAt: Date.now()
     };
 }
 
-export function requestModules(communityId: number): AnyAction {
+export function requestModules(communityId: number): ModuleActions {
 	return {
 		type: REQUEST_MODULES
 	};
 }
 
-export function resetModules(): AnyAction {
+export function resetModules(): ModuleActions {
 	return {
 		type: RESET_MODULES
 	};
@@ -45,7 +44,7 @@ export function fetchModules({ communityId }: { communityId: number }): Thunk<Ge
 	return async (dispatch: any /*, getState: any*/): Promise<GetModulesResult> => {
 		dispatch(requestModules(communityId));
 		const json = await dispatch(Stackend.getModules({ communityId }));
-		dispatch(recieveModules(json));
+		dispatch(receiveModules(json));
 		return json;
 	};
 }

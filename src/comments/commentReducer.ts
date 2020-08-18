@@ -8,9 +8,9 @@ import { emptyPaginatedCollection, PaginatedCollection } from '../PaginatedColle
 
 //Action Type
 export const REQUEST_GROUP_COMMENTS = 'REQUEST_GROUP_COMMENTS';
-export const RECIEVE_GROUP_COMMENTS = 'RECIEVE_GROUP_COMMENTS';
+export const RECEIVE_GROUP_COMMENTS = 'RECEIVE_GROUP_COMMENTS';
 export const REQUEST_COMMENTS = 'REQUEST_COMMENTS';
-export const RECIEVE_COMMENTS = 'RECIEVE_COMMENTS';
+export const RECEIVE_COMMENTS = 'RECEIVE_COMMENTS';
 export const UPDATE_COMMENT = 'UPDATE_COMMENT';
 export const INVALIDATE_GROUP_COMMENTS = 'INVALIDATE_GROUP_COMMENTS';
 export const TOGGLE_REPLY_BOX = 'TOGGLE_REPLY_BOX';
@@ -21,45 +21,45 @@ export const CLOSE_COMMENT_SECTION = 'CLOSE_COMMENT_SECTION';
 export const TOGGLE_COMMENT_SECTION = 'TOGGLE_COMMENT_SECTION';
 export const TOGGLE_EDIT_COMMENT = 'TOGGLE_EDIT_COMMENT';
 
-export type commentActionType =
-  | 'REQUEST_GROUP_COMMENTS'
-  | 'RECIEVE_GROUP_COMMENTS'
-  | 'INVALIDATE_GROUP_COMMENTS'
-  | 'REQUEST_COMMENTS'
-  | 'RECIEVE_COMMENTS'
-  | 'UPDATE_COMMENT';
 
-export type commentsAction =
-  | { type: 'REQUEST_GROUP_COMMENTS'; module: string; referenceGroupId: number }
-  | {
-      type: 'RECIEVE_GROUP_COMMENTS';
-      module: string;
-      referenceGroupId: number;
-      receievedAt: number;
-      json: {
-        comments: any;
-        likesByCurrentUser: any;
-      };
-    }
-  | { type: 'INVALIDATE_GROUP_COMMENTS'; module: string; referenceGroupId: number }
-  | { type: 'REQUEST_COMMENTS'; module: string; referenceId: number; referenceGroupId: number }
-  | {
-      type: 'RECIEVE_COMMENTS';
-      module: string;
-      referenceId: number;
-      referenceGroupId: number;
-      receievedAt: number;
-      json: commentAction.RecieveCommentsJson;
-    }
-  | {
-      type: 'UPDATE_COMMENT';
-      id: number;
-      module: string;
-      referenceId: number;
-      referenceGroupId: number;
-      receievedAt: number;
-      json: commentsApi.Comment;
+export type CommentsActions = {
+    type: typeof REQUEST_GROUP_COMMENTS;
+    module: string;
+    referenceGroupId: number;
+} | {
+    type: typeof RECEIVE_GROUP_COMMENTS;
+    module: string;
+    referenceGroupId: number;
+    receievedAt: number;
+    json: {
+      comments: any;
+      likesByCurrentUser: any;
     };
+} | {
+  type: typeof INVALIDATE_GROUP_COMMENTS;
+  module: string;
+  referenceGroupId: number;
+} | {
+  type: typeof REQUEST_COMMENTS;
+  module: string;
+  referenceId: number;
+  referenceGroupId: number;
+} | {
+  type: typeof RECEIVE_COMMENTS;
+  module: string;
+  referenceId: number;
+  referenceGroupId: number;
+  receievedAt: number;
+  json: commentAction.RecieveCommentsJson;
+} | {
+  type: typeof UPDATE_COMMENT;
+  id: number;
+  module: string;
+  referenceId: number;
+  referenceGroupId: number;
+  receievedAt: number;
+  json: commentsApi.Comment;
+};
 
 export type openReplyBoxesActionType = 'TOGGLE_REPLY_BOX' | 'OPEN_REPLY_BOX' | 'CLOSE_REPLY_BOX';
 //TODO: implement //export type openReplyBoxesAction = {
@@ -91,11 +91,11 @@ export interface CommentsState {
 }
 
 //Reducer
-export function GroupComments(state: CommentsState = {}, action: commentsAction): CommentsState {
+export function GroupComments(state: CommentsState = {}, action: CommentsActions): CommentsState {
   let key = '';
   switch (action.type) {
     case REQUEST_GROUP_COMMENTS:
-      // @ts-ignore
+
       key = commentAction._getCommentsStateKey(action);
 
       return Object.assign({}, state, {
@@ -106,8 +106,7 @@ export function GroupComments(state: CommentsState = {}, action: commentsAction)
         },
       });
 
-    case RECIEVE_GROUP_COMMENTS:
-      // @ts-ignore
+    case RECEIVE_GROUP_COMMENTS:
       key = commentAction._getCommentsStateKey(action);
 
       // @ts-ignore
@@ -136,7 +135,6 @@ export function GroupComments(state: CommentsState = {}, action: commentsAction)
       }
 
     case REQUEST_COMMENTS: {
-      // @ts-ignore
       key = commentAction._getCommentsStateKey(action);
 
       const requestBlogEntryComments = Object.assign(
@@ -166,10 +164,10 @@ export function GroupComments(state: CommentsState = {}, action: commentsAction)
       });
     }
 
-    case RECIEVE_COMMENTS: {
+    case RECEIVE_COMMENTS: {
       const { referenceId } = action;
-      // @ts-ignore
       key = commentAction._getCommentsStateKey(action);
+
       if (action.json.error) {
         // @ts-ignore
         return update(state, {
@@ -193,8 +191,8 @@ export function GroupComments(state: CommentsState = {}, action: commentsAction)
         });
       }
 
-      // @ts-ignore
-      const origComments: Array<Comment> = _.get(state, `[${key}].json.comments[${referenceId}].entries`, []);
+
+      const origComments: any = _.get(state, `[${key}].json.comments[${referenceId}].entries`, []);
       const newComments: Array<Comment> = [];
       action.json.comments.entries.forEach(e => {
         const orig = origComments.find((o: Comment) => o.id === e.id);
@@ -205,6 +203,7 @@ export function GroupComments(state: CommentsState = {}, action: commentsAction)
         }
       });
 
+      // @ts-ignore
       const referenceIdUniqueComments: Array<Comment> = _.concat(origComments, newComments);
       // @ts-ignore
       const pagination: PaginatedCollection<Comment> = _.get(
@@ -250,7 +249,6 @@ export function GroupComments(state: CommentsState = {}, action: commentsAction)
     }
 
     case UPDATE_COMMENT: {
-      // @ts-ignore
       key = commentAction._getCommentsStateKey(action);
       const updatedComment = action.json;
       const indexOfUpdatedComment = state[key].json.comments[action.referenceId].entries
@@ -275,7 +273,6 @@ export function GroupComments(state: CommentsState = {}, action: commentsAction)
     }
 
     case INVALIDATE_GROUP_COMMENTS:
-      // @ts-ignore
       key = commentAction._getCommentsStateKey(action);
       return Object.assign({}, state, {
         [key]: {

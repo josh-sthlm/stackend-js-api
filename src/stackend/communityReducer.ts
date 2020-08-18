@@ -2,13 +2,13 @@
 import update from 'immutability-helper';
 import { Community } from '../stackend';
 import { isRunningInBrowser } from '../api';
-import { AnyAction } from 'redux';
 import { PaginatedCollection } from '../PaginatedCollection';
+import { ReceiveCommunities, ResourceUsage } from './communityAction';
 
 export const KEY = 'COMMUNITIES';
 
 export const REQUEST_COMMUNITIES = 'REQUEST_COMMUNITIES';
-export const RECIEVE_COMMUNITIES = 'RECIEVE_COMMUNITIES';
+export const RECEIVE_COMMUNITIES = 'RECEIVE_COMMUNITIES';
 export const UPDATE_COMMUNITY = 'UPDATE_COMMUNITY';
 export const SET_COMMUNITY_SETTINGS = 'SET_COMMUNITY_SETTINGS';
 export const REMOVE_COMMUNITIES = 'REMOVE_COMMUNITIES';
@@ -35,8 +35,30 @@ export interface CommunityState {
   lastUpdated?: number;
 }
 
+export type CommunityActions = {
+  type: typeof REQUEST_COMMUNITIES;
+} | {
+  type: typeof RECEIVE_COMMUNITIES;
+  json: ReceiveCommunities;
+  receivedAt: number;
+} | {
+  type: typeof UPDATE_COMMUNITY;
+  community: Community;
+  receivedAt: number;
+} | {
+  type: typeof SET_COMMUNITY_SETTINGS;
+  community: Community;
+  objectsRequiringModeration?: number;
+} | {
+  type: typeof REMOVE_COMMUNITIES;
+} | {
+  type: typeof REMOVE_COMMUNITY;
+} | ResourceUsage & {
+  type: typeof RECEIVE_RESOURCE_USAGE;
+}
+
 //Reducer
-export default function communityReducer(state: CommunityState = {}, action: AnyAction): CommunityState {
+export default function communityReducer(state: CommunityState = {}, action: CommunityActions): CommunityState {
   switch (action.type) {
     case REQUEST_COMMUNITIES:
       return Object.assign({}, state, {
@@ -44,11 +66,11 @@ export default function communityReducer(state: CommunityState = {}, action: Any
         didInvalidate: false,
       });
 
-    case RECIEVE_COMMUNITIES:
+    case RECEIVE_COMMUNITIES:
       return Object.assign({}, state, {
         isFetching: false,
         didInvalidate: false,
-        lastUpdated: action.receievedAt,
+        lastUpdated: action.receivedAt,
         communities: action.json.results,
         statistics: action.json.statistics,
       });
@@ -80,7 +102,7 @@ export default function communityReducer(state: CommunityState = {}, action: Any
         return update(state, {
           isFetching: { $set: false },
           didInvalidate: { $set: false },
-          lastUpdated: { $set: action.receievedAt },
+          lastUpdated: { $set: action.receivedAt },
           communities: { $set: newCommunities },
         });
       }

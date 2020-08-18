@@ -1,37 +1,35 @@
 // @flow
 import update from 'immutability-helper';
-import { Action } from 'redux';
 import _ from 'lodash';
 import createReducer from '../createReducer';
 import * as forumApi from '../forum';
 
-export type ForumActions = Request | Recieve | Invalidate;
+export const RECEIVE_FORUMS = 'RECEIVE_FORUMS';
+export const REQUEST_FORUMS = 'REQUEST_FORUMS';
+export const INVALIDATE_FORUMS = 'INVALIDATE_FORUMS';
 
-export const actionTypes = {
-  RECIEVE_FORUMS: 'RECIEVE_FORUMS',
-  REQUEST_FORUMS: 'REQUEST_FORUMS',
-  INVALIDATE_FORUMS: 'INVALIDATE_FORUMS',
-};
 
-export type Request = Action & {
-  type: 'REQUEST_FORUMS';
+export type RequestForumsAction = {
+  type: typeof REQUEST_FORUMS;
 };
-export type Recieve = Action & {
-  type: 'RECIEVE_FORUMS';
+export type ReceiveForumsAction = {
+  type: typeof RECEIVE_FORUMS;
   entries: Array<forumApi.Forum>;
 };
-export type Invalidate = Action & {
-  type: 'INVALIDATE_FORUMS';
+export type InvalidateForumsAction = {
+  type: typeof INVALIDATE_FORUMS;
 };
 
-interface State {
+export type ForumActions = RequestForumsAction | ReceiveForumsAction | InvalidateForumsAction;
+
+export interface ForumState {
   isFetching: boolean;
   didInvalidate: boolean;
   lastUpdated: number; //Date
   entries: Array<forumApi.Forum>;
 }
 
-const initialState: State = {
+const initialState: ForumState = {
   isFetching: false,
   didInvalidate: false,
   lastUpdated: 0,
@@ -39,12 +37,13 @@ const initialState: State = {
 };
 
 export default createReducer(initialState, {
-  REQUEST_FORUMS: (state: State, action: Action) =>
+  REQUEST_FORUMS: (state: ForumState, action: RequestForumsAction) =>
     update(state, {
       isFetching: { $set: true },
       didInvalidate: { $set: false },
     }),
-  RECIEVE_FORUMS: (state: State, action: Recieve) => {
+
+  RECEIVE_FORUMS: (state: ForumState, action: ReceiveForumsAction) => {
     const uniqueForums = _(action.entries)
       .concat(_.get(state, `entries`, []))
       .groupBy('id')
@@ -58,7 +57,8 @@ export default createReducer(initialState, {
       entries: { $set: uniqueForums },
     });
   },
-  INVALIDATE_FORUMS: (state: State, action: Action) =>
+
+  INVALIDATE_FORUMS: (state: ForumState, action: InvalidateForumsAction) =>
     update(state, {
       didInvalidate: { $set: true },
     }),

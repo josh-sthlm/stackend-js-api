@@ -3,8 +3,8 @@ import {
 	CLOSE_REPLY_BOX,
 	INVALIDATE_GROUP_COMMENTS,
 	OPEN_REPLY_BOX,
-	RECIEVE_COMMENTS,
-	RECIEVE_GROUP_COMMENTS,
+	RECEIVE_COMMENTS,
+	RECEIVE_GROUP_COMMENTS,
 	REQUEST_COMMENTS,
 	REQUEST_GROUP_COMMENTS,
 	TOGGLE_COMMENT_SECTION,
@@ -31,7 +31,7 @@ const DEFAULT_PAGE_SIZE = 3;
  * @param action
  * @returns {string}
  */
-export function _getCommentsStateKey(action: { module: string; referenceGroupId: string }): string {
+export function _getCommentsStateKey<T extends { module: string; referenceGroupId: number }>(action: T): string {
 	return action.module + ':' + action.referenceGroupId;
 }
 
@@ -55,7 +55,7 @@ export function getCommentsStateKey(module: string, referenceGroupId: number): s
 //When loading comments recieve is run when the server has responded
 function recieveGroupComments(module: string, referenceGroupId: number, json: string): AnyAction {
 	return {
-		type: RECIEVE_GROUP_COMMENTS,
+		type: RECEIVE_GROUP_COMMENTS,
 		module,
 		referenceGroupId,
 		json,
@@ -111,7 +111,7 @@ function recieveComments(
 	json: RecieveCommentsJson
 ): AnyAction {
 	return {
-		type: RECIEVE_COMMENTS,
+		type: RECEIVE_COMMENTS,
 		module,
 		referenceId,
 		referenceGroupId,

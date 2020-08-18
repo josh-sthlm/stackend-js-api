@@ -1,20 +1,20 @@
 //@flow
 
-import { getInitialStoreValues, GetInitialStoreValuesResult, Thunk } from './api';
-import { recieveLoginData } from './login/loginAction';
+import { getInitialStoreValues, GetInitialStoreValuesResult, newXcapJsonResult, Thunk } from './api';
+import { receiveLoginData } from './login/loginAction';
 import { loadCommunity, receiveResourceUsage } from './stackend/communityAction';
-import { XCAP_INITIAL_STORE_DATA_RECIEVED } from './configReducer';
+import { XCAP_INITIAL_STORE_DATA_RECEIVED } from './configReducer';
 import { setRequestInfo } from './request/requestActions';
-import { recieveModules } from './stackend/moduleAction';
-import { recieveContents } from './cms/cmsActions';
-import { recievePages, recieveSubSites } from './cms/pageActions';
+import { receiveModules } from './stackend/moduleAction';
+import { receiveContents } from './cms/cmsActions';
+import { receivePages, receiveSubSites } from './cms/pageActions';
 import { AnyAction } from 'redux';
 //import { receiveNotificationCounts } from './notifications/notificationActions';
 
 
-function recieveInitialStoreValues(json: any): AnyAction {
+function receiveInitialStoreValues(json: any): AnyAction {
   return {
-    type: XCAP_INITIAL_STORE_DATA_RECIEVED,
+    type: XCAP_INITIAL_STORE_DATA_RECEIVED,
     json,
   };
 }
@@ -66,24 +66,24 @@ export function loadInitialStoreValues({
     }
 
     if (Object.keys(r.modules).length !== 0) {
-      dispatch(recieveModules({ modules: r.modules }));
+      dispatch(receiveModules({ modules: r.modules }));
     }
 
     if (r.cmsContents && Object.keys(r.cmsContents).length !== 0) {
-      dispatch(recieveContents(r.cmsContents));
+      dispatch(receiveContents(r.cmsContents));
     }
 
     if (r.cmsPages && Object.keys(r.cmsPages).length !== 0) {
-      dispatch(recievePages({ pages: r.cmsPages }));
+      dispatch(receivePages(newXcapJsonResult("success", { pages: r.cmsPages })));
     }
 
     if (r.subSites && Object.keys(r.subSites).length !== 0) {
-      dispatch(recieveSubSites({ subSites: r.subSites }));
+      dispatch(receiveSubSites({ subSites: r.subSites }));
     }
 
-    dispatch(recieveInitialStoreValues(r));
+    dispatch(receiveInitialStoreValues(r));
     dispatch(setRequestInfo({ referenceUrlId: r.referenceUrlId }));
-    dispatch(recieveLoginData({ user: r.user }));
+    dispatch(receiveLoginData({ user: r.user }));
     dispatch(loadCommunity(r.stackendCommunity));
     //dispatch(receiveNotificationCounts({ numberOfUnseen: r.numberOfUnseen }));
 

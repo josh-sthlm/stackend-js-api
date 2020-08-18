@@ -1,19 +1,19 @@
 //@flow
 
-import { newXcapJsonResult, Thunk } from '../api';
+import { getJsonErrorText, newXcapJsonResult, Thunk } from '../api';
 
 import {
   CLEAR_PAGE,
   CLEAR_PAGES,
-  RECIEVE_PAGES,
+  RECEIVE_PAGES,
   PagesState,
-  RECIEVE_SUB_SITES,
-  PageAndLoadedState,
+  RECEIVE_SUB_SITES,
+  PageAndLoadedState, PageActions
 } from './pageReducer';
 
-import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode } from '../cms';
+import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode, SubSite } from '../cms';
 import { getPermalink } from '../tree';
-import { AnyAction } from 'redux';
+
 
 /**
  * Request multiple pages
@@ -30,7 +30,7 @@ export function requestPages({
   return async (dispatch: any): Promise<GetPagesResult> => {
     const r = await dispatch(getPages({ pageIds, permalinks, communityPermalink }));
     await dispatch({
-      type: RECIEVE_PAGES,
+      type: RECEIVE_PAGES,
       json: r,
     });
     return r;
@@ -130,9 +130,9 @@ export function requestPageByPermalink(permalink: string): Thunk<GetPagesResult>
  * Clear all pages
  * @returns {Function}
  */
-export function clearPages(): Thunk<void> {
-  return (dispatch /*, getState: any*/): void => {
-    dispatch({
+export function clearPages(): Thunk<PageActions> {
+  return (dispatch /*, getState: any*/): PageActions => {
+    return dispatch({
       type: CLEAR_PAGES,
     });
   };
@@ -143,19 +143,19 @@ export function clearPages(): Thunk<void> {
  * @param pageId
  * @returns {Function}
  */
-export function clearPage(pageId: number): Thunk<void> {
-  return (dispatch /*, getState: any*/): void => {
-    dispatch({
+export function clearPage(pageId: number): Thunk<PageActions> {
+  return (dispatch /*, getState: any*/): PageActions => {
+    return dispatch({
       type: CLEAR_PAGE,
       id: pageId,
     });
   };
 }
 
-export function recievePages(json: any): Thunk<any> {
-  return (dispatch /*, getState: any*/): AnyAction => {
+export function receivePages(json: GetPagesResult): Thunk<any> {
+  return (dispatch /*, getState: any*/): PageActions => {
     return dispatch({
-      type: RECIEVE_PAGES,
+      type: RECEIVE_PAGES,
       json,
     });
   };
@@ -164,6 +164,11 @@ export function recievePages(json: any): Thunk<any> {
 export function requestSubSite(id: number): Thunk<GetSubSiteResult> {
   return async (dispatch: any): Promise<GetSubSiteResult> => {
     const r = await dispatch(getSubSite({ id }));
+    if (r.error) {
+      console.error('Could not get sub sites ' + getJsonErrorText(r));
+      return r;
+    }
+
     if (!r.error && r.tree) {
       const pages: { [id: number]: Page } = {};
       Object.keys(r.referencedObjects).forEach(k => {
@@ -173,18 +178,21 @@ export function requestSubSite(id: number): Thunk<GetSubSiteResult> {
         }
       });
 
-      await dispatch(recievePages({ pages }));
-      await dispatch(recieveSubSites({ subSites: { [r.tree.id]: r.tree } }));
+
+      await dispatch(receivePages(newXcapJsonResult("success", {
+        pages,
+      })));
+      await dispatch(receiveSubSites({ subSites: { [r.tree.id]: r.tree } }));
     }
     return r;
   };
 }
 
-export function recieveSubSites(json: any): Thunk<AnyAction> {
-  return (dispatch /*, getState: any*/): AnyAction => {
+export function receiveSubSites({ subSites }:  { subSites: { [id: number]: SubSite } }): Thunk<PageActions> {
+  return (dispatch /*, getState: any*/): PageActions => {
     return dispatch({
-      type: RECIEVE_SUB_SITES,
-      json,
+      type: RECEIVE_SUB_SITES,
+      subSites,
     });
   };
 }

@@ -246,7 +246,7 @@ export async function LoadJson({
       return { error: 'Response is not a json object', status: 200 };
     }
   } catch (e) {
-    logger.error(e, JSON.stringify(request));
+    logger.error(e, request ? JSON.stringify(request) : '');
     if (e.message === 'Failed to fetch') {
       return {
         error:

@@ -1,27 +1,29 @@
 // @flow
-import * as reducer from './editForumThreadReducer';
+import {
+  ADD_QUOTE,
+  EDIT_FORUM_ENTRY_TEXT,
+  EditForumThreadActions, FORUM_THREAD_TOGGLE_EDIT,
+  SET_FORUM_ENTRY_TEXT
+} from './editForumThreadReducer';
 import { Thunk } from '../api';
 
-export function editForumEntyText({ text }: { text: string }): reducer.Edit {
-  // @ts-ignore
+export function editForumEntyText({ text }: { text: string }): EditForumThreadActions {
   return {
-    type: reducer.actionTypes.EDIT_FORUM_ENTRY_TEXT,
+    type: EDIT_FORUM_ENTRY_TEXT,
     text,
   };
 }
 
-export function setForumEntyText({ text }: { text: string }): reducer.Set {
-  // @ts-ignore
+export function setForumEntyText({ text }: { text: string }): EditForumThreadActions {
   return {
-    type: reducer.actionTypes.SET_FORUM_ENTRY_TEXT,
+    type: SET_FORUM_ENTRY_TEXT,
     text,
   };
 }
 
-export function addForumEntryQuote({ quote }: { quote: string }): reducer.AddQuote {
-  // @ts-ignore
+export function addForumEntryQuote({ quote }: { quote: string }): EditForumThreadActions {
   return {
-    type: reducer.actionTypes.ADD_QUOTE,
+    type: ADD_QUOTE,
     quote,
   };
 }
@@ -31,10 +33,11 @@ export type ToggleEditForumThread = {
   editThreadId?: number;
   text: string;
 };
+
 export function toggleEditForumThread({ forumPermalink, editThreadId, text }: ToggleEditForumThread): Thunk<void> {
   return (dispatch: any /*, getState: any*/): void => {
     dispatch({
-      type: reducer.actionTypes.FORUM_THREAD_TOGGLE_EDIT,
+      type: FORUM_THREAD_TOGGLE_EDIT,
       forumPermalink,
       editThreadId,
     });

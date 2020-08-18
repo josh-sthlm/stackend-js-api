@@ -2,12 +2,19 @@
 
 //Action Type
 
-import { GraphQLList, GraphQLListNode, Product } from '../shop';
+import {
+  GetProductResult,
+  GraphQLList,
+  GraphQLListNode,
+  ListProductsAndTypesResult,
+  ListProductTypesResult,
+  Product
+} from '../shop';
 import _ from 'lodash';
 
-export const RECIEVE_PRODUCT_TYPES = 'RECIEVE_PRODUCT_TYPES';
-export const RECIEVE_PRODUCT = 'RECIEVE_PRODUCT';
-export const RECIEVE_PRODUCTS = 'RECIEVE_PRODUCTS';
+export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
+export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
+export const RECEIVE_PRODUCTS = 'RECEIVE_PRODUCTS';
 export const ADD_TO_BASKET = 'ADD_TO_BASKET';
 export const REMOVE_FROM_BASKET = 'REMOVE_FROM_BASKET';
 
@@ -24,6 +31,20 @@ export interface ShopState {
   basket: Array<any>;
 }
 
+export type ShopActions = {
+  type: typeof RECEIVE_PRODUCT_TYPES;
+  json: ListProductTypesResult;
+} | {
+  type: typeof RECEIVE_PRODUCT;
+  json: GetProductResult;
+} | {
+  type: typeof RECEIVE_PRODUCTS;
+  json: ListProductsAndTypesResult;
+} | {
+  type: typeof ADD_TO_BASKET;
+  product: Product;
+}
+
 export default function shopReducer(
   state: ShopState = {
     productTypes: [],
@@ -31,14 +52,10 @@ export default function shopReducer(
     productsByType: {},
     basket: [],
   },
-  action: {
-    type: string;
-    receievedAt?: number;
-    json?: any;
-  }
+  action: ShopActions
 ): ShopState {
   switch (action.type) {
-    case RECIEVE_PRODUCT_TYPES: {
+    case RECEIVE_PRODUCT_TYPES: {
       const edges: [GraphQLListNode<string>] = _.get(action, 'json.productTypes.edges', []);
       const productTypes = edges.map(e => e.node);
       return Object.assign({}, state, {
@@ -46,7 +63,7 @@ export default function shopReducer(
       });
     }
 
-    case RECIEVE_PRODUCT: {
+    case RECEIVE_PRODUCT: {
       const product = _.get(action, 'json.product');
       if (product) {
         const products = Object.assign({}, state.products, {
@@ -60,7 +77,7 @@ export default function shopReducer(
       break;
     }
 
-    case RECIEVE_PRODUCTS: {
+    case RECEIVE_PRODUCTS: {
       const products = _.get(action, 'json.products');
       const productType = DEFAULT_PRODUCT_TYPE; // FIXME: Get requested type from backend
 

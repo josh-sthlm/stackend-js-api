@@ -2,10 +2,10 @@
 import update from 'immutability-helper';
 import createReducer from './createReducer';
 
-export const RECIEVE_REFERENCES = 'RECIEVE_REFERENCES';
+export const RECEIVE_REFERENCES = 'RECEIVE_REFERENCES';
 
-export interface Recieve {
-  type: 'RECIEVE_REFERENCES';
+export interface ReceiveAction {
+  type: typeof RECEIVE_REFERENCES;
   entries: { [key: number]: any };
 }
 
@@ -15,5 +15,5 @@ interface ReferenceState {
 const initialState: ReferenceState = {};
 
 export default createReducer(initialState, {
-  RECIEVE_REFERENCES: (state: ReferenceState, action: Recieve) => update(state, { $merge: action.entries }),
+  RECEIVE_REFERENCES: (state: ReferenceState, action: ReceiveAction) => update(state, { $merge: action.entries }),
 });

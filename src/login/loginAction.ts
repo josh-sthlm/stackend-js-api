@@ -3,25 +3,38 @@ import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginRed
 import { getCurrentUser, User } from '../user';
 import { Thunk } from '../api';
 import _ from 'lodash';
-import { AnyAction } from 'redux';
 
 const LOGIN_TTL: number = 60 * 1000;
 
+export type LoginActions = {
+  type: typeof LOGIN;
+} | {
+  type: typeof LOGOUT;
+} |  {
+  type: typeof REQUEST_LOGIN_DATA;
+} | {
+  type: typeof UPDATE_LOGIN_DATA;
+  json: {
+    user: User | null;
+    [rest: string]: any ;
+  };
+}
+
 //Action Creator
-export function reduxLogin(): AnyAction {
+export function reduxLogin(): LoginActions {
 	return {
 		type: LOGIN
 	};
 }
 
-export function reduxLogout(): AnyAction {
+export function reduxLogout(): LoginActions {
 	return {
 		type: LOGOUT
 	};
 }
 
 //Action Creator
-function requestLoginData(): AnyAction {
+function requestLoginData(): LoginActions {
 	return {
 		type: REQUEST_LOGIN_DATA
 	};
@@ -53,14 +66,14 @@ export function refreshLoginData(params?: any): Thunk<any> {
 			//let apiUrl = `${api.getServerWithContextPath()+community}/api/user/get`;
 			dispatch(requestLoginData());
 			const json = await dispatch(getCurrentUser());
-			return dispatch(recieveLoginData(json));
+			return dispatch(receiveLoginData(json));
 		} catch (e) {
 			console.error("Couldn't refreshLoginData: ", e);
 		}
 	};
 }
 
-export function recieveLoginData(json: { user: User | null }): AnyAction {
+export function receiveLoginData(json: { user: User | null }): LoginActions {
 	return {
 		type: UPDATE_LOGIN_DATA,
 		json

@@ -9,21 +9,23 @@ export const SET_QNA_GAME = 'SET_QNA_GAME';
 export const SET_QNA_STYLE = 'SET_QNA_STYLE';
 export const CHANGE_FILTER = 'CHANGE_FILTER';
 export const SET_QNA_AVAILABLE_FILTERS = 'SET_QNA_AVAILABLE_FILTERS';
-export const RECIEVE_SEARCH_RESULT = 'RECIEVE_SEARCH_RESULT';
+export const RECEIVE_SEARCH_RESULT = 'RECEIVE_SEARCH_RESULT';
 
 export interface QnaState {
   pageType: string;
   forumThreadPermalink?: string;
 }
 
+export type QnaActions = {
+  type: typeof CHANGE_QNA_PAGE;
+  pageType: string;
+  forumThreadPermalink: string;
+}
+
 //Reducer
 const qnaReducer = (
   state: QnaState = { pageType: 'Search' },
-  action: {
-    type: string;
-    pageType: string;
-    forumThreadPermalink: string;
-  }
+  action: QnaActions
 ): QnaState => {
   switch (action.type) {
     case CHANGE_QNA_PAGE:
@@ -161,7 +163,7 @@ export function qnaSearchResult(
   action: { type: string; result: any }
 ): any {
   switch (action.type) {
-    case RECIEVE_SEARCH_RESULT:
+    case RECEIVE_SEARCH_RESULT:
       return (state = action.result);
     default:
       return state;

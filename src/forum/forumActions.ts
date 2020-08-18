@@ -1,27 +1,25 @@
 // @flow
 import _ from 'lodash';
-import { listForums, Forum } from '../forum';
+import { Forum, listForums } from '../forum';
 import { Thunk } from '../api';
-import * as reducer from './forumReducer';
+import { ForumActions, RECEIVE_FORUMS, REQUEST_FORUMS } from './forumReducer';
 
 //Requests and receive comments and store them in redux-state
 export function fetchForums(): Thunk<void> {
   return async (dispatch: any): Promise<void> => {
     dispatch(requestForums());
     const json = await dispatch(listForums({}));
-    dispatch(recieveForums({ entries: _.get(json, 'forumsPaginated.entries', []) }));
+    dispatch(receiveForums({ entries: _.get(json, 'forumsPaginated.entries', []) }));
   };
 }
 
-export function requestForums(): reducer.Request {
-  // @ts-ignore
-  return { type: reducer.actionTypes.REQUEST_FORUMS };
+export function requestForums(): ForumActions {
+  return { type: REQUEST_FORUMS };
 }
 
-export function recieveForums({ entries }: { entries: Array<Forum> }): reducer.Recieve {
-  // @ts-ignore
+export function receiveForums({ entries }: { entries: Array<Forum> }): ForumActions {
   return {
-    type: reducer.actionTypes.RECIEVE_FORUMS,
+    type: RECEIVE_FORUMS,
     entries,
   };
 }

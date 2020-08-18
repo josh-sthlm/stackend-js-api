@@ -5,8 +5,18 @@
 import { Module, ModuleStats } from '../stackend';
 
 export const REQUEST_MODULES = 'REQUEST_MODULES';
-export const RECIEVE_MODULES = 'RECIEVE_MODULES';
+export const RECEIVE_MODULES = 'RECEIVE_MODULES';
 export const RESET_MODULES = 'RESET_MODULES';
+
+export type ModuleActions = {
+  type: typeof REQUEST_MODULES;
+} | {
+  type: typeof RECEIVE_MODULES;
+  receivedAt: number;
+  json: any;
+} | {
+  type: typeof RESET_MODULES;
+}
 
 export interface ModuleState {
   isFetching?: boolean;
@@ -24,13 +34,7 @@ export interface ModuleState {
 //Reducer
 export default function moduleReducer(
   state: ModuleState = {},
-  action: {
-    type: string;
-    receievedAt?: number;
-    json?: {
-      result: [any];
-    };
-  }
+  action: ModuleActions
 ): ModuleState {
   switch (action.type) {
     case REQUEST_MODULES:
@@ -39,11 +43,11 @@ export default function moduleReducer(
         didInvalidate: false,
       });
 
-    case RECIEVE_MODULES:
+    case RECEIVE_MODULES:
       return Object.assign({}, state, {
         isFetching: false,
         didInvalidate: false,
-        lastUpdated: action.receievedAt,
+        lastUpdated: action.receivedAt,
         ...action.json,
       });
 

@@ -1,14 +1,22 @@
 // @flow
 import _ from 'lodash';
 import * as forumApi from '../forum';
+import { Forum, ForumThreadEntry, ListThreadsResult, removeForumThreadEntry } from '../forum';
 import * as likeApi from '../like';
 import * as api from '../api';
-import * as forumActions from './forumActions';
-import * as reducer from './forumThreadReducer';
-import { Forum, ForumThreadEntry, ListThreadsResult, removeForumThreadEntry } from '../forum';
 import { Thunk } from '../api';
+import * as forumActions from './forumActions';
+import {
+  DELETE_FORUM_THREAD,
+  ForumThreadActions,
+  RECEIVE_FORUM_THREADS,
+  RECEIVE_LIKE_FORUM_THREAD,
+  RECEIVE_VOTE_FORUM_THREAD,
+  REQUEST_FORUM_THREADS,
+  UPDATE_FORUM_THREAD_ENTRY
+} from './forumThreadReducer';
 import { PaginatedCollection } from '../PaginatedCollection';
-import { AnyAction } from 'redux';
+
 //import { sendEventToGA } from '../analytics/analyticsFunctions';
 
 export interface FetchForumThreads {
@@ -30,7 +38,7 @@ export function fetchForumThreads({ forumPermalink, page, pageSize = 25 }: Fetch
     }
 
     dispatch(
-      forumActions.recieveForums({
+      forumActions.receiveForums({
         entries: Object.keys(json.__relatedObjects)
           .filter(entryKey => json.__relatedObjects[entryKey].__type === 'net.josh.community.forum.impl.ForumImpl')
           .reduce((obj, key) => obj.concat(json.__relatedObjects[key]), []),
@@ -83,7 +91,7 @@ export function fetchForumThreadEntries({
         return { error: "couldn't fetchForumThreadEntries :" + api.getJsonErrorText(data) };
       }
       dispatch(
-        forumActions.recieveForums({
+        forumActions.receiveForums({
           entries: Object.keys(data.__relatedObjects)
             .filter(entryKey => data.__relatedObjects[entryKey].__type === 'net.josh.community.forum.impl.ForumImpl')
             .reduce((obj, key) => obj.concat(data.__relatedObjects[key]), []),
@@ -104,9 +112,8 @@ export function fetchForumThreadEntries({
   };
 }
 
-export function requestForumThreads(): reducer.Request {
-  // @ts-ignore
-  return { type: reducer.actionTypes.REQUEST_FORUM_THREADS };
+export function requestForumThreads(): ForumThreadActions {
+  return { type: REQUEST_FORUM_THREADS };
 }
 
 export function receiveForumThreads({
@@ -117,10 +124,9 @@ export function receiveForumThreads({
   entries: Array<forumApi.ForumThreadEntry>;
   forumPermalink: string;
   pageSize: number;
-}): reducer.Recieve {
-  // @ts-ignore
+}): ForumThreadActions {
   return {
-    type: reducer.actionTypes.RECIEVE_FORUM_THREADS,
+    type: RECEIVE_FORUM_THREADS,
     entries,
     forumPermalink,
     pageSize,
@@ -133,9 +139,9 @@ export function updateForumThreadEntry({
 }: {
   entry: forumApi.ForumThreadEntry;
   forumPermalink: string;
-}): AnyAction {
+}): ForumThreadActions {
   return {
-    type: reducer.actionTypes.UPDATE_FORUM_THREAD_ENTRY,
+    type: UPDATE_FORUM_THREAD_ENTRY,
     entry,
     forumPermalink,
   };
@@ -175,10 +181,9 @@ export function recieveVoteForumThread({
 }: {
   voteJson: forumApi.VoteReturn;
   forumPermalink: string;
-}): reducer.Rate {
-  // @ts-ignore
+}): ForumThreadActions {
   return {
-    type: reducer.actionTypes.RECIEVE_VOTE_FORUM_THREAD,
+    type: RECEIVE_VOTE_FORUM_THREAD,
     voteJson,
     forumPermalink,
   };
@@ -225,9 +230,9 @@ export interface ReceiveLikeForumThreadEntry {
   forumPermalink: string;
 }
 
-function _receiveLikeForumThreadEntry({ receivedLikes, forumPermalink, referenceId }: ReceiveLikeForumThreadEntry): AnyAction {
+function _receiveLikeForumThreadEntry({ receivedLikes, forumPermalink, referenceId }: ReceiveLikeForumThreadEntry): ForumThreadActions {
   return {
-    type: reducer.actionTypes.RECIEVE_LIKE_FORUM_THREAD,
+    type: RECEIVE_LIKE_FORUM_THREAD,
     receivedLikes,
     referenceId,
     forumPermalink,
@@ -250,9 +255,9 @@ export function deleteForumThreadEntry({ forumThreadEntryId, modalName }: Delete
   };
 }
 
-function _deleteForumThreadEntry({ entry }: { entry: ForumThreadEntry }): AnyAction {
+function _deleteForumThreadEntry({ entry }: { entry: ForumThreadEntry }): ForumThreadActions {
   return {
-    type: reducer.actionTypes.DELETE_FORUM_THREAD,
+    type: DELETE_FORUM_THREAD,
     entry,
   };
 }

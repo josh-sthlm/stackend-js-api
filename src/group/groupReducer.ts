@@ -1,15 +1,18 @@
 // @flow
 import update from 'immutability-helper';
-import { GroupActions } from './groupActions';
+import {
+  GroupActions,
+  INVALIDATE_GROUPS,
+  RECEIVE_GROUP_MEMBERS,
+  RECEIVE_GROUPS,
+  RECEIVE_GROUPS_AUTH,
+  REQUEST_GROUPS
+} from './groupActions';
 import { Group, GroupMemberAuth } from '../group';
 import { AuthObject } from '../privileges';
-export const REQUEST_GROUPS = 'REQUEST_GROUPS';
-export const RECIEVE_GROUPS = 'RECIEVE_GROUPS';
-export const INVALIDATE_GROUPS = 'INVALIDATE_GROUPS';
-export const RECIEVE_GROUPS_AUTH = 'RECIEVE_GROUPS_AUTH';
-export const RECIEVE_GROUP_MEMBERS = 'RECIEVE_GROUP_MEMBERS';
 
-export interface GrouState {
+
+export interface GroupState {
   isFetching: boolean;
   didInvalidate: boolean;
   lastUpdated: number;
@@ -18,7 +21,7 @@ export interface GrouState {
   groupMembers: { [key: number]: Array<GroupMemberAuth> };
 }
 
-const initialState: GrouState = {
+const initialState: GroupState = {
   isFetching: false,
   didInvalidate: false,
   lastUpdated: Date.now(),
@@ -27,14 +30,14 @@ const initialState: GrouState = {
   groupMembers: {},
 };
 
-export default function groups(state: GrouState = initialState, action: GroupActions): GrouState {
+export default function groups(state: GroupState = initialState, action: GroupActions): GroupState {
   switch (action.type) {
     case REQUEST_GROUPS:
       return update(state, {
         isFetching: { $set: true },
         didInvalidate: { $set: false },
       });
-    case RECIEVE_GROUPS:
+    case RECEIVE_GROUPS:
       // FIXME: action.errors not passed on
       if (action.entries) {
         const uniqueGroupEntries: { [groupId: number]: Group } = {};
@@ -61,7 +64,7 @@ export default function groups(state: GrouState = initialState, action: GroupAct
         didInvalidate: { $set: true },
       });
 
-    case RECIEVE_GROUPS_AUTH:
+    case RECEIVE_GROUPS_AUTH:
       return update(state, {
         isFetching: { $set: false },
         didInvalidate: { $set: false },
@@ -69,7 +72,7 @@ export default function groups(state: GrouState = initialState, action: GroupAct
         auth: { $set: action.entries },
       });
 
-    case RECIEVE_GROUP_MEMBERS:
+    case RECEIVE_GROUP_MEMBERS:
       return update(state, {
         isFetching: { $set: false },
         didInvalidate: { $set: false },

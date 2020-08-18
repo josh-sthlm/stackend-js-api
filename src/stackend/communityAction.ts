@@ -1,18 +1,25 @@
 //@flow
 import {
   REQUEST_COMMUNITIES,
-  RECIEVE_COMMUNITIES,
+  RECEIVE_COMMUNITIES,
   UPDATE_COMMUNITY,
   SET_COMMUNITY_SETTINGS,
   REMOVE_COMMUNITIES,
   REMOVE_COMMUNITY,
-  RECEIVE_RESOURCE_USAGE,
+  RECEIVE_RESOURCE_USAGE, CommunityActions
 } from './communityReducer';
 
-import * as Stackend from '../stackend';
 import { Thunk } from '../api';
-import { Community } from '../stackend';
-import { AnyAction } from 'redux';
+import { Community, CommunityStatus, getCommunity, searchCommunity, storeCommunity } from '../stackend';
+
+
+export interface ResourceUsage {
+  maximumUseBeforeCharge: { [key: string]: number };
+  resourceUsageLast30Days: { [key: string]: number };
+  hasPaymentMethod: boolean;
+  isUserExcludedFromBilling: boolean;
+}
+
 
 /**
  * Load communities
@@ -21,29 +28,30 @@ import { AnyAction } from 'redux';
  * @author jens
  */
 
-type RecieveCommunities = {
+export type ReceiveCommunities = {
   results: {
     pageSize: number;
     page: number;
     entries: [any];
   };
+  statistics?: any;
 };
 
-export function recieveCommunities(json: RecieveCommunities): any {
+export function receiveCommunities(json: ReceiveCommunities): CommunityActions {
   return {
-    type: RECIEVE_COMMUNITIES,
+    type: RECEIVE_COMMUNITIES,
     json,
-    receievedAt: Date.now(),
+    receivedAt: Date.now(),
   };
 }
 
-export function requestCommunities(status: string): any {
+export function requestCommunities(status: string): CommunityActions {
   return {
     type: REQUEST_COMMUNITIES,
   };
 }
 
-export function loadCommunity(community: Stackend.Community, objectsRequiringModeration?: number): AnyAction {
+export function loadCommunity(community: Community, objectsRequiringModeration?: number): CommunityActions {
   return {
     type: SET_COMMUNITY_SETTINGS,
     community: community,
@@ -51,13 +59,13 @@ export function loadCommunity(community: Stackend.Community, objectsRequiringMod
   };
 }
 
-export function removeCommunities(): AnyAction {
+export function removeCommunities(): CommunityActions {
   return {
     type: REMOVE_COMMUNITIES,
   };
 }
 
-export function removeCommunity(): AnyAction {
+export function removeCommunity(): CommunityActions {
   return {
     type: REMOVE_COMMUNITY,
   };
@@ -65,12 +73,12 @@ export function removeCommunity(): AnyAction {
 
 export function fetchCommunity({ id, permalink }: { id?: number; permalink?: string }): Thunk<any> {
   return async (dispatch: any /*, getState: any*/): Promise<any> => {
-    const json = await dispatch(Stackend.getCommunity({ id, permalink }));
+    const json = await dispatch(getCommunity({ id, permalink }));
     return dispatch(loadCommunity(json.stackendCommunity));
   };
 }
 
-type FetchCommunities = {
+export type FetchCommunities = {
   myCommunities?: boolean;
   creatorUserId?: number;
   status?: string; // Module See Comments.CommentModule
@@ -87,15 +95,15 @@ export function fetchCommunities({
 }: FetchCommunities): Thunk<any> {
   return async (dispatch: any /*, getState: any*/): Promise<any> => {
     dispatch(requestCommunities(status));
-    const json = await dispatch(Stackend.searchCommunity({ myCommunities, creatorUserId, status, pageSize, p }));
-    return dispatch(recieveCommunities(json));
+    const json = await dispatch(searchCommunity({ myCommunities, creatorUserId, status, pageSize, p }));
+    return dispatch(receiveCommunities(json));
   };
 }
 
-function updateCommunity(community: Community): any {
+function updateCommunity(community: Community): CommunityActions {
   return {
     type: UPDATE_COMMUNITY,
-    receievedAt: Date.now(),
+    receivedAt: Date.now(),
     community,
   };
 }
@@ -105,7 +113,7 @@ export function editCommunity({
   name = '',
   permalink = '',
   description = '',
-  status = Stackend.CommunityStatus.VISIBLE,
+  status = CommunityStatus.VISIBLE,
   locale = 'en_US',
   domains = [],
 }: {
@@ -119,7 +127,7 @@ export function editCommunity({
 }): Thunk<any> {
   return async (dispatch: any /*, getState: any*/): Promise<any> => {
     const response = await dispatch(
-      Stackend.storeCommunity({ id, name, permalink, description, status, locale, domains })
+      storeCommunity({ id, name, permalink, description, status, locale, domains })
     );
 
     if (!!id && id !== 0) {
@@ -127,7 +135,7 @@ export function editCommunity({
     } else {
       //This is a new comment
       dispatch(
-        recieveCommunities({
+        receiveCommunities({
           results: {
             pageSize: 1,
             page: 1,
@@ -150,7 +158,7 @@ export function loadCommunitySettings({
 }): Thunk<any> {
   return async function (dispatch: any): Promise<any> {
     try {
-      const r = await dispatch(Stackend.getCommunity({ id, permalink, domain }));
+      const r = await dispatch(getCommunity({ id, permalink, domain }));
       if (r.stackendCommunity === null) {
         //console.log("couldn't find community: ",permalink)
         return;
@@ -162,7 +170,7 @@ export function loadCommunitySettings({
   };
 }
 
-export function receiveResourceUsage(json: any): AnyAction {
+export function receiveResourceUsage(json: ResourceUsage): CommunityActions {
   return {
     type: RECEIVE_RESOURCE_USAGE,
     maximumUseBeforeCharge: json.maximumUseBeforeCharge,

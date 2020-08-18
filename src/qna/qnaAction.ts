@@ -10,10 +10,10 @@ import {
 import * as Search from '../search';
 import * as searchActions from '../search/searchActions';
 import {
-	CHANGE_QNA_PAGE,
-	CHANGE_FILTER,
-	SET_QNA_AVAILABLE_FILTERS,
-	RECIEVE_SEARCH_RESULT
+  CHANGE_QNA_PAGE,
+  CHANGE_FILTER,
+  SET_QNA_AVAILABLE_FILTERS,
+  RECEIVE_SEARCH_RESULT, QnaActions
 } from './qnaReducer';
 import { isRunningInBrowser, Thunk, XcapJsonResult } from '../api';
 import { Request, getRequest } from '../request';
@@ -21,7 +21,7 @@ import { AnyAction } from 'redux';
 
 
 //Action Creator to change qnaPage using pageType, eg. "ViewForumThread" and permalink to question
-export function changeQnaPage(pageType: string, forumThreadPermalink: string): AnyAction {
+export function changeQnaPage(pageType: string, forumThreadPermalink: string): QnaActions {
 	return {
 		type: CHANGE_QNA_PAGE,
 		pageType,
@@ -95,7 +95,7 @@ export function changeFilter({
 			const newPath = Search.getSearchBaseUrl({ request }) + type + sortOrder + _filter;
 
 			if (!!filter.updateUrl && isRunningInBrowser() && newPath !== request.location.pathname) {
-			  // FIXME: browserHistor
+			  // FIXME: browserHistory
 				//browserHistory.push(newPath);
 			}
 
@@ -169,14 +169,14 @@ function setAvailableFilters(filters: {
 	};
 }
 
-function recieveSearchResult(result: {
+function receiveSearchResult(result: {
 	entries: Array<any>;
 	relatedObjects: Array<any>;
 	categoryCounts: { [key: number]: any };
 	error: boolean;
 }): AnyAction {
 	return {
-		type: RECIEVE_SEARCH_RESULT,
+		type: RECEIVE_SEARCH_RESULT,
 		result
 	};
 }
@@ -188,7 +188,7 @@ export function searchQna({ searchString, selectedFilters, game }: any) {
     const searchResult = await dispatch(_search({ ...qo, game }));
     if (typeof searchResult.error !== 'undefined') {
       return dispatch(
-        recieveSearchResult({
+        receiveSearchResult({
           entries: [],
           relatedObjects: [],
           categoryCounts: {},
@@ -197,7 +197,7 @@ export function searchQna({ searchString, selectedFilters, game }: any) {
       );
     } else {
       return dispatch(
-        recieveSearchResult({
+        receiveSearchResult({
           entries: searchResult.results.entries,
           relatedObjects: searchResult.__relatedObjects,
           categoryCounts: searchResult.categoryCounts,

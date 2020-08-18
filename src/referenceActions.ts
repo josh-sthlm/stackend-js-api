@@ -1,13 +1,13 @@
 // @flow
 import * as reducer from './referenceReducer';
 
-interface RecieveReferences {
+interface ReceiveReferences {
   entries: { [key: number]: any };
 }
 
-export function recieveReferences({ entries }: RecieveReferences): reducer.Recieve {
+export function receiveReferences({ entries }: ReceiveReferences): reducer.ReceiveAction {
   return {
-    type: reducer.RECIEVE_REFERENCES,
+    type: reducer.RECEIVE_REFERENCES,
     entries,
   };
 }

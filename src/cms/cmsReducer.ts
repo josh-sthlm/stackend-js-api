@@ -1,12 +1,11 @@
 //@flow
 
-import { Content } from '../cms';
+import { Content, GetContentResult } from '../cms';
 import { getJsonErrorText } from '../api';
-import { AnyAction } from 'redux';
 
 export const REQUEST_CONTENT = 'REQUEST_CONTENT';
-export const RECIEVE_CONTENT = 'RECIEVE_CONTENT';
-export const RECIEVE_CONTENTS = 'RECIEVE_CONTENTS';
+export const RECEIVE_CONTENT = 'RECEIVE_CONTENT';
+export const RECEIVE_CONTENTS = 'RECEIVE_CONTENTS';
 export const SET_CONTENT = 'SET_CONTENT';
 
 export interface CmsState {
@@ -14,9 +13,32 @@ export interface CmsState {
   [id: string]: Content;
 }
 
-export default function (state: CmsState = {}, action: AnyAction): CmsState {
+export interface RequestContentAction {
+  type: typeof REQUEST_CONTENT;
+}
+
+export interface ReceiveContentAction {
+  type: typeof RECEIVE_CONTENT;
+  id?: number | null;
+  permalink?: string | null;
+  json: GetContentResult;
+}
+
+export interface ReciveContentsAction {
+  type: typeof RECEIVE_CONTENTS;
+  contents: {[id: number]: Content};
+}
+
+export interface SetContentAction {
+  type: typeof SET_CONTENT;
+  content?: Content | null;
+}
+
+export type CmsActionTypes = RequestContentAction | ReceiveContentAction | ReciveContentsAction | SetContentAction;
+
+export default function (state: CmsState = {}, action: CmsActionTypes): CmsState {
   switch (action.type) {
-    case RECIEVE_CONTENT:
+    case RECEIVE_CONTENT:
       if (action.json.error) {
         console.error(
           'Could not get content ' +
@@ -37,7 +59,7 @@ export default function (state: CmsState = {}, action: AnyAction): CmsState {
       return state;
 
     // Recieve multiple contents
-    case RECIEVE_CONTENTS:
+    case RECEIVE_CONTENTS:
       if (!action.contents) {
         return state;
       }

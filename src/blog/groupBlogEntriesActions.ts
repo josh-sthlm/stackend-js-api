@@ -105,7 +105,7 @@ export function fetchBlogEntries({
       try {
         if (_.get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
           const myGroups = await dispatch(listMyGroups());
-          dispatch(groupActions.recieveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
+          dispatch(groupActions.receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
         }
       } catch (e) {
         console.error("Couldn't recieveGroupsAuth in fetchBlogEntries for " + blogKey + ': ', e);
@@ -115,7 +115,7 @@ export function fetchBlogEntries({
       // FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
       const groupRef = _.get(blogEntries, 'blog.groupRef');
       if (groupRef) {
-        await dispatch(groupActions.recieveGroups({ entries: groupRef }));
+        await dispatch(groupActions.receiveGroups({ entries: groupRef }));
       } else {
         console.error("Couldn't recieveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
       }
@@ -154,7 +154,7 @@ export function fetchBlogEntry({
       const auth = _.get(groups, 'auth', {});
       if (_.get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
         const json = await dispatch(listMyGroups());
-        await dispatch(groupActions.recieveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
+        await dispatch(groupActions.receiveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
       }
 
       const json = await dispatch(getEntry({ id, entryPermaLink: permalink, blogKey }));
@@ -246,7 +246,7 @@ function _fetchBlogEntry(blogKey: string, json: any): Thunk<any> {
   return (dispatch: any): Promise<any> => {
     const groupRef = _.get(json, 'blog.groupRef', _.get(json, 'blogEntry.blogRef.groupRef'));
     if (groupRef) {
-      dispatch(groupActions.recieveGroups({ entries: groupRef }));
+      dispatch(groupActions.receiveGroups({ entries: groupRef }));
     }
     const blogRef = _.get(json, 'blog', _.get(json, 'blogEntry.blogRef'));
     if (blogRef) {
