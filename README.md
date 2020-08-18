@@ -102,7 +102,7 @@ However, a call to loadInitialStoreValues is required to tell Stackend which sta
 import { createStore, combineReducers } from 'redux';
 import { BASE_REDUCERS } from '@stackend/api/reducers';
 import { getCurrentCommunity } from '@stackend/api';
-import { getEntries } from '@stackend/api/blog';
+import { getComments } from '@stackend/api/comments';
 
 const reducers = combineReducers(BASE_REDUCERS);    
 const store = createStore(reducers, {});
