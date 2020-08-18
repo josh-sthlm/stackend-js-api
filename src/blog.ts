@@ -239,9 +239,9 @@ export interface GetEntriesResult extends BlogEntryListingResult {
   userRsvpStatuses: any;
 
   /** Maps from event id to status to list */
-  rsvpUserIds: Map<string, Map<string, any>>;
+  rsvpUserIds: { [eventId: string]: { [status: string]: any }};
 
-  likesByCurrentUser: Map<string, any>;
+  likesByCurrentUser: LikeDataMap;
 
   categories: Array<Category>;
   blog: Blog | null;

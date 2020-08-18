@@ -147,7 +147,7 @@ export interface GetLikeToplistResult extends XcapJsonResult {
   toplist: PaginatedCollection<LikeObjectAndCount>;
 
   /** Maps from obfuscated reference like data */
-  likes: Map<string, LikeData>;
+  likes: LikeDataMap;
 
   /** Actual interval used */
   interval: string;

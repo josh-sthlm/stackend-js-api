@@ -178,7 +178,7 @@ export interface XcapJsonResult {
    * Related objects mapped from a hash string to the actual object.
    * Present only when a call is successful.
    */
-  __relatedObjects?: Map<string, any>;
+  __relatedObjects?: {[ref: string]: XcapObject};
 
   /** Additional properties specific to the called API method  */
   [propName: string]: any;
@@ -1545,18 +1545,18 @@ export interface GetInitialStoreValuesResult extends XcapJsonResult {
 
   /** Current user. Stackend user when running in /stacks */
   user: User | null;
-  xcapApiConfiguration: Map<string, any>;
+  xcapApiConfiguration: {[key: string]: any};
   numberOfUnseen: number;
   modules: { [id: string]: Module};
 
   /** Maps from id to content */
-  cmsContents: Map<string, Content>;
+  cmsContents: {[id: string]: Content};
 
   /** Maps from id to  Page */
-  cmsPages: Map<string, Page>;
+  cmsPages: {[id: string]: Page};
 
   /** Maps from id to  SubSite */
-  subSites: Map<string, SubSite>;
+  subSites: {[id: string]: SubSite};
 
   /** Maps the referenceUrl parameter to an id */
   referenceUrlId: number;

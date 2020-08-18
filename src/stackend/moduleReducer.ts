@@ -23,7 +23,7 @@ export interface ModuleState {
   didInvalidate?: boolean;
   lastUpdated?: number;
   modules?: Array<Module>;
-  stats?: Map<string, ModuleStats>;
+  stats?: {[id: string]: ModuleStats};
   communityId?: number;
   supportedModuleContexts?: Array<{
     context: string;

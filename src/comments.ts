@@ -121,7 +121,7 @@ export interface GetMultipleCommentsResult extends XcapJsonResult {
   likesByCurrentUser: LikesByCurrentUser;
 
   /** Maps from reference id to comments */
-  comments: Map<string, PaginatedCollection<Comment>>;
+  comments: { [referenceId: string]: PaginatedCollection<Comment> };
 
   minutesToEdit: number;
 }

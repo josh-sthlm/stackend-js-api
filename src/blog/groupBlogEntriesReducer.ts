@@ -8,25 +8,19 @@ import { getJsonErrorText } from '../api';
 import { REACT_ROUTER_REDUX_LOCATION_CHANGE } from '../request/requestReducers';
 import { logger } from '../api';
 import { BlogEntry, GetEntriesResult } from '../blog';
+import { LikeDataMap } from '../like';
 
 //Action Type
 export const REQUEST_GROUP_BLOG_ENTRIES = 'REQUEST_GROUP_BLOG_ENTRIES';
-export const RECIEVE_GROUP_BLOG_ENTRIES = 'RECIEVE_GROUP_BLOG_ENTRIES';
+export const RECEIVE_GROUP_BLOG_ENTRIES = 'RECEIVE_GROUP_BLOG_ENTRIES';
 export const INVALIDATE_GROUP_BLOG_ENTRIES = 'INVALIDATE_GROUP_BLOG_ENTRIES';
 export const TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY = 'TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY';
 export const CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY = 'CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY';
 export const UPDATE_GROUP_BLOG_ENTRY = 'UPDATE_GROUP_BLOG_ENTRY';
 
-export type GroupBlogEntriesActions = Recieve | Update | Request | Invalidate;
-export type GroupBlogEntriesActionTypes =
-  | 'INVALIDATE_GROUP_BLOG_ENTRIES'
-  | 'RECIEVE_GROUP_BLOG_ENTRIES'
-  | 'REQUEST_GROUP_BLOG_ENTRIES'
-  | 'TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY'
-  | 'CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY'
-  | 'UPDATE_GROUP_BLOG_ENTRY';
+export type GroupBlogEntriesActions = Receive | Update | Request | Invalidate;
 
-type BlogKey = string; //ex: king/blog
+type BlogKey = string; //ex: groups/news
 
 export interface GroupBlogEntriesState {
   [BlogKey: string]: {
@@ -38,40 +32,45 @@ export interface GroupBlogEntriesState {
       };
       userRsvpStatuses: any;
       likesByCurrentUser: any;
+      likes: LikeDataMap;
       blogId: number;
     };
     lastUpdated: number;
   };
 }
 
-interface Recieve {
-  type: 'RECIEVE_GROUP_BLOG_ENTRIES';
+interface Receive {
+  type: typeof RECEIVE_GROUP_BLOG_ENTRIES;
   blogKey: BlogKey;
-  receievedAt: number;
+  receivedAt: number;
   json: GetEntriesResult;
 }
 
-interface Update {
-  type: 'UPDATE_GROUP_BLOG_ENTRY';
-  blogKey: BlogKey;
-  receievedAt: number;
-  json: {
-    blogId: number;
-    resultPaginated: {
-      entries: Array<blogApi.BlogEntry>;
-    };
-    userRsvpStatuses: any;
-    likesByCurrentUser: any;
+export type UpdateBlogEntry = {
+  blogId?: number;
+  resultPaginated: {
+    entries: Array<BlogEntry>;
   };
+  userRsvpStatuses?: any;
+  likesByCurrentUser?: any;
 }
 
+interface Update {
+  type: typeof UPDATE_GROUP_BLOG_ENTRY;
+  blogKey: BlogKey;
+  receivedAt: number;
+  json: UpdateBlogEntry;
+}
+
+
+
 interface Request {
-  type: 'REQUEST_GROUP_BLOG_ENTRIES';
+  type: typeof REQUEST_GROUP_BLOG_ENTRIES;
   blogKey: BlogKey;
 }
 
 interface Invalidate {
-  type: 'INVALIDATE_GROUP_BLOG_ENTRIES';
+  type: typeof INVALIDATE_GROUP_BLOG_ENTRIES;
   blogKey: BlogKey;
 }
 
@@ -92,9 +91,9 @@ export const groupBlogEntries = createReducer(
         },
       }),
 
-    RECIEVE_GROUP_BLOG_ENTRIES: (state: GroupBlogEntriesState, action: Recieve) => {
+    RECEIVE_GROUP_BLOG_ENTRIES: (state: GroupBlogEntriesState, action: Receive) => {
       if (action.json.error) {
-        logger.warn(RECIEVE_GROUP_BLOG_ENTRIES, 'Error:', action.blogKey, getJsonErrorText(action.json));
+        logger.warn(RECEIVE_GROUP_BLOG_ENTRIES, 'Error:', action.blogKey, getJsonErrorText(action.json));
 
         return update(state, {
           [action.blogKey]: {
@@ -102,9 +101,9 @@ export const groupBlogEntries = createReducer(
               update(context || {}, {
                 isFetching: { $set: false },
                 didInvalidate: { $set: false },
-                lastUpdated: { $set: action.receievedAt },
+                lastUpdated: { $set: action.receivedAt },
                 // @ts-ignore
-                json: { $merge: { resultPagined: { page: 1, totalSize: 0, entries: [] } } },
+                json: { $merge: { resultPaginated: { page: 1, totalSize: 0, entries: [] } } },
                 error: { $set: action.json.error },
               }),
           },
@@ -126,7 +125,7 @@ export const groupBlogEntries = createReducer(
 
       const uniqueBlogEntries = _.concat(origEntries, addEntries);
 
-      //console.log("RECIEVE_GROUP_BLOG_ENTRIES", action.json);
+      //console.log("RECEIVE_GROUP_BLOG_ENTRIES", action.json);
 
       return update(state, {
         [action.blogKey]: {
@@ -134,7 +133,7 @@ export const groupBlogEntries = createReducer(
             update(context || {}, {
               isFetching: { $set: false },
               didInvalidate: { $set: false },
-              lastUpdated: { $set: action.receievedAt },
+              lastUpdated: { $set: action.receivedAt },
               json: {
                 $apply: (context): any =>
                   update(Object.assign({}, context, action.json), {
@@ -147,6 +146,7 @@ export const groupBlogEntries = createReducer(
         },
       });
     },
+
     INVALIDATE_GROUP_BLOG_ENTRIES: (state: GroupBlogEntriesState, action: Invalidate) => {
       return {
         ...state,
@@ -157,6 +157,7 @@ export const groupBlogEntries = createReducer(
         },
       };
     },
+
     UPDATE_GROUP_BLOG_ENTRY: (state: GroupBlogEntriesState, action: Update) => {
       // Last index is the updated entry
       const updatedBlogEntry = action.json.resultPaginated.entries[action.json.resultPaginated.entries.length - 1];
@@ -168,7 +169,7 @@ export const groupBlogEntries = createReducer(
         [action.blogKey]: {
           isFetching: { $set: false },
           didInvalidate: { $set: false },
-          lastUpdated: { $set: action.receievedAt },
+          lastUpdated: { $set: action.receivedAt },
           json: {
             resultPaginated: {
               entries: {
@@ -186,15 +187,19 @@ export default groupBlogEntries;
 
 type OpenBlogEntryWriteCommentSection = false | { blogEntryId: number; editorType: 'EDIT' | 'COMMENT' };
 
-export interface OpenBlogEntryWriteCommentSectionAction {
-  type: string;
+export type OpenBlogEntryWriteCommentSectionActions = {
+  type: typeof TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY;
   blogEntryId: number;
   editorType: 'EDIT' | 'COMMENT';
+} | {
+  type: typeof REACT_ROUTER_REDUX_LOCATION_CHANGE;
+} | {
+  type: typeof CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY;
 }
 
 export function openBlogEntryWriteCommentSection(
   state: OpenBlogEntryWriteCommentSection = false,
-  action: OpenBlogEntryWriteCommentSectionAction
+  action: OpenBlogEntryWriteCommentSectionActions
 ): OpenBlogEntryWriteCommentSection {
   switch (action.type) {
     case TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY:

@@ -413,7 +413,7 @@ export function storeCommunityPrivateSettings({
 }: {
   key?: string | null;
   value?: any | null;
-  values?: Map<string, any>;
+  values?: {[name: string]: any};
   community?: string | null;
 }): Thunk<XcapJsonResult> {
   const x = {
@@ -472,7 +472,7 @@ export function removeCommunity({
 
 export interface SearchCommunityResult extends XcapJsonResult {
   results: PaginatedCollection<Community>;
-  statistics: Map<string, CommunityStats>;
+  statistics: {[id: string]: CommunityStats};
 }
 
 /**
@@ -817,7 +817,7 @@ export interface GetModulesResult extends XcapJsonResult {
     supportsMultipleModules: boolean;
   }>;
 
-  stats: Map<string, ModuleStats>;
+  stats: {[id: string]: ModuleStats};
 }
 
 /**

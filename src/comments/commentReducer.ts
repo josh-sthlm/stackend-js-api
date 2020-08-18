@@ -30,7 +30,7 @@ export type CommentsActions = {
     type: typeof RECEIVE_GROUP_COMMENTS;
     module: string;
     referenceGroupId: number;
-    receievedAt: number;
+    receivedAt: number;
     json: {
       comments: any;
       likesByCurrentUser: any;
@@ -49,15 +49,15 @@ export type CommentsActions = {
   module: string;
   referenceId: number;
   referenceGroupId: number;
-  receievedAt: number;
-  json: commentAction.RecieveCommentsJson;
+  receivedAt: number;
+  json: commentAction.ReceiveCommentsJson;
 } | {
   type: typeof UPDATE_COMMENT;
   id: number;
   module: string;
   referenceId: number;
   referenceGroupId: number;
-  receievedAt: number;
+  receivedAt: number;
   json: commentsApi.Comment;
 };
 
@@ -119,7 +119,7 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
           [key]: {
             isFetching: false,
             didInvalidate: false,
-            lastUpdated: action.receievedAt,
+            lastUpdated: action.receivedAt,
             json,
           },
         });
@@ -128,7 +128,7 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
           [key]: {
             isFetching: false,
             didInvalidate: false,
-            lastUpdated: action.receievedAt,
+            lastUpdated: action.receivedAt,
             json: action.json,
           },
         });
@@ -174,14 +174,14 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
           [key]: {
             isFetching: { $set: false },
             didInvalidate: { $set: false },
-            lastUpdated: { $set: action.receievedAt },
+            lastUpdated: { $set: action.receivedAt },
             json: {
               comments: {
                 [referenceId]: {
                   $set: {
                     isFetching: false,
                     didInvalidate: false,
-                    lastUpdated: action.receievedAt,
+                    lastUpdated: action.receivedAt,
                     error: action.json.error,
                   },
                 },
@@ -219,7 +219,7 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
       const x = update(action.json.comments, {
         isFetching: { $set: false },
         didInvalidate: { $set: false },
-        lastUpdated: { $set: action.receievedAt },
+        lastUpdated: { $set: action.receivedAt },
         // @ts-ignore
         entries: { $set: referenceIdUniqueComments },
       });
@@ -232,7 +232,7 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         [key]: {
           isFetching: { $set: false },
           didInvalidate: { $set: false },
-          lastUpdated: { $set: action.receievedAt },
+          lastUpdated: { $set: action.receivedAt },
           json: {
             likesByCurrentUser: { $merge: action.json.likesByCurrentUser },
             comments: {
@@ -258,7 +258,7 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         [key]: {
           isFetching: { $set: false },
           didInvalidate: { $set: false },
-          lastUpdated: { $set: action.receievedAt },
+          lastUpdated: { $set: action.receivedAt },
           json: {
             comments: {
               [action.referenceId]: {

@@ -1,23 +1,20 @@
 //@flow
 import * as reducer from './blogReducer';
 import { Blog } from '../blog';
-import { AnyAction } from 'redux';
+import { BlogActions } from './blogReducer';
 
-export interface ReceiveBlogs {
-  entries: Array<Blog>;
-}
 
-export function recieveBlogs({ entries }: ReceiveBlogs): AnyAction {
+export function receiveBlogs({ entries }: { entries: Array<Blog> }): BlogActions {
   return {
-    type: reducer.RECIEVE_BLOGS,
+    type: reducer.RECEIVE_BLOGS,
     entries,
   };
 }
 
-export function requestBlogs(): AnyAction {
+export function requestBlogs(): BlogActions {
   return { type: reducer.REQUEST_BLOGS };
 }
 
-export function invalidateBlogs(): AnyAction {
+export function invalidateBlogs(): BlogActions {
   return { type: reducer.INVALIDATE_BLOGS };
 }

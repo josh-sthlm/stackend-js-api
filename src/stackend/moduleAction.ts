@@ -19,7 +19,7 @@ export function receiveModules(json: {
     componentClass: string;
     supportsMultipleModules: boolean;
   }>;
-  stats?: Map<string, ModuleStats>;
+  stats?: {[id: string]: ModuleStats};
 }): ModuleActions {
     return {
       type: RECEIVE_MODULES,

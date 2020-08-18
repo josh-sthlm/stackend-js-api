@@ -4,7 +4,7 @@ import update from 'immutability-helper';
 import { Blog } from '../blog';
 
 export const REQUEST_BLOGS = 'REQUEST_BLOGS';
-export const RECIEVE_BLOGS = 'RECIEVE_BLOGS';
+export const RECEIVE_BLOGS = 'RECEIVE_BLOGS';
 export const INVALIDATE_BLOGS = 'INVALIDATE_BLOGS';
 
 export interface BlogState {
@@ -14,10 +14,10 @@ export interface BlogState {
   entries: { [blogId: number]: Blog }; //entries is an object with blogId: blog
 }
 
-export type Action =
-  | { type: 'REQUEST_BLOGS' }
-  | { type: 'RECIEVE_BLOGS'; entries: Array<Blog> }
-  | { type: 'INVALIDATE_BLOGS' };
+export type BlogActions =
+  | { type: typeof REQUEST_BLOGS }
+  | { type: typeof RECEIVE_BLOGS; entries: Array<Blog> }
+  | { type: typeof INVALIDATE_BLOGS };
 
 export default function blogs(
   state: BlogState = {
@@ -26,7 +26,7 @@ export default function blogs(
     entries: {},
     lastUpdated: Date.now(),
   },
-  action: Action
+  action: BlogActions
 ): BlogState {
   switch (action.type) {
     case REQUEST_BLOGS:
@@ -35,9 +35,9 @@ export default function blogs(
         didInvalidate: { $set: false },
       });
 
-    case RECIEVE_BLOGS: {
+    case RECEIVE_BLOGS: {
       const newBlogs: { [id: number]: Blog } = {};
-      (action.entries as Array<Blog>).map(group => (newBlogs[group.id] = group));
+      action.entries.map(group => (newBlogs[group.id] = group));
 
       return update(state, {
         isFetching: { $set: false },

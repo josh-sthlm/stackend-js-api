@@ -1,16 +1,16 @@
 // @flow
 import {
-	CLOSE_REPLY_BOX,
-	INVALIDATE_GROUP_COMMENTS,
-	OPEN_REPLY_BOX,
-	RECEIVE_COMMENTS,
-	RECEIVE_GROUP_COMMENTS,
-	REQUEST_COMMENTS,
-	REQUEST_GROUP_COMMENTS,
-	TOGGLE_COMMENT_SECTION,
-	TOGGLE_EDIT_COMMENT,
-	TOGGLE_REPLY_BOX,
-	UPDATE_COMMENT
+  CLOSE_REPLY_BOX, CommentsActions,
+  INVALIDATE_GROUP_COMMENTS,
+  OPEN_REPLY_BOX,
+  RECEIVE_COMMENTS,
+  RECEIVE_GROUP_COMMENTS,
+  REQUEST_COMMENTS,
+  REQUEST_GROUP_COMMENTS,
+  TOGGLE_COMMENT_SECTION,
+  TOGGLE_EDIT_COMMENT,
+  TOGGLE_REPLY_BOX,
+  UPDATE_COMMENT
 } from './commentReducer';
 import * as blogActions from '../blog/groupBlogEntriesActions';
 import {
@@ -21,7 +21,7 @@ import {
 } from '../comments'
 import { Thunk } from '../api';
 //import { sendEventToGA } from '../analytics/analyticsFunctions';
-import { recieveVotes } from '../vote/voteActions';
+import { receiveVotes } from '../vote/voteActions';
 import { AnyAction } from 'redux';
 
 const DEFAULT_PAGE_SIZE = 3;
@@ -52,19 +52,23 @@ export function getCommentsStateKey(module: string, referenceGroupId: number): s
  * @author pelle
  */
 
-//When loading comments recieve is run when the server has responded
-function recieveGroupComments(module: string, referenceGroupId: number, json: string): AnyAction {
+//When loading comments receive is run when the server has responded
+function receiveGroupComments(module: string, referenceGroupId: number,
+                              json: {
+  comments: any;
+  likesByCurrentUser: any;
+}): CommentsActions {
 	return {
 		type: RECEIVE_GROUP_COMMENTS,
 		module,
 		referenceGroupId,
 		json,
-		receievedAt: Date.now()
+		receivedAt: Date.now()
 	};
 }
 
 //Request comments from the server
-function requestGroupComments(module: string, referenceGroupId: number): AnyAction {
+function requestGroupComments(module: string, referenceGroupId: number): CommentsActions {
 	return {
 		type: REQUEST_GROUP_COMMENTS,
 		module,
@@ -72,7 +76,7 @@ function requestGroupComments(module: string, referenceGroupId: number): AnyActi
 	};
 }
 
-//Requests and recieve comments and store them in redux-state
+//Requests and receive comments and store them in redux-state
 export function fetchMultipleComments({
 	module,
 	referenceIds,
@@ -89,12 +93,12 @@ export function fetchMultipleComments({
 	return async (dispatch: any): Promise<GetMultipleCommentsResult> => {
 		dispatch(requestGroupComments(module, referenceGroupId));
 		const json = await dispatch(getMultipleComments({ module, referenceIds, pageSize, p }));
-		dispatch(recieveGroupComments(module, referenceGroupId, json));
+		dispatch(receiveGroupComments(module, referenceGroupId, json));
 		return json;
 	};
 }
 
-export interface RecieveCommentsJson {
+export interface ReceiveCommentsJson {
 	comments: {
 		entries: [Comment];
 	};
@@ -103,25 +107,25 @@ export interface RecieveCommentsJson {
 }
 
 
-//When loading comments recieve is run when the server has responded
-function recieveComments(
+//When loading comments receive is run when the server has responded
+function receiveComments(
 	module: string,
 	referenceId: number,
 	referenceGroupId: number,
-	json: RecieveCommentsJson
-): AnyAction {
+	json: ReceiveCommentsJson
+): CommentsActions {
 	return {
 		type: RECEIVE_COMMENTS,
 		module,
 		referenceId,
 		referenceGroupId,
-		receievedAt: Date.now(),
+		receivedAt: Date.now(),
 		json
 	};
 }
 
 //Request comments from the server
-function requestComments(module: string, referenceId: number, referenceGroupId: number): any {
+function requestComments(module: string, referenceId: number, referenceGroupId: number): CommentsActions {
 	return {
 		type: REQUEST_COMMENTS,
 		module,
@@ -135,9 +139,9 @@ export function invalidateComments({
 	module,
 	referenceGroupId
 }: {
-	module?: string;
+	module: string;
 	referenceGroupId: number;
-}): any {
+}): CommentsActions {
 	return {
 		type: INVALIDATE_GROUP_COMMENTS,
 		module,
@@ -145,21 +149,21 @@ export function invalidateComments({
 	};
 }
 
-//When loading comments recieve is run when the server has responded
+//When loading comments receive is run when the server has responded
 function updateComment(
 	id: number,
 	module: string,
 	referenceId: number,
 	referenceGroupId: number,
 	json: Comment
-): any {
+): CommentsActions {
 	return {
 		type: UPDATE_COMMENT,
 		id,
 		referenceId,
 		referenceGroupId,
 		module,
-		receievedAt: Date.now(),
+		receivedAt: Date.now(),
 		json
 	};
 }
@@ -199,12 +203,12 @@ export function fetchComments({
 
 			if (voteSummary) {
 				dispatch(
-					recieveVotes(module ? module : 'comments', voteSummary, votes, hasVoted, myReview)
+					receiveVotes(module ? module : 'comments', voteSummary, votes, hasVoted, myReview)
 				);
 			}
 
 			return dispatch(
-				recieveComments(module, referenceId, referenceGroupId, {
+				receiveComments(module, referenceId, referenceGroupId, {
 					comments,
 					likesByCurrentUser,
 					error
@@ -284,7 +288,7 @@ export function postComment({
 			);
 
 			const commentJson = dispatch(
-				recieveComments(module, referenceId, referenceGroupId, {
+				receiveComments(module, referenceId, referenceGroupId, {
 					comments: {
 						entries: [response.comment]
 					},

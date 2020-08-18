@@ -1,20 +1,19 @@
 //@flow
 
-import { XCAP_VOTES_RECIEVED, XCAP_VOTES_UPDATE } from './voteReducer';
+import { VoteActions, XCAP_VOTES_RECEIVED, XCAP_VOTES_UPDATE } from './voteReducer';
 import { Vote, VoteSummary } from '../vote';
 import { VoteInfo } from './voteReducer';
 import { Comment } from '../comments';
-import { AnyAction } from 'redux';
 
-export function recieveVotes(
+export function receiveVotes(
 	context: string,
 	voteSummary: VoteSummary,
-	votes: Map<number, Vote>,
+	votes: { [id: number]: Vote},
 	hasVoted?: boolean,
 	myReview?: Comment | null
-): AnyAction {
+): VoteActions {
 	return {
-		type: XCAP_VOTES_RECIEVED,
+		type: XCAP_VOTES_RECEIVED,
 		context,
 		voteSummary,
 		votes,
@@ -29,7 +28,7 @@ export function updateVotes(
 	voteSummary: VoteSummary,
 	hasVoted?: boolean,
 	myReview?: Comment | null
-): AnyAction {
+): VoteActions {
 	return {
 		type: XCAP_VOTES_UPDATE,
 		context,

@@ -3,8 +3,23 @@ import { VoteSummary, Vote } from '../vote';
 import update from 'immutability-helper';
 import { Comment } from '../comments';
 
-export const XCAP_VOTES_RECIEVED = 'XCAP_VOTES_RECIEVED';
+export const XCAP_VOTES_RECEIVED = 'XCAP_VOTES_RECEIVED';
 export const XCAP_VOTES_UPDATE = 'XCAP_VOTES_UPDATE';
+
+type VoteActionBase = {
+  context: string;
+  hasVoted?: boolean;
+  myReview?: Comment | null;
+  voteSummary: VoteSummary;
+}
+export type VoteActions =  VoteActionBase & {
+  type: typeof XCAP_VOTES_RECEIVED;
+  votes: { [referenceGroupId: number]: Vote };
+} | VoteActionBase & {
+  type: typeof XCAP_VOTES_UPDATE;
+  vote: Vote;
+};
+
 
 export interface VoteInfo {
   voteSummary: VoteSummary;
@@ -89,10 +104,10 @@ function updateVotes({
 }
 
 
-const voteReducer = (state: VoteState = {}, action: any): VoteState => {
+const voteReducer = (state: VoteState = {}, action: VoteActions): VoteState => {
   let c = state;
   switch (action.type) {
-    case XCAP_VOTES_RECIEVED:
+    case XCAP_VOTES_RECEIVED:
       c = updateVotes({
         state,
         context: action.context,

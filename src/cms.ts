@@ -517,7 +517,7 @@ export type SubSite = Tree;
 
 export interface GetSubSiteResult extends XcapJsonResult {
   tree: SubSite | null;
-  referencedObjects: Map<string, any>;
+  referencedObjects: {[ref: string]: any};
 }
 
 export function getSubSite({ id }: { id: number }): Thunk<GetSubSiteResult> {

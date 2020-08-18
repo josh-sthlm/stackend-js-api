@@ -285,9 +285,9 @@ export interface ListMyGroupsResult extends XcapJsonResult {
   groups: PaginatedCollection<Group>;
 
   /** Maps from group id */
-  groupAuth: Map<string, AuthObject>;
+  groupAuth: { [id: string]: AuthObject };
 
-  groupTypes: Map<string, number>;
+  groupType: { [id: string]: number };
 }
 
 /**

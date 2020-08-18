@@ -408,12 +408,12 @@ export interface UploadMediaFileResult {
   /**
    * Maps from media id to thumbnail. Only present if the thumbnail parameter is set.
    */
-  thumbnails?: Map<string, Thumbnail>;
+  thumbnails?: {[id: string]: Thumbnail};
 
   /**
    * Maps from media id to html used for embedding the media object
    */
-  html: Map<string, string>;
+  html: { [id: string]: string};
 }
 
 /**
@@ -486,7 +486,7 @@ export function uploadMediaFile({
 
 export interface ListResult extends XcapJsonResult {
   mediaPaginated: PaginatedCollection<MediaObject>;
-  thumbnailsByMediaId?: Map<string, Thumbnail> | null;
+  thumbnailsByMediaId?: {[mediaId: string]: Thumbnail} | null;
 }
 
 /**

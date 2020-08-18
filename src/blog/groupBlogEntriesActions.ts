@@ -11,11 +11,11 @@ import * as commentApi from '../comments';
 
 import {
   INVALIDATE_GROUP_BLOG_ENTRIES,
-  RECIEVE_GROUP_BLOG_ENTRIES,
+  RECEIVE_GROUP_BLOG_ENTRIES,
   REQUEST_GROUP_BLOG_ENTRIES,
   TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
   CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY,
-  UPDATE_GROUP_BLOG_ENTRY,
+  UPDATE_GROUP_BLOG_ENTRY, GroupBlogEntriesActions, UpdateBlogEntry, OpenBlogEntryWriteCommentSectionActions
 } from './groupBlogEntriesReducer';
 
 import {
@@ -29,7 +29,6 @@ import {
   //gaPostEventObject,
   //gaEditPostEventObject
 } from '../blog';
-import { AnyAction } from 'redux';
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**
@@ -39,39 +38,41 @@ import { AnyAction } from 'redux';
  * @author pelle
  */
 
-//When loading comments recieve is run when the server has responded
-function recieveBlogEntries(blogKey: string, json: GetEntriesResult): AnyAction {
+//When loading comments receive is run when the server has responded
+function receiveBlogEntries(blogKey: string, json: GetEntriesResult): GroupBlogEntriesActions {
   return {
-    type: RECIEVE_GROUP_BLOG_ENTRIES,
+    type: RECEIVE_GROUP_BLOG_ENTRIES,
     blogKey,
     json,
-    receievedAt: Date.now(),
+    receivedAt: Date.now(),
   };
 }
 
-//When loading comments recieve is run when the server has responded
-export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): AnyAction {
+//When loading comments receive is run when the server has responded
+export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): GroupBlogEntriesActions {
   return {
     type: INVALIDATE_GROUP_BLOG_ENTRIES,
-    blogKey,
-    receievedAt: Date.now(),
+    blogKey
   };
 }
 
 //Request comments from the server
-function requestBlogEntries(blogKey: string): AnyAction {
+function requestBlogEntries(blogKey: string): GroupBlogEntriesActions {
   return {
     type: REQUEST_GROUP_BLOG_ENTRIES,
     blogKey,
   };
 }
+
+
+
 //Update already existing blog entry
-function updateBlogEntry(blogKey: string, json: { resultPaginated: { entries: [BlogEntry] } }): AnyAction {
+function updateBlogEntry(blogKey: string, json: UpdateBlogEntry): GroupBlogEntriesActions {
   return {
     type: UPDATE_GROUP_BLOG_ENTRY,
     blogKey,
     json,
-    receievedAt: Date.now(),
+    receivedAt: Date.now(),
   };
 }
 
@@ -108,7 +109,7 @@ export function fetchBlogEntries({
           dispatch(groupActions.receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
         }
       } catch (e) {
-        console.error("Couldn't recieveGroupsAuth in fetchBlogEntries for " + blogKey + ': ', e);
+        console.error("Couldn't receiveGroupsAuth in fetchBlogEntries for " + blogKey + ': ', e);
       }
 
       const blogEntries = await dispatch(getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry }));
@@ -117,18 +118,18 @@ export function fetchBlogEntries({
       if (groupRef) {
         await dispatch(groupActions.receiveGroups({ entries: groupRef }));
       } else {
-        console.error("Couldn't recieveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
+        console.error("Couldn't receiveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
       }
       const blogRef = _.get(blogEntries, 'blog');
       if (blogRef) {
-        await dispatch(blogActions.recieveBlogs({ entries: blogRef }));
+        await dispatch(blogActions.receiveBlogs({ entries: [blogRef] }));
       } else {
-        console.error("Couldn't recieveBlogs in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
+        console.error("Couldn't receiveBlogs in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
       }
       if (invalidatePrevious) {
         await dispatch(cleanCacheBlogEntries({ blogKey }));
       }
-      return dispatch(recieveBlogEntries(blogKey, blogEntries));
+      return dispatch(receiveBlogEntries(blogKey, blogEntries));
     } catch (e) {
       console.error("Couldn't fetchBlogEntries for " + blogKey + ': ', e);
     }
@@ -250,11 +251,11 @@ function _fetchBlogEntry(blogKey: string, json: any): Thunk<any> {
     }
     const blogRef = _.get(json, 'blog', _.get(json, 'blogEntry.blogRef'));
     if (blogRef) {
-      dispatch(blogActions.recieveBlogs({ entries: blogRef }));
+      dispatch(blogActions.receiveBlogs({ entries: blogRef }));
     }
 
     return dispatch(
-      recieveBlogEntries(blogKey, {
+      receiveBlogEntries(blogKey, {
         // @ts-ignore
         resultPaginated: {
           entries: [json.blogEntry],
@@ -316,8 +317,7 @@ export function postBlogEntry({
       //Add new blogEntry
       // FIXME: Re add ga
       //dispatch(sendEventToGA(gaPostEventObject({ blogEntry: response.entry })));
-      // @ts-ignore
-      return dispatch(recieveBlogEntries(blogKey, state));
+      return dispatch(receiveBlogEntries(blogKey, state as GetEntriesResult));
     }
   };
 }
@@ -336,7 +336,7 @@ export function toggleWriteCommentOrEdit({
 }: {
   blogEntryId: number; //BlogEntry id
   editorType: 'EDIT' | 'COMMENT';
-}): AnyAction {
+}): OpenBlogEntryWriteCommentSectionActions {
   return {
     type: TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
     blogEntryId,
@@ -344,6 +344,6 @@ export function toggleWriteCommentOrEdit({
   };
 }
 
-export function closeWriteCommentOrEdit(): AnyAction {
+export function closeWriteCommentOrEdit(): OpenBlogEntryWriteCommentSectionActions {
   return { type: CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY };
 }

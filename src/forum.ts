@@ -185,7 +185,7 @@ export interface ListThreadsResult extends XcapJsonResult {
   forumPermalink: string | null;
   forumThreadPermalink: string | null;
   likes: LikeDataMap;
-  votes: Map<string, any>;
+  votes: { [referenceId: string]: any};
   pageSize: number;
   p: number;
 }
