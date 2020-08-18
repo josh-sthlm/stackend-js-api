@@ -22,12 +22,12 @@ import modules from "./stackend/moduleReducer";
 import vote from "./vote/voteReducer";
 import GroupComments from "./comments/commentReducer";
 import throbber from "./throbber/throbberReducer";
-
+import { Reducer } from 'redux';
 
 /**
  * Minimum set of reducers with their expected names
  */
-export const BASE_REDUCERS:any = {
+export const BASE_REDUCERS: {[name: string]: Reducer<any, any>} = {
     config,
     currentUser,
     references,
@@ -41,7 +41,7 @@ export const BASE_REDUCERS:any = {
 /**
  * All Stackend reducers and their expected names.
  */
-export const ALL_REDUCERS = {
+export const STANDARD_REDUCERS: {[name: string]: Reducer<any, any>} = {
     ...BASE_REDUCERS,
 
     // Blog
@@ -67,4 +67,3 @@ export const ALL_REDUCERS = {
     shop,
     vote,
 };
-

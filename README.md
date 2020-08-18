@@ -79,17 +79,24 @@ The built in stackend configuration should be usable by any project and may be l
   }
  } 
 ```
-The code uses [redux](https://www.npmjs.com/package/redux) to keep application state. To get started with stackend, you need to first set up a redux store using the reducers from reducers.ts. **Note:** If your application also uses redux, please do not combine the stores into one single instance.
+The code uses [redux](https://www.npmjs.com/package/redux) to keep application state. 
+To get started with stackend, you need to first set up a redux store using the reducers from reducers.ts. 
+**Note:** If your application also uses redux, please do not combine the stores into one single instance as the action types may clash.
 
 ```javascript
-import { createStore, combineReducers } from 'redux';
-import { ALL_REDUCERS } from '@stackend/api/reducers';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { thunk } from 'redux-thunk';
+import { STANDARD_REDUCERS } from '@stackend/api/reducers';
 import { loadInitialStoreValues } from '@stackend/api/xcapActions';
 import { getCurrentCommunity } from '@stackend/api';
     
 // Possibly add your own reducers and middleware here
-const reducers = combineReducers(ALL_REDUCERS);    
-const store = createStore(reducers, {});
+
+const store = createStore(
+    combineReducers(STANDARD_REDUCERS),
+    { },
+    compose(applyMiddleware(thunk))
+  );
     
 // Initialize stackend with your community permalink
 await store.dispatch(loadInitialStoreValues({
@@ -98,30 +105,6 @@ await store.dispatch(loadInitialStoreValues({
 
 // Get the community data
 const community = await store.dispatch(getCurrentCommunity());
-console.log("Community": community);
+console.log("Community", community);
 ```
 
-A redux store is always required to run Stackend. But it is possible to mostly ignore it and run your the bare API calls directly, if desired.
-However, a call to loadInitialStoreValues is required to tell Stackend which stack to use:
-
-```javascript
-import { createStore, combineReducers } from 'redux';
-import { BASE_REDUCERS } from '@stackend/api/reducers';
-import { getCurrentCommunity } from '@stackend/api';
-import { getComments } from '@stackend/api/comments';
-
-const reducers = combineReducers(BASE_REDUCERS);    
-const store = createStore(reducers, {});
-
-// Initialize stackend with your community permalink
-await store.dispatch(loadInitialStoreValues({
-  permalink: 'stackend-com'
-}));
-
-// Omit the redux store and directly call an API method
-const comments = await getComments({
-  referenceId: 1
-});
-console.log("Comments: ", comments);
-
-```

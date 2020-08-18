@@ -1,47 +1,21 @@
 //@flow
 
-import { createStore, compose, applyMiddleware, combineReducers, Action } from 'redux';
+import { createStore, compose, applyMiddleware, combineReducers, Store } from 'redux';
 import thunk from 'redux-thunk';
-import { ALL_REDUCERS } from '../src/reducers';
-import { isRunningInBrowser } from '../src/api';
+import { STANDARD_REDUCERS } from '../src/reducers';
 
-const appReducer = combineReducers(ALL_REDUCERS);
+const appReducer = combineReducers(STANDARD_REDUCERS);
+export type AppState = ReturnType<typeof appReducer>;
 
-const rootReducer = (state: any, action: Action): any => {
-  if (action.type === 'EMPTY_STORE') {
-    state = undefined;
-  }
-  // FIXME: Fix this
-  //@ts-ignore
-  return appReducer(state, action);
-};
 
-export const crashReporter = (store: any) => (next: any) => (action: any): void => {
-  try {
-    return next(action);
-  } catch (err) {
-    if (isRunningInBrowser()) {
-      console.error('Caught an exception!', err);
-      console.error('redux action', action);
-      console.error('redux state', store.getState());
-    } else {
-      console.error('Caught an exception!', JSON.stringify(err));
-    }
-    throw err;
-  }
-};
-
-const preloadedState: any = undefined;
-
-export default function createTestStore(): any {
+export default function createTestStore(): Store<AppState> {
   return createStore(
-    rootReducer,
-    preloadedState,
+    appReducer,
+    { },
     compose(
-      applyMiddleware(thunk, crashReporter),
-      window && window.__REDUX_DEVTOOLS_EXTENSION__
-        ? window.__REDUX_DEVTOOLS_EXTENSION__({ trace: true, traceLimit: 25 })
-        : (f: any): any => f
+      applyMiddleware(thunk)
     )
   );
 }
+
+
