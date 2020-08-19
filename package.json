@@ -19,11 +19,12 @@
     "pretest": "npm run build",
     "test": "jest",
     "lint": "eslint --ext js,ts src tests",
-    "clean": "rimraf build coverage types",
+    "clean": "rimraf dist types",
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
     "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
-    "prepublish": "tsc",
-    "prepublishOnly": "npm run clean && npm run check-types && npm run format:check && npm run lint && npm test"
+    "prepare": "npm run clean && npm run lint && npm test",
+    "prepublishOnly": "npm run clean && npm run build && npm run lint && npm run format:check && npm run test",
+    "preversion" : "npm run lint"
   },
   "dependencies": {
     "@babel/runtime": "^7.9.2",
