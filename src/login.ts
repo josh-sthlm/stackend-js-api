@@ -7,8 +7,8 @@ import {
   Config,
   post,
   _getApiUrl,
-  Thunk, isRunningInBrowser
-} from './api'
+  Thunk, isRunningInBrowser, XcapOptionalParameters
+} from './api';
 
 
 declare let browserHistory: { push: (location: string) => any }; // FIXME: for backward compatibility with react-router
@@ -207,7 +207,7 @@ export function _getLogoutUrl({
  * @param redirectUrl
  * @returns {Thunk<XcapJsonResult>}
  */
-export function logout({ redirectUrl }: { redirectUrl?: string|null }): Thunk<XcapJsonResult> {
+export function logout({ redirectUrl }: { redirectUrl?: string|null } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
 	return post({
 		url: '/user/logout',
 		parameters: arguments
@@ -243,7 +243,7 @@ export function login({
 	config: Config;
 	request: Request;
 	communityPermalink?: string;
-}): Thunk<LoginResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>|string> { // FIXME: return type
 	switch (provider) {
 		case AuthenticationType.XCAP: {
 			const p = arguments[0];
@@ -363,7 +363,7 @@ export function performLoginRedirect({
  * Send a token to the email address that will allow the user to change password.
  * @param email
  */
-export function sendPasswordChangeToken({ email }: { email: string }): Thunk<XcapJsonResult> {
+export function sendPasswordChangeToken({ email }: { email: string }): Thunk<Promise<XcapJsonResult>> {
 	return post({
 		url: '/user/send-password-change-token',
 		parameters: arguments
@@ -400,7 +400,7 @@ export function changePassword({
 	oldPassword?: string;
 	password: string;
 	returnUrl?: string;
-}): Thunk<ChangePasswordResult> {
+} & XcapOptionalParameters): Thunk<Promise<ChangePasswordResult>> {
 	return post({
 		url: '/user/change-password',
 		parameters: arguments

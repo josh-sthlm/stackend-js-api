@@ -1,5 +1,15 @@
 // @flow
-import { createCommunityUrl, _getApiUrl, getJson, post, Config, XcapJsonResult, XcapObject, Thunk } from './api';
+import {
+  createCommunityUrl,
+  _getApiUrl,
+  getJson,
+  post,
+  Config,
+  XcapJsonResult,
+  XcapObject,
+  Thunk,
+  XcapOptionalParameters
+} from './api';
 import * as qnaApi from './qna';
 import _ from 'lodash';
 import { Request } from './request';
@@ -145,7 +155,7 @@ export type Search = {
   categoryId?: number;
   community?: string;
   excludeCurrentUser?: boolean; //applicable for user-search
-};
+} & XcapOptionalParameters;
 
 export interface SearchResult extends XcapJsonResult {
   results: PaginatedCollection<XcapObject>;
@@ -158,7 +168,7 @@ export interface SearchResult extends XcapJsonResult {
  * @param urlArguments
  * @returns {Thunk.<*>}
  */
-export function search({ community, ...urlArguments }: Search): Thunk<SearchResult> {
+export function search({ community, ...urlArguments }: Search): Thunk<Promise<SearchResult>> {
   return getJson({
     url: searchType,
     parameters: (urlArguments as any),
@@ -185,7 +195,7 @@ export function getSearchApiUrl({
   community: any;
   type: string;
   urlArguments: any;
-}): string {
+} & XcapOptionalParameters): string {
   const communityPermalink = _.get(community, 'permalink', null);
   let url = `/search${type ? `/${type}` : ''}`;
 
@@ -240,7 +250,7 @@ export function getStatistics({
   moderationVisibility?: boolean;
   pageSize?: number;
   page?: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/search/statistics', parameters: arguments });
 }
 
@@ -298,7 +308,6 @@ export interface PopulateSearchIndexResult extends XcapJsonResult {
  *
  * @param modifiedSince Update only objects modified since this date. Otherwise all. ISO Date format (2006-04-07)
  * @param populator String array of populator class names to run. {@see SEARCH_INDEX_POPULATORS}.
- * @returns {Thunk<PopulateSearchIndexResult>}
  */
 export function populateSearchIndex({
   modifiedSince,
@@ -306,7 +315,7 @@ export function populateSearchIndex({
 }: {
   modifiedSince: string | null;
   populator: Array<string> | null;
-}): Thunk<PopulateSearchIndexResult> {
+} & XcapOptionalParameters): Thunk<Promise<PopulateSearchIndexResult>> {
   return post({
     url: '/search/admin/populate-index',
     parameters: arguments,

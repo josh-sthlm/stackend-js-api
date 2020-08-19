@@ -1,5 +1,5 @@
 //@flow
-import { getJson, post, createCommunityUrl, XcapJsonResult, XcapObject, Thunk } from './api';
+import { getJson, post, createCommunityUrl, XcapJsonResult, XcapObject, Thunk, XcapOptionalParameters } from './api';
 import * as userApi from './user';
 import { Request } from './request';
 import { PaginatedCollection } from './PaginatedCollection';
@@ -293,8 +293,8 @@ export interface ListMyGroupsResult extends XcapJsonResult {
 /**
  * List my groups
  */
-export function listMyGroups(): Thunk<ListMyGroupsResult> {
-  return getJson({ url: '/group/list/my' });
+export function listMyGroups({ }: XcapOptionalParameters): Thunk<Promise<ListMyGroupsResult>> {
+  return getJson({ url: '/group/list/my', parameters: arguments });
 }
 
 /**
@@ -328,7 +328,7 @@ export function search({
   order?: GroupMemberSortOrder;
   pageSize?: number;
   p?: number; //page number
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/group/search', parameters: arguments });
 }
 
@@ -347,7 +347,7 @@ export function listGroupsByTag({
   tag: string;
   pageSize?: number;
   p?: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/group/list/by-tag', parameters: arguments });
 }
 
@@ -367,7 +367,7 @@ export function getGroup({
 }: {
   groupPermalink?: string;
   groupId?: number;
-}): Thunk<GetGroupResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetGroupResult>> {
   return getJson({ url: '/group/get', parameters: arguments });
 }
 
@@ -389,7 +389,7 @@ export function subscribe({
 }: {
   groupPermalink?: string;
   groupId?: number;
-}): Thunk<SubscribeResult> {
+} & XcapOptionalParameters): Thunk<Promise<SubscribeResult>> {
   return post({ url: '/group/subscribe', parameters: arguments });
 }
 
@@ -404,7 +404,7 @@ export function unsubscribe({
 }: {
   groupPermalink?: string;
   groupId?: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/group/unsubscribe', parameters: arguments });
 }
 
@@ -419,7 +419,7 @@ export function applyForMembership({
 }: {
   groupPermalink?: string;
   groupId?: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/group/applyForMembership', parameters: arguments });
 }
 
@@ -446,7 +446,7 @@ export function editMembership({
   groupId?: number;
   userId: number;
   privilegeType: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/group/edit-membership',
     parameters: {
@@ -473,7 +473,7 @@ export function listMembershipRequests({
 }: {
   groupPermalink?: string;
   groupId?: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: 'group/list/membership-requests', parameters: arguments });
 }
 
@@ -500,7 +500,7 @@ export function listMembers({
   groupId?: number;
   sortOrder?: GroupMemberSortOrder;
   groupMemberPrivilegeType?: string; //Comma separated string of PrivilegeTypes, for example "16,32"
-}): Thunk<ListMembersResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/group/list/members', parameters: arguments });
 }
 
@@ -543,7 +543,7 @@ export function editGroup({
   isOpenForApplications: boolean;
   categoryId?: number;
   tags?: Array<string>;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/group/edit',
     parameters: arguments,
@@ -560,7 +560,7 @@ export interface CheckGroupPermalinkResult extends XcapJsonResult {
  * Check if a group permalink is valid and available.
  * @param groupPermalink
  */
-export function checkGroupPermalink({ groupPermalink }: { groupPermalink: string }): Thunk<CheckGroupPermalinkResult> {
+export function checkGroupPermalink({ groupPermalink }: { groupPermalink: string } & XcapOptionalParameters): Thunk<Promise<CheckGroupPermalinkResult>> {
   return getJson({
     url: '/group/check-permalink',
     parameters: arguments,
@@ -579,7 +579,7 @@ export function setGroupLogotypeImage({
 }: {
   groupId: number;
   imageId: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/group/set-image',
     parameters: {
@@ -602,7 +602,7 @@ export function setGroupBackgroundImage({
 }: {
   groupId: number;
   imageId: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/group/set-image',
     parameters: {
@@ -647,7 +647,7 @@ export function setGroupStyle({
   backgroundImageId?: number;
   backgroundCropX?: number;
   backgroundCropY?: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/group/set-style',
     parameters: arguments,
@@ -659,7 +659,7 @@ export function setGroupStyle({
  *
  * @param groupId	Group id
  */
-export function removeGroup({ groupId }: { groupId: number }): Thunk<XcapJsonResult> {
+export function removeGroup({ groupId }: { groupId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/group/remove',
     parameters: arguments,

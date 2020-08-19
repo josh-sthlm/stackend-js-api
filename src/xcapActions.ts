@@ -44,7 +44,7 @@ export function loadInitialStoreValues({
   subSiteIds?: Array<number>;
   referenceUrl?: string;
   stackendMode?: boolean;
-}): Thunk<GetInitialStoreValuesResult> {
+}): Thunk<Promise<GetInitialStoreValuesResult>> {
   return async (dispatch: any): Promise<GetInitialStoreValuesResult> => {
     const r = await dispatch(
       getInitialStoreValues({

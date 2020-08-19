@@ -1,5 +1,5 @@
 //@flow
-import { post, getJson, XcapObject, XcapJsonResult, Thunk } from './api';
+import { post, getJson, XcapObject, XcapJsonResult, Thunk, XcapOptionalParameters } from './api';
 
 /**
  * Xcap Event api constants and methods.
@@ -55,7 +55,7 @@ export enum RSVPStatus {
  * @param eventId
  * @param status
  */
-export function rsvp({ eventId, status }: { eventId: number; status: RSVPStatus }): Thunk<XcapJsonResult> {
+export function rsvp({ eventId, status }: { eventId: number; status: RSVPStatus } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/blog/event/rsvp', parameters: arguments });
 }
 
@@ -78,6 +78,6 @@ export function listRsvpUsers({
   status: RSVPStatus;
   p?: number;
   pageSize?: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/blog/event/list-rsvp-users', parameters: arguments });
 }

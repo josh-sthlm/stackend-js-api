@@ -11,7 +11,15 @@ import {
   PageAndLoadedState, PageActions
 } from './pageReducer';
 
-import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode, SubSite } from '../cms';
+import {
+  getPages,
+  GetPagesResult,
+  getSubSite,
+  GetSubSiteResult,
+  Page,
+  SubSiteNode,
+  SubSite
+} from '../cms';
 import { getPermalink } from '../tree';
 
 
@@ -26,7 +34,7 @@ export function requestPages({
   pageIds?: Array<number>;
   permalinks?: Array<string>;
   communityPermalink?: string | null;
-}): Thunk<GetPagesResult> {
+}): Thunk<Promise<GetPagesResult>> {
   return async (dispatch: any): Promise<GetPagesResult> => {
     const r = await dispatch(getPages({ pageIds, permalinks, communityPermalink }));
     await dispatch({
@@ -52,7 +60,7 @@ export function requestMissingPages({
   pageIds?: Array<number>;
   permalinks?: Array<string>;
   communityPermalink?: string | null;
-}): Thunk<GetPagesResult> {
+}): Thunk<Promise<GetPagesResult>> {
   return async (dispatch: any, getState): Promise<GetPagesResult> => {
     const fetchPageIds: Array<number> = [];
     const fetchPermalinks: Array<string> = [];
@@ -113,7 +121,7 @@ export function shouldFetchPage(p: Page | PageAndLoadedState | null, now: number
  * @param pageId
  * @returns {Thunk<GetPagesResult>}
  */
-export function requestPage(pageId: number): Thunk<GetPagesResult> {
+export function requestPage(pageId: number): Thunk<Promise<GetPagesResult>> {
   return requestPages({ pageIds: [pageId] });
 }
 
@@ -122,7 +130,7 @@ export function requestPage(pageId: number): Thunk<GetPagesResult> {
  * @param permalink
  * @returns {Thunk<GetPagesResult>}
  */
-export function requestPageByPermalink(permalink: string): Thunk<GetPagesResult> {
+export function requestPageByPermalink(permalink: string): Thunk<Promise<GetPagesResult>> {
   return requestPages({ permalinks: [permalink] });
 }
 
@@ -161,7 +169,7 @@ export function receivePages(json: GetPagesResult): Thunk<any> {
   };
 }
 
-export function requestSubSite(id: number): Thunk<GetSubSiteResult> {
+export function requestSubSite(id: number): Thunk<Promise<GetSubSiteResult>> {
   return async (dispatch: any): Promise<GetSubSiteResult> => {
     const r = await dispatch(getSubSite({ id }));
     if (r.error) {

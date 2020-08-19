@@ -1,12 +1,12 @@
 //@flow
-import { XcapJsonResult, post, getJson, Thunk } from './api';
+import { XcapJsonResult, post, getJson, Thunk, XcapOptionalParameters } from './api';
 
 /**
  * Submit a rating
  * @param reference
  * @param value
  */
-export function rate({ reference, value }: { reference: string; value: number }): Thunk<XcapJsonResult> {
+export function rate({ reference, value }: { reference: string; value: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/rating/rate',
     parameters: arguments,
@@ -18,7 +18,7 @@ export function rate({ reference, value }: { reference: string; value: number })
  * @param reference
  * @returns {Thunk<XcapJsonResult>}
  */
-export function getAverateRating({ reference }: { reference: string }): Thunk<XcapJsonResult> {
+export function getAverateRating({ reference }: { reference: string } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({
     url: '/rating/get-average',
     parameters: arguments,

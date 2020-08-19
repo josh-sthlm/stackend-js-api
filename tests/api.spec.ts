@@ -9,9 +9,10 @@ import {
   invertOrder,
   Order, parseCommunityContext, parseReference,
   STACKEND_DEFAULT_SERVER, templateReplace, templateReplaceUrl, _constructConfig,
-  STACKEND_DEFAULT_CONTEXT_PATH, DeployProfile, setConfiguration, newXcapJsonResult
+  STACKEND_DEFAULT_CONTEXT_PATH, DeployProfile, setConfiguration, newXcapJsonResult, GetInitialStoreValuesResult
 } from '../src/api';
-import { Community, CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
+import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
+import assert from 'assert';
 
 describe('API', () => {
   const store = createTestStore();
@@ -27,7 +28,7 @@ describe('API', () => {
 
   describe("getConfiguration", () => {
     it("Should get stackend configuration from redux state", async () => {
-      const c: Config = await store.dispatch(getConfiguration());
+      const c: Config = store.dispatch(getConfiguration());
       expect(c).toBeDefined();
       expect(c.server).toBe(STACKEND_DEFAULT_SERVER);
       expect(c.contextPath).toBe(STACKEND_DEFAULT_CONTEXT_PATH);
@@ -67,11 +68,12 @@ describe('API', () => {
 
   describe("getInitialStoreValues", () => {
     it("Loads initial information about a community into the redux store", async () => {
-      const r = await store.dispatch(getInitialStoreValues({ permalink: STACKEND_COM_COMMUNITY_PERMALINK }));
+      const r: GetInitialStoreValuesResult = await store.dispatch(getInitialStoreValues({ permalink: STACKEND_COM_COMMUNITY_PERMALINK }));
       expect(r.__resultCode).toBe("success");
       expect(r.stackendCommunity).toBeDefined();
 
-      const c: Community = r.stackendCommunity;
+      const c = r.stackendCommunity;
+      assert(c);
       expect(c.id).toBe(55);
       expect(c.permalink).toBe(STACKEND_COM_COMMUNITY_PERMALINK);
       expect(c.name).toBe("stackend.com");
@@ -169,7 +171,7 @@ describe('API', () => {
         server: "http://localhost:8080/"
       }));
 
-      const c: Config = store.dispatch(getConfiguration());
+      const c: Config = await store.dispatch(getConfiguration());
       expect(c).toBeDefined();
       expect(c.server).toBe("http://localhost:8080/");
       expect(c.apiUrl).toBe(STACKEND_DEFAULT_SERVER + "" + STACKEND_DEFAULT_CONTEXT_PATH + "/api");

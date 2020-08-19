@@ -28,7 +28,7 @@ export interface FetchForumThreads {
 /**
  * Requests and receive forumThreads and store them in redux-state
  */
-export function fetchForumThreads({ forumPermalink, page, pageSize = 25 }: FetchForumThreads): Thunk<ListThreadsResult|{error: string}> {
+export function fetchForumThreads({ forumPermalink, page, pageSize = 25 }: FetchForumThreads): Thunk<Promise<ListThreadsResult|{error: string}>> {
   return async (dispatch: any): Promise<ListThreadsResult| { error: string }> => {
     dispatch(requestForumThreads());
     const json = await dispatch(forumApi.listThreads({ forumPermalink, pageSize, p: page }));
@@ -73,7 +73,7 @@ export function fetchForumThreadEntries({
   entryId,
   pageSize = 15,
   p,
-}: FetchForumThreadEntries): Thunk<PaginatedCollection<ForumThreadEntry> | { error: string }> {
+}: FetchForumThreadEntries): Thunk<Promise<PaginatedCollection<ForumThreadEntry> | { error: string }>> {
   return async (dispatch: any): Promise<PaginatedCollection<ForumThreadEntry> | { error: string }> => {
     try {
       const data = await dispatch(

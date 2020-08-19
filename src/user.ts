@@ -6,7 +6,7 @@ import {
   XcapJsonResult,
   Order,
   invertOrder,
-  Thunk,
+  Thunk, XcapOptionalParameters
 } from './api';
 import { Request } from './request';
 import { AuthenticationType } from './login';
@@ -201,7 +201,7 @@ export interface GetUserResult extends XcapJsonResult {
  * @see stackend.ts:getCurrentStackendUser()
  * @return {Thunk}
  */
-export function getCurrentUser(): Thunk<GetUserResult> {
+export function getCurrentUser(): Thunk<Promise<GetUserResult>> {
   // TODO: Implement caching here
   return getJson({
     url: '/user/get',
@@ -209,6 +209,7 @@ export function getCurrentUser(): Thunk<GetUserResult> {
     context: CONTEXT,
   });
 }
+
 
 /**
  * Construct a link to a users profile page.
@@ -339,7 +340,7 @@ export function getUser({
 }: {
   id?: number;
   alias?: string;
-}): Thunk<GetUserResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetUserResult>> {
   return getJson({ url: '/user/get', parameters: arguments });
 }
 
@@ -352,7 +353,7 @@ export interface GetUsersResult extends XcapJsonResult {
  * @param id
  * @returns {Promise}
  */
-export function getUsers({ id }: { id: Array<number> }): Thunk<GetUsersResult> {
+export function getUsers({ id }: { id: Array<number> } & XcapOptionalParameters): Thunk<Promise<GetUsersResult>> {
   return getJson({ url: '/user/get-multiple', parameters: arguments });
 }
 
@@ -444,7 +445,7 @@ export function storeUser({
   zipCode?: number;
   termsAccept?: boolean;
   profileEntries?: any;
-}): Thunk<StoreUserResult> {
+} & XcapOptionalParameters): Thunk<Promise<StoreUserResult>> {
   return post({ url: '/user/store', parameters: arguments });
 }
 
@@ -469,7 +470,7 @@ export function getUserPrivileges({
   componentContext: string;
   componentClass: string;
   externalTypeId: number;
-}): Thunk<GetUserPrivilegesResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetUserPrivilegesResult>> {
   return getJson({ url: '/user/get-privileges', parameters: arguments });
 }
 
@@ -547,7 +548,7 @@ export function search({
   orderBy?: OrderBy | null;
   order?: Order | null;
   community?: string;
-}): Thunk<SearchResult> {
+} & XcapOptionalParameters): Thunk<Promise<SearchResult>> {
   const sortOrder = convertSortOrder(orderBy, order);
 
   return getJson({
@@ -581,7 +582,7 @@ export function setProfileImage({
 }: {
   imageId: number;
   community?: string;
-}): Thunk<SetProfileImageResult> {
+} & XcapOptionalParameters): Thunk<Promise<SetProfileImageResult>> {
   return post({
     url: '/user/set-profile-image',
     parameters: { imageId: imageId },
@@ -598,7 +599,7 @@ export function removeProfileImage({
   community,
 }: {
   community?: string;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/user/remove-profile-image',
     community,
@@ -630,7 +631,7 @@ export function isEmailFree({
   email,
 }: {
   email: string;
-}): Thunk<IsEmailFreeResult> {
+} & XcapOptionalParameters): Thunk<Promise<IsEmailFreeResult>> {
   return getJson({
     url: '/user/register/is-email-free',
     parameters: arguments,
@@ -650,7 +651,7 @@ export function isAliasFree({
   alias,
 }: {
   alias: string;
-}): Thunk<IsAliasFreeResult> {
+} & XcapOptionalParameters): Thunk<Promise<IsAliasFreeResult>> {
   return getJson({
     url: '/user/register/is-alias-free',
     parameters: arguments,
@@ -699,8 +700,8 @@ export interface GetRegistrationDataResult extends XcapJsonResult {
  *
  * @returns {Thunk<GetRegistrationDataResult>}
  */
-export function getFacebookRegistrationData({}: {}): Thunk<
-  GetRegistrationDataResult
+export function getFacebookRegistrationData({}: {} & XcapOptionalParameters): Thunk<Promise<
+  GetRegistrationDataResult>
 > {
   return getJson({
     url: '/user/register/facebook',
@@ -739,7 +740,7 @@ export function registerFacebookUser({
   birthDate?: string;
   termsAccept?: boolean;
   returnUrl?: string;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/user/register/facebook/save',
     parameters: arguments,
@@ -755,7 +756,7 @@ export function removeFacebookReference({
   facebookId,
 }: {
   facebookId?: string | null;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/user/auth/facebook/remove',
     parameters: arguments,
@@ -771,7 +772,7 @@ export function removeGoogleReference({
   userReferenceId,
 }: {
   userReferenceId?: string | null;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/user/auth/google/remove',
     parameters: arguments,
@@ -809,7 +810,7 @@ export function registerGoogleUser({
   birthDate?: string;
   termsAccept?: boolean;
   returnUrl?: string;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/user/register/google',
     parameters: arguments,
@@ -847,7 +848,7 @@ export function registerOAuth2User({
   birthDate?: string;
   termsAccept?: boolean;
   returnUrl?: string;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/user/register/oauth2',
     parameters: arguments,
@@ -884,7 +885,7 @@ export function sendVerificationEmail({
   email: string;
   authenticationType?: string;
   returnUrl?: string;
-}): Thunk<VerifyEmailResult> {
+} & XcapOptionalParameters): Thunk<Promise<VerifyEmailResult>> {
   return post({
     url: '/user/register/send-verification-email',
     parameters: arguments,
@@ -911,7 +912,7 @@ export function verifyEmail({
   code: string;
   login?: boolean;
   returnUrl?: string;
-}): Thunk<VerifyEmailResult> {
+} & XcapOptionalParameters): Thunk<Promise<VerifyEmailResult>> {
   return post({
     url: '/user/register/verify-email',
     parameters: arguments,
@@ -962,7 +963,7 @@ export function registerUser({
   showBirthDay?: boolean;
   termsAccept?: boolean;
   returnUrl?: string;
-}): Thunk<RegisterUserResult> {
+} & XcapOptionalParameters): Thunk<Promise<RegisterUserResult>> {
   return post({
     url: '/user/register/email',
     parameters: arguments,
@@ -996,7 +997,7 @@ export function getStatistics({
   id,
 }: {
   id: number;
-}): Thunk<GetUserStatisticsResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetUserStatisticsResult>> {
   return getJson({
     url: '/user/statistics',
     parameters: { id },
@@ -1012,19 +1013,19 @@ export function isPasswordAcceptable(password: string | null): boolean {
   return !!password && password.length >= 6 && !!password.match(/[0-9]/);
 }
 
-export interface ListAutenticationOptionsResult extends XcapJsonResult {
+export interface ListAuthenticationOptionsResult extends XcapJsonResult {
   user: User | null;
   availableOptions: Array<AuthenticationType>;
   enabledOptions: Array<AuthenticationType>;
 }
 
 /**
- * List available and enabled autentication options of the current user.
+ * List available and enabled authentication options of the current user.
  * @returns {Thunk<XcapJsonResult>}
  */
-export function listAutenticationOptions({}: any): Thunk<
-  ListAutenticationOptionsResult
-> {
+export function listAuthenticationOptions({}:  XcapOptionalParameters): Thunk<Promise<
+  ListAuthenticationOptionsResult
+>> {
   return getJson({
     url: '/user/auth/list-options',
     parameters: arguments,
@@ -1036,7 +1037,6 @@ export function listAutenticationOptions({}: any): Thunk<
  * @param id
  * @param block
  * @param comment
- * @returns {Thunk<XcapJsonResult>}
  */
 export function setBlocked({
   id,
@@ -1046,14 +1046,14 @@ export function setBlocked({
   id: number;
   block: boolean;
   comment?: string | null;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/user/set-blocked',
     parameters: arguments,
   });
 }
 
-export function listOnline(): Thunk<XcapJsonResult> {
+export function listOnline({}: XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({
     url: '/user/list-online',
     parameters: arguments,

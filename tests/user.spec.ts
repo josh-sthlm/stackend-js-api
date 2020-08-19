@@ -4,6 +4,7 @@ import createTestStore from './setup-redux';
 import { COMMUNITY_PARAMETER } from '../src/api'
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
 import { getUser, GetUserResult } from '../src/user'
+import assert from 'assert';
 
 
 describe('User', () => {
@@ -17,7 +18,7 @@ describe('User', () => {
       }));
 
       expect(r.__resultCode).toBe("success");
-      expect(r.user).toBeDefined();
+      assert(r.user);
       expect(r.user.id).toBe(1);
     })
   });

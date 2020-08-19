@@ -40,7 +40,7 @@ export function resetModules(): ModuleActions {
 	};
 }
 
-export function fetchModules({ communityId }: { communityId: number }): Thunk<GetModulesResult> {
+export function fetchModules({ communityId }: { communityId: number }): Thunk<Promise<GetModulesResult>> {
 	return async (dispatch: any /*, getState: any*/): Promise<GetModulesResult> => {
 		dispatch(requestModules(communityId));
 		const json = await dispatch(Stackend.getModules({ communityId }));

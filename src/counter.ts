@@ -1,5 +1,5 @@
 // @flow
-import { post, XcapJsonResult, Thunk } from './api';
+import { post, XcapJsonResult, Thunk, XcapOptionalParameters } from './api';
 
 /**
  * Xcap Counter API constants and methods.
@@ -15,7 +15,7 @@ import { post, XcapJsonResult, Thunk } from './api';
  * @param context Context (Required)
  * @param referenceId Reference id, for example a blog entry id (Required)
  */
-export function increment({ context, referenceId }: { context: string; referenceId: number }): Thunk<XcapJsonResult> {
+export function increment({ context, referenceId }: { context: string; referenceId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/counter/increment', parameters: arguments });
 }
 
@@ -34,6 +34,6 @@ export function putFootprint({
 }: {
   context: string;
   referenceId: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/counter/footprint', parameters: arguments });
 }

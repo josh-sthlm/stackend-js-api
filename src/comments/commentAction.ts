@@ -89,7 +89,7 @@ export function fetchMultipleComments({
 	referenceGroupId: number; // Reference group id, for example blog id (optional)
 	p?: number; //page number in paginated collection
 	pageSize?: number;
-}): Thunk<GetMultipleCommentsResult> {
+}): Thunk<Promise<GetMultipleCommentsResult>> {
 	return async (dispatch: any): Promise<GetMultipleCommentsResult> => {
 		dispatch(requestGroupComments(module, referenceGroupId));
 		const json = await dispatch(getMultipleComments({ module, referenceIds, pageSize, p }));

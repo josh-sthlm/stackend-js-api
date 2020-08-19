@@ -200,7 +200,8 @@ export type State = { [key: string]: any };
 /**
  * Function that dispatches actions against the store
  */
-export type Thunk<A> = (dispatch: Dispatch, getState: () => State) => Promise<A> | A | any;
+//export type Thunk<A> = (dispatch: Dispatch, getState: () => State) => Promise<A> | A | any;
+export type Thunk<A> = (dispatch: Dispatch, getState: () => State) => A;
 
 /**
  * Invert the ordering
@@ -725,7 +726,7 @@ export function _getAbsoluteApiBaseUrl({
  * @return may return null
  */
 export function getCurrentCommunity(): Thunk<Community | null> {
-  return (dispatch, getState): string => {
+  return (dispatch, getState): Community | null => {
     return _.get(getState(), 'communities.community', null);
   };
 }
@@ -888,16 +889,12 @@ export function addRelatedObjectsToStore(dispatch: Dispatch, json: any): void {
   }
 }
 
-export type ParameterValue = string | number | boolean | null | undefined | Array<string | number | boolean | null> ;
-export type Parameters = { [name: string]: ParameterValue } | string;
-
-export function x({ stuff }: { stuff?: string }): void {
-  const p: Parameters = {
-    stuff
-  }
-
-  console.log(p);
+export type XcapOptionalParameters = {
+  [COMMUNITY_PARAMETER]?: string | null | undefined;
 }
+
+export type ParameterValue = string | number | boolean | null | undefined | Array<string | number | boolean | null> ;
+export type Parameters = XcapOptionalParameters & { [name: string]: ParameterValue } | string;
 
 export interface XcapJsonRequest {
   /** Path on the api server */
@@ -930,7 +927,7 @@ export interface XcapJsonRequest {
  * @param cookie Optional cookie string to pass on
  * @returns {Thunk}
  */
-export function getJson({
+export function getJson<T extends XcapJsonResult>({
   url,
   parameters,
   notFromApi = false,
@@ -938,8 +935,8 @@ export function getJson({
   componentName,
   context,
   cookie,
-}: XcapJsonRequest): Thunk<XcapJsonResult> {
-  return async (dispatch: any): Promise<XcapJsonResult> => {
+}: XcapJsonRequest): Thunk<Promise<T>> {
+  return async (dispatch: any): Promise<T> => {
     let p = url;
     try {
       dispatch(setLoadingThrobberVisible(true));
@@ -985,7 +982,7 @@ export function getJson({
 						*/
           }
 
-          return result;
+          return result as T;
         }
 
         const r = postProcessApiResult(result);
@@ -996,12 +993,12 @@ export function getJson({
 
       logger.error('No result received: ' + p);
       dispatch(setLoadingThrobberVisible(false));
-      return newXcapJsonErrorResult('No result received');
+      return newXcapJsonErrorResult('No result received') as T;
     } catch (e) {
       // 404, connection refused etc
       logger.error(Error(e), "Couldn't getJson: " + p);
       dispatch(setLoadingThrobberVisible(false));
-      return newXcapJsonErrorResult('Couldn\'t getJson: ' + e);
+      return newXcapJsonErrorResult('Couldn\'t getJson: ' + e) as T;
     }
   };
 }
@@ -1013,7 +1010,7 @@ export function getJson({
  * @param parameters
  * @returns {Promise}
  */
-export function getJsonOutsideApi({ url, parameters }: { url: string; parameters?: any }): Thunk<XcapJsonResult> {
+export function getJsonOutsideApi({ url, parameters }: { url: string; parameters?: any }): Thunk<Promise<XcapJsonResult>> {
   return async (dispatch): Promise<XcapJsonResult> => {
     const p = appendQueryString(url, urlEncodeParameters(argsToObject(parameters)));
     const result = await LoadJson({ url: p });
@@ -1043,7 +1040,7 @@ export function getJsonOutsideApi({ url, parameters }: { url: string; parameters
  * @param context Community context used for config (for example "forum")
  * @returns {Thunk}
  */
-export function post({
+export function post<T extends XcapJsonResult>({
   url,
   parameters,
   community,
@@ -1055,8 +1052,8 @@ export function post({
   community?: string | null;
   componentName?: string | null;
   context?: string | null;
-}): Thunk<XcapJsonResult> {
-  return async (dispatch: any): Promise<XcapJsonResult> => {
+}): Thunk<Promise<T>> {
+  return async (dispatch: any): Promise<T> => {
     const params = argsToObject(parameters);
 
     if (typeof community === 'undefined' && params
@@ -1093,7 +1090,7 @@ export function post({
       return r;
     }
 
-    return newXcapJsonErrorResult('Post failed: no response');
+    return newXcapJsonErrorResult('Post failed: no response') as T;
   };
 }
 
@@ -1113,7 +1110,7 @@ export function getXpressToken({
   community?: string | null;
   componentName?: string | null;
   context?: string | null;
-}): Thunk<GetExpressTokenResult> {
+}): Thunk<Promise<GetExpressTokenResult>> {
   return getJson({
     url: '/xpresstoken',
     community,
@@ -1587,7 +1584,7 @@ export function getInitialStoreValues({
   cookie?: string;
   referenceUrl?: string;
   stackendMode?: boolean;
-}): Thunk<GetInitialStoreValuesResult> {
+}): Thunk<Promise<GetInitialStoreValuesResult>> {
   return getJson({
     url: '/init',
     parameters: {

@@ -1,6 +1,6 @@
 //@flow
 
-import { getJson, post, XcapJsonResult, Thunk } from './api';
+import { getJson, post, XcapJsonResult, Thunk, XcapOptionalParameters } from './api';
 
 export interface GraphQLListNode<T> {
   node: T;
@@ -35,7 +35,7 @@ export interface Product {
  * Get the shop configuration. Requires admin privs
  * @returns {Thunk<XcapJsonResult>}
  */
-export function getShopConfiguration(): Thunk<XcapJsonResult> {
+export function getShopConfiguration(): Thunk<Promise<XcapJsonResult>> {
   return getJson({
     url: '/shop/admin/get-config',
   });
@@ -53,14 +53,14 @@ export function storeShopConfiguration({
 }: {
   shop: string | null;
   storeFrontAccessToken: string | null;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/shop/admin/store-config',
     parameters: arguments,
   });
 }
 
-export interface ListProductTypesRequest {
+export interface ListProductTypesRequest extends XcapOptionalParameters {
   first?: number;
 }
 
@@ -75,7 +75,7 @@ export interface ListProductTypesResult extends XcapJsonResult {
  */
 export function listProductTypes(
   req: ListProductTypesRequest
-): Thunk<ListProductTypesResult> {
+): Thunk<Promise<ListProductTypesResult>> {
   return getJson({
     url: '/shop/list-product-types',
     parameters: arguments,
@@ -86,7 +86,7 @@ export enum ProductSortKeys {
   RELEVANCE = 'RELEVANCE',
 }
 
-export interface ListProductsRequest {
+export interface ListProductsRequest extends XcapOptionalParameters {
   q?: string;
   productTypes?: Array<string>;
   tags?: Array<string>;
@@ -106,14 +106,14 @@ export interface ListProductsResult extends XcapJsonResult {
  */
 export function listProducts(
   req: ListProductsRequest
-): Thunk<ListProductsResult> {
+): Thunk<Promise<ListProductsResult>> {
   return getJson({
     url: '/shop/list-products',
     parameters: arguments,
   });
 }
 
-export interface GetProductRequest {
+export interface GetProductRequest extends XcapOptionalParameters {
   handle: string;
 }
 
@@ -126,7 +126,7 @@ export interface GetProductResult extends XcapJsonResult {
  * @param req
  * @returns {Thunk<XcapJsonResult>}
  */
-export function getProduct(req: GetProductRequest): Thunk<GetProductResult> {
+export function getProduct(req: GetProductRequest): Thunk<Promise<GetProductResult>> {
   return getJson({
     url: '/shop/get-product',
     parameters: arguments,
@@ -144,7 +144,7 @@ export interface ListProductsAndTypesResult extends ListProductsResult {
  */
 export function listProductsAndTypes(
   req: ListProductsRequest
-): Thunk<ListProductsAndTypesResult> {
+): Thunk<Promise<ListProductsAndTypesResult>> {
   return getJson({
     url: '/shop/list-products-and-types',
     parameters: arguments,

@@ -9,6 +9,7 @@ import {
   GetContentResult,
   getSubSite, GetSubSiteResult
 } from '../src/cms'
+import assert from 'assert';
 
 
 describe('CMS', () => {
@@ -24,6 +25,7 @@ describe('CMS', () => {
       expect(r.__resultCode).toBe("success");
 
       const c = r.content;
+      assert(c !== null);
       expect(c).toBeDefined();
       expect(c.id).toBe(84);
       expect(c.permalink).toBe('my-first-stack-instructions');
@@ -56,7 +58,7 @@ describe('CMS', () => {
       }));
 
       expect(r.__resultCode).toBe("success");
-      expect(r.tree).toBeDefined();
+      assert(r.tree);
       expect(r.tree.id).toBe(1);
       expect(r.tree.permalink).toBe('test');
       expect(r.tree.__type).toBe("se.josh.xcap.tree.impl.TreeImpl");

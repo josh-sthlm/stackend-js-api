@@ -4,6 +4,7 @@ import createTestStore from './setup-redux';
 import { GetBlogEntryResult, getEntries, GetEntriesResult, getEntry, newBlogEntry } from '../src/blog'
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import { COMMUNITY_PARAMETER } from '../src/api';
+import assert from 'assert';
 
 describe('Blog', () => {
 
@@ -30,7 +31,7 @@ describe('Blog', () => {
       expect(r.__resultCode).toBe("success");
 
       const e = r.blogEntry;
-      expect(e).toBeDefined();
+      assert(e !== null);
       expect(e.id).toBe(17);
       expect(e.permalink).toBe('get-started-with-article-comments');
       expect(e.slideshow).toBeDefined();

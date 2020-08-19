@@ -1,5 +1,14 @@
 //@flow
-import { getJson, post, createCommunityUrl, XcapJsonResult, XcapObject, Thunk, logger } from './api';
+import {
+  getJson,
+  post,
+  createCommunityUrl,
+  XcapJsonResult,
+  XcapObject,
+  Thunk,
+  logger,
+  XcapOptionalParameters
+} from './api';
 import * as event from './event';
 import { Poll } from './poll';
 import * as group from './group';
@@ -274,7 +283,7 @@ export function getEntries({
   categoryPermaLink,
   categoryId,
   goToBlogEntry,
-}: {
+}: XcapOptionalParameters & {
   q?: string;
   blogKey?: string;
   blogId?: number;
@@ -285,7 +294,7 @@ export function getEntries({
   categoryPermaLink?: string;
   categoryId?: number;
   goToBlogEntry?: string;
-}): Thunk<GetEntriesResult> {
+}): Thunk<Promise<GetEntriesResult>> {
   return getJson({
     url: '/blog/entries/list',
     parameters: arguments,
@@ -299,7 +308,7 @@ export function getEntries({
  * @param pageSize Page size (optional)
  * @returns {Thunk}
  */
-export function getMyEntries({ p, pageSize }: { p?: number; pageSize?: number }): Thunk<BlogEntryListingResult> {
+export function getMyEntries({ p, pageSize }: { p?: number; pageSize?: number } & XcapOptionalParameters): Thunk<Promise<BlogEntryListingResult>> {
   return getJson({ url: '/blog/entries/my', parameters: arguments });
 }
 
@@ -316,7 +325,7 @@ export function getMostPopularEntries({
 }: {
   p?: number;
   pageSize?: number;
-}): Thunk<BlogEntryListingResult> {
+} & XcapOptionalParameters): Thunk<Promise<BlogEntryListingResult>> {
   return getJson({ url: '/blog/entries/most-popular', parameters: arguments });
 }
 
@@ -349,7 +358,7 @@ export function getMostCommentedEntries({
   endDate?: any;
   p?: number;
   pageSize?: number;
-}): Thunk<GetMostCommentedEntriesResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetMostCommentedEntriesResult>> {
   return getJson({ url: '/blog/entries/most-commented', parameters: arguments });
 }
 
@@ -366,7 +375,7 @@ export function getRecommendedEntries({
 }: {
   p?: number;
   pageSize?: number;
-}): Thunk<BlogEntryListingResult> {
+} & XcapOptionalParameters): Thunk<Promise<BlogEntryListingResult>> {
   return getJson({ url: '/blog/entries/recommended', parameters: arguments });
 }
 
@@ -389,18 +398,18 @@ export interface GetBlogEntryResult extends XcapJsonResult {
  *
  * @param id Blog entry id (required)
  * @param permalink
- * @returns {Promise}
- *
  */
 export function getEntry({
   id,
   entryPermaLink,
   blogKey,
+  blogId,
 }: {
   id?: number;
   entryPermaLink?: string;
-  blogKey: string;
-}): Thunk<GetBlogEntryResult> {
+  blogKey?: string;
+  blogId?: number;
+} & XcapOptionalParameters): Thunk<Promise<GetBlogEntryResult>> {
   return getJson({ url: '/blog/entry/get', parameters: arguments });
 }
 
@@ -411,7 +420,7 @@ export interface SetEntryStatusResult extends XcapJsonResult {
   authBlog: AuthBlog;
 }
 
-export interface SetEntryStatus {
+export interface SetEntryStatus extends XcapOptionalParameters {
   blogKey: string;
   id: number;
   status: BlogEntryStatus;
@@ -425,7 +434,7 @@ export interface SetEntryStatus {
  * @param status
  * @returns {Promise}
  */
-export function setEntryStatus({ blogKey, id, status }: SetEntryStatus): Thunk<SetEntryStatusResult> {
+export function setEntryStatus({ blogKey, id, status }: SetEntryStatus ): Thunk<Promise<SetEntryStatusResult>> {
   return post({ url: '/blog/entry/set-status', parameters: arguments });
 }
 
@@ -454,7 +463,7 @@ export function saveEntry({
   type: any;
   draftId?: number;
   blogKey: string;
-}): Thunk<SaveEntryResult> {
+} & XcapOptionalParameters): Thunk<Promise<SaveEntryResult>> {
   return post({
     url: '/blog/save-blog-entry',
     parameters: {

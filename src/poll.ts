@@ -1,5 +1,5 @@
 //@flow
-import { getJson, post, XcapJsonResult, XcapObject, Thunk } from './api';
+import { getJson, post, XcapJsonResult, XcapObject, Thunk, XcapOptionalParameters } from './api';
 import { VoteSummary } from './vote';
 
 /**
@@ -56,7 +56,7 @@ export function getPoll({
   referenceId,
 }: {
   referenceId: number;
-}): Thunk<GetPollResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetPollResult>> {
   return getJson({ url: '/poll/get', parameters: arguments });
 }
 
@@ -74,7 +74,7 @@ export function vote({
 }: {
   referenceId: number;
   answerId: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/poll/vote', parameters: arguments });
 }
 
@@ -104,7 +104,7 @@ export function edit({
   description: string;
   view?: string;
   pollAnswers: any;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   const ans = JSON.stringify(pollAnswers);
 
   return post({

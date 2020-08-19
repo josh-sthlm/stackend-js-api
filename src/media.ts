@@ -13,7 +13,7 @@ import {
   _getServer,
   _getContextPath,
   _getConfig,
-  Thunk,
+  Thunk, XcapOptionalParameters
 } from './api';
 import { User } from './user';
 
@@ -453,7 +453,7 @@ export function uploadMediaFile({
   maxWidth?: number;
   maxHeight?: number;
   responsive?: boolean;
-}): Promise<UploadMediaFileResult> {
+} & XcapOptionalParameters): Promise<UploadMediaFileResult> {
   // Allows the use of COMMUNITY_PARAMETER as well
   if (typeof communityPermalink === 'undefined') {
     // @ts-ignore
@@ -519,7 +519,7 @@ export function listMy({
   order?: number;
   pageSize?: number;
   p?: number;
-}): Thunk<ListResult> {
+} & XcapOptionalParameters): Thunk<Promise<ListResult>> {
   return getJson({ url: '/media/list/my', parameters: arguments });
 }
 
@@ -553,7 +553,7 @@ export function list({
   order?: number;
   pageSize?: number;
   p?: number;
-}): Thunk<ListResult> {
+} & XcapOptionalParameters): Thunk<Promise<ListResult>> {
   return getJson({ url: '/media/list', parameters: arguments });
 }
 
@@ -572,7 +572,7 @@ export function remove({
   communityPermalink?: string;
   context: string;
   id: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   /*
 	let url = Media.getAbsoluteContextPrefix({communityPermalink, context}) + "/media/remove";
 	console.log("url", url);
@@ -619,7 +619,7 @@ export function get({
   id?: number;
   permalink?: string;
   responsive?: boolean;
-}): Thunk<GetMediaResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetMediaResult>> {
   return getJson({ url: '/media/get', parameters: arguments });
 }
 
@@ -674,7 +674,7 @@ export function embed({
   maxWidth?: number;
   responsive?: boolean;
   communityPermalink?: string;
-}): Thunk<EmbedResult> {
+} & XcapOptionalParameters): Thunk<Promise<EmbedResult>> {
   !!arguments[0].communityPermalink && delete arguments[0].communityPermalink;
   return getJson({
     url: '/media/embed',
@@ -699,7 +699,7 @@ export function searchUses({
 }: {
   context: string;
   mediaId?: number;
-}): Thunk<SearchUsesResult> {
+} & XcapOptionalParameters): Thunk<Promise<SearchUsesResult>> {
   return getJson({
     url: '/media/search-uses',
     parameters: arguments,

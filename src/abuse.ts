@@ -1,5 +1,5 @@
 // @flow
-import { post, XcapJsonResult, Thunk } from './api';
+import { post, XcapJsonResult, Thunk, XcapOptionalParameters } from './api';
 
 
 /**
@@ -29,7 +29,7 @@ export function report({
   abuseText: string;
   context?: string | null;
   componentName?: string | null;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/abuse/report',
     parameters: arguments,

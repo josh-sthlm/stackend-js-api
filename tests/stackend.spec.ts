@@ -6,6 +6,7 @@ import {
   GetCommunityResult, getReferenceUrl, isCommunityUrlBlocked,
   STACKEND_COM_COMMUNITY_PERMALINK
 } from '../src/stackend'
+import assert from 'assert';
 
 describe('Stackend', () => {
   const store = createTestStore();
@@ -16,7 +17,7 @@ describe('Stackend', () => {
       expect(r.__resultCode).toBe("success");
 
       const c = r.stackendCommunity;
-      expect(c).toBeDefined();
+      assert(c);
       expect(c.id).toBe(55);
       expect(c.permalink).toBe(STACKEND_COM_COMMUNITY_PERMALINK);
 		})

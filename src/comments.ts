@@ -1,5 +1,14 @@
 // @flow
-import { getJson, post, SortOrder, XcapJsonResult, XcapObject, Thunk, isRunningInBrowser } from './api';
+import {
+  getJson,
+  post,
+  SortOrder,
+  XcapJsonResult,
+  XcapObject,
+  Thunk,
+  isRunningInBrowser,
+  XcapOptionalParameters
+} from './api';
 //import * as groupApi from './group';
 import * as user from './user';
 //import * as gaFunctions from '../functions/gaFunctions';
@@ -106,7 +115,7 @@ export function getComments({
   sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
   order = SortOrder.DESCENDING,
   useVotes = false,
-}: any): Thunk<GetCommentsResult> {
+}: any): Thunk<Promise<GetCommentsResult>> {
   if (isNaN(referenceId)) {
     throw Error('Parameter referenceId is required');
   }
@@ -148,7 +157,7 @@ export function getMultipleComments({
   pageSize = null,
   sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
   order = SortOrder.DESCENDING,
-}: any): Thunk<GetMultipleCommentsResult> {
+}: any): Thunk<Promise<GetMultipleCommentsResult>> {
   if (!Array.isArray(referenceIds)) {
     throw Error('Parameter referenceIds is required');
   }
@@ -197,7 +206,7 @@ export function postComment({
   body: string;
   extraInformation?: any;
   referenceUrl?: string;
-}): Thunk<PostCommentResult> {
+} & XcapOptionalParameters): Thunk<Promise<PostCommentResult>> {
   // Add referenceUrl, if not set
   if (!referenceUrl && isRunningInBrowser()) {
     arguments[0].referenceUrl = window.location.href;

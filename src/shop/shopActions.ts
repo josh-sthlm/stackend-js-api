@@ -14,7 +14,7 @@ import {
 import { ADD_TO_BASKET, RECEIVE_PRODUCT, RECEIVE_PRODUCT_TYPES, RECEIVE_PRODUCTS } from './shopReducer';
 import { Thunk } from '../api';
 
-export const requestProductTypes = (req: ListProductTypesRequest): Thunk<ListProductTypesResult> => async (
+export const requestProductTypes = (req: ListProductTypesRequest): Thunk<Promise<ListProductTypesResult>> => async (
   dispatch: any
 ): Promise<ListProductTypesResult> => {
   const r = await dispatch(listProductTypes(req));

@@ -6,7 +6,7 @@ import {
   XcapJsonResult,
   _getApiUrl,
   Config,
-  Thunk,
+  Thunk, XcapOptionalParameters
 } from './api';
 import type { PaginatedCollection } from './PaginatedCollection';
 import type { Community } from './stackend';
@@ -77,7 +77,7 @@ export function like({
   obfuscatedReference?: string;
   reference?: string;
   context: string;
-}): Thunk<LikeResult> {
+} & XcapOptionalParameters): Thunk<Promise<LikeResult>> {
   return post({
     url: '/like/like',
     parameters: { obfuscatedReference, reference },
@@ -102,7 +102,7 @@ export function removeLike({
   obfuscatedReference?: string;
   reference?: string;
   context: string;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/like/like',
     parameters: { obfuscatedReference, reference, remove: true },
@@ -128,7 +128,7 @@ export function setLike({
   reference?: string;
   like: boolean;
   context?: string;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/like/like',
     parameters: { obfuscatedReference, reference, remove: !like },
@@ -162,7 +162,7 @@ export interface GetLikeToplistResult extends XcapJsonResult {
   objectCreatorUserId: number;
 }
 
-interface GetToplist {
+export interface GetToplist extends XcapOptionalParameters {
   creatorUserId?: number;
   objectCreatorUserId?: number;
   interval?: string;
@@ -191,7 +191,7 @@ export function getToplist({
   objectContext,
   p,
   pageSize,
-}: GetToplist): Thunk<GetLikeToplistResult> {
+}: GetToplist): Thunk<Promise<GetLikeToplistResult>> {
   return getJson({
     url: '/like/toplist',
     parameters: arguments,

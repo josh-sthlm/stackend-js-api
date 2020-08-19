@@ -1,6 +1,6 @@
 //@flow
 
-import { post, XcapJsonResult, Thunk } from './api';
+import { post, XcapJsonResult, Thunk, XcapOptionalParameters } from './api';
 import { CommentModule } from './comments';
 
 /** VoteSummary is used for like and dislike in forum*/
@@ -60,7 +60,7 @@ export function vote({
   referenceGroupId: number;
   score: number;
   module: string;
-}): Thunk<VoteResult> {
+} & XcapOptionalParameters): Thunk<Promise<VoteResult>> {
   return post({
     url: (module && module !== CommentModule.GENERIC ? module : '') + '/comments/vote/vote',
     parameters: arguments,

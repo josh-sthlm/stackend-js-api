@@ -192,7 +192,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
             Object.keys(_.get(getState(), 'groups.auth')).length === 0
           ) {
             try {
-              const json = await dispatch(groupApi.listMyGroups());
+              const json = await dispatch(groupApi.listMyGroups({}));
               dispatch(groupActions.receiveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
             } catch (e) {
               console.error('searchApi.search listMyGroups caught an error: ', e);

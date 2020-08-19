@@ -40,7 +40,7 @@ export type GroupActions = Request | Receive | ReceiveGroup | Invalidate | Recei
 export function fetchMyGroups(): Thunk<void> {
   return async (dispatch: any /*, getState: GetState*/): Promise<void> => {
     dispatch(requestGroups());
-    const json = await dispatch(listMyGroups());
+    const json = await dispatch(listMyGroups({}));
     dispatch(receiveGroups({ entries: json }));
   };
 }
@@ -61,7 +61,7 @@ export function addGroup({ groupPermalink, groupId }: { groupPermalink?: string;
  * @param groupPermalink
  * @param groupId
  */
-export function subscribe({ groupPermalink, groupId }: { groupPermalink?: string; groupId?: number }): Thunk<SubscribeResult> {
+export function subscribe({ groupPermalink, groupId }: { groupPermalink?: string; groupId?: number }): Thunk<Promise<SubscribeResult>> {
   return async (dispatch: any /*, getState: any*/): Promise<SubscribeResult> => {
     const json = await dispatch(_subscribe({ groupPermalink, groupId }));
     console.log('subscribe', json);
@@ -72,7 +72,7 @@ export function subscribe({ groupPermalink, groupId }: { groupPermalink?: string
       console.error("Error: couldn't find groupId in subscribe response:", e);
     }
 
-    const myGroups = await dispatch(listMyGroups());
+    const myGroups = await dispatch(listMyGroups({}));
     dispatch(receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
 
     return json;
@@ -90,7 +90,7 @@ export function unsubscribe({
 }: {
   groupPermalink?: string;
   groupId?: number;
-}): Thunk<XcapJsonResult> {
+}): Thunk<Promise<XcapJsonResult>> {
   return async (dispatch: any): Promise<XcapJsonResult> => {
     const json = await dispatch(_unsubscribe({ groupPermalink, groupId }));
     try {
@@ -99,7 +99,7 @@ export function unsubscribe({
       console.error("Error: couldn't find groupId in unsubscribe response:", e);
     }
 
-    const myGroups = await dispatch(listMyGroups());
+    const myGroups = await dispatch(listMyGroups({}));
     dispatch(receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
     return json;
   };
@@ -110,10 +110,10 @@ export interface ApplyForMembership {
   groupId: number; //ex: 1
 }
 
-export function applyForMembership({ groupPermalink, groupId }: ApplyForMembership): Thunk<XcapJsonResult> {
+export function applyForMembership({ groupPermalink, groupId }: ApplyForMembership): Thunk<Promise<XcapJsonResult>> {
   return async (dispatch: any /*, getState: any*/): Promise<XcapJsonResult> => {
     const json = await dispatch(_applyForMembership({ groupPermalink, groupId }));
-    const myGroups = await dispatch(listMyGroups());
+    const myGroups = await dispatch(listMyGroups({}));
     dispatch(receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
     return json;
   };
@@ -174,7 +174,7 @@ export function fetchGroupMembers({
 }: {
   groupId?: number;
   groupPermalink?: string;
-}): Thunk<ListMembersResult> {
+}): Thunk<Promise<ListMembersResult>> {
   return async (dispatch: any): Promise<ListMembersResult> => {
     const json = await dispatch(listMembers({ groupId, groupPermalink }));
     dispatch(receiveGroups({ entries: json.group }));

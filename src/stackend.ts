@@ -196,7 +196,7 @@ export function getCommunity({
   id?: number;
   permalink?: string;
   domain?: string;
-}): Thunk<GetCommunityResult> {
+}): Thunk<Promise<GetCommunityResult>> {
   return getJson({
     url: '/stackend/community/get',
     parameters: {
@@ -226,7 +226,7 @@ export function validateCommunityPermalink({
 }: {
   permalink: string;
   name?: string;
-}): Thunk<ValidateCommunityPermalinkResult> {
+}): Thunk<Promise<ValidateCommunityPermalinkResult>> {
   return getJson({
     url: '/stackend/community/validate-permalink',
     parameters: {
@@ -307,7 +307,7 @@ export function storeCommunity({
   moderators?: Array<number>;
   theme?: string;
   style?: any;
-}): Thunk<StoreCommunityResult> {
+}): Thunk<Promise<StoreCommunityResult>> {
   return post({
     url: '/stackend/community/store',
     parameters: {
@@ -341,7 +341,7 @@ export function setCommunitySettings({
 }: {
   id: number;
   settings: any;
-}): Thunk<StoreCommunityResult> {
+}): Thunk<Promise<StoreCommunityResult>> {
   return post({
     url: '/stackend/community/set-settings',
     parameters: { id, settings: JSON.stringify(settings) },
@@ -364,7 +364,7 @@ export function setCommunitySetting({
   id: number;
   name: string;
   value: any;
-}): Thunk<StoreCommunityResult> {
+}): Thunk<Promise<StoreCommunityResult>> {
   return post({
     url: '/stackend/community/set-setting',
     parameters: { id, name, value: JSON.stringify(value) },
@@ -388,7 +388,7 @@ export function getCommunityPrivateSettings({
   key?: string | null;
   prefix?: string | null;
   community?: string | null;
-}): Thunk<GetCommunityPrivateSettingsResult> {
+}): Thunk<Promise<GetCommunityPrivateSettingsResult>> {
   return getJson({
     url: '/stackend/community/private/get-settings',
     parameters: { key, prefix },
@@ -415,7 +415,7 @@ export function storeCommunityPrivateSettings({
   value?: any | null;
   values?: {[name: string]: any};
   community?: string | null;
-}): Thunk<XcapJsonResult> {
+}): Thunk<Promise<XcapJsonResult>> {
   const x = {
     key: key,
     values: values ? JSON.stringify(values) : null,
@@ -437,7 +437,7 @@ export function setCommunityStatus({
 }: {
   id?: number;
   status: CommunityStatus.VISIBLE | CommunityStatus.HIDDEN;
-}): Thunk<StoreCommunityResult> {
+}): Thunk<Promise<StoreCommunityResult>> {
   return post({
     url: '/stackend/community/set-status',
     parameters: { id, status },
@@ -462,7 +462,7 @@ export function removeCommunity({
 }: {
   id: number;
   removeData: boolean;
-}): Thunk<RemoveCommunityResult> {
+}): Thunk<Promise<RemoveCommunityResult>> {
   return post({
     url: '/stackend/community/remove',
     parameters: { id, removeData },
@@ -504,7 +504,7 @@ export function searchCommunity({
   pageSize?: number;
   orderBy?: OrderBy;
   order?: Order;
-}): Thunk<SearchCommunityResult> {
+}): Thunk<Promise<SearchCommunityResult>> {
   return getJson({
     url: '/stackend/community/search',
     parameters: {
@@ -524,7 +524,7 @@ export function searchCommunity({
 /**
  * Get the current user (with privileges from stackend rather than the current community)
  */
-export function getCurrentStackendUser(): Thunk<XcapJsonResult> {
+export function getCurrentStackendUser(): Thunk<Promise<XcapJsonResult>> {
   return getJson({
     url: '/user/get',
     community: STACKEND_COMMUNITY,
@@ -830,7 +830,7 @@ export function getModules({
   communityId,
 }: {
   communityId: number;
-}): Thunk<GetModulesResult> {
+}): Thunk<Promise<GetModulesResult>> {
   return getJson({
     url: '/stackend/module/list',
     parameters: {
@@ -861,7 +861,7 @@ export function getModule({
 }: {
   communityId: number;
   moduleId: number;
-}): Thunk<GetModuleResult> {
+}): Thunk<Promise<GetModuleResult>> {
   return getJson({
     url: '/stackend/module/get',
     parameters: {
@@ -887,7 +887,7 @@ export function getSingletonModule({
   communityId: number;
   componentClass: string;
   componentContext: string;
-}): Thunk<GetModuleResult> {
+}): Thunk<Promise<GetModuleResult>> {
   return getJson({
     url: '/stackend/module/get-singleton',
     parameters: {
@@ -997,7 +997,7 @@ export function storeModule({
   settings?: any;
   style?: any;
   extraData?: any;
-}): Thunk<StoreModuleResult> {
+}): Thunk<Promise<StoreModuleResult>> {
   return async (dispatch: any): Promise<StoreModuleResult> => {
     const module = await dispatch(
       post({
@@ -1049,7 +1049,7 @@ export function storeModuleRules({
   rule: RuleSetup;
   commentRule: RuleSetup;
   trustedUsers: Array<number>;
-}): Thunk<XcapJsonResult> {
+}): Thunk<Promise<XcapJsonResult>> {
   const r = {
     createPrivilege: rule.createPrivilege,
     moderationStatus: rule.moderationStatus,
@@ -1093,7 +1093,7 @@ export function removeModule({
 }: {
   id: number;
   communityId: number;
-}): Thunk<XcapJsonResult> {
+}): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/module/remove',
     parameters: {
@@ -1112,7 +1112,7 @@ export function detectModules({
   communityId,
 }: {
   communityId: number;
-}): Thunk<XcapJsonResult> {
+}): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/modules/update',
     parameters: {
@@ -1186,7 +1186,7 @@ export function listAdminUsers({
   privilege,
 }: {
   privilege: number;
-}): Thunk<ListAdminUsersResult> {
+}): Thunk<Promise<ListAdminUsersResult>> {
   return getJson({
     url: '/stackend/user/list-admins',
     parameters: {
@@ -1209,7 +1209,7 @@ export function setAdminStatus({
 }: {
   userId: number;
   privilege: number;
-}): Thunk<XcapJsonResult> {
+}): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/user/set-admin-status',
     parameters: {
@@ -1234,7 +1234,7 @@ export function setCommunityAccess({
   communityId: number;
   userId: number;
   privilegeType: number;
-}): Thunk<XcapJsonResult> {
+}): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/user/set-community-access',
     parameters: arguments,
@@ -1261,7 +1261,7 @@ export function inviteUserToCommunity({
   communityId: number;
   communityPrivilegeType: PrivilegeTypeIds;
   message: string;
-}): Thunk<XcapJsonResult> {
+}): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/user/invite',
     parameters: arguments,
@@ -1328,7 +1328,7 @@ export function removeUser({
   userId,
 }: {
   userId: number;
-}): Thunk<XcapJsonResult> {
+}): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/user/remove',
     parameters: arguments,

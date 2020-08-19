@@ -79,7 +79,7 @@ export function get({
   context: string;
   categoryId?: number;
   permaLink?: string;
-}): Thunk<GetCategoryResult> {
+}): Thunk<Promise<GetCategoryResult>> {
   if (typeof categoryId === 'undefined' && typeof permaLink === 'undefined') {
     throw Error('categoryId or permaLink must be specified');
   }
@@ -108,7 +108,7 @@ export function getByReferenceId({
 }: {
   context: string;
   referenceId: number;
-}): Thunk<GetByReferenceIdResult> {
+}): Thunk<Promise<GetByReferenceIdResult>> {
   return getJson({
     url: '/category/get-by-reference-id',
     parameters: arguments,
@@ -140,7 +140,7 @@ export function list({
   context: string;
   categoryId?: number;
   permaLink?: string;
-}): Thunk<ListCategoriesResult> {
+}): Thunk<Promise<ListCategoriesResult>> {
   return getJson({
     url: '/category/list',
     parameters: arguments,
@@ -176,7 +176,7 @@ export function edit({
   description?: string;
   parentCategoryId?: number;
   sortOrder?: number;
-}): Thunk<XcapObject> {
+}): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/category/edit',
     parameters: arguments,
@@ -193,7 +193,7 @@ export function edit({
  * @param context {string} Context name, for example "news"
  * @param id {number} Category id (optional)
  */
-export function remove({ context, id }: { context: string; id: number }): Thunk<XcapObject> {
+export function remove({ context, id }: { context: string; id: number }): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/category/remove',
     parameters: arguments,

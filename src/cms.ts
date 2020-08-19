@@ -7,7 +7,7 @@ import {
   ModerationStatus,
   XcapObject,
   Thunk,
-  isRunningServerSide,
+  isRunningServerSide, XcapOptionalParameters
 } from './api';
 import { generatePermalink } from './permalink';
 import { User } from './user';
@@ -72,7 +72,7 @@ export interface GetContentResult extends XcapJsonResult {
  * @param id Content id (required)
  * @param permalink Content permalink (optional)
  */
-export function getContent({ id, permalink }: { id?: number; permalink?: string }): Thunk<GetContentResult> {
+export function getContent({ id, permalink }: { id?: number; permalink?: string } & XcapOptionalParameters): Thunk<Promise<GetContentResult>> {
   return getJson({ url: '/cms/get', parameters: arguments });
 }
 
@@ -92,7 +92,7 @@ export function populateTemplateContent({
 }: {
   id?: number;
   permalink?: string;
-}): Thunk<PopulateTemplateContent> {
+} & XcapOptionalParameters): Thunk<Promise<PopulateTemplateContent>> {
   return getJson({ url: '/cms/populate-template', parameters: arguments });
 }
 
@@ -116,7 +116,7 @@ export function listContent({
   permalink?: string;
   p?: number;
   pageSize?: number;
-}): Thunk<ListContentResult> {
+} & XcapOptionalParameters): Thunk<Promise<ListContentResult>> {
   return getJson({
     url: '/cms/list',
     parameters: {
@@ -149,7 +149,7 @@ export function search({
   p?: number;
   pageSize?: number;
   orderBy?: 'CREATED' | 'MODIFIED' | 'SORT';
-}): Thunk<SearchResult> {
+} & XcapOptionalParameters): Thunk<Promise<SearchResult>> {
   return getJson({
     url: '/cms/search',
     parameters: {
@@ -239,7 +239,7 @@ export function editContent({
   teaser?: string;
   body: string;
   categoryId?: number;
-}): Thunk<EditContentResult> {
+} & XcapOptionalParameters): Thunk<Promise<EditContentResult>> {
   return post({ url: '/cms/edit', parameters: arguments });
 }
 
@@ -254,7 +254,7 @@ export function setModerationStatus({
 }: {
   id: number;
   moderationStatus: ModerationStatus;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/cms/set-modstatus', parameters: arguments });
 }
 
@@ -264,7 +264,7 @@ export function setModerationStatus({
  * @param id Cms content id (required)
  * @returns {Promise}
  */
-export function removeContent({ id }: { id: number }): Thunk<XcapJsonResult> {
+export function removeContent({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/cms/remove', parameters: arguments });
 }
 
@@ -284,7 +284,7 @@ export function moveContent({
   oldCategoryId?: number;
   insertion: Insertion;
   insertionPoint: number;
-}): Thunk<XcapJsonResult> {
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/cms/move',
     parameters: {
@@ -325,7 +325,7 @@ export type EditPageResult = XcapJsonResult
  *
  * @returns {Thunk<EditPageResult>}
  */
-export function editPage({ page, parentPageId }: { page: Page; parentPageId?: number }): Thunk<EditPageResult> {
+export function editPage({ page, parentPageId }: { page: Page; parentPageId?: number } & XcapOptionalParameters): Thunk<Promise<EditPageResult>> {
   return post({
     url: '/cms/pages/edit',
     parameters: {
@@ -340,7 +340,7 @@ export function editPage({ page, parentPageId }: { page: Page; parentPageId?: nu
  * @param id
  * @returns {Thunk<XcapJsonResult>}
  */
-export function removePage({ id }: { id: number }): Thunk<XcapJsonResult> {
+export function removePage({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/cms/pages/remove', parameters: arguments });
 }
 
@@ -366,7 +366,7 @@ export function getPage({
   permalink?: string;
   p?: number;
   pageSize?: number;
-}): Thunk<GetPageResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetPageResult>> {
   return getJson({
     url: '/cms/pages/get',
     parameters: {
@@ -393,7 +393,7 @@ export function searchContentUse({
   contentId: number;
   p?: number;
   pageSize?: number;
-}): Thunk<SearchPagesResult> {
+} & XcapOptionalParameters): Thunk<Promise<SearchPagesResult>> {
   return getJson({
     url: '/cms/find-uses',
     parameters: {
@@ -429,7 +429,7 @@ export function searchPages({
   pageSize: number | null;
   orderBy: 'name' | 'createdDate' | null;
   order: Order | null;
-}): Thunk<SearchPagesResult> {
+} & XcapOptionalParameters): Thunk<Promise<SearchPagesResult>> {
   return getJson({
     url: '/cms/pages/search',
     parameters: arguments,
@@ -455,7 +455,7 @@ export function getPages({
   pageIds?: Array<number>;
   permalinks?: Array<string>;
   communityPermalink?: string | null;
-}): Thunk<GetPagesResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetPagesResult>> {
   return getJson({
     url: '/cms/pages/get-multiple',
     parameters: {
@@ -482,7 +482,7 @@ export function searchPageContent({
 }: {
   q: string;
   codeBinOnly: boolean;
-}): Thunk<SearchPageContentResult> {
+} & XcapOptionalParameters): Thunk<Promise<SearchPageContentResult>> {
   return getJson({
     url: '/cms/pages/search-page-content',
     parameters: arguments,
@@ -494,7 +494,7 @@ export interface GetAvailablePagePermalinkResult extends XcapJsonResult {
 }
 
 /**
- * Construct an avaialable permalink for cms pages
+ * Construct an available permalink for cms pages
  * @param pageId
  * @param permalink
  * @returns {Thunk<XcapJsonResult>}
@@ -505,7 +505,7 @@ export function getAvailablePagePermalink({
 }: {
   pageId?: number | null;
   permalink: string;
-}): Thunk<GetAvailablePagePermalinkResult> {
+} & XcapOptionalParameters): Thunk<Promise<GetAvailablePagePermalinkResult>> {
   return getJson({
     url: '/cms/pages/get-available-permalink',
     parameters: arguments,
@@ -520,14 +520,14 @@ export interface GetSubSiteResult extends XcapJsonResult {
   referencedObjects: {[ref: string]: any};
 }
 
-export function getSubSite({ id }: { id: number }): Thunk<GetSubSiteResult> {
+export function getSubSite({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
   return getJson({
     url: '/cms/subsite/get',
     parameters: arguments,
   });
 }
 
-export function storeSubSite({ subSite }: { subSite: SubSite }): Thunk<GetSubSiteResult> {
+export function storeSubSite({ subSite }: { subSite: SubSite } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
   return post({
     url: '/cms/subsite/store',
     parameters: {
@@ -540,7 +540,7 @@ export interface RemoveSubSiteResult extends XcapJsonResult {
   removed: boolean;
 }
 
-export function removeSubSite({ id }: { id: number }): Thunk<RemoveSubSiteResult> {
+export function removeSubSite({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<RemoveSubSiteResult>> {
   return post({
     url: '/cms/subsite/remove',
     parameters: arguments,
@@ -559,7 +559,7 @@ export function searchSubSites({
   q?: string | null;
   p?: number;
   pageSize?: number;
-}): Thunk<SearchSubSiteResult> {
+} & XcapOptionalParameters): Thunk<Promise<SearchSubSiteResult>> {
   return getJson({
     url: '/cms/subsite/list',
     parameters: arguments,

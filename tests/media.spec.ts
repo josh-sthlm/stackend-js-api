@@ -5,6 +5,7 @@ import { get, GetMediaResult, list, ListResult, MediaListOrder, ThumbnailSize } 
 import { COMMUNITY_PARAMETER } from '../src/api'
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
 import { DEFAULT_CMS_CONTEXT } from '../src/cms'
+import assert from 'assert';
 
 
 describe('Media', () => {
@@ -20,10 +21,10 @@ describe('Media', () => {
       }));
 
       expect(r.__resultCode).toBe("success");
-      expect(r.media).toBeDefined();
+      assert(r.media);
       expect(r.media.id).toBe(2);
       expect(r.html).toBe("<img src=\"https://api.stackend.com/media/get/c55/cms/developers-jpg.jpg\" alt=\"\" width=\"1250\" height=\"631\" style=\"max-width:1250px;\" class=\"stackend-responsive\"/>");
-      expect(r.thumbnail).toBeDefined();
+      assert(r.thumbnail);
       expect(r.thumbnail.mediaId).toBe(2);
       expect(r.thumbnail.url).toBeDefined();
     })

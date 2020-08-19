@@ -105,7 +105,7 @@ export function fetchBlogEntries({
       const auth = _.get(groups, 'auth', {});
       try {
         if (_.get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
-          const myGroups = await dispatch(listMyGroups());
+          const myGroups = await dispatch(listMyGroups({}));
           dispatch(groupActions.receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
         }
       } catch (e) {
@@ -147,14 +147,14 @@ export function fetchBlogEntry({
   id?: number;
   permalink?: string;
   blogKey: string;
-}): Thunk<GetBlogEntryResult> {
+}): Thunk<Promise<GetBlogEntryResult|null>> {
   return async (dispatch: any, getState): Promise<GetBlogEntryResult|null> => { // FIXME: error handling
     try {
       await dispatch(requestBlogEntries(blogKey));
       const { currentUser, groups } = getState();
       const auth = _.get(groups, 'auth', {});
       if (_.get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
-        const json = await dispatch(listMyGroups());
+        const json = await dispatch(listMyGroups({}));
         await dispatch(groupActions.receiveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
       }
 
