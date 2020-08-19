@@ -1,8 +1,8 @@
 //@flow
 
 import createTestStore from './setup-redux';
-import { CommentModule, getComments, GetCommentsResult } from '../src/comments';
-import { COMMUNITY_PARAMETER } from '../src/api';
+import { CommentModule, getComments, GetCommentsResult } from '../comments';
+import { COMMUNITY_PARAMETER } from '../api';
 
 describe('Comments', () => {
 

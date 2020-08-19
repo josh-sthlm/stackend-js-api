@@ -18,7 +18,7 @@
     "build": "tsc",
     "pretest": "npm run build",
     "test": "jest",
-    "lint": "eslint --ext js,ts src tests",
+    "lint": "eslint --ext ts .",
     "clean": "rimraf dist types",
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
     "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",

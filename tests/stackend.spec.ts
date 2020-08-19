@@ -5,7 +5,7 @@ import {
   getCommunity,
   GetCommunityResult, getReferenceUrl, isCommunityUrlBlocked,
   STACKEND_COM_COMMUNITY_PERMALINK
-} from '../src/stackend'
+} from '../stackend'
 import assert from 'assert';
 
 describe('Stackend', () => {

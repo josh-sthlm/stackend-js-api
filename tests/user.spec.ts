@@ -1,9 +1,9 @@
 //@flow
 
 import createTestStore from './setup-redux';
-import { COMMUNITY_PARAMETER } from '../src/api'
-import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
-import { getUser, GetUserResult } from '../src/user'
+import { COMMUNITY_PARAMETER } from '../api'
+import { STACKEND_COM_COMMUNITY_PERMALINK } from '../stackend'
+import { getUser, GetUserResult } from '../user'
 import assert from 'assert';
 
 

@@ -2,13 +2,13 @@
 
 import createTestStore from './setup-redux';
 
-import { COMMUNITY_PARAMETER } from '../src/api'
-import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
+import { COMMUNITY_PARAMETER } from '../api'
+import { STACKEND_COM_COMMUNITY_PERMALINK } from '../stackend'
 import {
   getContent,
   GetContentResult,
   getSubSite, GetSubSiteResult
-} from '../src/cms'
+} from '../cms'
 import assert from 'assert';
 
 

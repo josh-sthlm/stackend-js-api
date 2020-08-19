@@ -1,6 +1,6 @@
 //@flow
 
-import { listProductTypes } from '../src/shop'
+import { listProductTypes } from '../shop'
 
 
 describe('Shop', () => {

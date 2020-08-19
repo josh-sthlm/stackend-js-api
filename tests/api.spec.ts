@@ -10,8 +10,8 @@ import {
   Order, parseCommunityContext, parseReference,
   STACKEND_DEFAULT_SERVER, templateReplace, templateReplaceUrl, _constructConfig,
   STACKEND_DEFAULT_CONTEXT_PATH, DeployProfile, setConfiguration, newXcapJsonResult, GetInitialStoreValuesResult
-} from '../src/api';
-import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
+} from '../api';
+import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../stackend'
 import assert from 'assert';
 
 describe('API', () => {
