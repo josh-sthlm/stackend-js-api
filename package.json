@@ -19,12 +19,12 @@
     "pretest": "npm run build",
     "test": "jest",
     "lint": "eslint --ext ts .",
-    "clean": "rimraf types *.js.map blog.js blog/*.js blog/*.map category/index.js category/*.js category/*.map cms/index.js cms/*.js cms/*.map comments/index.js comments/.js comments/*.map",
+    "clean": "rimraf types {abuse,api,blog,category,cms,comments,counter,event,forum,group,like,login,media,poll,qna,rating,request,search,shop,stackend,throbber,user,vote}/*.{js,js.map}",
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
     "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
     "prepare": "npm run clean && npm run lint && npm test",
     "prepublishOnly": "npm run clean && npm run build && npm run lint && npm run format:check && npm run test",
-    "preversion" : "npm run lint"
+    "preversion": "npm run lint"
   },
   "dependencies": {
     "@babel/runtime": "^7.9.2",
@@ -64,9 +64,9 @@
     "eslint-plugin-flowtype": "^4.7.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^2.5.1",
-    "eslint-plugin-prettier": "^3.1.4",
     "jest": "^26.4.0",
     "prettier": "^2.0.5",
     "rimraf": "^3.0.2",
