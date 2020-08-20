@@ -1,7 +1,7 @@
 //@flow
 
 
-import { listForums } from '../forum'
+import { listForums } from '../src/forum'
 
 
 describe('Forum', () => {

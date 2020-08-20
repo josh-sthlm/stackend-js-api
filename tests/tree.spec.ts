@@ -1,5 +1,5 @@
 
-import { newTree, addNode, newTreeNode } from '../api/tree'
+import { newTree, addNode, newTreeNode } from '../src/api/tree'
 
 
 describe('Tree', () => {

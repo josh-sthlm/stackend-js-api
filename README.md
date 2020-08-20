@@ -86,8 +86,8 @@ To get started with stackend, you need to first set up a redux store using the r
 ```javascript
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
-import { STANDARD_REDUCERS } from '@stackend/api/reducers';
-import { loadInitialStoreValues } from '@stackend/api/xcapActions';
+import { STANDARD_REDUCERS } from '@stackend/api/api/reducers';
+import { loadInitialStoreValues } from '@stackend/api/api/actions';
 import { getCurrentCommunity } from '@stackend/api';
     
 // Possibly add your own reducers and middleware here

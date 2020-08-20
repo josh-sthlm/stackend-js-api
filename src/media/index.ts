@@ -167,18 +167,18 @@ export const MediaTypeName: { [mediaTypeId: number]: MediaTypeNames } = {
 /**
  * Media list ordering
  */
-export const MediaListOrder = {
-  LATEST_UPDATED_DESC: 1,
-  LATEST_UPDATED_ASC: 2,
-  CREATED_DESC: 3,
-  CREATED_ASC: 4,
-  CATEGORY_DESC: 5,
-  CATEGORY_ASC: 6,
-  TITLE_DESC: 7,
-  TITLE_ASC: 8,
-  USER_DESC: 9,
-  USER_ASC: 10,
-  RANDOM: 11,
+export enum MediaListOrder {
+  LATEST_UPDATED_DESC = 1,
+  LATEST_UPDATED_ASC = 2,
+  CREATED_DESC = 3,
+  CREATED_ASC = 4,
+  CATEGORY_DESC = 5,
+  CATEGORY_ASC = 6,
+  TITLE_DESC = 7,
+  TITLE_ASC = 8,
+  USER_DESC = 9,
+  USER_ASC = 10,
+  RANDOM = 11
 };
 
 /**
@@ -516,7 +516,7 @@ export function listMy({
   mediaType?: number;
   referenceId?: number;
   categoryId?: number;
-  order?: number;
+  order?: MediaListOrder;
   pageSize?: number;
   p?: number;
 } & XcapOptionalParameters): Thunk<Promise<ListResult>> {

@@ -1,6 +1,6 @@
 //@flow
 
-import { login } from '../login'
+import { login } from '../src/login'
 
 describe('Login', () => {
   describe("Compile", () => {

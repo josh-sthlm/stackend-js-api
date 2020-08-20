@@ -1,6 +1,6 @@
 //@flow
 
-import { vote } from '../vote'
+import { vote } from '../src/vote'
 
 
 describe('Vote', () => {

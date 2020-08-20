@@ -1,8 +1,8 @@
 //@flow
 
 import createTestStore from './setup-redux';
-import { COMMUNITY_PARAMETER } from '../api'
-import { getPoll, GetPollResult } from '../poll'
+import { COMMUNITY_PARAMETER } from '../src/api'
+import { getPoll, GetPollResult } from '../src/poll'
 
 
 describe('Poll', () => {

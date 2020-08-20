@@ -2,9 +2,9 @@
 
 import createTestStore from './setup-redux';
 
-import { COMMUNITY_PARAMETER } from '../api'
-import { STACKEND_COM_COMMUNITY_PERMALINK } from '../stackend'
-import { getGroup, GetGroupResult } from '../group'
+import { COMMUNITY_PARAMETER } from '../src/api'
+import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
+import { getGroup, GetGroupResult } from '../src/group'
 import assert from 'assert';
 
 

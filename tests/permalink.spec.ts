@@ -1,7 +1,7 @@
 //@flow
 
 
-import { generatePermalink, getParentPermalink } from '../api/permalink';
+import { generatePermalink, getParentPermalink } from '../src/api/permalink';
 
 
 describe('Permalink', () => {
