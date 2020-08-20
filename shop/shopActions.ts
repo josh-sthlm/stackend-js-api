@@ -10,7 +10,7 @@ import {
   ListProductsRequest,
   ListProductTypesResult,
   ListProductTypesRequest, ListProductsResult, ListProductsAndTypesResult, GetProductResult
-} from '../shop';
+} from './index';
 import { ADD_TO_BASKET, RECEIVE_PRODUCT, RECEIVE_PRODUCT_TYPES, RECEIVE_PRODUCTS } from './shopReducer';
 import { Thunk } from '../api';
 

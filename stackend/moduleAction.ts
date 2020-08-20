@@ -2,8 +2,8 @@
 import { REQUEST_MODULES, RECEIVE_MODULES, RESET_MODULES, ModuleActions } from './moduleReducer';
 import { Thunk } from '../api';
 
-import * as Stackend from '../stackend';
-import { GetModulesResult, Module, ModuleStats } from '../stackend';
+import * as Stackend from './index';
+import { GetModulesResult, Module, ModuleStats } from './index';
 
 /**
  * Load communities

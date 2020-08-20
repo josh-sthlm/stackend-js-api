@@ -1,9 +1,9 @@
 // @flow
 import _ from 'lodash';
 import update from 'immutability-helper';
-import createReducer from '../createReducer';
-import * as forumApi from '../forum';
-import { ForumThreadEntry } from '../forum';
+import createReducer from '../api/createReducer';
+import * as forumApi from './index';
+import { ForumThreadEntry } from './index';
 
 export type ForumThreadActions = Request | Receive | Invalidate | Rate | Like | DeleteEntry | Update;
 

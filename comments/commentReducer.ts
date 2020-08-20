@@ -2,9 +2,9 @@
 import _ from 'lodash';
 import update from 'immutability-helper';
 import * as commentAction from './commentAction';
-import * as commentsApi from '../comments';
-import { Comment } from '../comments';
-import { emptyPaginatedCollection, PaginatedCollection } from '../PaginatedCollection';
+import * as commentsApi from './index';
+import { Comment } from './index';
+import { emptyPaginatedCollection, PaginatedCollection } from '../api/PaginatedCollection';
 
 //Action Type
 export const REQUEST_GROUP_COMMENTS = 'REQUEST_GROUP_COMMENTS';

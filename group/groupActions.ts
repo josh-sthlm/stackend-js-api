@@ -1,6 +1,6 @@
 // @flow
 import _ from 'lodash';
-import { AuthObject } from '../privileges';
+import { AuthObject } from '../user/privileges';
 import {
   Group,
   GroupMemberAuth,
@@ -11,7 +11,7 @@ import {
   listMembers,
   getGroup,
   ListMembersResult, SubscribeResult
-} from '../group';
+} from './index';
 
 import { Thunk, XcapJsonResult } from '../api';
 

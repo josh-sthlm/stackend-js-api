@@ -8,8 +8,8 @@ import {
   RECEIVE_GROUPS_AUTH,
   REQUEST_GROUPS
 } from './groupActions';
-import { Group, GroupMemberAuth } from '../group';
-import { AuthObject } from '../privileges';
+import { Group, GroupMemberAuth } from './index';
+import { AuthObject } from '../user/privileges';
 
 
 export interface GroupState {

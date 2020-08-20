@@ -6,7 +6,7 @@ import {
 	getCategories,
 	search as _search,
 	QnaTypeConverter
-} from '../qna';
+} from './index';
 import * as Search from '../search';
 import * as searchActions from '../search/searchActions';
 import {

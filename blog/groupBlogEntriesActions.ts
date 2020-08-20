@@ -28,7 +28,7 @@ import {
   GetEntriesResult, GetBlogEntryResult
   //gaPostEventObject,
   //gaEditPostEventObject
-} from '../blog';
+} from './index';
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**

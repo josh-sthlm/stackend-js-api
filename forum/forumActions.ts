@@ -1,6 +1,6 @@
 // @flow
 import _ from 'lodash';
-import { Forum, listForums } from '../forum';
+import { Forum, listForums } from './index';
 import { Thunk } from '../api';
 import { ForumActions, RECEIVE_FORUMS, REQUEST_FORUMS } from './forumReducer';
 

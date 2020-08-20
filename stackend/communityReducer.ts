@@ -1,8 +1,8 @@
 // @flow
 import update from 'immutability-helper';
-import { Community } from '../stackend';
+import { Community } from './index';
 import { isRunningInBrowser } from '../api';
-import { PaginatedCollection } from '../PaginatedCollection';
+import { PaginatedCollection } from '../api/PaginatedCollection';
 import { ReceiveCommunities, ResourceUsage } from './communityAction';
 
 export const KEY = 'COMMUNITIES';

@@ -1,7 +1,7 @@
 //@flow
 
 import { VoteActions, XCAP_VOTES_RECEIVED, XCAP_VOTES_UPDATE } from './voteReducer';
-import { Vote, VoteSummary } from '../vote';
+import { Vote, VoteSummary } from './index';
 import { VoteInfo } from './voteReducer';
 import { Comment } from '../comments';
 

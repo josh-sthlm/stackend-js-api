@@ -1,6 +1,6 @@
 //@flow
 
-import { Content, GetContentResult } from '../cms';
+import { Content, GetContentResult } from './index';
 import { getJsonErrorText } from '../api';
 
 export const REQUEST_CONTENT = 'REQUEST_CONTENT';

@@ -1,8 +1,8 @@
 // @flow
 import update from 'immutability-helper';
 import _ from 'lodash';
-import createReducer from '../createReducer';
-import * as forumApi from '../forum';
+import createReducer from '../api/createReducer';
+import * as forumApi from './index';
 
 export const RECEIVE_FORUMS = 'RECEIVE_FORUMS';
 export const REQUEST_FORUMS = 'REQUEST_FORUMS';

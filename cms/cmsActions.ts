@@ -2,7 +2,7 @@
 
 import { Thunk } from '../api';
 import { REQUEST_CONTENT, RECEIVE_CONTENT, RECEIVE_CONTENTS, SET_CONTENT } from './cmsReducer';
-import { getContent, Content } from '../cms';
+import { getContent, Content } from './index';
 
 /**
  * Fetch CMS content

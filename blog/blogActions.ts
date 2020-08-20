@@ -1,6 +1,6 @@
 //@flow
 import * as reducer from './blogReducer';
-import { Blog } from '../blog';
+import { Blog } from './index';
 import { BlogActions } from './blogReducer';
 
 

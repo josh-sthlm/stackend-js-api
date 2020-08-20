@@ -9,7 +9,7 @@ import {
   ListProductsAndTypesResult,
   ListProductTypesResult,
   Product
-} from '../shop';
+} from './index';
 import _ from 'lodash';
 
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';

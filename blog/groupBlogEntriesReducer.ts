@@ -2,12 +2,12 @@
 import _ from 'lodash';
 
 import update from 'immutability-helper';
-import * as blogApi from '../blog';
-import createReducer from '../createReducer';
+import * as blogApi from './index';
+import createReducer from '../api/createReducer';
 import { getJsonErrorText } from '../api';
 import { REACT_ROUTER_REDUX_LOCATION_CHANGE } from '../request/requestReducers';
 import { logger } from '../api';
-import { BlogEntry, GetEntriesResult } from '../blog';
+import { BlogEntry, GetEntriesResult } from './index';
 import { LikeDataMap } from '../like';
 
 //Action Type

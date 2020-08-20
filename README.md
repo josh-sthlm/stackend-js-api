@@ -20,7 +20,7 @@ Stackend comments allows you to add threaded comments to your page.<br>
 ### [Reviews](https://stackend.com/product/reviews)
 Reviews is a variation of comments that includes a 1-5 star rating.<br>
 
-### [Community Feed / Blog](https://stackend.com/product/feed)
+### [Community Feed / Index](https://stackend.com/product/feed)
 Allows you to add news feeds to you projects for anyone logged in or just selected members.<br>
 
 ### [Login & Registration](https://stackend.com/product/login)

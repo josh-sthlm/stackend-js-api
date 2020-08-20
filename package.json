@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/josh-sthlm/stackend-js-api"
   },
-  "module": "dist/api.js",
+  "module": "api/index.js",
   "private": true,
   "bugs": {
     "url": "info@stackend.com"
@@ -19,7 +19,7 @@
     "pretest": "npm run build",
     "test": "jest",
     "lint": "eslint --ext ts .",
-    "clean": "rimraf dist types",
+    "clean": "rimraf types *.js.map blog.js blog/*.js blog/*.map category/index.js category/*.js category/*.map cms/index.js cms/*.js cms/*.map comments/index.js comments/.js comments/*.map",
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
     "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
     "prepare": "npm run clean && npm run lint && npm test",

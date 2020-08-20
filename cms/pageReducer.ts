@@ -1,6 +1,6 @@
 //@flow
 import { getJsonErrorText } from '../api';
-import { GetPagesResult, Page, SubSite } from '../cms';
+import { GetPagesResult, Page, SubSite } from './index';
 
 export const RECEIVE_PAGES = 'RECEIVE_PAGES';
 export const CLEAR_PAGE = 'CLEAR_PAGE';

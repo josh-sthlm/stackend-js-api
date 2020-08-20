@@ -2,7 +2,7 @@
 
 //Action Type
 
-import { Module, ModuleStats } from '../stackend';
+import { Module, ModuleStats } from './index';
 
 export const REQUEST_MODULES = 'REQUEST_MODULES';
 export const RECEIVE_MODULES = 'RECEIVE_MODULES';

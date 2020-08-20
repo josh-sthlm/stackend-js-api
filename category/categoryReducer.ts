@@ -1,7 +1,7 @@
 // @flow
 import update from 'immutability-helper';
-import * as categoryApi from '../category';
-import { Category } from '../category';
+import * as categoryApi from './index';
+import { Category } from './index';
 
 ////Action Type
 export const REQUEST_AVAILABLE_CATEGORIES = 'REQUEST_AVAILABLE_CATEGORIES';

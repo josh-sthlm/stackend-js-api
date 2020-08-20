@@ -18,7 +18,7 @@ import {
   getMultipleComments,
   getComments,
   postComment as _postComment, GetMultipleCommentsResult, CommentModule
-} from '../comments'
+} from './index'
 import { Thunk } from '../api';
 //import { sendEventToGA } from '../analytics/analyticsFunctions';
 import { receiveVotes } from '../vote/voteActions';

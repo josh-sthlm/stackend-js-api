@@ -1,6 +1,6 @@
 // @flow
 import * as searchApi from '../search';
-import { Category, Context, Reference, list } from '../category';
+import { Category, Context, Reference, list } from './index';
 import * as searchActions from '../search/searchActions';
 import * as reducer from './categoryReducer';
 import { AnyAction } from 'redux';

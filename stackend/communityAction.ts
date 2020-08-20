@@ -10,7 +10,7 @@ import {
 } from './communityReducer';
 
 import { Thunk } from '../api';
-import { Community, CommunityStatus, getCommunity, searchCommunity, storeCommunity } from '../stackend';
+import { Community, CommunityStatus, getCommunity, searchCommunity, storeCommunity } from './index';
 
 
 export interface ResourceUsage {

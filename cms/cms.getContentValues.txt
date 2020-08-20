@@ -1,0 +1,40 @@
+
+FIXME: Was removed from index.ts. Uses react
+
+/**
+ * Extract all content values from a page
+ * @param page
+ */
+export function getContentValues(page: Page | null): ContentValues {
+	if (!page) {
+		return {};
+	}
+
+	let contentValues = {};
+
+	page.content.forEach(pc => {
+		if (pc.type === ModuleType.CMS && pc.referenceRef) {
+			const { htmlValue, javascriptValue, cssValue } = extractContentValues(pc.referenceRef);
+			let style = cssValue ? (
+				<style
+					type="text/css"
+					dangerouslySetInnerHTML={{ __html: cssValue }}
+					key={'pc-css-' + pc.referenceRef.id}
+					id={'stackend-cms-' + pc.referenceRef.id + '-style'}
+				/>
+			) : null;
+			let javascript = null;
+			if (javascriptValue !== '') {
+				javascript = `<script type="text/javascript" id="stackend-cms-${pc.referenceRef.id}-js">${javascriptValue}</script>`;
+			}
+			let html = htmlValue ? `<div class='${RICH_CONTENT_CSS_CLASS}'>${htmlValue}</div>` : null;
+			contentValues[pc.reference] = {
+				html,
+				style,
+				javascript
+			};
+		}
+	});
+
+	return contentValues;
+}

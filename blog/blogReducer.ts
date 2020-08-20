@@ -1,7 +1,7 @@
 // @flow
 import update from 'immutability-helper';
 
-import { Blog } from '../blog';
+import { Blog } from './index';
 
 export const REQUEST_BLOGS = 'REQUEST_BLOGS';
 export const RECEIVE_BLOGS = 'RECEIVE_BLOGS';

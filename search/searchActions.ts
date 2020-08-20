@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import * as groupActions from '../group/groupActions';
 import { getCurrentCommunityPermalink, Thunk } from '../api';
-import { getActiveSearchTypes, Order, OrderBy, search as _search, SearchAbleType } from '../search';
+import { getActiveSearchTypes, Order, OrderBy, search as _search, SearchAbleType } from './index';
 import * as qnaApi from '../qna';
 import * as groupApi from '../group';
 import * as reducer from './searchReducer';

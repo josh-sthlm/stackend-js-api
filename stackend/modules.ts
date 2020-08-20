@@ -229,7 +229,7 @@ export function getModuleInfo(moduleType: ModuleType): ModuleInfo | null {
 }
 
 /**
- * Translate a ModuleType to a value accepted by stackend.ts
+ * Translate a ModuleType to a value accepted by index.ts
  * @param moduleType
  * @returns {string}
  */

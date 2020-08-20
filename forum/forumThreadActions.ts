@@ -1,7 +1,7 @@
 // @flow
 import _ from 'lodash';
-import * as forumApi from '../forum';
-import { Forum, ForumThreadEntry, ListThreadsResult, removeForumThreadEntry } from '../forum';
+import * as forumApi from './index';
+import { Forum, ForumThreadEntry, ListThreadsResult, removeForumThreadEntry } from './index';
 import * as likeApi from '../like';
 import * as api from '../api';
 import { Thunk } from '../api';
@@ -15,7 +15,7 @@ import {
   REQUEST_FORUM_THREADS,
   UPDATE_FORUM_THREAD_ENTRY
 } from './forumThreadReducer';
-import { PaginatedCollection } from '../PaginatedCollection';
+import { PaginatedCollection } from '../api/PaginatedCollection';
 
 //import { sendEventToGA } from '../analytics/analyticsFunctions';
 

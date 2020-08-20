@@ -1,6 +1,6 @@
 // @flow
 import update from 'immutability-helper';
-import createReducer from '../createReducer';
+import createReducer from '../api/createReducer';
 
 export type EditForumThreadActions = Edit | Set | AddQuote | ToggleEdit;
 

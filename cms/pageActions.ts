@@ -19,8 +19,8 @@ import {
   Page,
   SubSiteNode,
   SubSite
-} from '../cms';
-import { getPermalink } from '../tree';
+} from './index';
+import { getPermalink } from '../api/tree';
 
 
 /**
