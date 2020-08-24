@@ -1,12 +1,11 @@
 //@flow
 
-import log4js from 'log4js';
-import { Parameters } from './index';
+//import log4js from 'log4js';
+import { logger, Parameters } from './index';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
-const logger = log4js.getLogger('Stackend');
 
 /**
  * Content type for json data

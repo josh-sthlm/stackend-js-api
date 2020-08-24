@@ -42,7 +42,7 @@ Stackend is very suitable for building dynamic applications with user generated 
 
 # Stackend JS API
 
-This project contins the lowest level of JS bindings to the JSON endpoints provided by api.stackend.com
+This project contains the lowest level of JS bindings to the JSON endpoints provided by api.stackend.com
 
 ## Installation
 
@@ -52,42 +52,18 @@ To add Stackend to your project, run:
 
 ## Initialization and basic setup
 
-The Stackend library uses [config](https://www.npmjs.com/package/config) to store project specific settings 
-and [log4js](https://www.npmjs.com/package/log4js) for logging.
-
-Your project must include the file `config/default.json` to work.
-
-The built in stackend configuration should be usable by any project and may be left out. However, you might want to tweak the logging setup:
-
-```json
-{
-  "stackend": {
-    "server": "https://api.stackend.com",
-    "contextPath": ""
-  },
-  
- "log4js": {
-    "appenders": {
-      "console": { "type": "console" }
-    },
-    "categories": {
-      "default": {
-        "appenders": [ "console" ],
-        "level": "warn"
-      }
-    }
-  }
- } 
-```
 The code uses [redux](https://www.npmjs.com/package/redux) to keep application state. 
-To get started with stackend, you need to first set up a redux store using the reducers from reducers.ts. 
+Most API methods are [redux-thunk](https://github.com/reduxjs/redux-thunk#redux-thunk) methods and should be dispatched thru the store.
+To get started with stackend, you need to first set up a redux store using the supplied reducers. 
 **Note:** If your application also uses redux, please do not combine the stores into one single instance as the action types may clash.
+
+The initialize function can also be used to set up logging, custom configuration and to load additional data from the api server.
 
 ```javascript
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { STANDARD_REDUCERS } from '@stackend/api/api/reducers';
-import { loadInitialStoreValues } from '@stackend/api/api/actions';
+import { initialize } from '@stackend/api/api/actions';
 import { getCurrentCommunity } from '@stackend/api';
     
 // Possibly add your own reducers and middleware here
@@ -98,9 +74,8 @@ const store = createStore(
     compose(applyMiddleware(thunk))
   );
     
-// Initialize stackend with your community permalink
-await store.dispatch(loadInitialStoreValues({
-  permalink: 'stackend-com'
+await store.dispatch(initialize({
+  permalink: 'stackend-com' /* Replace with your community permalink */
 }));
 
 // Get the community data
@@ -108,3 +83,44 @@ const community = await store.dispatch(getCurrentCommunity());
 console.log("Community", community);
 ```
 
+## Custom logging
+Stackend [winston](https://github.com/winstonjs/winston#readme) for logging.
+
+If you don't set up logging, a default console logger will be used.
+
+To start stackend with a custom logging setup, supply it to the initialize function like this:
+
+```javascript
+import { initialize } from '@stackend/api/api/actions';
+import winston from 'winston';
+
+await store.dispatch(initialize({
+  permalink: 'stackend-com', /* Replace with your community permalink */
+  winstonLogger: winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    defaultMeta: { service: 'Stackend' },
+    transports: [
+      new winston.transports.Console({
+        format: winston.format.simple(),
+      })
+    ]
+  })
+}));
+```
+
+## Custom setup
+
+Configuration options can also be passed to the initialize function. For details se the API documentation.
+
+```javascript
+import { initialize } from '@stackend/api/api/actions';
+import winston from 'winston';
+
+await store.dispatch(initialize({
+  permalink: 'stackend-com', /* Replace with your community permalink */
+  config: {
+    ... /* Any settings goes here */
+  }
+}));
+```

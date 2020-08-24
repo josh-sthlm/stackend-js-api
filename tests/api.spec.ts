@@ -164,6 +164,14 @@ describe('API', () => {
     });
   });
 
+  describe("newXcapJsonResult", () => {
+    it("Constructs a new result", async () => {
+      const r = newXcapJsonResult('success');
+      expect(r.__resultCode).toBe("success");
+      expect(r.error).toBeUndefined();
+    });
+  })
+
   // Must be last to not mess upp the rest of the tests
   describe("setConfig", () => {
     it("Alter the configuration", async () => {
@@ -178,13 +186,6 @@ describe('API', () => {
     });
   });
 
-  describe("newXcapJsonResult", () => {
-    it("Constructs a new result", async () => {
-      const r = newXcapJsonResult('success');
-      expect(r.__resultCode).toBe("success");
-      expect(r.error).toBeUndefined();
-    });
-  })
 });
 
 

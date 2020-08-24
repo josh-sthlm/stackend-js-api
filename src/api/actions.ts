@@ -1,6 +1,14 @@
 //@flow
 
-import { getInitialStoreValues, GetInitialStoreValuesResult, newXcapJsonResult, Thunk } from './index';
+import {
+  Config,
+  getInitialStoreValues,
+  GetInitialStoreValuesResult,
+  newXcapJsonResult,
+  setConfigDefaults,
+  setLogger,
+  Thunk,
+} from './index';
 import { receiveLoginData } from '../login/loginAction';
 import { loadCommunity, receiveResourceUsage } from '../stackend/communityAction';
 import { XCAP_INITIAL_STORE_DATA_RECEIVED } from './configReducer';
@@ -9,14 +17,62 @@ import { receiveModules } from '../stackend/moduleAction';
 import { receiveContents } from '../cms/cmsActions';
 import { receivePages, receiveSubSites } from '../cms/pageActions';
 import { AnyAction } from 'redux';
+import { Logger } from 'winston';
 //import { receiveNotificationCounts } from './notifications/notificationActions';
 
+export interface InitializeRequest extends LoadInitialStoreValuesRequest {
+  config?: Partial<Config>;
+  winstonLogger?: Logger;
+}
+
+/**
+ * Initialize the stackend API.
+ * Supply either communityId or permalink
+ * @param communityId Community id
+ * @param permalink Community permalink
+ * @param winstonLoggingConfiguration Optional logging configuration for winston
+ */
+export function initialize({
+  communityId,
+  permalink,
+  config,
+  winstonLogger,
+}: InitializeRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
+  return async (dispatch: any): Promise<GetInitialStoreValuesResult> => {
+    if (!communityId && !permalink) {
+      throw Error('Supply communityId or permalink');
+    }
+
+    if (winstonLogger) {
+      setLogger(winstonLogger);
+    }
+
+    if (config) {
+      setConfigDefaults(config);
+    }
+
+    return dispatch(loadInitialStoreValues({ communityId, permalink }));
+  };
+}
 
 function receiveInitialStoreValues(json: any): AnyAction {
   return {
     type: XCAP_INITIAL_STORE_DATA_RECEIVED,
     json,
   };
+}
+
+export interface LoadInitialStoreValuesRequest {
+  permalink?: string;
+  domain?: string;
+  cookie?: string;
+  communityId?: number;
+  moduleIds?: Array<number>;
+  contentIds?: Array<number>;
+  pageIds?: Array<number>;
+  subSiteIds?: Array<number>;
+  referenceUrl?: string;
+  stackendMode?: boolean;
 }
 
 /*
@@ -33,18 +89,7 @@ export function loadInitialStoreValues({
   subSiteIds,
   referenceUrl,
   stackendMode = false,
-}: {
-  permalink?: string;
-  domain?: string;
-  cookie?: string;
-  communityId?: number;
-  moduleIds?: Array<number>;
-  contentIds?: Array<number>;
-  pageIds?: Array<number>;
-  subSiteIds?: Array<number>;
-  referenceUrl?: string;
-  stackendMode?: boolean;
-}): Thunk<Promise<GetInitialStoreValuesResult>> {
+}: LoadInitialStoreValuesRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
   return async (dispatch: any): Promise<GetInitialStoreValuesResult> => {
     const r = await dispatch(
       getInitialStoreValues({
@@ -74,7 +119,7 @@ export function loadInitialStoreValues({
     }
 
     if (r.cmsPages && Object.keys(r.cmsPages).length !== 0) {
-      dispatch(receivePages(newXcapJsonResult("success", { pages: r.cmsPages })));
+      dispatch(receivePages(newXcapJsonResult('success', { pages: r.cmsPages })));
     }
 
     if (r.subSites && Object.keys(r.subSites).length !== 0) {
@@ -107,4 +152,3 @@ export function loadInitialStoreValues({
     return r;
   };
 }
-

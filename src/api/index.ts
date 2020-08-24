@@ -9,40 +9,52 @@ import { User } from '../user';
 import { setLoadingThrobberVisible } from '../throbber/throbberActions';
 import { Content, Page, SubSite } from '../cms';
 import { Privilege } from '../user/privileges';
-import config from 'config';
+import winston, { Logger } from 'winston';
 import { XCAP_SET_CONFIG } from './configReducer';
-import log4js, { Configuration } from 'log4js';
+//import log4js, { Configuration } from 'log4js';
 import { Dispatch } from 'redux';
 
 declare let __xcapRunningServerSide: any;
 
-// Configure using
-const lc: any = config.get('log4js');
-if (typeof lc === 'object') {
-  //console.debug("Stackend: Using configured log4js settings", lc);
-  log4js.configure(lc);
-} else if (typeof lc === 'undefined') {
-  const logConfig: Configuration = {
-    appenders: {
-      console: { type: 'console' },
-    },
-    categories: {
-      default: {
-        appenders: ['console'],
-        level: 'info',
-      },
-    },
-  };
-  //console.debug("Stackend: Using built in log4js config");
-  log4js.configure(logConfig);
-} else {
-  //console.debug("Stackend: Skipping log4js config");
+
+function createDefaultLogger(): Logger
+{
+  return winston.createLogger({
+    level: 'info',
+    format: winston.format.json(),
+    defaultMeta: { service: 'Stackend' },
+    transports: [
+      new winston.transports.Console({
+        format: winston.format.simple(),
+      })
+    ]
+  });
 }
 
 /**
  * Stackend logger
  */
-export const logger = log4js.getLogger('Stackend');
+export let logger = createDefaultLogger();
+
+/**
+ * Get the stackend logger
+ */
+export function getLogger(): Logger {
+  if (!logger ) {
+    logger = createDefaultLogger();
+
+  }
+  return logger as Logger;
+}
+
+/**
+ * Set the default logger
+ * @param newLogger
+ */
+export function setLogger(newLogger: Logger): void {
+  logger = newLogger;
+}
+
 
 export const STACKEND_DEFAULT_SERVER = 'https://api.stackend.com';
 export const STACKEND_DEFAULT_CONTEXT_PATH = '';
@@ -79,6 +91,24 @@ export interface Config {
 export enum DeployProfile {
   STACKEND = 'stackend',
   CASTLE = 'castle'
+}
+
+export let configDefaults: Partial<Config> = {
+  server: STACKEND_DEFAULT_SERVER,
+  contextPath: "",
+  apiUrl: STACKEND_DEFAULT_SERVER + STACKEND_DEFAULT_CONTEXT_PATH + "/api",
+  recaptchaSiteKey: null,
+  gaKey: null,
+  deployProfile: DeployProfile.STACKEND
+}
+
+/**
+ * Set default configuration options
+ * @param defaults
+ */
+export function setConfigDefaults(defaults: Partial<Config>): void
+{
+  configDefaults = defaults;
 }
 
 /**
@@ -410,19 +440,24 @@ export interface Reference {
  * Construct basic configuration from the environment.
  */
 export function _constructConfig(): Config {
-  const defaults = config.get('stackend');
 
-  return Object.assign(
+  const c: Config = Object.assign(
     {
       server: STACKEND_DEFAULT_SERVER,
       contextPath: STACKEND_DEFAULT_CONTEXT_PATH,
-      apiUrl: STACKEND_DEFAULT_SERVER + '/api',
       deployProfile: DeployProfile.STACKEND,
+      apiUrl: null,
       gaKey: null,
       recaptchaSiteKey: null,
     },
-    defaults
+    configDefaults
   );
+
+  if (!c.apiUrl) {
+    c.apiUrl = c.server + c.contextPath + '/api';
+  }
+
+  return c;
 }
 
 /**
@@ -444,15 +479,7 @@ export function getConfiguration(): Thunk<Config> {
  * Set the API configuration
  * @param config
  */
-export function setConfiguration(config: {
-  server?: string;
-  contextPath?: string;
-  apiUri?: string;
-  deployProfile?: string;
-  recaptchaSiteKey?: string | null;
-  gaKey?: string | null;
-  [propName: string]: any;
-}): Thunk<any> {
+export function setConfiguration(config: Partial<Config>): Thunk<any> {
   return (dispatch, getState): any => {
     return dispatch({
       type: XCAP_SET_CONFIG,
@@ -996,7 +1023,7 @@ export function getJson<T extends XcapJsonResult>({
       return newXcapJsonErrorResult('No result received') as T;
     } catch (e) {
       // 404, connection refused etc
-      logger.error(Error(e), "Couldn't getJson: " + p);
+      logger.error("Couldn't getJson: " + p, e);
       dispatch(setLoadingThrobberVisible(false));
       return newXcapJsonErrorResult('Couldn\'t getJson: ' + e) as T;
     }
