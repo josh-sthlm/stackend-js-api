@@ -11,7 +11,6 @@ import { Content, Page, SubSite } from '../cms';
 import { Privilege } from '../user/privileges';
 import winston, { Logger } from 'winston';
 import { XCAP_SET_CONFIG } from './configReducer';
-//import log4js, { Configuration } from 'log4js';
 import { Dispatch } from 'redux';
 
 declare let __xcapRunningServerSide: any;
@@ -255,8 +254,6 @@ export enum SortOrder {
   ASCENDING = 'ASCENDING',
   DESCENDING = 'DESCENDING',
 }
-
-export type Modstatus = 'NONE' | 'PASSED' | 'NOT_PASSED';
 
 /**
  * Xcap types and their names

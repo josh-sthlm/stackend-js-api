@@ -4,8 +4,6 @@ import * as groupApi from '../group';
 
 export const CMS_COMPONENT_CLASS = 'se.josh.xcap.cms.CmsManager';
 
-// FIXME: duplicated in xcap/index.ts
-
 /**
  * Privilege types (new enum based version)
  */

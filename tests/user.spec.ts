@@ -1,9 +1,9 @@
 //@flow
 
 import createTestStore from './setup-redux';
-import { COMMUNITY_PARAMETER } from '../src/api'
+import { COMMUNITY_PARAMETER } from '../src/api';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
-import { getUser, GetUserResult } from '../src/user'
+import { getUser, GetUserResult } from '../src/user';
 import assert from 'assert';
 
 
@@ -22,6 +22,8 @@ describe('User', () => {
       expect(r.user.id).toBe(1);
     })
   });
+
+
 
 });
 

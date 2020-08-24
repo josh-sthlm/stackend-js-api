@@ -4,11 +4,10 @@ import {
   getJson,
   post,
   createCommunityUrl,
-  Modstatus,
   XcapJsonResult,
   XcapObject,
   Thunk,
-  XcapOptionalParameters
+  XcapOptionalParameters, ModerationStatus
 } from '../api';
 import * as categoryApi from '../category';
 import * as userApi from '../user';
@@ -51,7 +50,7 @@ export interface ForumThreadEntry extends XcapObject {
   forumRef: Forum;
   lastEntryDate: Date;
   lastEntryId: number;
-  modStatus: Modstatus;
+  modStatus: ModerationStatus;
   modifiedByUserId: number;
   modifiedByUserRef: userApi.User | null;
   modifiedDate: Date;

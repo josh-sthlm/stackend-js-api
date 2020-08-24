@@ -15,14 +15,14 @@ type InitialDataAction = Action & {
 
 type SetConfigAction = Action & {
   type: typeof XCAP_SET_CONFIG;
-  config: Config;
+  config: Partial<Config>;
 };
 
 export type ConfigActions = InitialDataAction | SetConfigAction;
 
 const configReducer = (
   state: Config = {
-    apiUrl: STACKEND_DEFAULT_SERVER + '/api',
+    apiUrl: STACKEND_DEFAULT_SERVER + STACKEND_DEFAULT_CONTEXT_PATH + '/api',
     contextPath: STACKEND_DEFAULT_CONTEXT_PATH,
     server: STACKEND_DEFAULT_SERVER,
     deployProfile: DeployProfile.STACKEND,
@@ -35,9 +35,21 @@ const configReducer = (
     case XCAP_INITIAL_STORE_DATA_RECEIVED:
       return _.get(action, 'json.xcapApiConfiguration', {});
 
-    case XCAP_SET_CONFIG:
-      return Object.assign({}, state, (action as SetConfigAction).config);
+    case XCAP_SET_CONFIG: {
 
+      const c = (action as SetConfigAction).config;
+      if (c.server) {
+        let cp = c.contextPath || state.contextPath || "";
+        if (c.server.endsWith("/")) {
+          cp = cp.replace(/^\//, "");
+        }
+        if (cp.endsWith("/"))
+        cp = cp.replace(/\/$/, "");
+        c.apiUrl = c.server + cp + "/api";
+      }
+
+      return Object.assign({}, state, c);
+    }
     default:
       return state;
   }

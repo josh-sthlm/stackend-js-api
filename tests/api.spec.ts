@@ -176,13 +176,14 @@ describe('API', () => {
   describe("setConfig", () => {
     it("Alter the configuration", async () => {
       await store.dispatch(setConfiguration({
-        server: "http://localhost:8080/"
+        server: "http://localhost:8080/",
+        contextPath: "/stackend/"
       }));
 
       const c: Config = await store.dispatch(getConfiguration());
       expect(c).toBeDefined();
       expect(c.server).toBe("http://localhost:8080/");
-      expect(c.apiUrl).toBe(STACKEND_DEFAULT_SERVER + "" + STACKEND_DEFAULT_CONTEXT_PATH + "/api");
+      expect(c.apiUrl).toBe("http://localhost:8080/stackend/api");
     });
   });
 

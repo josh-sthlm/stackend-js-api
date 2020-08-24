@@ -7,7 +7,7 @@ import categories from "../category/categoryReducer";
 import references from "./referenceReducer";
 import request  from "../request/requestReducers";
 import config from './configReducer';
-import cms from '../cms/cmsReducer';
+import cmsContent from '../cms/cmsReducer';
 import pages from '../cms/pageReducer';
 import editForumThread from "../forum/editForumThreadReducer";
 import forums from "../forum/forumReducer";
@@ -51,7 +51,7 @@ export const STANDARD_REDUCERS: {[name: string]: Reducer<any, any>} = {
     categories,
 
     // CMS
-    cms,
+    cmsContent,
     pages,
 
     GroupComments,
