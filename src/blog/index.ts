@@ -64,18 +64,18 @@ export enum BlogEntryStatus {
   DELETED = 'DELETED',
 }
 
-export const DisplayType = {
-  FeedEntry: 'feedEntry',
-  BlogEntry: 'blogEntry',
-  BLOG_ENTRY_PORTFOLIO: 'BLOG_ENTRY_PORTFOLIO',
-  TopList: 'toplist',
-  FeedEntryTopList: 'FeedEntryTopList',
-  BlogEntryTopList: 'BlogEntryTopList',
-  //SearchListing: 'searchListing',
-  EntrySearchResult: 'entrySearchResult',
-};
+export enum DisplayType {
+  FeedEntry = 'feedEntry',
+  BlogEntry = 'blogEntry',
+  BLOG_ENTRY_PORTFOLIO = 'BLOG_ENTRY_PORTFOLIO',
+  TopList = 'toplist',
+  FeedEntryTopList = 'FeedEntryTopList',
+  BlogEntryTopList = 'BlogEntryTopList',
+  //SearchListing = 'searchListing',
+  EntrySearchResult = 'entrySearchResult',
+}
 
-export type DisplayType = 'feedEntry' | 'blogEntry' | 'BLOG_ENTRY_PORTFOLIO' | 'entrySearchResult';
+//export type DisplayType = 'feedEntry' | 'blogEntry' | 'BLOG_ENTRY_PORTFOLIO' | 'entrySearchResult';
 
 export type FeedType = 'groups' | 'blog' | 'discussion';
 
@@ -121,17 +121,6 @@ export interface BlogEntry extends XcapObject {
   numberOfLikes: number;
 }
 
-export interface BlogEntries {
-  __relatedObjects: any;
-  blogId: number;
-  blogKey: string;
-  likesByCurrentUser: any;
-  resultPaginated: {
-    entries: Array<BlogEntry>;
-  };
-  userRsvpStatuses: any;
-}
-
 /**
  * Blog definition
  */
@@ -162,6 +151,17 @@ export interface Blog extends XcapObject {
  */
 export interface AuthBlog extends Blog {
   auth: AuthObject;
+}
+
+export interface BlogEntries {
+  __relatedObjects: any;
+  blogId: number;
+  blogKey: string;
+  likesByCurrentUser: any;
+  resultPaginated: {
+    entries: Array<BlogEntry>;
+  };
+  userRsvpStatuses: any;
 }
 
 /**
