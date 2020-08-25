@@ -13,12 +13,11 @@
   },
   "author": "Stackend",
   "homepage": "https://stackend.com",
-  "sideEffects": true,
   "scripts": {
     "build": "tsc",
     "pretest": "npm run build",
     "test": "jest",
-    "lint": "eslint --ext ts .",
+    "lint": "eslint --ext ts src tests",
     "clean": "rimraf types {abuse,api,blog,category,cms,comments,counter,event,forum,group,like,login,media,poll,qna,rating,request,search,shop,stackend,throbber,user,vote}",
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
     "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
@@ -69,7 +68,7 @@
     "jest": "^26.4.0",
     "prettier": "^2.0.5",
     "rimraf": "^3.0.2",
-    "typescript": "^3.9.7",
+    "typescript": "^4.0.2",
     "typings-tester": "^0.3.2"
   },
   "jest": {

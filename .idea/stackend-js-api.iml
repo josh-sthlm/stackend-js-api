@@ -4,13 +4,36 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/abuse" />
+      <excludeFolder url="file://$MODULE_DIR$/api" />
+      <excludeFolder url="file://$MODULE_DIR$/blog" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/category" />
+      <excludeFolder url="file://$MODULE_DIR$/cms" />
+      <excludeFolder url="file://$MODULE_DIR$/comments" />
+      <excludeFolder url="file://$MODULE_DIR$/counter" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/es" />
+      <excludeFolder url="file://$MODULE_DIR$/event" />
+      <excludeFolder url="file://$MODULE_DIR$/forum" />
+      <excludeFolder url="file://$MODULE_DIR$/group" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/like" />
+      <excludeFolder url="file://$MODULE_DIR$/login" />
+      <excludeFolder url="file://$MODULE_DIR$/media" />
+      <excludeFolder url="file://$MODULE_DIR$/poll" />
+      <excludeFolder url="file://$MODULE_DIR$/qna" />
+      <excludeFolder url="file://$MODULE_DIR$/rating" />
+      <excludeFolder url="file://$MODULE_DIR$/request" />
+      <excludeFolder url="file://$MODULE_DIR$/search" />
+      <excludeFolder url="file://$MODULE_DIR$/shop" />
+      <excludeFolder url="file://$MODULE_DIR$/stackend" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
+      <excludeFolder url="file://$MODULE_DIR$/throbber" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/types" />
+      <excludeFolder url="file://$MODULE_DIR$/user" />
+      <excludeFolder url="file://$MODULE_DIR$/vote" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

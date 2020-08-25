@@ -76,7 +76,8 @@ export interface Search {
 
 // Convert qna style ordering to search ordering
 function convertSearchTypeToOrderBy(params: { searchType?: string; orderBy?: string }): any {
-  let { searchType, orderBy } = params;
+  let { orderBy } = params;
+  const { searchType } = params;
   const newParams = Object.assign({}, params);
 
   switch (searchType) {

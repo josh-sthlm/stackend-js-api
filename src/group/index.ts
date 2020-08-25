@@ -1,6 +1,6 @@
 //@flow
 import { getJson, post, createCommunityUrl, XcapJsonResult, XcapObject, Thunk, XcapOptionalParameters } from '../api';
-import * as userApi from '../user';
+import { User } from '../user';
 import { Request } from '../request';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { AuthObject } from '../user/privileges';
@@ -76,17 +76,17 @@ export interface Group extends XcapObject {
   rating: number;
   calendarId: number;
   lightLogotype: string;
-  tags: [string];
+  tags: Array<string>;
   totalNumberOfViews: number;
-  adminIds: [number];
-  adminsRef: Array<userApi.User>;
+  adminIds: Array<number>;
+  adminsRef: Array<User>;
 }
 
 export interface GroupMember {
   groupId: number;
   groupRef: Group;
   userId: number;
-  userRef: userApi.User;
+  userRef: User;
 
   /** Privilege. See privileges.ts */
   privilegeType: number;

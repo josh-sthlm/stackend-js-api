@@ -1,4 +1,3 @@
-//@flow
 
 //Action Type
 
@@ -56,7 +55,7 @@ export default function shopReducer(
 ): ShopState {
   switch (action.type) {
     case RECEIVE_PRODUCT_TYPES: {
-      const edges: [GraphQLListNode<string>] = _.get(action, 'json.productTypes.edges', []);
+      const edges: Array<GraphQLListNode<string>> = _.get(action, 'json.productTypes.edges', []);
       const productTypes = edges.map(e => e.node);
       return Object.assign({}, state, {
         productTypes,

@@ -1,4 +1,4 @@
-// @flow
+
 import {
   CLOSE_REPLY_BOX, CommentsActions,
   INVALIDATE_GROUP_COMMENTS,
@@ -85,7 +85,7 @@ export function fetchMultipleComments({
 	pageSize = DEFAULT_PAGE_SIZE
 }: {
 	module: string; // Module See Comments.CommentModule
-	referenceIds: [number]; //Array of reference to fetch comments for
+	referenceIds: Array<number>; //Array of reference to fetch comments for
 	referenceGroupId: number; // Reference group id, for example blog id (optional)
 	p?: number; //page number in paginated collection
 	pageSize?: number;
@@ -100,7 +100,7 @@ export function fetchMultipleComments({
 
 export interface ReceiveCommentsJson {
 	comments: {
-		entries: [Comment];
+		entries: Array<Comment>;
 	};
 	likesByCurrentUser: any;
   error?: any;
@@ -243,7 +243,7 @@ export function postComment({
 	module: CommentModule; // Module See Comments.CommentModule
 	body: string; //The body text
 	parentId?: number; //The id of the comment you want to reply on
-}): Thunk<any> {
+}): Thunk<Promise<any>> {
 	return async (dispatch: any, getState): Promise<any> => {
 		dispatch(blogActions.closeWriteCommentOrEdit());
 

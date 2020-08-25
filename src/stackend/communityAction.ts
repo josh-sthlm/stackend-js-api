@@ -1,4 +1,4 @@
-//@flow
+
 import {
   REQUEST_COMMUNITIES,
   RECEIVE_COMMUNITIES,
@@ -32,7 +32,7 @@ export type ReceiveCommunities = {
   results: {
     pageSize: number;
     page: number;
-    entries: [any];
+    entries: Array<any>;
   };
   statistics?: any;
 };
@@ -133,7 +133,7 @@ export function editCommunity({
     if (!!id && id !== 0) {
       dispatch(updateCommunity(response.storedCommunity));
     } else {
-      //This is a new comment
+      //This is a new community
       dispatch(
         receiveCommunities({
           results: {
