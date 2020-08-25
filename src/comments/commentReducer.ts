@@ -109,8 +109,7 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
     case RECEIVE_GROUP_COMMENTS:
       key = commentAction._getCommentsStateKey(action);
 
-      // @ts-ignore
-      if (!!state[key].json && state[key].json !== '') {
+      if (state[key].json) {
         const json = state[key].json;
         json.comments = Object.assign({}, state[key].json.comments, action.json.comments);
         json.likesByCurrentUser = Object.assign({}, state[key].json.likesByCurrentUser, action.json.likesByCurrentUser);
@@ -203,7 +202,6 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         }
       });
 
-      // @ts-ignore
       const referenceIdUniqueComments: Array<Comment> = _.concat(origComments, newComments);
       // @ts-ignore
       const pagination: PaginatedCollection<Comment> = _.get(
@@ -212,15 +210,10 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         emptyPaginatedCollection()
       );
 
-      // @ts-ignore
-      delete pagination['entries'];
+      delete (pagination as any)['entries'];
       pagination.totalSize += action.json.comments.entries.length;
 
       const x = update(action.json.comments, {
-        isFetching: { $set: false },
-        didInvalidate: { $set: false },
-        lastUpdated: { $set: action.receivedAt },
-        // @ts-ignore
         entries: { $set: referenceIdUniqueComments },
       });
 

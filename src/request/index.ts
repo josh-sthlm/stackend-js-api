@@ -1,4 +1,4 @@
-// @flow
+
 import { Thunk } from '../api';
 import _ from 'lodash';
 
@@ -147,15 +147,13 @@ export function parseAnchor(anchor: string | null): StackendAnchor | null {
   for (let i = 0; i < v.length; i++) {
     const x = parseAnchorInt(v[i]);
     if (x) {
-      // @ts-ignore
-      a.items.push(x);
+      (a.items as Array<any>).push(x);
     }
   }
 
-  // @ts-ignore
-  if (a.items.length !== 0) {
-    // @ts-ignore
-    a.type = a.items[0].type;
+  const items = (a.items as Array<StackendAnchor>);
+  if (items.length !== 0) {
+    a.type = items[0].type;
     const i = s.indexOf('/');
     a.permalink = s.substring(i + 1);
   }

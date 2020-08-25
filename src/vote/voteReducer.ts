@@ -95,8 +95,7 @@ function updateVotes({
     v.myReview = myReview;
   }
 
-  // @ts-ignore
-  x.n = Math.random(); // Hack to make this update
+  (x as any).n = Math.random(); // Hack to make this update
 
   x[context][refId] = v;
 
