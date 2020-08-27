@@ -13,9 +13,11 @@ import {
   _getServer,
   _getContextPath,
   _getConfig,
-  Thunk, XcapOptionalParameters
+  Thunk,
+  XcapOptionalParameters,
 } from '../api';
 import { User } from '../user';
+import _ from 'lodash';
 
 /**
  * Image
@@ -178,8 +180,8 @@ export enum MediaListOrder {
   TITLE_ASC = 8,
   USER_DESC = 9,
   USER_ASC = 10,
-  RANDOM = 11
-};
+  RANDOM = 11,
+}
 
 /**
  * Standard ImageThumbnailConfig names
@@ -408,16 +410,28 @@ export interface UploadMediaFileResult {
   /**
    * Maps from media id to thumbnail. Only present if the thumbnail parameter is set.
    */
-  thumbnails?: {[id: string]: Thumbnail};
+  thumbnails?: { [id: string]: Thumbnail };
 
   /**
    * Maps from media id to html used for embedding the media object
    */
-  html: { [id: string]: string};
+  html: { [id: string]: string };
+}
+
+export interface UploadMediaFileRequest {
+  file: File;
+  communityPermalink?: string;
+  context?: string;
+  referenceId?: number;
+  temporary?: boolean;
+  thumbnail?: string;
+  maxWidth?: number;
+  maxHeight?: number;
+  responsive?: boolean;
 }
 
 /**
- * Upload a media file.
+ * Upload a media file. Browser only.
  *
  * @param config API config
  * @param file {File} file object
@@ -433,7 +447,7 @@ export interface UploadMediaFileResult {
  */
 export function uploadMediaFile({
   config,
-  file = undefined,
+  file,
   communityPermalink = undefined,
   context = undefined,
   referenceId = undefined,
@@ -444,16 +458,8 @@ export function uploadMediaFile({
   responsive = undefined,
 }: {
   config: Config;
-  file: any;
-  communityPermalink?: string;
-  context?: string;
-  referenceId?: number;
-  temporary?: boolean;
-  thumbnail?: string;
-  maxWidth?: number;
-  maxHeight?: number;
-  responsive?: boolean;
-} & XcapOptionalParameters): Promise<UploadMediaFileResult> {
+} & UploadMediaFileRequest &
+  XcapOptionalParameters): Promise<UploadMediaFileResult> {
   // Allows the use of COMMUNITY_PARAMETER as well
   if (typeof communityPermalink === 'undefined') {
     // @ts-ignore
@@ -484,9 +490,64 @@ export function uploadMediaFile({
   });
 }
 
+/**
+ * Upload a media file. Browser only.
+ *
+ * @param config API config
+ * @param file {File} file object
+ * @param communityPermalink {string} Community permalink (optional, defaults to current community)
+ * @param context {string} Community context
+ * @param referenceId {number} Id of another object referencing this media object.
+ * @param temporary {Boolean} Mark the media as temporary? Temporary images are subject to automatic removal.
+ * @param thumbnail {String} Optional thumbnail configuration name. Determines the size of the returned image
+ * @param maxWidth {number} Optional max width. Typically detected from the width of a container element.
+ * @param maxHeight {number} Optional max height. Typically detected from the height of a container element.
+ * @param responsive {Boolean} Optional responsive. Sets widht:100%; max-width: <PICTURE WIDTH>px; height: auto
+ * @return {Promise}
+ */
+export function upload({
+  file,
+  context = undefined,
+  referenceId = undefined,
+  temporary = false,
+  thumbnail,
+  maxWidth,
+  maxHeight,
+  responsive = undefined,
+  communityPermalink = undefined,
+}: UploadMediaFileRequest & XcapOptionalParameters): Thunk<Promise<UploadMediaFileResult>> {
+
+  let cpl = communityPermalink;
+  if (typeof cpl === 'undefined') {
+    // @ts-ignore
+    cpl = arguments[COMMUNITY_PARAMETER];
+  }
+
+  return (dispatch, getState): Promise<UploadMediaFileResult> => {
+    const { config, communities } = getState();
+
+    if (!cpl) {
+      cpl = _.get(communities, "community.permalink");
+    }
+
+    return uploadMediaFile({
+      config,
+      file,
+      communityPermalink: cpl,
+      context,
+      referenceId,
+      temporary,
+      thumbnail,
+      maxWidth,
+      maxHeight,
+      responsive,
+    });
+  };
+}
+
 export interface ListResult extends XcapJsonResult {
   mediaPaginated: PaginatedCollection<MediaObject>;
-  thumbnailsByMediaId?: {[mediaId: string]: Thumbnail} | null;
+  thumbnailsByMediaId?: { [mediaId: string]: Thumbnail } | null;
 }
 
 /**
@@ -711,10 +772,7 @@ export function searchUses({
  * @param image
  * @returns ImageThumbnail
  */
-export function constructImageThumbnail(
-  image: Image,
-  thumbnailConfig: string
-): ImageThumbnail | null {
+export function constructImageThumbnail(image: Image, thumbnailConfig: string): ImageThumbnail | null {
   if (!image) {
     return null;
   }
