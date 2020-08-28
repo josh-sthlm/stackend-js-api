@@ -15,6 +15,7 @@
   "homepage": "https://stackend.com",
   "scripts": {
     "build": "tsc",
+    "watch": "tsc --watch",
     "pretest": "npm run build",
     "test": "jest",
     "lint": "eslint --ext ts src tests",
