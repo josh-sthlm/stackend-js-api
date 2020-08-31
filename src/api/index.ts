@@ -1,6 +1,6 @@
 //@flow
 
-import { appendQueryString, LoadJson, urlEncodeParameters } from './LoadJson';
+import { appendQueryString, LoadJson, LoadJsonResult, urlEncodeParameters } from './LoadJson';
 import _ from 'lodash';
 import { receiveReferences } from './referenceActions';
 import { Request, getRequest } from '../request';
@@ -948,7 +948,7 @@ export interface XcapJsonRequest {
  * @param community Current community name
  * @param componentName Component name used for config (for example "like")
  * @param context Community context used for config (for example "forum")
- * @param cookie Optional cookie string to pass on
+ * @param cookie Optional cookie string to pass on. Typically used for SSR only
  * @returns {Thunk}
  */
 export function getJson<T extends XcapJsonResult>({
@@ -988,28 +988,30 @@ export function getJson<T extends XcapJsonResult>({
 
       const requestStartTime = Date.now();
       logger.debug('GET ' + p);
-      const result: XcapJsonResult = await LoadJson({ url: p, cookie: c });
+      const result: LoadJsonResult = await LoadJson({ url: p, cookie: c });
+
       const t = Date.now() - requestStartTime;
       if (t > 500 && runningServerSide) {
         logger.warn('Slow API request: ' + t + 'ms:' + p);
       }
 
-      if (result) {
+      if (result.json) {
+
         if (result.error) {
-          logger.error(getJsonErrorText(result) + ' ' + p);
+          logger.error(getJsonErrorText(result.json) + ' ' + p);
           dispatch(setLoadingThrobberVisible(false));
           if (result.status === 403) {
             // Unauthorized
             logger.warn('Session has expired: ' + p);
-            /* FIXME: At this point the user should be prompted to login again. Prefferably using a popup
+            /* FIXME: At this point the user should be prompted to login again. Preferably using a popup
 						dispatch(refreshLoginData({ force : true })); // Breaks because of circular dependencies
 						*/
           }
 
-          return result as T;
+          return result.json as T;
         }
 
-        const r = postProcessApiResult(result);
+        const r = postProcessApiResult(result.json);
         addRelatedObjectsToStore(dispatch, r);
         dispatch(setLoadingThrobberVisible(false));
         return r;
@@ -1041,13 +1043,20 @@ export function getJsonOutsideApi({ url, parameters }: { url: string; parameters
 
     if (result) {
       if (result.error) {
-        logger.warn(getJsonErrorText(result) + p);
-        return result;
+        logger.warn(result.error + p);
+        return newXcapJsonErrorResult(result.error);
       }
-      const r = postProcessApiResult(result);
 
-      addRelatedObjectsToStore(dispatch, r);
-      return r;
+      if (result.json) {
+        if (result.json.error) {
+          logger.warn(getJsonErrorText(result.json) + p);
+          return result.json;
+        }
+
+        const r = postProcessApiResult(result.json);
+        addRelatedObjectsToStore(dispatch, r);
+        return r;
+      }
     }
 
     return newXcapJsonErrorResult("No result received");
@@ -1095,7 +1104,7 @@ export function post<T extends XcapJsonResult>({
       })
     );
 
-    const xpressToken = await dispatch(getXpressToken({ componentName, context }));
+    const xpressToken = await dispatch(getXpressToken({ community, componentName, context }));
 
     const result = await LoadJson({
       url: p,
@@ -1106,12 +1115,18 @@ export function post<T extends XcapJsonResult>({
 
     if (result) {
       if (result.error) {
-        logger.warn(getJsonErrorText(result) + p);
-        return result;
+        logger.warn(result.error + ": " + p);
+        return newXcapJsonErrorResult('Post failed: ' + result.error) as T;
       }
-      const r = postProcessApiResult(result);
-      addRelatedObjectsToStore(dispatch, r);
-      return r;
+
+      if (result.json) {
+        if (result.json.error) {
+          logger.warn(getJsonErrorText(result.json) + ": " + p);
+        }
+        const r = postProcessApiResult(result.json);
+        addRelatedObjectsToStore(dispatch, r);
+        return r;
+      }
     }
 
     return newXcapJsonErrorResult('Post failed: no response') as T;

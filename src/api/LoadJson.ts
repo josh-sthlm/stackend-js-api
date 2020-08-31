@@ -1,7 +1,7 @@
 //@flow
 
 //import log4js from 'log4js';
-import { logger, Parameters } from './index';
+import { logger, Parameters, XcapJsonResult } from './index';
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -90,6 +90,13 @@ export function appendQueryString(url: string, queryString: string): string {
   return u;
 }
 
+export interface LoadJsonResult {
+  status: number;
+  error?: string;
+  response: Response | null;
+  json?: XcapJsonResult;
+}
+
 /**
  * Load an url as json. Supports GET and POST (using application/x-www-form-urlencoded or a json body)
  *
@@ -100,7 +107,6 @@ export function appendQueryString(url: string, queryString: string): string {
  * @param bodyContentType Mime type of the body content (optional)
  * @param xpressToken
  * @param cookie Optional cookie string
- * @returns {Promise.<*>}
  * @constructor
  */
 export async function LoadJson({
@@ -119,7 +125,7 @@ export async function LoadJson({
   bodyContentType?: string;
   xpressToken?: string;
   cookie?: string | null;
-}): Promise<any> {
+}): Promise<LoadJsonResult> {
   //console.log("Fetching json: ",url);
   //console.trace("Fetching json: ",url);
 
@@ -128,6 +134,8 @@ export async function LoadJson({
     headers = new Headers();
     headers.set('x-custom-headless', 'true');
     headers.set('Accept', CONTENT_TYPE_JSON);
+
+    // In most cases handled by the browser but supplied in SSR initial data fetch
     if (typeof cookie === 'string') {
       headers.set('cookie', cookie);
     }
@@ -138,7 +146,7 @@ export async function LoadJson({
     headers,
     mode: 'cors',
     cache: 'default',
-    credentials: 'include', // FIXME: this may leak session cookies
+    credentials: 'include',
     body: undefined,
   };
 
@@ -186,7 +194,7 @@ export async function LoadJson({
     queryString = urlEncodeParameters(parameters);
   }
   url = appendQueryString(url, queryString);
-  let response;
+  let response = null;
   let request;
   try {
     if (typeof Headers === 'function' && typeof Request === 'function') {
@@ -211,8 +219,9 @@ export async function LoadJson({
             response.statusText
         );
         return {
-          error: response.status + ': ' + response.statusText,
-          status: response.status,
+            error: response.status + ': ' + response.statusText,
+            status: response.status,
+            response
         };
       } else {
         const status = response.status ? 'Error Status:' + response.status : '';
@@ -227,13 +236,20 @@ export async function LoadJson({
         return {
           error: response.status + ': ' + response.statusText,
           status: response.status,
+          response
         };
       }
     }
 
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.indexOf(CONTENT_TYPE_JSON) > -1) {
-      return response.json();
+      const json = await response.json();
+      return {
+        status: 200,
+        json: (json as XcapJsonResult),
+        response
+      }
+
     } else {
       logger.error(
         'Error Status:500 The Fetch request of ' +
@@ -242,7 +258,11 @@ export async function LoadJson({
           JSON.stringify(typeof request !== 'undefined' ? request : null) +
           JSON.stringify(response)
       );
-      return { error: 'Response is not a json object', status: 200 };
+      return {
+        error: 'Response is not a json object',
+        status: 200,
+        response
+      };
     }
   } catch (e) {
     logger.error(e, request ? JSON.stringify(request) : '');
@@ -250,9 +270,15 @@ export async function LoadJson({
       return {
         error:
           "Can't access stackend api. Please make sure you've allowed this domain in your stack settings.",
+        status: 500,
+        response
       };
     }
-    return { error: e };
+    return {
+      error: e,
+      status: 500,
+      response
+    };
   }
 }
 

@@ -1,6 +1,6 @@
 //@flow
 import * as Stackend from '../stackend';
-import { LoadJson } from '../api/LoadJson';
+import { LoadJson, LoadJsonResult } from '../api/LoadJson';
 import type { PaginatedCollection } from '../api/PaginatedCollection';
 import {
   getJson,
@@ -445,7 +445,7 @@ export interface UploadMediaFileRequest {
  * @param responsive {Boolean} Optional responsive. Sets widht:100%; max-width: <PICTURE WIDTH>px; height: auto
  * @return {Promise}
  */
-export function uploadMediaFile({
+export async function uploadMediaFile({
   config,
   file,
   communityPermalink = undefined,
@@ -482,12 +482,28 @@ export function uploadMediaFile({
   const data = new FormData();
   data.append('file', file);
 
-  return LoadJson({
+  // Outside the normal api path
+  const r: LoadJsonResult = await LoadJson({
     url,
     method: 'POST',
     parameters: {},
     body: data,
   });
+
+  // FIXME: Handle cookies
+
+  // This json format includes it's own error messages.
+  if (r.error) {
+    return {
+      error: r.error,
+      files:[],
+      html: {},
+      thumbnails: {}
+    }
+  }
+
+
+  return r.json as any;
 }
 
 /**

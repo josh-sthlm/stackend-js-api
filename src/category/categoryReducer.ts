@@ -5,14 +5,14 @@ import { Category } from './index';
 
 ////Action Type
 export const REQUEST_AVAILABLE_CATEGORIES = 'REQUEST_AVAILABLE_CATEGORIES';
-export const RECIEVE_AVAILABLE_CATEGORIES = 'RECIEVE_AVAILABLE_CATEGORIES';
+export const RECEIVE_AVAILABLE_CATEGORIES = 'RECEIVE_AVAILABLE_CATEGORIES';
 export const INVALIDATE_AVAILABLE_CATEGORIES = 'INVALIDATE_AVAILABLE_CATEGORIES';
 export const CATEGORIES_TOGGLE_SELECTED = 'CATEGORIES_TOGGLE_SELECTED';
 export const CATEGORIES_REMOVE_SELECTION = 'CATEGORIES_REMOVE_SELECTION';
 
-export type categoriesActionType =
+export type CategoriesActionTypes =
   | 'REQUEST_AVAILABLE_CATEGORIES'
-  | 'RECIEVE_AVAILABLE_CATEGORIES'
+  | 'RECEIVE_AVAILABLE_CATEGORIES'
   | 'INVALIDATE_AVAILABLE_CATEGORIES'
   | 'CATEGORIES_TOGGLE_SELECTED'
   | 'CATEGORIES_REMOVE_SELECTION';
@@ -29,10 +29,10 @@ export type CategoriesState = {
   };
 };
 
-export type categoriesAction =
+export type CategoriesAction =
   | { type: 'REQUEST_AVAILABLE_CATEGORIES'; context: string }
   | {
-      type: 'RECIEVE_AVAILABLE_CATEGORIES';
+      type: 'RECEIVE_AVAILABLE_CATEGORIES';
       context: string;
       available: { categories: Array<categoryApi.Category> };
       json: any;
@@ -47,15 +47,13 @@ export type categoriesAction =
   | { type: 'CATEGORIES_REMOVE_SELECTION'; context: string; reference: string };
 
 //Reducer
-function categories(state: CategoriesState = {}, action: categoriesAction): CategoriesState {
+function categories(state: CategoriesState = {}, action: CategoriesAction): CategoriesState {
   switch (action.type) {
     case REQUEST_AVAILABLE_CATEGORIES:
-      // @ts-ignore
       return update(state, {
         [action.context]: {
           $apply: (context: any): any =>
             update(context || { selected: {} }, {
-              // @ts-ignore
               isFetching: { $set: true },
               didInvalidate: { $set: false },
               available: { $set: state[action.context] ? state[action.context].available : '' },
@@ -63,13 +61,11 @@ function categories(state: CategoriesState = {}, action: categoriesAction): Cate
         },
       });
 
-    case RECIEVE_AVAILABLE_CATEGORIES:
-      // @ts-ignore
+    case RECEIVE_AVAILABLE_CATEGORIES:
       return update(state, {
         [action.context]: {
           $apply: (context: any): any =>
             update(context || { selected: {} }, {
-              // @ts-ignore
               isFetching: { $set: false },
               didInvalidate: { $set: false },
               available: { $set: action.json },
@@ -105,7 +101,6 @@ function categories(state: CategoriesState = {}, action: categoriesAction): Cate
           [action.context]: {
             $apply: (context: any): any =>
               update(context || { selected: {} }, {
-                // @ts-ignore
                 selected: {
                   [action.reference]: {
                     $apply: (reference: string): any => update(reference || [], { $splice: [[idOfClickedCategory, 1]] }),
@@ -120,11 +115,9 @@ function categories(state: CategoriesState = {}, action: categoriesAction): Cate
           [action.context]: {
             $apply: (context: any): any =>
               update(context || { selected: {} }, {
-                // @ts-ignore
                 selected: {
                   [action.reference]: {
-                    // @ts-ignore
-                    $apply: (reference): any => update(reference || [], { $push: [action.category] }),
+                    $apply: (reference: any): any => update(reference || [], { $push: [action.category] }),
                   },
                 },
               }),

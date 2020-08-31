@@ -20,7 +20,7 @@ export function fetchCategories({ context }: ContextObject): Thunk<any> {
 
 function recieveCategories({ context, json }: ContextObject & { json: any }): AnyAction {
   return {
-    type: reducer.RECIEVE_AVAILABLE_CATEGORIES,
+    type: reducer.RECEIVE_AVAILABLE_CATEGORIES,
     context,
     json,
   };
