@@ -314,9 +314,6 @@ export function performLoginRedirect({
 			);
 			break;
 
-		case 'none': // Already logged in
-			break;
-
 		case 'register':
 			browserHistory.push(
 				request.contextPath +
@@ -341,6 +338,7 @@ export function performLoginRedirect({
 			//browserHistory.push(request.contextPath + '/user/removed');
 			return false;
 
+    case 'none': // Already logged in
 		default: {
 			// Reload desired
 			const r = typeof returnUrl === 'string' ? returnUrl : request.absoluteCommunityUrl;
