@@ -61,9 +61,6 @@ export function refreshLoginData(params?: any): Thunk<any> {
 				}
 			}
 
-			//const cpl = _.get(getState(),`communities.community.permalink`);
-			//const community = !!cpl ? `/${cpl}` : '';
-			//let apiUrl = `${api.getServerWithContextPath()+community}/api/user/get`;
 			dispatch(requestLoginData());
 			const json = await dispatch(getCurrentUser());
 			return dispatch(receiveLoginData(json));

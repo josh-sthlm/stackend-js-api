@@ -324,7 +324,7 @@ export function openEditComment(state: OpenEditCommentState = [], action: { type
         return state.concat(action.id);
       } else {
         //close Edit Comment
-        return Object.assign([], state.splice(i, 1));
+        return ([] as Array<number>).concat(state.splice(i, 1));
       }
     }
 
