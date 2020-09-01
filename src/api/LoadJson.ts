@@ -243,10 +243,12 @@ export async function LoadJson({
 
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.indexOf(CONTENT_TYPE_JSON) > -1) {
-      const json = await response.json();
+      const json = (await response.json() as XcapJsonResult);
+
       return {
         status: 200,
-        json: (json as XcapJsonResult),
+        error: json.__resultCode === 'error' ? json.__resultCode : undefined,
+        json: json,
         response
       }
 

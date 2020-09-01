@@ -1521,6 +1521,10 @@ export function _newXcapJsonResult<T extends XcapJsonResult>(resultCode: string,
       actionErrors: ae,
       fieldErrors: fieldErrors || {}
     }
+  } else if (resultCode === 'error') {
+    x.error = {
+      actionErrors: [ 'error' ]
+    }
   }
 
   return x;

@@ -10,7 +10,7 @@ import { getContent, Content } from './index';
  * @param permalink
  * @returns {Function}
  */
-export function fetchContent({ id, permalink }: { id: number; permalink?: string }): Thunk<any> {
+export function fetchContent({ id, permalink }: { id: number; permalink?: string }): Thunk<Promise<any>> {
 	return async (dispatch: any): Promise<any> => {
 		dispatch({
 			type: REQUEST_CONTENT,
