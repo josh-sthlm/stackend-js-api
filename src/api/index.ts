@@ -13,7 +13,6 @@ import winston, { Logger } from 'winston';
 import { XCAP_SET_CONFIG } from './configReducer';
 import { Dispatch } from 'redux';
 
-declare let __xcapRunningServerSide: any;
 
 
 function createDefaultLogger(): Logger
@@ -110,18 +109,25 @@ export function setConfigDefaults(defaults: Partial<Config>): void
   configDefaults = defaults;
 }
 
+let __xcapRunningServerSide = false;
+
 /**
  * Is the app running server side?
  */
 export function isRunningServerSide(): boolean {
-  return typeof __xcapRunningServerSide !== 'undefined';
+  return __xcapRunningServerSide;
 }
 
 /**
  * Is the app running in the browser
  */
 export function isRunningInBrowser(): boolean {
-  return typeof __xcapRunningServerSide === 'undefined' && typeof window !== "undefined";
+  return !__xcapRunningServerSide && typeof window !== "undefined";
+}
+
+export function setRunningServerSide(ssr: boolean): void
+{
+  __xcapRunningServerSide = ssr;
 }
 
 /**
