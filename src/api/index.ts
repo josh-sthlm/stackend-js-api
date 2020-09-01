@@ -1500,7 +1500,7 @@ export function getJsonErrorText(response?: XcapJsonResult): string {
  * @param fieldErrors
  * @param data
  */
-export function _newXcapJsonResult<T extends XcapJsonResult>(resultCode: string, actionErrors: undefined|string|Array<string>, fieldErrors: undefined | { [fieldName: string]: string}, ...data: any): T
+export function _newXcapJsonResult<T extends XcapJsonResult>(resultCode: string, actionErrors: undefined|string|Array<string>, fieldErrors: undefined | { [fieldName: string]: string}, data?: any): T
 {
   const x =  {
     __resultCode: resultCode,
@@ -1535,7 +1535,7 @@ export function _newXcapJsonResult<T extends XcapJsonResult>(resultCode: string,
  * @param resultCode
  * @param data
  */
-export function newXcapJsonResult<T extends XcapJsonResult>(resultCode: string, ...data: any): T
+export function newXcapJsonResult<T extends XcapJsonResult>(resultCode: string, data?: any): T
 {
   return _newXcapJsonResult(resultCode, undefined, undefined, data);
 }

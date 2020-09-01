@@ -15,6 +15,7 @@ import { PaginatedCollection } from '../api/PaginatedCollection';
 import { Insertion, Category } from '../category';
 import { Order } from '../search';
 import { Tree, Node, newTree, newTreeNode } from '../api/tree';
+import { ModuleType } from "../stackend/modules";
 
 /**
  * Xcap Cms api constants and methods.
@@ -178,7 +179,7 @@ export interface Page {
 export interface PageContent {
   name: string;
   /** Simple reference type name */
-  type: string;
+  type: ModuleType;
 
   /** Is this content visible? */
   visible: boolean;

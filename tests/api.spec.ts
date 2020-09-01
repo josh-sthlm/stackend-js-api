@@ -11,7 +11,7 @@ import {
   STACKEND_DEFAULT_SERVER, templateReplace, templateReplaceUrl, _constructConfig,
   STACKEND_DEFAULT_CONTEXT_PATH, DeployProfile, setConfiguration, newXcapJsonResult, GetInitialStoreValuesResult
 } from '../src/api';
-import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend'
+import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import assert from 'assert';
 
 describe('API', () => {
@@ -166,9 +166,20 @@ describe('API', () => {
 
   describe("newXcapJsonResult", () => {
     it("Constructs a new result", async () => {
-      const r = newXcapJsonResult('success');
+      let r = newXcapJsonResult('success');
       expect(r.__resultCode).toBe("success");
       expect(r.error).toBeUndefined();
+
+      r = newXcapJsonResult('error');
+      expect(r.__resultCode).toBe("error");
+      expect(r.error).toBeDefined();
+      assert(r.error);
+      expect(r.error.actionErrors).toStrictEqual(['error']);
+
+      r = newXcapJsonResult('success',  { hej: true });
+      expect(r.__resultCode).toBe("success");
+      expect(r.error).toBeUndefined();
+      expect(r.hej).toBe(true);
     });
   })
 
@@ -186,6 +197,7 @@ describe('API', () => {
       expect(c.apiUrl).toBe("http://localhost:8080/stackend/api");
     });
   });
+
 
 });
 
