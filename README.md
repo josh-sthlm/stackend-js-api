@@ -1,8 +1,3 @@
-<p align="center" style="width:400px; width:auto">
-  <a href="https://stackend.com">
-    <img src="https://github.com/josh-sthlm/stackend-js-api/blob/master/stackend_logo_dark.png">
-  </a>
-</p>
 
 # [About Stackend](https://stackend.com)
 
