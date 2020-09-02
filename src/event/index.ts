@@ -55,7 +55,10 @@ export enum RSVPStatus {
  * @param eventId
  * @param status
  */
-export function rsvp({ eventId, status }: { eventId: number; status: RSVPStatus } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+export function rsvp({
+  eventId,
+  status,
+}: { eventId: number; status: RSVPStatus } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/blog/event/rsvp', parameters: arguments });
 }
 

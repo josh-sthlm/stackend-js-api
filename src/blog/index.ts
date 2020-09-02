@@ -7,7 +7,7 @@ import {
   XcapObject,
   Thunk,
   logger,
-  XcapOptionalParameters
+  XcapOptionalParameters,
 } from '../api';
 import * as event from '../event';
 import { Poll } from '../poll';
@@ -248,7 +248,7 @@ export interface GetEntriesResult extends BlogEntryListingResult {
   userRsvpStatuses: any;
 
   /** Maps from event id to status to list */
-  rsvpUserIds: { [eventId: string]: { [status: string]: any }};
+  rsvpUserIds: { [eventId: string]: { [status: string]: any } };
 
   likesByCurrentUser: LikeDataMap;
 
@@ -308,7 +308,10 @@ export function getEntries({
  * @param pageSize Page size (optional)
  * @returns {Thunk}
  */
-export function getMyEntries({ p, pageSize }: { p?: number; pageSize?: number } & XcapOptionalParameters): Thunk<Promise<BlogEntryListingResult>> {
+export function getMyEntries({
+  p,
+  pageSize,
+}: { p?: number; pageSize?: number } & XcapOptionalParameters): Thunk<Promise<BlogEntryListingResult>> {
   return getJson({ url: '/blog/entries/my', parameters: arguments });
 }
 
@@ -434,7 +437,7 @@ export interface SetEntryStatus extends XcapOptionalParameters {
  * @param status
  * @returns {Promise}
  */
-export function setEntryStatus({ blogKey, id, status }: SetEntryStatus ): Thunk<Promise<SetEntryStatusResult>> {
+export function setEntryStatus({ blogKey, id, status }: SetEntryStatus): Thunk<Promise<SetEntryStatusResult>> {
   return post({ url: '/blog/entry/set-status', parameters: arguments });
 }
 

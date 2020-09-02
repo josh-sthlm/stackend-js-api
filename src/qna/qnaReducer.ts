@@ -20,13 +20,10 @@ export type QnaActions = {
   type: typeof CHANGE_QNA_PAGE;
   pageType: string;
   forumThreadPermalink: string;
-}
+};
 
 //Reducer
-const qnaReducer = (
-  state: QnaState = { pageType: 'Search' },
-  action: QnaActions
-): QnaState => {
+const qnaReducer = (state: QnaState = { pageType: 'Search' }, action: QnaActions): QnaState => {
   switch (action.type) {
     case CHANGE_QNA_PAGE:
       return (state = {
@@ -119,7 +116,10 @@ type QnaSelectedFiltersChangeFilter = {
   };
 };
 
-const qnaSelectedFilters = (state: any = defaultQnaSelectedFiltersState, action: QnaSelectedFiltersChangeFilter): any => {
+const qnaSelectedFilters = (
+  state: any = defaultQnaSelectedFiltersState,
+  action: QnaSelectedFiltersChangeFilter
+): any => {
   switch (action.type) {
     case CHANGE_FILTER:
       if (typeof state[action.contentType] === 'undefined') {

@@ -15,7 +15,10 @@ import {
   REQUEST_GROUP_BLOG_ENTRIES,
   TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
   CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY,
-  UPDATE_GROUP_BLOG_ENTRY, GroupBlogEntriesActions, UpdateBlogEntry, OpenBlogEntryWriteCommentSectionActions
+  UPDATE_GROUP_BLOG_ENTRY,
+  GroupBlogEntriesActions,
+  UpdateBlogEntry,
+  OpenBlogEntryWriteCommentSectionActions,
 } from './groupBlogEntriesReducer';
 
 import {
@@ -25,7 +28,8 @@ import {
   saveEntry,
   SetEntryStatus,
   setEntryStatus,
-  GetEntriesResult, GetBlogEntryResult
+  GetEntriesResult,
+  GetBlogEntryResult,
   //gaPostEventObject,
   //gaEditPostEventObject
 } from './index';
@@ -52,7 +56,7 @@ function receiveBlogEntries(blogKey: string, json: GetEntriesResult): GroupBlogE
 export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): GroupBlogEntriesActions {
   return {
     type: INVALIDATE_GROUP_BLOG_ENTRIES,
-    blogKey
+    blogKey,
   };
 }
 
@@ -63,8 +67,6 @@ function requestBlogEntries(blogKey: string): GroupBlogEntriesActions {
     blogKey,
   };
 }
-
-
 
 //Update already existing blog entry
 function updateBlogEntry(blogKey: string, json: UpdateBlogEntry): GroupBlogEntriesActions {
@@ -147,8 +149,9 @@ export function fetchBlogEntry({
   id?: number;
   permalink?: string;
   blogKey: string;
-}): Thunk<Promise<GetBlogEntryResult|null>> {
-  return async (dispatch: any, getState): Promise<GetBlogEntryResult|null> => { // FIXME: error handling
+}): Thunk<Promise<GetBlogEntryResult | null>> {
+  return async (dispatch: any, getState): Promise<GetBlogEntryResult | null> => {
+    // FIXME: error handling
     try {
       await dispatch(requestBlogEntries(blogKey));
       const { currentUser, groups } = getState();

@@ -19,8 +19,8 @@ import { receivePages, receiveSubSites } from '../cms/pageActions';
 import { AnyAction } from 'redux';
 import { Logger } from 'winston';
 import { Page } from '../cms/index';
-import { Content, PageContent } from "../cms";
-import { ModuleType } from "../stackend/modules";
+import { Content, PageContent } from '../cms';
+import { ModuleType } from '../stackend/modules';
 //import { receiveNotificationCounts } from './notifications/notificationActions';
 
 export interface InitializeRequest extends LoadInitialStoreValuesRequest {
@@ -117,7 +117,7 @@ export function loadInitialStoreValues({
       dispatch(receiveModules({ modules: r.modules }));
     }
 
-    const allCmsContents: {[id: string]: Content} = {};
+    const allCmsContents: { [id: string]: Content } = {};
 
     if (r.cmsPages && Object.keys(r.cmsPages).length !== 0) {
       dispatch(receivePages(newXcapJsonResult('success', { pages: r.cmsPages })));
@@ -134,7 +134,7 @@ export function loadInitialStoreValues({
     }
 
     if (r.cmsContents && Object.keys(r.cmsContents).length !== 0) {
-      Object.values(r.cmsContents).forEach((c) => {
+      Object.values(r.cmsContents).forEach(c => {
         const y = c as Content;
         allCmsContents[y.id] = y;
       });

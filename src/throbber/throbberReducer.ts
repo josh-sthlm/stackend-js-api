@@ -15,17 +15,24 @@ export interface ThrobberState {
   requests: number;
 }
 
-export type ThrobberActions = {
-  type: typeof XCAP_MODAL_THROBBER_INCREASE;
-} | {
- type: typeof XCAP_MODAL_THROBBER_DECREASE;
-} | {
-  type: typeof XCAP_LOADING_THROBBER_INCREASE;
-} | {
-  type: typeof XCAP_LOADING_THROBBER_DECREASE;
-}
+export type ThrobberActions =
+  | {
+      type: typeof XCAP_MODAL_THROBBER_INCREASE;
+    }
+  | {
+      type: typeof XCAP_MODAL_THROBBER_DECREASE;
+    }
+  | {
+      type: typeof XCAP_LOADING_THROBBER_INCREASE;
+    }
+  | {
+      type: typeof XCAP_LOADING_THROBBER_DECREASE;
+    };
 
-const throbberReducer = (state: ThrobberState = { visible: false, n: 0, loading: false, requests: 0 }, action: ThrobberActions): ThrobberState => {
+const throbberReducer = (
+  state: ThrobberState = { visible: false, n: 0, loading: false, requests: 0 },
+  action: ThrobberActions
+): ThrobberState => {
   switch (action.type) {
     case XCAP_MODAL_THROBBER_INCREASE: {
       const n = state.n + 1;

@@ -7,8 +7,7 @@ import { ForumThreadEntry } from './index';
 
 export type ForumThreadActions = Request | Receive | Invalidate | Rate | Like | DeleteEntry | Update;
 
-
-export const RECEIVE_FORUM_THREADS ='RECEIVE_FORUM_THREADS';
+export const RECEIVE_FORUM_THREADS = 'RECEIVE_FORUM_THREADS';
 export const REQUEST_FORUM_THREADS = 'REQUEST_FORUM_THREADS';
 export const INVALIDATE_FORUM_THREADS = 'INVALIDATE_FORUM_THREADS';
 export const RECEIVE_VOTE_FORUM_THREAD = 'RECEIVE_VOTE_FORUM_THREAD';
@@ -16,11 +15,10 @@ export const RECEIVE_LIKE_FORUM_THREAD = 'RECEIVE_LIKE_FORUM_THREAD';
 export const UPDATE_FORUM_THREAD_ENTRY = 'UPDATE_FORUM_THREAD_ENTRY';
 export const DELETE_FORUM_THREAD = 'DELETE_FORUM_THREAD';
 
-
-export type Request =  {
+export type Request = {
   type: typeof REQUEST_FORUM_THREADS;
 };
-export type Receive =  {
+export type Receive = {
   type: typeof RECEIVE_FORUM_THREADS;
   entries: Array<forumApi.ForumThreadEntry>;
   forumPermalink: string;
@@ -33,16 +31,16 @@ export type Update = {
   forumPermalink: string;
 };
 
-export type Invalidate =  {
+export type Invalidate = {
   type: typeof INVALIDATE_FORUM_THREADS;
 };
-export type Rate =  {
+export type Rate = {
   type: typeof RECEIVE_VOTE_FORUM_THREAD;
   voteJson: forumApi.VoteReturn;
   forumPermalink: string;
 };
 
-export type Like =  {
+export type Like = {
   type: typeof RECEIVE_LIKE_FORUM_THREAD;
   referenceId: number;
   receivedLikes: any;

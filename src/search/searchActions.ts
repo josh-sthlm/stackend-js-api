@@ -53,8 +53,6 @@ export function updateSelectedType({ type, p = 1, updateUrl = true }: UpdateSele
   };
 }
 
-
-
 export interface Search {
   reduxStorageUrl: string;
   searchParams: {

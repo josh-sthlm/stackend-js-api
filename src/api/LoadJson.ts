@@ -6,7 +6,6 @@ import { logger, Parameters, XcapJsonResult } from './index';
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
 
-
 /**
  * Content type for json data
  * @type {string}
@@ -17,17 +16,14 @@ export const CONTENT_TYPE_JSON = 'application/json';
  * Content type for form data
  * @type {string}
  */
-export const CONTENT_TYPE_X_WWW_FORM_URLENCODED =
-  'application/x-www-form-urlencoded';
-
-
+export const CONTENT_TYPE_X_WWW_FORM_URLENCODED = 'application/x-www-form-urlencoded';
 
 /**
-* Url encode a parameter object.
-* @param parameters
-* @returns {String}
-*/
-export function urlEncodeParameters(parameters: Parameters | null | undefined ): string {
+ * Url encode a parameter object.
+ * @param parameters
+ * @returns {String}
+ */
+export function urlEncodeParameters(parameters: Parameters | null | undefined): string {
   if (typeof parameters === 'string') {
     return parameters;
   }
@@ -68,7 +64,6 @@ export function urlEncodeParameters(parameters: Parameters | null | undefined ):
 
   return s;
 }
-
 
 /**
  * Append to the query string
@@ -151,22 +146,14 @@ export async function LoadJson({
   };
 
   // Encode json if needed
-  if (
-    body &&
-    bodyContentType === CONTENT_TYPE_JSON &&
-    typeof body === 'object'
-  ) {
+  if (body && bodyContentType === CONTENT_TYPE_JSON && typeof body === 'object') {
     body = JSON.stringify(body);
   }
   let queryString = '';
 
   if (method === 'POST') {
     if (bodyContentType !== null) {
-      if (
-        body &&
-        typeof body.toString === 'function' &&
-        body.toString().indexOf('FormData') !== -1
-      ) {
+      if (body && typeof body.toString === 'function' && body.toString().indexOf('FormData') !== -1) {
         // This is a file upload. Don't set the content type,
         // since that would remove the boundary parameter for the binary data.
       } else if (headers) {
@@ -206,22 +193,12 @@ export async function LoadJson({
 
     // FIXME: Should throw to encourage proper error handling and not cause any weird errors in the data layer.
     if (!response.ok) {
-      if (
-        response.status === 401 ||
-        response.status === 404 ||
-        response.status === 500
-      ) {
-        logger.error(
-          'The Fetch request of ' +
-            url +
-            ' failed: ' +
-            response.status +
-            response.statusText
-        );
+      if (response.status === 401 || response.status === 404 || response.status === 500) {
+        logger.error('The Fetch request of ' + url + ' failed: ' + response.status + response.statusText);
         return {
-            error: response.status + ': ' + response.statusText,
-            status: response.status,
-            response
+          error: response.status + ': ' + response.statusText,
+          status: response.status,
+          response,
         };
       } else {
         const status = response.status ? 'Error Status:' + response.status : '';
@@ -236,22 +213,21 @@ export async function LoadJson({
         return {
           error: response.status + ': ' + response.statusText,
           status: response.status,
-          response
+          response,
         };
       }
     }
 
     const contentType = response.headers.get('content-type');
     if (contentType && contentType.indexOf(CONTENT_TYPE_JSON) > -1) {
-      const json = (await response.json() as XcapJsonResult);
+      const json = (await response.json()) as XcapJsonResult;
 
       return {
         status: 200,
         error: json.__resultCode === 'error' ? json.__resultCode : undefined,
         json: json,
-        response
-      }
-
+        response,
+      };
     } else {
       logger.error(
         'Error Status:500 The Fetch request of ' +
@@ -263,30 +239,27 @@ export async function LoadJson({
       return {
         error: 'Response is not a json object',
         status: 200,
-        response
+        response,
       };
     }
   } catch (e) {
     logger.error(e, request ? JSON.stringify(request) : '');
     if (e.message === 'Failed to fetch') {
       return {
-        error:
-          "Can't access stackend api. Please make sure you've allowed this domain in your stack settings.",
+        error: "Can't access stackend api. Please make sure you've allowed this domain in your stack settings.",
         status: 500,
-        response
+        response,
       };
     }
     return {
       error: e,
       status: 500,
-      response
+      response,
     };
   }
 }
 
 export default LoadJson;
-
-
 
 /**
  * Given a set of parameters, construct a FormData object that can be used as the body of a request

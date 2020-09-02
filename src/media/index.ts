@@ -496,12 +496,11 @@ export async function uploadMediaFile({
   if (r.error) {
     return {
       error: r.error,
-      files:[],
+      files: [],
       html: {},
-      thumbnails: {}
-    }
+      thumbnails: {},
+    };
   }
-
 
   return r.json as any;
 }
@@ -532,7 +531,6 @@ export function upload({
   responsive = undefined,
   communityPermalink = undefined,
 }: UploadMediaFileRequest & XcapOptionalParameters): Thunk<Promise<UploadMediaFileResult>> {
-
   let cpl = communityPermalink;
   if (typeof cpl === 'undefined') {
     // @ts-ignore
@@ -543,7 +541,7 @@ export function upload({
     const { config, communities } = getState();
 
     if (!cpl) {
-      cpl = _.get(communities, "community.permalink");
+      cpl = _.get(communities, 'community.permalink');
     }
 
     return uploadMediaFile({

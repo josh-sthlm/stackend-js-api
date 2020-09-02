@@ -10,7 +10,8 @@ import {
   applyForMembership as _applyForMembership,
   listMembers,
   getGroup,
-  ListMembersResult, SubscribeResult
+  ListMembersResult,
+  SubscribeResult,
 } from './index';
 
 import { Thunk, XcapJsonResult } from '../api';
@@ -61,7 +62,13 @@ export function addGroup({ groupPermalink, groupId }: { groupPermalink?: string;
  * @param groupPermalink
  * @param groupId
  */
-export function subscribe({ groupPermalink, groupId }: { groupPermalink?: string; groupId?: number }): Thunk<Promise<SubscribeResult>> {
+export function subscribe({
+  groupPermalink,
+  groupId,
+}: {
+  groupPermalink?: string;
+  groupId?: number;
+}): Thunk<Promise<SubscribeResult>> {
   return async (dispatch: any /*, getState: any*/): Promise<SubscribeResult> => {
     const json = await dispatch(_subscribe({ groupPermalink, groupId }));
     console.log('subscribe', json);

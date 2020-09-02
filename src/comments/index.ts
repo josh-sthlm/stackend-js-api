@@ -7,7 +7,7 @@ import {
   XcapObject,
   Thunk,
   isRunningInBrowser,
-  XcapOptionalParameters
+  XcapOptionalParameters,
 } from '../api';
 //import * as groupApi from './group';
 import * as user from '../user';

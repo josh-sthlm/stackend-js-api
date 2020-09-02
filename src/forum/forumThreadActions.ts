@@ -13,7 +13,7 @@ import {
   RECEIVE_LIKE_FORUM_THREAD,
   RECEIVE_VOTE_FORUM_THREAD,
   REQUEST_FORUM_THREADS,
-  UPDATE_FORUM_THREAD_ENTRY
+  UPDATE_FORUM_THREAD_ENTRY,
 } from './forumThreadReducer';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 
@@ -28,13 +28,17 @@ export interface FetchForumThreads {
 /**
  * Requests and receive forumThreads and store them in redux-state
  */
-export function fetchForumThreads({ forumPermalink, page, pageSize = 25 }: FetchForumThreads): Thunk<Promise<ListThreadsResult|{error: string}>> {
-  return async (dispatch: any): Promise<ListThreadsResult| { error: string }> => {
+export function fetchForumThreads({
+  forumPermalink,
+  page,
+  pageSize = 25,
+}: FetchForumThreads): Thunk<Promise<ListThreadsResult | { error: string }>> {
+  return async (dispatch: any): Promise<ListThreadsResult | { error: string }> => {
     dispatch(requestForumThreads());
     const json = await dispatch(forumApi.listThreads({ forumPermalink, pageSize, p: page }));
     if (json.error) {
       console.error(forumPermalink + ': ' + api.getJsonErrorText(json));
-			return { error: "Couldn't fetchForumThreads :" + api.getJsonErrorText(json) };
+      return { error: "Couldn't fetchForumThreads :" + api.getJsonErrorText(json) };
     }
 
     dispatch(
@@ -230,7 +234,11 @@ export interface ReceiveLikeForumThreadEntry {
   forumPermalink: string;
 }
 
-function _receiveLikeForumThreadEntry({ receivedLikes, forumPermalink, referenceId }: ReceiveLikeForumThreadEntry): ForumThreadActions {
+function _receiveLikeForumThreadEntry({
+  receivedLikes,
+  forumPermalink,
+  referenceId,
+}: ReceiveLikeForumThreadEntry): ForumThreadActions {
   return {
     type: RECEIVE_LIKE_FORUM_THREAD,
     receivedLikes,

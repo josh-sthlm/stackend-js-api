@@ -103,7 +103,8 @@ function categories(state: CategoriesState = {}, action: CategoriesAction): Cate
               update(context || { selected: {} }, {
                 selected: {
                   [action.reference]: {
-                    $apply: (reference: string): any => update(reference || [], { $splice: [[idOfClickedCategory, 1]] }),
+                    $apply: (reference: string): any =>
+                      update(reference || [], { $splice: [[idOfClickedCategory, 1]] }),
                   },
                 },
               }),

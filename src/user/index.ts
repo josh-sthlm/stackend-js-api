@@ -6,7 +6,8 @@ import {
   XcapJsonResult,
   Order,
   invertOrder,
-  Thunk, XcapOptionalParameters
+  Thunk,
+  XcapOptionalParameters,
 } from '../api';
 import { Request } from '../request';
 import { AuthenticationType } from '../login';
@@ -134,7 +135,7 @@ export const Gender: any = {
 
   // TODO: Better alternative? Typescript does not support functions in enums like java
 
-  getByGenderId: function(id: GenderIdType): typeof Gender {
+  getByGenderId: function (id: GenderIdType): typeof Gender {
     switch (id) {
       case GenderId.FEMALE:
         return Gender.FEMALE;
@@ -145,7 +146,7 @@ export const Gender: any = {
     }
   },
 
-  getGenderId: function(gender: string | null): GenderIdType {
+  getGenderId: function (gender: string | null): GenderIdType {
     switch (gender) {
       case Gender.FEMALE:
         return GenderId.FEMALE;
@@ -154,8 +155,8 @@ export const Gender: any = {
       default:
         return GenderId.UNKNOWN;
     }
-  }
-}
+  },
+};
 
 export type GenderType = 'FEMALE' | 'MALE' | 'UNKNOWN';
 
@@ -210,7 +211,6 @@ export function getCurrentUser(): Thunk<Promise<GetUserResult>> {
   });
 }
 
-
 /**
  * Construct a link to a users profile page.
  * @param request
@@ -250,11 +250,7 @@ export function getProfileLink(
   url: string;
   isRemote: boolean;
 } {
-  const useRemoteProfileLink = _.get(
-    community,
-    'settings.useRemoteProfileLink',
-    false
-  );
+  const useRemoteProfileLink = _.get(community, 'settings.useRemoteProfileLink', false);
   let profileLink = null;
   let isRemote = false;
   if (useRemoteProfileLink && user.profile && user.profile.remoteProfileUrl) {
@@ -497,10 +493,7 @@ const ORDER_MAPPING = {
  * @param order
  * @returns {number}
  */
-function convertSortOrder(
-  orderBy: OrderBy | null,
-  order: Order | null
-): number {
+function convertSortOrder(orderBy: OrderBy | null, order: Order | null): number {
   let k = (orderBy || OrderBy.ALIAS) + (order || Order.ASCENDING);
   let v = ORDER_MAPPING[k];
   if (v) {
@@ -700,8 +693,8 @@ export interface GetRegistrationDataResult extends XcapJsonResult {
  *
  * @returns {Thunk<GetRegistrationDataResult>}
  */
-export function getFacebookRegistrationData({}: {} & XcapOptionalParameters): Thunk<Promise<
-  GetRegistrationDataResult>
+export function getFacebookRegistrationData({}: {} & XcapOptionalParameters): Thunk<
+  Promise<GetRegistrationDataResult>
 > {
   return getJson({
     url: '/user/register/facebook',
@@ -1023,9 +1016,7 @@ export interface ListAuthenticationOptionsResult extends XcapJsonResult {
  * List available and enabled authentication options of the current user.
  * @returns {Thunk<XcapJsonResult>}
  */
-export function listAuthenticationOptions({}:  XcapOptionalParameters): Thunk<Promise<
-  ListAuthenticationOptionsResult
->> {
+export function listAuthenticationOptions({}: XcapOptionalParameters): Thunk<Promise<ListAuthenticationOptionsResult>> {
   return getJson({
     url: '/user/auth/list-options',
     parameters: arguments,

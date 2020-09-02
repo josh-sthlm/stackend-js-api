@@ -10,7 +10,7 @@ export function getParentPermalink(permalink: string): string | null {
   }
 
   if (permalink.endsWith('/')) {
-    permalink = permalink.substr(0, permalink.length-1);
+    permalink = permalink.substr(0, permalink.length - 1);
   }
 
   const i = permalink.lastIndexOf('/');
@@ -40,10 +40,7 @@ export function splitPermalink(permalink: string | null): Array<string> | null {
  * @param permalink
  * @param typingMode Allow trailing dash
  */
-export function generatePermalink(
-  permalink: string,
-  typingMode?: boolean
-): string | null {
+export function generatePermalink(permalink: string, typingMode?: boolean): string | null {
   if (!permalink) {
     return null;
   }

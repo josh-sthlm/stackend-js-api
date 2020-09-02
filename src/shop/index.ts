@@ -73,9 +73,7 @@ export interface ListProductTypesResult extends XcapJsonResult {
  * @param req
  * @returns {Thunk<ListProductTypesResult>}
  */
-export function listProductTypes(
-  req: ListProductTypesRequest
-): Thunk<Promise<ListProductTypesResult>> {
+export function listProductTypes(req: ListProductTypesRequest): Thunk<Promise<ListProductTypesResult>> {
   return getJson({
     url: '/shop/list-product-types',
     parameters: arguments,
@@ -104,9 +102,7 @@ export interface ListProductsResult extends XcapJsonResult {
  * @param req
  * @returns {Thunk<ListProductsResult>}
  */
-export function listProducts(
-  req: ListProductsRequest
-): Thunk<Promise<ListProductsResult>> {
+export function listProducts(req: ListProductsRequest): Thunk<Promise<ListProductsResult>> {
   return getJson({
     url: '/shop/list-products',
     parameters: arguments,
@@ -142,9 +138,7 @@ export interface ListProductsAndTypesResult extends ListProductsResult {
  * @param req
  * @returns {Thunk<XcapJsonResult>}
  */
-export function listProductsAndTypes(
-  req: ListProductsRequest
-): Thunk<Promise<ListProductsAndTypesResult>> {
+export function listProductsAndTypes(req: ListProductsRequest): Thunk<Promise<ListProductsAndTypesResult>> {
   return getJson({
     url: '/shop/list-products-and-types',
     parameters: arguments,
@@ -169,11 +163,7 @@ export interface ProductTypeTree {
   children?: Array<ProductTypeTree>;
 }
 
-
-function _createNodes(
-  root: ProductTypeTree,
-  parts: Array<string>
-): ProductTypeTree | null {
+function _createNodes(root: ProductTypeTree, parts: Array<string>): ProductTypeTree | null {
   if (parts.length === 0) {
     return null;
   }
@@ -206,7 +196,6 @@ function _createNodes(
   return _createNodes(match, remainingParts);
 }
 
-
 function _addNode(root: ProductTypeTree, name: string): ProductTypeTree {
   const parts = name.split(/\s*[/;]\s*/);
 
@@ -230,9 +219,7 @@ function _addNode(root: ProductTypeTree, name: string): ProductTypeTree {
  * @param productTypes
  * @returns {null}
  */
-export function constructProductTypeTree(
-  productTypes: GraphQLList<string>
-): ProductTypeTree | null {
+export function constructProductTypeTree(productTypes: GraphQLList<string>): ProductTypeTree | null {
   if (!productTypes) {
     return null;
   }
@@ -255,5 +242,3 @@ export function constructProductTypeTree(
 
   return t;
 }
-
-

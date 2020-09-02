@@ -7,9 +7,10 @@ import {
   Config,
   post,
   _getApiUrl,
-  Thunk, isRunningInBrowser, XcapOptionalParameters
+  Thunk,
+  isRunningInBrowser,
+  XcapOptionalParameters,
 } from '../api';
-
 
 declare let browserHistory: { push: (location: string) => any }; // FIXME: for backward compatibility with react-router
 declare let window: any; // FIXME: For client side stuff
@@ -18,40 +19,40 @@ declare let window: any; // FIXME: For client side stuff
  * Ways to log in.
  */
 export enum AuthenticationType {
-	/**
-	 * Login using facebook
-	 */
-	FACEBOOK= 'FACEBOOK',
+  /**
+   * Login using facebook
+   */
+  FACEBOOK = 'FACEBOOK',
 
-	/**
-	 * Login using email+password
-	 */
-	XCAP = 'XCAP',
+  /**
+   * Login using email+password
+   */
+  XCAP = 'XCAP',
 
-	/**
-	 * Login using google token
-	 */
-	GOOGLE = 'GOOGLE',
+  /**
+   * Login using google token
+   */
+  GOOGLE = 'GOOGLE',
 
-	/**
-	 * Custom oauth solution
-	 */
-	OAUTH2 = 'OAUTH2'
+  /**
+   * Custom oauth solution
+   */
+  OAUTH2 = 'OAUTH2',
 }
 
-const AUTH_NAMES: {[key: string]: string} = {
-	[AuthenticationType.FACEBOOK]: 'Facebook',
-	[AuthenticationType.GOOGLE]: 'Google',
-	[AuthenticationType.XCAP]: 'E-mail & password',
-	[AuthenticationType.OAUTH2]: 'OAuth2'
+const AUTH_NAMES: { [key: string]: string } = {
+  [AuthenticationType.FACEBOOK]: 'Facebook',
+  [AuthenticationType.GOOGLE]: 'Google',
+  [AuthenticationType.XCAP]: 'E-mail & password',
+  [AuthenticationType.OAUTH2]: 'OAuth2',
 };
 
 export function getAuthenticationTypeName(type: AuthenticationType): string {
-	if (AUTH_NAMES[type]) {
-		return AUTH_NAMES[type];
-	}
+  if (AUTH_NAMES[type]) {
+    return AUTH_NAMES[type];
+  }
 
-	return AUTH_NAMES[AuthenticationType.XCAP];
+  return AUTH_NAMES[AuthenticationType.XCAP];
 }
 
 /**
@@ -60,16 +61,16 @@ export function getAuthenticationTypeName(type: AuthenticationType): string {
  * @returns {string}
  */
 export function getAuthenticationTypeByUserPermalink(permalink: string): AuthenticationType {
-	let provider = AuthenticationType.XCAP;
-	if (permalink.startsWith('g_')) {
-		provider = AuthenticationType.GOOGLE;
-	} else if (permalink.startsWith('fb_')) {
-		provider = AuthenticationType.FACEBOOK;
-	} else if (permalink.startsWith('o_')) {
-		provider = AuthenticationType.OAUTH2;
-	}
+  let provider = AuthenticationType.XCAP;
+  if (permalink.startsWith('g_')) {
+    provider = AuthenticationType.GOOGLE;
+  } else if (permalink.startsWith('fb_')) {
+    provider = AuthenticationType.FACEBOOK;
+  } else if (permalink.startsWith('o_')) {
+    provider = AuthenticationType.OAUTH2;
+  }
 
-	return provider;
+  return provider;
 }
 
 /**
@@ -83,70 +84,69 @@ export function getAuthenticationTypeByUserPermalink(permalink: string): Authent
  * @returns string
  */
 export function _getLoginUrl({
-	config,
-	request,
-	returnUrl,
-	communityPermalink,
-	provider
+  config,
+  request,
+  returnUrl,
+  communityPermalink,
+  provider,
 }: {
-	config: Config;
-	request?: Request|null;
-	returnUrl?: string|null;
-	communityPermalink?: string|null;
-	provider: AuthenticationType;
+  config: Config;
+  request?: Request | null;
+  returnUrl?: string | null;
+  communityPermalink?: string | null;
+  provider: AuthenticationType;
 }): string {
-	const pfx = _getServerWithContextPath(config);
+  const pfx = _getServerWithContextPath(config);
 
-	switch (provider) {
-		case AuthenticationType.FACEBOOK:
-			return (
-				pfx +
-				'/facebook/?login=true' +
-				(returnUrl ? '&returnurl=' + encodeURIComponent(returnUrl) : '') +
-				(communityPermalink ? '&c=' + encodeURIComponent(communityPermalink) : '')
-			);
+  switch (provider) {
+    case AuthenticationType.FACEBOOK:
+      return (
+        pfx +
+        '/facebook/?login=true' +
+        (returnUrl ? '&returnurl=' + encodeURIComponent(returnUrl) : '') +
+        (communityPermalink ? '&c=' + encodeURIComponent(communityPermalink) : '')
+      );
 
-		case AuthenticationType.XCAP: {
-			const parameters: any = {};
-			if (returnUrl) {
-				parameters.returnUrl = returnUrl;
-			}
+    case AuthenticationType.XCAP: {
+      const parameters: any = {};
+      if (returnUrl) {
+        parameters.returnUrl = returnUrl;
+      }
 
-			if (communityPermalink) {
-				parameters.c = communityPermalink;
-			}
+      if (communityPermalink) {
+        parameters.c = communityPermalink;
+      }
 
-			parameters.email = _.get(arguments[0], 'email');
-			parameters.password = _.get(arguments[0], 'password');
+      parameters.email = _.get(arguments[0], 'email');
+      parameters.password = _.get(arguments[0], 'password');
 
-			return _getApiUrl({
-				state: { request, config, communities: {} },
-				url: '/user/login',
-				parameters
-			});
-		}
+      return _getApiUrl({
+        state: { request, config, communities: {} },
+        url: '/user/login',
+        parameters,
+      });
+    }
 
-		case AuthenticationType.GOOGLE:
-			return (
-				pfx +
-				'/google?login=true' +
-				(returnUrl ? '&r=' + encodeURIComponent(returnUrl) : '') +
-				(communityPermalink ? '&c=' + encodeURIComponent(communityPermalink) : '')
-			);
+    case AuthenticationType.GOOGLE:
+      return (
+        pfx +
+        '/google?login=true' +
+        (returnUrl ? '&r=' + encodeURIComponent(returnUrl) : '') +
+        (communityPermalink ? '&c=' + encodeURIComponent(communityPermalink) : '')
+      );
 
-		case AuthenticationType.OAUTH2:
-			return (
-				pfx +
-				'/oauth2?login=true' +
-				(returnUrl ? '&r=' + encodeURIComponent(returnUrl) : '') +
-				(communityPermalink ? '&c=' + encodeURIComponent(communityPermalink) : '')
-			);
+    case AuthenticationType.OAUTH2:
+      return (
+        pfx +
+        '/oauth2?login=true' +
+        (returnUrl ? '&r=' + encodeURIComponent(returnUrl) : '') +
+        (communityPermalink ? '&c=' + encodeURIComponent(communityPermalink) : '')
+      );
 
-		default:
-			throw Error('_getLoginUrl() provider "' + provider + '" not supported');
-	}
+    default:
+      throw Error('_getLoginUrl() provider "' + provider + '" not supported');
+  }
 }
-
 
 function _getReturnUrl({ request, returnUrl }: { request: Request; returnUrl?: string }): string {
   let pfx = '';
@@ -181,46 +181,47 @@ function _getReturnUrl({ request, returnUrl }: { request: Request; returnUrl?: s
  * @deprecated Should not link directly to logout. It requires a post with a token.
  */
 export function _getLogoutUrl({
-	config,
-	request,
-	returnUrl
+  config,
+  request,
+  returnUrl,
 }: {
-	config: Config;
-	request: Request;
-	returnUrl?: string;
+  config: Config;
+  request: Request;
+  returnUrl?: string;
 }): string {
-	const ru = _getReturnUrl({ request, returnUrl });
+  const ru = _getReturnUrl({ request, returnUrl });
 
-	return _getApiUrl({
-		state: { request, config, communities: {} },
-		url: '/user/logout',
-		parameters: { redirectUrl: ru }
-	});
+  return _getApiUrl({
+    state: { request, config, communities: {} },
+    url: '/user/logout',
+    parameters: { redirectUrl: ru },
+  });
 
-	//const pfx = _getServerWithContextPath(config);
-	//return pfx + '/logout?redirectUrl=' + ru;
+  //const pfx = _getServerWithContextPath(config);
+  //return pfx + '/logout?redirectUrl=' + ru;
 }
-
 
 /**
  * Logout
  * @param redirectUrl
  * @returns {Thunk<XcapJsonResult>}
  */
-export function logout({ redirectUrl }: { redirectUrl?: string|null } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
-	return post({
-		url: '/user/logout',
-		parameters: arguments
-	});
+export function logout({
+  redirectUrl,
+}: { redirectUrl?: string | null } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+  return post({
+    url: '/user/logout',
+    parameters: arguments,
+  });
 }
 
 export interface LoginResult extends XcapJsonResult {
-	loginFailed: boolean;
-	redirectUrl: string;
-	email?: string | null;
-	firstName?: string | null;
-	lastName?: string | null;
-	provider?: string | null;
+  loginFailed: boolean;
+  redirectUrl: string;
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  provider?: string | null;
 }
 
 /**
@@ -231,50 +232,51 @@ export interface LoginResult extends XcapJsonResult {
  * The email provider requires email and password to be supplied.
  */
 export function login({
-	provider,
-	returnUrl,
-	config,
-	request,
-	communityPermalink,
-	...any
+  provider,
+  returnUrl,
+  config,
+  request,
+  communityPermalink,
+  ...any
 }: {
-	provider: AuthenticationType;
-	returnUrl?: string;
-	config: Config;
-	request: Request;
-	communityPermalink?: string;
-} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>|string> { // FIXME: return type
-	switch (provider) {
-		case AuthenticationType.XCAP: {
-			const p = arguments[0];
-			const xcap_email = p.email;
-			const xcap_password = p.password;
+  provider: AuthenticationType;
+  returnUrl?: string;
+  config: Config;
+  request: Request;
+  communityPermalink?: string;
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult> | string> {
+  // FIXME: return type
+  switch (provider) {
+    case AuthenticationType.XCAP: {
+      const p = arguments[0];
+      const xcap_email = p.email;
+      const xcap_password = p.password;
 
-			return post({
-				url: '/user/login',
-				parameters: {
-					returnUrl,
-					c: communityPermalink,
-					xcap_email,
-					xcap_password
-				},
-				community: communityPermalink
-			});
-		}
+      return post({
+        url: '/user/login',
+        parameters: {
+          returnUrl,
+          c: communityPermalink,
+          xcap_email,
+          xcap_password,
+        },
+        community: communityPermalink,
+      });
+    }
 
-		case AuthenticationType.FACEBOOK:
-		case AuthenticationType.GOOGLE:
-		case AuthenticationType.OAUTH2: {
-			const url = _getLoginUrl({ provider, returnUrl, config, request, communityPermalink });
-			if (isRunningInBrowser()) {
-			  window.location = url;
+    case AuthenticationType.FACEBOOK:
+    case AuthenticationType.GOOGLE:
+    case AuthenticationType.OAUTH2: {
+      const url = _getLoginUrl({ provider, returnUrl, config, request, communityPermalink });
+      if (isRunningInBrowser()) {
+        window.location = url;
       }
-			return (): string => url;
-		}
+      return (): string => url;
+    }
 
-		default:
-			throw Error('login(): provider "' + provider + '" not supported');
-	}
+    default:
+      throw Error('login(): provider "' + provider + '" not supported');
+  }
 }
 
 /**
@@ -286,75 +288,72 @@ export function login({
  * @returns {boolean}
  */
 export function performLoginRedirect({
-	loginResult,
-	request,
-	email,
-	returnUrl
+  loginResult,
+  request,
+  email,
+  returnUrl,
 }: {
-	loginResult: LoginResult;
-	request: Request;
-	email?: string;
-	returnUrl?: string;
+  loginResult: LoginResult;
+  request: Request;
+  email?: string;
+  returnUrl?: string;
 }): boolean {
-
   // FIXME: Move this browser functionality to frontend project
 
-	if (loginResult.error || loginResult.loginFailed) {
-		return false;
-	}
+  if (loginResult.error || loginResult.loginFailed) {
+    return false;
+  }
 
-	switch (loginResult.__resultCode) {
-		case 'verify':
-			browserHistory.push(
-				request.contextPath +
-					'/register/verify?email=' +
+  switch (loginResult.__resultCode) {
+    case 'verify':
+      browserHistory.push(
+        request.contextPath +
+          '/register/verify?email=' +
           (email ? encodeURIComponent(email) : '') +
-					'&provider=' +
-					encodeURIComponent(loginResult.provider ? loginResult.provider : AuthenticationType.XCAP)
-			);
-			break;
+          '&provider=' +
+          encodeURIComponent(loginResult.provider ? loginResult.provider : AuthenticationType.XCAP)
+      );
+      break;
 
-		case 'register':
-			browserHistory.push(
-				request.contextPath +
-					'/register/details?email=' +
+    case 'register':
+      browserHistory.push(
+        request.contextPath +
+          '/register/details?email=' +
           (loginResult.email ? encodeURIComponent(loginResult.email) : '') +
-					'&provider=' +
+          '&provider=' +
           (loginResult.provider ? encodeURIComponent(loginResult.provider) : '') +
-					(loginResult.firstName ? '&firstName=' + encodeURIComponent(loginResult.firstName) : '') +
-					(loginResult.lastName ? '&lastName=' + encodeURIComponent(loginResult.lastName) : '') +
-					(returnUrl ? '&returnUrl=' + encodeURIComponent(returnUrl) : '') +
-					(loginResult.userReferenceId
-						? '&userReferenceId=' + encodeURIComponent(loginResult.userReferenceId)
-						: '')
-			);
-			break;
+          (loginResult.firstName ? '&firstName=' + encodeURIComponent(loginResult.firstName) : '') +
+          (loginResult.lastName ? '&lastName=' + encodeURIComponent(loginResult.lastName) : '') +
+          (returnUrl ? '&returnUrl=' + encodeURIComponent(returnUrl) : '') +
+          (loginResult.userReferenceId ? '&userReferenceId=' + encodeURIComponent(loginResult.userReferenceId) : '')
+      );
+      break;
 
-		case 'blocked':
-			browserHistory.push(request.contextPath + '/user/blocked');
-			break;
+    case 'blocked':
+      browserHistory.push(request.contextPath + '/user/blocked');
+      break;
 
-		case 'inactive':
-			//browserHistory.push(request.contextPath + '/user/removed');
-			return false;
+    case 'inactive':
+      //browserHistory.push(request.contextPath + '/user/removed');
+      return false;
 
     case 'none': // Already logged in
-		default: {
-			// Reload desired
-			const r = typeof returnUrl === 'string' ? returnUrl : request.absoluteCommunityUrl;
+    default: {
+      // Reload desired
+      const r = typeof returnUrl === 'string' ? returnUrl : request.absoluteCommunityUrl;
 
-			if (isRunningInBrowser()) {
+      if (isRunningInBrowser()) {
         if (window.location.href === r) {
           window.location.reload();
         } else {
           window.location = r;
         }
       }
-			break;
-		}
-	}
+      break;
+    }
+  }
 
-	return true;
+  return true;
 }
 
 /**
@@ -362,14 +361,14 @@ export function performLoginRedirect({
  * @param email
  */
 export function sendPasswordChangeToken({ email }: { email: string }): Thunk<Promise<XcapJsonResult>> {
-	return post({
-		url: '/user/send-password-change-token',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/send-password-change-token',
+    parameters: arguments,
+  });
 }
 
 export interface ChangePasswordResult extends XcapJsonResult {
-	returnUrl: string|null;
+  returnUrl: string | null;
 }
 
 /**
@@ -387,20 +386,20 @@ export interface ChangePasswordResult extends XcapJsonResult {
  * @param returnUrl The url to return to when the password is changed
  */
 export function changePassword({
-	email,
-	checkCode,
-	oldPassword,
-	password,
-	returnUrl
+  email,
+  checkCode,
+  oldPassword,
+  password,
+  returnUrl,
 }: {
-	email: string;
-	checkCode?: string;
-	oldPassword?: string;
-	password: string;
-	returnUrl?: string;
+  email: string;
+  checkCode?: string;
+  oldPassword?: string;
+  password: string;
+  returnUrl?: string;
 } & XcapOptionalParameters): Thunk<Promise<ChangePasswordResult>> {
-	return post({
-		url: '/user/change-password',
-		parameters: arguments
-	});
+  return post({
+    url: '/user/change-password',
+    parameters: arguments,
+  });
 }

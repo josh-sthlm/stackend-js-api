@@ -21,45 +21,50 @@ export const CLOSE_COMMENT_SECTION = 'CLOSE_COMMENT_SECTION';
 export const TOGGLE_COMMENT_SECTION = 'TOGGLE_COMMENT_SECTION';
 export const TOGGLE_EDIT_COMMENT = 'TOGGLE_EDIT_COMMENT';
 
-
-export type CommentsActions = {
-    type: typeof REQUEST_GROUP_COMMENTS;
-    module: string;
-    referenceGroupId: number;
-} | {
-    type: typeof RECEIVE_GROUP_COMMENTS;
-    module: string;
-    referenceGroupId: number;
-    receivedAt: number;
-    json: {
-      comments: any;
-      likesByCurrentUser: any;
+export type CommentsActions =
+  | {
+      type: typeof REQUEST_GROUP_COMMENTS;
+      module: string;
+      referenceGroupId: number;
+    }
+  | {
+      type: typeof RECEIVE_GROUP_COMMENTS;
+      module: string;
+      referenceGroupId: number;
+      receivedAt: number;
+      json: {
+        comments: any;
+        likesByCurrentUser: any;
+      };
+    }
+  | {
+      type: typeof INVALIDATE_GROUP_COMMENTS;
+      module: string;
+      referenceGroupId: number;
+    }
+  | {
+      type: typeof REQUEST_COMMENTS;
+      module: string;
+      referenceId: number;
+      referenceGroupId: number;
+    }
+  | {
+      type: typeof RECEIVE_COMMENTS;
+      module: string;
+      referenceId: number;
+      referenceGroupId: number;
+      receivedAt: number;
+      json: commentAction.ReceiveCommentsJson;
+    }
+  | {
+      type: typeof UPDATE_COMMENT;
+      id: number;
+      module: string;
+      referenceId: number;
+      referenceGroupId: number;
+      receivedAt: number;
+      json: commentsApi.Comment;
     };
-} | {
-  type: typeof INVALIDATE_GROUP_COMMENTS;
-  module: string;
-  referenceGroupId: number;
-} | {
-  type: typeof REQUEST_COMMENTS;
-  module: string;
-  referenceId: number;
-  referenceGroupId: number;
-} | {
-  type: typeof RECEIVE_COMMENTS;
-  module: string;
-  referenceId: number;
-  referenceGroupId: number;
-  receivedAt: number;
-  json: commentAction.ReceiveCommentsJson;
-} | {
-  type: typeof UPDATE_COMMENT;
-  id: number;
-  module: string;
-  referenceId: number;
-  referenceGroupId: number;
-  receivedAt: number;
-  json: commentsApi.Comment;
-};
 
 export type openReplyBoxesActionType = 'TOGGLE_REPLY_BOX' | 'OPEN_REPLY_BOX' | 'CLOSE_REPLY_BOX';
 //TODO: implement //export type openReplyBoxesAction = {
@@ -95,7 +100,6 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
   let key = '';
   switch (action.type) {
     case REQUEST_GROUP_COMMENTS:
-
       key = commentAction._getCommentsStateKey(action);
 
       return Object.assign({}, state, {
@@ -190,7 +194,6 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         });
       }
 
-
       const origComments: any = _.get(state, `[${key}].json.comments[${referenceId}].entries`, []);
       const newComments: Array<Comment> = [];
       action.json.comments.entries.forEach(e => {
@@ -281,7 +284,10 @@ export default GroupComments;
 
 export type OpenReplyBoxesState = Array<number>;
 
-export function openReplyBoxes(state: OpenReplyBoxesState = [], action: { type: string; parentId: number }): OpenReplyBoxesState {
+export function openReplyBoxes(
+  state: OpenReplyBoxesState = [],
+  action: { type: string; parentId: number }
+): OpenReplyBoxesState {
   switch (action.type) {
     case OPEN_REPLY_BOX:
       return state.concat(action.parentId);
@@ -293,7 +299,6 @@ export function openReplyBoxes(state: OpenReplyBoxesState = [], action: { type: 
       }
       return Object.assign([], state.splice(i, 1));
     }
-
 
     case TOGGLE_REPLY_BOX: {
       //if reply box is closed
@@ -314,7 +319,10 @@ export function openReplyBoxes(state: OpenReplyBoxesState = [], action: { type: 
 
 export type OpenEditCommentState = Array<number>;
 
-export function openEditComment(state: OpenEditCommentState = [], action: { type: string; id: number }): OpenEditCommentState {
+export function openEditComment(
+  state: OpenEditCommentState = [],
+  action: { type: string; id: number }
+): OpenEditCommentState {
   switch (action.type) {
     case TOGGLE_EDIT_COMMENT: {
       //if Edit Comment is closed
@@ -335,7 +343,10 @@ export function openEditComment(state: OpenEditCommentState = [], action: { type
 
 export type OpenCommentSectionState = boolean;
 
-export function openCommentSection(state: OpenCommentSectionState = false, action: { type: string }): OpenCommentSectionState {
+export function openCommentSection(
+  state: OpenCommentSectionState = false,
+  action: { type: string }
+): OpenCommentSectionState {
   switch (action.type) {
     case OPEN_COMMENT_SECTION:
       return true;

@@ -19,32 +19,32 @@ export function receiveModules(json: {
     componentClass: string;
     supportsMultipleModules: boolean;
   }>;
-  stats?: {[id: string]: ModuleStats};
+  stats?: { [id: string]: ModuleStats };
 }): ModuleActions {
-    return {
-      type: RECEIVE_MODULES,
-      json,
-      receivedAt: Date.now()
-    };
+  return {
+    type: RECEIVE_MODULES,
+    json,
+    receivedAt: Date.now(),
+  };
 }
 
 export function requestModules(communityId: number): ModuleActions {
-	return {
-		type: REQUEST_MODULES
-	};
+  return {
+    type: REQUEST_MODULES,
+  };
 }
 
 export function resetModules(): ModuleActions {
-	return {
-		type: RESET_MODULES
-	};
+  return {
+    type: RESET_MODULES,
+  };
 }
 
 export function fetchModules({ communityId }: { communityId: number }): Thunk<Promise<GetModulesResult>> {
-	return async (dispatch: any /*, getState: any*/): Promise<GetModulesResult> => {
-		dispatch(requestModules(communityId));
-		const json = await dispatch(Stackend.getModules({ communityId }));
-		dispatch(receiveModules(json));
-		return json;
-	};
+  return async (dispatch: any /*, getState: any*/): Promise<GetModulesResult> => {
+    dispatch(requestModules(communityId));
+    const json = await dispatch(Stackend.getModules({ communityId }));
+    dispatch(receiveModules(json));
+    return json;
+  };
 }

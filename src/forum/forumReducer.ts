@@ -8,7 +8,6 @@ export const RECEIVE_FORUMS = 'RECEIVE_FORUMS';
 export const REQUEST_FORUMS = 'REQUEST_FORUMS';
 export const INVALIDATE_FORUMS = 'INVALIDATE_FORUMS';
 
-
 export type RequestForumsAction = {
   type: typeof REQUEST_FORUMS;
 };

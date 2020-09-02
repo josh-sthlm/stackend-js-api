@@ -161,8 +161,7 @@ export const COMMUNITY_MANAGER_CONTEXT = 'community';
  * CommunityManager component class
  * @type {string}
  */
-export const COMPONENT_CLASS =
-  'se.josh.xcap.community.CommunityManager';
+export const COMPONENT_CLASS = 'se.josh.xcap.community.CommunityManager';
 
 /**
  * Community permalink reserverd for news and documentation on stackend.com
@@ -372,7 +371,7 @@ export function setCommunitySetting({
   });
 }
 
-export type GetCommunityPrivateSettingsResult = XcapJsonResult
+export type GetCommunityPrivateSettingsResult = XcapJsonResult;
 
 /**
  * Get the community's private settings that are not exposed to the frontend
@@ -413,7 +412,7 @@ export function storeCommunityPrivateSettings({
 }: {
   key?: string | null;
   value?: any | null;
-  values?: {[name: string]: any};
+  values?: { [name: string]: any };
   community?: string | null;
 }): Thunk<Promise<XcapJsonResult>> {
   const x = {
@@ -472,7 +471,7 @@ export function removeCommunity({
 
 export interface SearchCommunityResult extends XcapJsonResult {
   results: PaginatedCollection<Community>;
-  statistics: {[id: string]: CommunityStats};
+  statistics: { [id: string]: CommunityStats };
 }
 
 /**
@@ -535,15 +534,9 @@ export function getCurrentStackendUser(): Thunk<Promise<XcapJsonResult>> {
  * In a list of communities, find the one that matches the permalink
  * @return {Community} may return null,
  */
-export function getCurrentCommunity(
-  communities: Array<Community>
-): Thunk<Community | null> {
+export function getCurrentCommunity(communities: Array<Community>): Thunk<Community | null> {
   return (dispatch: any): Community | null => {
-    if (
-      typeof communities === 'undefined' ||
-      communities === null ||
-      communities.length === 0
-    ) {
+    if (typeof communities === 'undefined' || communities === null || communities.length === 0) {
       return null;
     }
 
@@ -600,7 +593,6 @@ export function isCommunityUrlBlocked(communityUrl: string): boolean {
   return typeof t === 'undefined' ? false : t;
 }
 
-
 /**
  * From the request url try to get the communityPermalink
  * @return {Community} may return null,
@@ -633,15 +625,8 @@ export function _getCurrentCommunityPermalinkFromUrl(request: Request): any {
  * In a list of communities, find the one that matches the permalink
  * @return {Community} may return null,
  */
-export function _getCurrentCommunity(
-  communities: Array<Community>,
-  request: Request
-): Community | null {
-  if (
-    typeof communities === 'undefined' ||
-    communities === null ||
-    communities.length === 0
-  ) {
+export function _getCurrentCommunity(communities: Array<Community>, request: Request): Community | null {
+  if (typeof communities === 'undefined' || communities === null || communities.length === 0) {
     return null;
   }
 
@@ -660,17 +645,13 @@ export function _getCurrentCommunity(
   return null;
 }
 
-
 /**
  * Check if the user is a community moderator, but not admin
  * @param community
  * @param userId
  * @returns {boolean}
  */
-export function isCommunityModerator(
-  community: Community | null,
-  userId: number
-): boolean {
+export function isCommunityModerator(community: Community | null, userId: number): boolean {
   if (!(community && community.id)) {
     return false;
   }
@@ -679,10 +660,7 @@ export function isCommunityModerator(
     return false;
   }
 
-  if (
-    typeof community.moderatorUserIds !== 'undefined' &&
-    community.moderatorUserIds.includes(userId)
-  ) {
+  if (typeof community.moderatorUserIds !== 'undefined' && community.moderatorUserIds.includes(userId)) {
     return true;
   }
 
@@ -695,17 +673,8 @@ export function isCommunityModerator(
  * @param userId
  * @returns {boolean}
  */
-export function isCommunityAdmin(
-  community: Community | null,
-  userId?: number | null
-): boolean {
-  if (
-    typeof community === 'undefined' ||
-    community === null ||
-    !!userId ||
-    userId === null ||
-    userId === 0
-  ) {
+export function isCommunityAdmin(community: Community | null, userId?: number | null): boolean {
+  if (typeof community === 'undefined' || community === null || !!userId || userId === null || userId === 0) {
     return false;
   }
 
@@ -713,10 +682,7 @@ export function isCommunityAdmin(
     return true;
   }
 
-  return (
-    typeof community.adminUserIds !== 'undefined' &&
-    community.adminUserIds.includes(userId as number)
-  );
+  return typeof community.adminUserIds !== 'undefined' && community.adminUserIds.includes(userId as number);
 }
 /**
  * Check if the user has stackend admin access (any community/stack).
@@ -724,12 +690,7 @@ export function isCommunityAdmin(
  * @returns {boolean}
  */
 export function hasStackendAdminAccess(currentUser: CurrentUserType): boolean {
-  return hasElevatedPrivilege(
-    currentUser,
-    COMMUNITY_MANAGER_CONTEXT,
-    COMPONENT_CLASS,
-    PrivilegeTypeId.ADMIN
-  );
+  return hasElevatedPrivilege(currentUser, COMMUNITY_MANAGER_CONTEXT, COMPONENT_CLASS, PrivilegeTypeId.ADMIN);
 }
 
 /**
@@ -737,10 +698,7 @@ export function hasStackendAdminAccess(currentUser: CurrentUserType): boolean {
  * @param community
  * @param currentUser
  */
-export function hasCommunityAdminOrModeratorAccess(
-  community: Community | null,
-  currentUser: CurrentUserType
-): boolean {
+export function hasCommunityAdminOrModeratorAccess(community: Community | null, currentUser: CurrentUserType): boolean {
   if (!(community && community.id)) {
     return false;
   }
@@ -754,17 +712,11 @@ export function hasCommunityAdminOrModeratorAccess(
     return true;
   }
 
-  if (
-    typeof community.adminUserIds !== 'undefined' &&
-    community.adminUserIds.includes(userId)
-  ) {
+  if (typeof community.adminUserIds !== 'undefined' && community.adminUserIds.includes(userId)) {
     return true;
   }
 
-  if (
-    typeof community.moderatorUserIds !== 'undefined' &&
-    community.moderatorUserIds.includes(userId)
-  ) {
+  if (typeof community.moderatorUserIds !== 'undefined' && community.moderatorUserIds.includes(userId)) {
     return true;
   }
 
@@ -777,10 +729,7 @@ export function hasCommunityAdminOrModeratorAccess(
  * @param currentUser
  * @returns {boolean}
  */
-export function hasCommunityAdminAccess(
-  community: Community | null,
-  currentUser: CurrentUserType
-): boolean {
+export function hasCommunityAdminAccess(community: Community | null, currentUser: CurrentUserType): boolean {
   if (!(currentUser && currentUser.user)) {
     return false;
   }
@@ -798,15 +747,8 @@ export function hasCommunityAdminAccess(
  * @returns {boolean}
  */
 export function hasStackendCreateAccess(currentUser: CurrentUserType): boolean {
-  return hasElevatedPrivilege(
-    currentUser,
-    COMMUNITY_MANAGER_CONTEXT,
-    COMPONENT_CLASS,
-    PrivilegeTypeId.TRUSTED
-  );
+  return hasElevatedPrivilege(currentUser, COMMUNITY_MANAGER_CONTEXT, COMPONENT_CLASS, PrivilegeTypeId.TRUSTED);
 }
-
-
 
 export interface GetModulesResult extends XcapJsonResult {
   modules: Array<Module>;
@@ -817,7 +759,7 @@ export interface GetModulesResult extends XcapJsonResult {
     supportsMultipleModules: boolean;
   }>;
 
-  stats: {[id: string]: ModuleStats};
+  stats: { [id: string]: ModuleStats };
 }
 
 /**
@@ -826,11 +768,7 @@ export interface GetModulesResult extends XcapJsonResult {
  * @param communityId
  * @returns {Promise}
  */
-export function getModules({
-  communityId,
-}: {
-  communityId: number;
-}): Thunk<Promise<GetModulesResult>> {
+export function getModules({ communityId }: { communityId: number }): Thunk<Promise<GetModulesResult>> {
   return getJson({
     url: '/stackend/module/list',
     parameters: {
@@ -1087,13 +1025,7 @@ export function storeModuleRules({
  * @param id
  * @param communityId
  */
-export function removeModule({
-  id,
-  communityId,
-}: {
-  id: number;
-  communityId: number;
-}): Thunk<Promise<XcapJsonResult>> {
+export function removeModule({ id, communityId }: { id: number; communityId: number }): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/module/remove',
     parameters: {
@@ -1108,11 +1040,7 @@ export function removeModule({
  * Detect modules by inspecting existing data. Developer tool.
  * @param communityId
  */
-export function detectModules({
-  communityId,
-}: {
-  communityId: number;
-}): Thunk<Promise<XcapJsonResult>> {
+export function detectModules({ communityId }: { communityId: number }): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/modules/update',
     parameters: {
@@ -1182,11 +1110,7 @@ export interface ListAdminUsersResult extends XcapJsonResult {
  * Requires stackend admin status.
  * @param privilege {number} PrivilegeType
  */
-export function listAdminUsers({
-  privilege,
-}: {
-  privilege: number;
-}): Thunk<Promise<ListAdminUsersResult>> {
+export function listAdminUsers({ privilege }: { privilege: number }): Thunk<Promise<ListAdminUsersResult>> {
   return getJson({
     url: '/stackend/user/list-admins',
     parameters: {
@@ -1324,11 +1248,7 @@ export function getStackendUrl({
  * @param userId
  * @returns {Thunk<XcapJsonResult>}
  */
-export function removeUser({
-  userId,
-}: {
-  userId: number;
-}): Thunk<Promise<XcapJsonResult>> {
+export function removeUser({ userId }: { userId: number }): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/user/remove',
     parameters: arguments,

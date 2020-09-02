@@ -10,16 +10,16 @@ const GROUP = { key: 'group', value: 'Groups' };
 const USER = { key: 'user', value: 'Users' };
 
 const TITLES = {
-	ALL,
-	//FAQ,
-	QUESTION,
-	ARTICLE,
-	BLOG,
-	GROUP,
-	USER
+  ALL,
+  //FAQ,
+  QUESTION,
+  ARTICLE,
+  BLOG,
+  GROUP,
+  USER,
 };
 
-export function findSearchTitle(searchKey: string): string|null|undefined {
-	const title = _.find(TITLES, item => searchKey === item.key);
-	return _.get(title, 'value', undefined);
+export function findSearchTitle(searchKey: string): string | null | undefined {
+  const title = _.find(TITLES, item => searchKey === item.key);
+  return _.get(title, 'value', undefined);
 }

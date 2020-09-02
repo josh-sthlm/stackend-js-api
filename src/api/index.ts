@@ -13,10 +13,7 @@ import winston, { Logger } from 'winston';
 import { XCAP_SET_CONFIG } from './configReducer';
 import { Dispatch } from 'redux';
 
-
-
-function createDefaultLogger(): Logger
-{
+function createDefaultLogger(): Logger {
   return winston.createLogger({
     level: 'info',
     format: winston.format.json(),
@@ -24,8 +21,8 @@ function createDefaultLogger(): Logger
     transports: [
       new winston.transports.Console({
         format: winston.format.simple(),
-      })
-    ]
+      }),
+    ],
   });
 }
 
@@ -38,9 +35,8 @@ export let logger = createDefaultLogger();
  * Get the stackend logger
  */
 export function getLogger(): Logger {
-  if (!logger ) {
+  if (!logger) {
     logger = createDefaultLogger();
-
   }
   return logger as Logger;
 }
@@ -52,7 +48,6 @@ export function getLogger(): Logger {
 export function setLogger(newLogger: Logger): void {
   logger = newLogger;
 }
-
 
 export const STACKEND_DEFAULT_SERVER = 'https://api.stackend.com';
 export const STACKEND_DEFAULT_CONTEXT_PATH = '';
@@ -88,24 +83,23 @@ export interface Config {
  */
 export enum DeployProfile {
   STACKEND = 'stackend',
-  CASTLE = 'castle'
+  CASTLE = 'castle',
 }
 
 export let configDefaults: Partial<Config> = {
   server: STACKEND_DEFAULT_SERVER,
-  contextPath: "",
-  apiUrl: STACKEND_DEFAULT_SERVER + STACKEND_DEFAULT_CONTEXT_PATH + "/api",
+  contextPath: '',
+  apiUrl: STACKEND_DEFAULT_SERVER + STACKEND_DEFAULT_CONTEXT_PATH + '/api',
   recaptchaSiteKey: null,
   gaKey: null,
-  deployProfile: DeployProfile.STACKEND
-}
+  deployProfile: DeployProfile.STACKEND,
+};
 
 /**
  * Set default configuration options
  * @param defaults
  */
-export function setConfigDefaults(defaults: Partial<Config>): void
-{
+export function setConfigDefaults(defaults: Partial<Config>): void {
   configDefaults = defaults;
 }
 
@@ -122,11 +116,10 @@ export function isRunningServerSide(): boolean {
  * Is the app running in the browser
  */
 export function isRunningInBrowser(): boolean {
-  return !__xcapRunningServerSide && typeof window !== "undefined";
+  return !__xcapRunningServerSide && typeof window !== 'undefined';
 }
 
-export function setRunningServerSide(ssr: boolean): void
-{
+export function setRunningServerSide(ssr: boolean): void {
   __xcapRunningServerSide = ssr;
 }
 
@@ -179,7 +172,6 @@ export enum Order {
  * Base type for api results
  */
 export interface XcapJsonResult {
-
   /**
    * Action specific result code.
    * Common codes includes: "success", "input", "notfound" etc.
@@ -203,7 +195,6 @@ export interface XcapJsonResult {
     };
   };
 
-
   /**
    * Additional debug messages (non errors) from the API
    */
@@ -213,7 +204,7 @@ export interface XcapJsonResult {
    * Related objects mapped from a hash string to the actual object.
    * Present only when a call is successful.
    */
-  __relatedObjects?: {[ref: string]: XcapObject};
+  __relatedObjects?: { [ref: string]: XcapObject };
 
   /** Additional properties specific to the called API method  */
   [propName: string]: any;
@@ -443,7 +434,6 @@ export interface Reference {
  * Construct basic configuration from the environment.
  */
 export function _constructConfig(): Config {
-
   const c: Config = Object.assign(
     {
       server: STACKEND_DEFAULT_SERVER,
@@ -921,10 +911,10 @@ export function addRelatedObjectsToStore(dispatch: Dispatch, json: any): void {
 
 export type XcapOptionalParameters = {
   [COMMUNITY_PARAMETER]?: string | null | undefined;
-}
+};
 
-export type ParameterValue = string | number | boolean | null | undefined | Array<string | number | boolean | null> ;
-export type Parameters = XcapOptionalParameters & { [name: string]: ParameterValue } | string;
+export type ParameterValue = string | number | boolean | null | undefined | Array<string | number | boolean | null>;
+export type Parameters = (XcapOptionalParameters & { [name: string]: ParameterValue }) | string;
 
 export interface XcapJsonRequest {
   /** Path on the api server */
@@ -1002,7 +992,6 @@ export function getJson<T extends XcapJsonResult>({
       }
 
       if (result.json) {
-
         if (result.error) {
           logger.error(getJsonErrorText(result.json) + ' ' + p);
           dispatch(setLoadingThrobberVisible(false));
@@ -1030,7 +1019,7 @@ export function getJson<T extends XcapJsonResult>({
       // 404, connection refused etc
       logger.error("Couldn't getJson: " + p, e);
       dispatch(setLoadingThrobberVisible(false));
-      return newXcapJsonErrorResult('Couldn\'t getJson: ' + e) as T;
+      return newXcapJsonErrorResult("Couldn't getJson: " + e) as T;
     }
   };
 }
@@ -1042,7 +1031,13 @@ export function getJson<T extends XcapJsonResult>({
  * @param parameters
  * @returns {Promise}
  */
-export function getJsonOutsideApi({ url, parameters }: { url: string; parameters?: any }): Thunk<Promise<XcapJsonResult>> {
+export function getJsonOutsideApi({
+  url,
+  parameters,
+}: {
+  url: string;
+  parameters?: any;
+}): Thunk<Promise<XcapJsonResult>> {
   return async (dispatch): Promise<XcapJsonResult> => {
     const p = appendQueryString(url, urlEncodeParameters(argsToObject(parameters)));
     const result = await LoadJson({ url: p });
@@ -1065,9 +1060,9 @@ export function getJsonOutsideApi({ url, parameters }: { url: string; parameters
       }
     }
 
-    return newXcapJsonErrorResult("No result received");
+    return newXcapJsonErrorResult('No result received');
     // TODO: Used to return empty
-  }
+  };
 }
 
 /**
@@ -1095,8 +1090,7 @@ export function post<T extends XcapJsonResult>({
   return async (dispatch: any): Promise<T> => {
     const params = argsToObject(parameters);
 
-    if (typeof community === 'undefined' && params
-      && typeof (params as any)[COMMUNITY_PARAMETER] !== 'undefined') {
+    if (typeof community === 'undefined' && params && typeof (params as any)[COMMUNITY_PARAMETER] !== 'undefined') {
       community = (params as any)[COMMUNITY_PARAMETER];
     }
 
@@ -1121,13 +1115,13 @@ export function post<T extends XcapJsonResult>({
 
     if (result) {
       if (result.error) {
-        logger.warn(result.error + ": " + p);
+        logger.warn(result.error + ': ' + p);
         return newXcapJsonErrorResult('Post failed: ' + result.error) as T;
       }
 
       if (result.json) {
         if (result.json.error) {
-          logger.warn(getJsonErrorText(result.json) + ": " + p);
+          logger.warn(getJsonErrorText(result.json) + ': ' + p);
         }
         const r = postProcessApiResult(result.json);
         addRelatedObjectsToStore(dispatch, r);
@@ -1342,7 +1336,7 @@ export function argsToObject(args: Parameters | IArguments | undefined | null): 
 
   let r: Parameters = {};
   if (typeof args.length === 'undefined') {
-    r = (args as any); // Plain object
+    r = args as any; // Plain object
   } else {
     // Arguments or Arguments object
     for (let i = 0; i < (args as IArguments).length; i++) {
@@ -1351,7 +1345,7 @@ export function argsToObject(args: Parameters | IArguments | undefined | null): 
   }
 
   // Remove undefined values
-  const o = (r as any);
+  const o = r as any;
   for (const k in o) {
     if (Object.prototype.hasOwnProperty.call(o, k) && typeof o[k] === 'undefined') {
       delete o[k];
@@ -1378,7 +1372,12 @@ export function postProcessApiResult(result: XcapJsonResult): any {
   return _postProcessApiResult(result, result[RELATED_OBJECTS] || {}, likes, votes);
 }
 
-function _postProcessApiResult(result: XcapJsonResult|null, relatedObjects: any, likes?: any, votes?: any): XcapJsonResult|null {
+function _postProcessApiResult(
+  result: XcapJsonResult | null,
+  relatedObjects: any,
+  likes?: any,
+  votes?: any
+): XcapJsonResult | null {
   if (result === null) {
     return null;
   }
@@ -1500,31 +1499,35 @@ export function getJsonErrorText(response?: XcapJsonResult): string {
  * @param fieldErrors
  * @param data
  */
-export function _newXcapJsonResult<T extends XcapJsonResult>(resultCode: string, actionErrors: undefined|string|Array<string>, fieldErrors: undefined | { [fieldName: string]: string}, data?: any): T
-{
-  const x =  {
+export function _newXcapJsonResult<T extends XcapJsonResult>(
+  resultCode: string,
+  actionErrors: undefined | string | Array<string>,
+  fieldErrors: undefined | { [fieldName: string]: string },
+  data?: any
+): T {
+  const x = {
     __resultCode: resultCode,
-    ...data
-  }
+    ...data,
+  };
 
   if (actionErrors || fieldErrors) {
     let ae: Array<string>;
-    if (typeof actionErrors === "undefined") {
+    if (typeof actionErrors === 'undefined') {
       ae = [];
-    } else if (typeof actionErrors === "string") {
-      ae = [ actionErrors ];
+    } else if (typeof actionErrors === 'string') {
+      ae = [actionErrors];
     } else {
       ae = actionErrors;
     }
 
     x.error = {
       actionErrors: ae,
-      fieldErrors: fieldErrors || {}
-    }
+      fieldErrors: fieldErrors || {},
+    };
   } else if (resultCode === 'error') {
     x.error = {
-      actionErrors: [ 'error' ]
-    }
+      actionErrors: ['error'],
+    };
   }
 
   return x;
@@ -1535,19 +1538,19 @@ export function _newXcapJsonResult<T extends XcapJsonResult>(resultCode: string,
  * @param resultCode
  * @param data
  */
-export function newXcapJsonResult<T extends XcapJsonResult>(resultCode: string, data?: any): T
-{
+export function newXcapJsonResult<T extends XcapJsonResult>(resultCode: string, data?: any): T {
   return _newXcapJsonResult(resultCode, undefined, undefined, data);
 }
-
 
 /**
  * Construct a new API result
  * @param actionErrors
  * @param fieldErrors
  */
-export function newXcapJsonErrorResult<T extends XcapJsonResult>(actionErrors: string|Array<string>, fieldErrors?: { [fieldName: string]: string}): T
-{
+export function newXcapJsonErrorResult<T extends XcapJsonResult>(
+  actionErrors: string | Array<string>,
+  fieldErrors?: { [fieldName: string]: string }
+): T {
   return _newXcapJsonResult('error', actionErrors, fieldErrors);
 }
 
@@ -1591,18 +1594,18 @@ export interface GetInitialStoreValuesResult extends XcapJsonResult {
 
   /** Current user. Stackend user when running in /stacks */
   user: User | null;
-  xcapApiConfiguration: {[key: string]: any};
+  xcapApiConfiguration: { [key: string]: any };
   numberOfUnseen: number;
-  modules: { [id: string]: Module};
+  modules: { [id: string]: Module };
 
   /** Maps from id to content */
-  cmsContents: {[id: string]: Content};
+  cmsContents: { [id: string]: Content };
 
   /** Maps from id to  Page */
-  cmsPages: {[id: string]: Page};
+  cmsPages: { [id: string]: Page };
 
   /** Maps from id to  SubSite */
-  subSites: {[id: string]: SubSite};
+  subSites: { [id: string]: SubSite };
 
   /** Maps the referenceUrl parameter to an id */
   referenceUrlId: number;

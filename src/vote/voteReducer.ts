@@ -11,15 +11,16 @@ type VoteActionBase = {
   hasVoted?: boolean;
   myReview?: Comment | null;
   voteSummary: VoteSummary;
-}
-export type VoteActions =  VoteActionBase & {
-  type: typeof XCAP_VOTES_RECEIVED;
-  votes: { [referenceGroupId: number]: Vote };
-} | VoteActionBase & {
-  type: typeof XCAP_VOTES_UPDATE;
-  vote: Vote;
 };
-
+export type VoteActions =
+  | (VoteActionBase & {
+      type: typeof XCAP_VOTES_RECEIVED;
+      votes: { [referenceGroupId: number]: Vote };
+    })
+  | (VoteActionBase & {
+      type: typeof XCAP_VOTES_UPDATE;
+      vote: Vote;
+    });
 
 export interface VoteInfo {
   voteSummary: VoteSummary;
@@ -33,18 +34,17 @@ export interface VoteState {
     // Context
     [referenceId: string]: VoteInfo;
   };
-
 }
 
 function updateVotes({
-                       state,
-                       context,
-                       voteSummary,
-                       votes,
-                       vote,
-                       hasVoted,
-                       myReview,
-                     }: {
+  state,
+  context,
+  voteSummary,
+  votes,
+  vote,
+  hasVoted,
+  myReview,
+}: {
   state: VoteState;
   context: string;
   voteSummary: VoteSummary;
@@ -102,7 +102,6 @@ function updateVotes({
   return x;
 }
 
-
 const voteReducer = (state: VoteState = {}, action: VoteActions): VoteState => {
   let c = state;
   switch (action.type) {
@@ -136,4 +135,3 @@ const voteReducer = (state: VoteState = {}, action: VoteActions): VoteState => {
 };
 
 export default voteReducer;
-

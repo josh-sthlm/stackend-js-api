@@ -9,7 +9,10 @@ import {
   GetProductRequest,
   ListProductsRequest,
   ListProductTypesResult,
-  ListProductTypesRequest, ListProductsResult, ListProductsAndTypesResult, GetProductResult
+  ListProductTypesRequest,
+  ListProductsResult,
+  ListProductsAndTypesResult,
+  GetProductResult,
 } from './index';
 import { ADD_TO_BASKET, RECEIVE_PRODUCT, RECEIVE_PRODUCT_TYPES, RECEIVE_PRODUCTS } from './shopReducer';
 import { Thunk } from '../api';
@@ -28,7 +31,9 @@ export const requestProducts = (req: ListProductsRequest) => async (dispatch: an
   return r;
 };
 
-export const requestProductsAndProductTypes = (req: ListProductsRequest) => async (dispatch: any): Promise<ListProductsAndTypesResult> => {
+export const requestProductsAndProductTypes = (req: ListProductsRequest) => async (
+  dispatch: any
+): Promise<ListProductsAndTypesResult> => {
   const r = await dispatch(listProductsAndTypes(req));
   await dispatch({ type: RECEIVE_PRODUCTS, json: r });
   await dispatch({ type: RECEIVE_PRODUCT_TYPES, json: r });

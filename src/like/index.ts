@@ -1,13 +1,6 @@
 // @flow
 import _ from 'lodash';
-import {
-  post,
-  getJson,
-  XcapJsonResult,
-  _getApiUrl,
-  Config,
-  Thunk, XcapOptionalParameters
-} from '../api';
+import { post, getJson, XcapJsonResult, _getApiUrl, Config, Thunk, XcapOptionalParameters } from '../api';
 import type { PaginatedCollection } from '../api/PaginatedCollection';
 import type { Community } from '../stackend';
 

@@ -8,22 +8,25 @@ export const REQUEST_MODULES = 'REQUEST_MODULES';
 export const RECEIVE_MODULES = 'RECEIVE_MODULES';
 export const RESET_MODULES = 'RESET_MODULES';
 
-export type ModuleActions = {
-  type: typeof REQUEST_MODULES;
-} | {
-  type: typeof RECEIVE_MODULES;
-  receivedAt: number;
-  json: any;
-} | {
-  type: typeof RESET_MODULES;
-}
+export type ModuleActions =
+  | {
+      type: typeof REQUEST_MODULES;
+    }
+  | {
+      type: typeof RECEIVE_MODULES;
+      receivedAt: number;
+      json: any;
+    }
+  | {
+      type: typeof RESET_MODULES;
+    };
 
 export interface ModuleState {
   isFetching?: boolean;
   didInvalidate?: boolean;
   lastUpdated?: number;
   modules?: Array<Module>;
-  stats?: {[id: string]: ModuleStats};
+  stats?: { [id: string]: ModuleStats };
   communityId?: number;
   supportedModuleContexts?: Array<{
     context: string;
@@ -32,10 +35,7 @@ export interface ModuleState {
   }>;
 }
 //Reducer
-export default function moduleReducer(
-  state: ModuleState = {},
-  action: ModuleActions
-): ModuleState {
+export default function moduleReducer(state: ModuleState = {}, action: ModuleActions): ModuleState {
   switch (action.type) {
     case REQUEST_MODULES:
       return Object.assign({}, state, {

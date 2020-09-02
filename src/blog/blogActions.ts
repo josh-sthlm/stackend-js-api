@@ -3,7 +3,6 @@ import * as reducer from './blogReducer';
 import { Blog } from './index';
 import { BlogActions } from './blogReducer';
 
-
 export function receiveBlogs({ entries }: { entries: Array<Blog> }): BlogActions {
   return {
     type: reducer.RECEIVE_BLOGS,

@@ -4,7 +4,8 @@ import {
   XCAP_MODAL_THROBBER_INCREASE,
   XCAP_MODAL_THROBBER_DECREASE,
   XCAP_LOADING_THROBBER_INCREASE,
-  XCAP_LOADING_THROBBER_DECREASE, ThrobberActions
+  XCAP_LOADING_THROBBER_DECREASE,
+  ThrobberActions,
 } from './throbberReducer';
 import { Thunk } from '../api';
 

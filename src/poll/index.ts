@@ -42,8 +42,8 @@ export interface GetPollResult extends XcapJsonResult {
   hasVoted: boolean;
   pollAnswerVote: number;
   canVote: boolean;
-  votesByAnswer: {[id: string]: number};
-  votesPercentByAnswer: {[id: string]: number};
+  votesByAnswer: { [id: string]: number };
+  votesPercentByAnswer: { [id: string]: number };
   hidden: false;
 }
 

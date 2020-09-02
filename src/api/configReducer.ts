@@ -36,16 +36,14 @@ const configReducer = (
       return _.get(action, 'json.xcapApiConfiguration', {});
 
     case XCAP_SET_CONFIG: {
-
       const c = (action as SetConfigAction).config;
       if (c.server) {
-        let cp = c.contextPath || state.contextPath || "";
-        if (c.server.endsWith("/")) {
-          cp = cp.replace(/^\//, "");
+        let cp = c.contextPath || state.contextPath || '';
+        if (c.server.endsWith('/')) {
+          cp = cp.replace(/^\//, '');
         }
-        if (cp.endsWith("/"))
-        cp = cp.replace(/\/$/, "");
-        c.apiUrl = c.server + cp + "/api";
+        if (cp.endsWith('/')) cp = cp.replace(/\/$/, '');
+        c.apiUrl = c.server + cp + '/api';
       }
 
       return Object.assign({}, state, c);

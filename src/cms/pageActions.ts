@@ -8,20 +8,12 @@ import {
   RECEIVE_PAGES,
   PagesState,
   RECEIVE_SUB_SITES,
-  PageAndLoadedState, PageActions
+  PageAndLoadedState,
+  PageActions,
 } from './pageReducer';
 
-import {
-  getPages,
-  GetPagesResult,
-  getSubSite,
-  GetSubSiteResult,
-  Page,
-  SubSiteNode,
-  SubSite
-} from './index';
+import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode, SubSite } from './index';
 import { getPermalink } from '../api/tree';
-
 
 /**
  * Request multiple pages
@@ -88,7 +80,7 @@ export function requestMissingPages({
     }
 
     if (fetchPageIds.length === 0 && fetchPermalinks.length === 0) {
-      return newXcapJsonResult('success', { pages: ''}) as GetPagesResult;
+      return newXcapJsonResult('success', { pages: '' }) as GetPagesResult;
       //return { pages: {} };
     }
 
@@ -186,17 +178,20 @@ export function requestSubSite(id: number): Thunk<Promise<GetSubSiteResult>> {
         }
       });
 
-
-      await dispatch(receivePages(newXcapJsonResult("success", {
-        pages,
-      })));
+      await dispatch(
+        receivePages(
+          newXcapJsonResult('success', {
+            pages,
+          })
+        )
+      );
       await dispatch(receiveSubSites({ subSites: { [r.tree.id]: r.tree } }));
     }
     return r;
   };
 }
 
-export function receiveSubSites({ subSites }:  { subSites: { [id: number]: SubSite } }): Thunk<PageActions> {
+export function receiveSubSites({ subSites }: { subSites: { [id: number]: SubSite } }): Thunk<PageActions> {
   return (dispatch /*, getState: any*/): PageActions => {
     return dispatch({
       type: RECEIVE_SUB_SITES,

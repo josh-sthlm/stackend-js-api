@@ -19,12 +19,12 @@ export type Set = {
   text: string;
 };
 
-export type AddQuote =  {
+export type AddQuote = {
   type: typeof ADD_QUOTE;
   quote: string;
 };
 
-export type ToggleEdit =  {
+export type ToggleEdit = {
   type: typeof FORUM_THREAD_TOGGLE_EDIT;
   forumPermalink: string;
   editThreadId: number;

@@ -1,4 +1,3 @@
-
 //Action Type
 
 import {
@@ -7,7 +6,7 @@ import {
   GraphQLListNode,
   ListProductsAndTypesResult,
   ListProductTypesResult,
-  Product
+  Product,
 } from './index';
 import _ from 'lodash';
 
@@ -30,19 +29,23 @@ export interface ShopState {
   basket: Array<any>;
 }
 
-export type ShopActions = {
-  type: typeof RECEIVE_PRODUCT_TYPES;
-  json: ListProductTypesResult;
-} | {
-  type: typeof RECEIVE_PRODUCT;
-  json: GetProductResult;
-} | {
-  type: typeof RECEIVE_PRODUCTS;
-  json: ListProductsAndTypesResult;
-} | {
-  type: typeof ADD_TO_BASKET;
-  product: Product;
-}
+export type ShopActions =
+  | {
+      type: typeof RECEIVE_PRODUCT_TYPES;
+      json: ListProductTypesResult;
+    }
+  | {
+      type: typeof RECEIVE_PRODUCT;
+      json: GetProductResult;
+    }
+  | {
+      type: typeof RECEIVE_PRODUCTS;
+      json: ListProductsAndTypesResult;
+    }
+  | {
+      type: typeof ADD_TO_BASKET;
+      product: Product;
+    };
 
 export default function shopReducer(
   state: ShopState = {

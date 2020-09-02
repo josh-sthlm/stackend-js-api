@@ -53,7 +53,7 @@ export type UpdateBlogEntry = {
   };
   userRsvpStatuses?: any;
   likesByCurrentUser?: any;
-}
+};
 
 interface Update {
   type: typeof UPDATE_GROUP_BLOG_ENTRY;
@@ -61,8 +61,6 @@ interface Update {
   receivedAt: number;
   json: UpdateBlogEntry;
 }
-
-
 
 interface Request {
   type: typeof REQUEST_GROUP_BLOG_ENTRIES;
@@ -187,15 +185,18 @@ export default groupBlogEntries;
 
 type OpenBlogEntryWriteCommentSection = false | { blogEntryId: number; editorType: 'EDIT' | 'COMMENT' };
 
-export type OpenBlogEntryWriteCommentSectionActions = {
-  type: typeof TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY;
-  blogEntryId: number;
-  editorType: 'EDIT' | 'COMMENT';
-} | {
-  type: typeof REACT_ROUTER_REDUX_LOCATION_CHANGE;
-} | {
-  type: typeof CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY;
-}
+export type OpenBlogEntryWriteCommentSectionActions =
+  | {
+      type: typeof TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY;
+      blogEntryId: number;
+      editorType: 'EDIT' | 'COMMENT';
+    }
+  | {
+      type: typeof REACT_ROUTER_REDUX_LOCATION_CHANGE;
+    }
+  | {
+      type: typeof CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY;
+    };
 
 export function openBlogEntryWriteCommentSection(
   state: OpenBlogEntryWriteCommentSection = false,

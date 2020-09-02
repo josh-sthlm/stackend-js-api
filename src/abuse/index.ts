@@ -1,7 +1,6 @@
 // @flow
 import { post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
 
-
 /**
  * Component name
  */
@@ -20,11 +19,11 @@ export const TYPE_ABUSE = 'net.josh.community.abuse.ReferencedAbuse';
  * @param context Optional community context used for config (for example "forum")
  */
 export function report({
-                         obfuscatedReference,
-                         abuseText,
-                         context = null,
-                         componentName = null
-                       }: {
+  obfuscatedReference,
+  abuseText,
+  context = null,
+  componentName = null,
+}: {
   obfuscatedReference: string;
   abuseText: string;
   context?: string | null;
@@ -34,8 +33,6 @@ export function report({
     url: '/abuse/report',
     parameters: arguments,
     context: context || 'abuse',
-    componentName: componentName || COMPONENT_NAME
+    componentName: componentName || COMPONENT_NAME,
   });
 }
-
-

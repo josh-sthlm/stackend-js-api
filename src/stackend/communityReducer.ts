@@ -35,27 +35,34 @@ export interface CommunityState {
   lastUpdated?: number;
 }
 
-export type CommunityActions = {
-  type: typeof REQUEST_COMMUNITIES;
-} | {
-  type: typeof RECEIVE_COMMUNITIES;
-  json: ReceiveCommunities;
-  receivedAt: number;
-} | {
-  type: typeof UPDATE_COMMUNITY;
-  community: Community;
-  receivedAt: number;
-} | {
-  type: typeof SET_COMMUNITY_SETTINGS;
-  community: Community;
-  objectsRequiringModeration?: number;
-} | {
-  type: typeof REMOVE_COMMUNITIES;
-} | {
-  type: typeof REMOVE_COMMUNITY;
-} | ResourceUsage & {
-  type: typeof RECEIVE_RESOURCE_USAGE;
-}
+export type CommunityActions =
+  | {
+      type: typeof REQUEST_COMMUNITIES;
+    }
+  | {
+      type: typeof RECEIVE_COMMUNITIES;
+      json: ReceiveCommunities;
+      receivedAt: number;
+    }
+  | {
+      type: typeof UPDATE_COMMUNITY;
+      community: Community;
+      receivedAt: number;
+    }
+  | {
+      type: typeof SET_COMMUNITY_SETTINGS;
+      community: Community;
+      objectsRequiringModeration?: number;
+    }
+  | {
+      type: typeof REMOVE_COMMUNITIES;
+    }
+  | {
+      type: typeof REMOVE_COMMUNITY;
+    }
+  | (ResourceUsage & {
+      type: typeof RECEIVE_RESOURCE_USAGE;
+    });
 
 //Reducer
 export default function communityReducer(state: CommunityState = {}, action: CommunityActions): CommunityState {

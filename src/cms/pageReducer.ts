@@ -18,20 +18,25 @@ export interface PageAndLoadedState extends Page {
   loaded: number; // Time when loaded
 }
 
-export type PageActions = {
-  type: typeof RECEIVE_PAGES;
-  json: GetPagesResult;
-} | {
-  type: typeof CLEAR_PAGE;
-  id: number;
-} | {
-  type: typeof CLEAR_PAGES;
-} | {
-  type: typeof RECEIVE_SUB_SITES;
-  subSites: { [id: string]: SubSite };
-} | {
-  type: typeof CLEAR_SUB_SITES;
-};
+export type PageActions =
+  | {
+      type: typeof RECEIVE_PAGES;
+      json: GetPagesResult;
+    }
+  | {
+      type: typeof CLEAR_PAGE;
+      id: number;
+    }
+  | {
+      type: typeof CLEAR_PAGES;
+    }
+  | {
+      type: typeof RECEIVE_SUB_SITES;
+      subSites: { [id: string]: SubSite };
+    }
+  | {
+      type: typeof CLEAR_SUB_SITES;
+    };
 
 export default function (
   state: PagesState = {
@@ -85,7 +90,6 @@ export default function (
     }
 
     case RECEIVE_SUB_SITES: {
-
       const s: PagesState = Object.assign({}, state);
       for (const [subSiteId, subSite] of Object.entries(action.subSites)) {
         s.subSiteById[subSiteId] = subSite as SubSite;

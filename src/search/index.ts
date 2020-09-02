@@ -8,7 +8,7 @@ import {
   XcapJsonResult,
   XcapObject,
   Thunk,
-  XcapOptionalParameters
+  XcapOptionalParameters,
 } from '../api';
 import * as qnaApi from '../qna';
 import _ from 'lodash';
@@ -171,7 +171,7 @@ export interface SearchResult extends XcapJsonResult {
 export function search({ community, ...urlArguments }: Search): Thunk<Promise<SearchResult>> {
   return getJson({
     url: searchType,
-    parameters: (urlArguments as any),
+    parameters: urlArguments as any,
     community: community,
     context: CONTEXT,
     componentName: COMPONENT_NAME,

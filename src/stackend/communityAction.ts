@@ -1,4 +1,3 @@
-
 import {
   REQUEST_COMMUNITIES,
   RECEIVE_COMMUNITIES,
@@ -6,12 +5,12 @@ import {
   SET_COMMUNITY_SETTINGS,
   REMOVE_COMMUNITIES,
   REMOVE_COMMUNITY,
-  RECEIVE_RESOURCE_USAGE, CommunityActions
+  RECEIVE_RESOURCE_USAGE,
+  CommunityActions,
 } from './communityReducer';
 
 import { Thunk } from '../api';
 import { Community, CommunityStatus, getCommunity, searchCommunity, storeCommunity } from './index';
-
 
 export interface ResourceUsage {
   maximumUseBeforeCharge: { [key: string]: number };
@@ -19,7 +18,6 @@ export interface ResourceUsage {
   hasPaymentMethod: boolean;
   isUserExcludedFromBilling: boolean;
 }
-
 
 /**
  * Load communities
@@ -126,9 +124,7 @@ export function editCommunity({
   domains: any;
 }): Thunk<any> {
   return async (dispatch: any /*, getState: any*/): Promise<any> => {
-    const response = await dispatch(
-      storeCommunity({ id, name, permalink, description, status, locale, domains })
-    );
+    const response = await dispatch(storeCommunity({ id, name, permalink, description, status, locale, domains }));
 
     if (!!id && id !== 0) {
       dispatch(updateCommunity(response.storedCommunity));

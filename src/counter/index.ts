@@ -15,7 +15,10 @@ import { post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
  * @param context Context (Required)
  * @param referenceId Reference id, for example a blog entry id (Required)
  */
-export function increment({ context, referenceId }: { context: string; referenceId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+export function increment({
+  context,
+  referenceId,
+}: { context: string; referenceId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/counter/increment', parameters: arguments });
 }
 

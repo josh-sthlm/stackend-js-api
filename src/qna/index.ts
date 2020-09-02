@@ -5,7 +5,7 @@ import {
   createCommunityUrl,
   XcapJsonResult,
   Thunk,
-  XcapOptionalParameters
+  XcapOptionalParameters,
 } from '../api';
 import * as searchApi from '../search';
 import * as forumApi from '../forum';
@@ -142,7 +142,10 @@ export function getQnaQuestionUrl({
  * @param pageSize Page size (optional)
  * @returns {Promise}
  */
-export function listTrendingQuestions({ p, pageSize }: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+export function listTrendingQuestions({
+  p,
+  pageSize,
+}: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/question/trending', parameters: arguments });
 }
 
@@ -153,7 +156,10 @@ export function listTrendingQuestions({ p, pageSize }: { p: number; pageSize: nu
  * @param pageSize Page size (optional)
  * @returns {Promise}
  */
-export function listSolvedQuestions({ p, pageSize }: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+export function listSolvedQuestions({
+  p,
+  pageSize,
+}: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/question/solved', parameters: arguments });
 }
 
@@ -163,7 +169,10 @@ export function listSolvedQuestions({ p, pageSize }: { p: number; pageSize: numb
  * @param p Page number (optional)
  * @param pageSize Page size (optional)
  */
-export function listAnsweredQuestions({ p, pageSize }: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+export function listAnsweredQuestions({
+  p,
+  pageSize,
+}: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/question/answered', parameters: arguments });
 }
 
@@ -173,7 +182,10 @@ export function listAnsweredQuestions({ p, pageSize }: { p: number; pageSize: nu
  * @param p Page number (optional)
  * @param pageSize Page size (optional)
  */
-export function listPostedQuestions({ p, pageSize }: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+export function listPostedQuestions({
+  p,
+  pageSize,
+}: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/question/posted', parameters: arguments });
 }
 
@@ -245,7 +257,9 @@ export function submitAnswer({
  *
  * @param answerId {int} Id.
  */
-export function solveQuestion({ answerId }: { answerId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+export function solveQuestion({
+  answerId,
+}: { answerId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/question/solve', parameters: arguments });
 }
 
@@ -288,6 +302,6 @@ export function gaQuestionEventObject({ forumThreadEntry }: GaTrackThread): any 
   return forumApi.getEventObject('question_post', forumThreadEntry);
 }
 
-export function gaAnswerEventObject({ forumThreadEntry }: GaTrackThread): any  {
+export function gaAnswerEventObject({ forumThreadEntry }: GaTrackThread): any {
   return forumApi.getEventObject('answer_post', forumThreadEntry);
 }

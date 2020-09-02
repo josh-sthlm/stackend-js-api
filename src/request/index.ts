@@ -1,4 +1,3 @@
-
 import { Thunk } from '../api';
 import _ from 'lodash';
 
@@ -151,7 +150,7 @@ export function parseAnchor(anchor: string | null): StackendAnchor | null {
     }
   }
 
-  const items = (a.items as Array<StackendAnchor>);
+  const items = a.items as Array<StackendAnchor>;
   if (items.length !== 0) {
     a.type = items[0].type;
     const i = s.indexOf('/');

@@ -293,7 +293,7 @@ export interface ListMyGroupsResult extends XcapJsonResult {
 /**
  * List my groups
  */
-export function listMyGroups({ }: XcapOptionalParameters): Thunk<Promise<ListMyGroupsResult>> {
+export function listMyGroups({}: XcapOptionalParameters): Thunk<Promise<ListMyGroupsResult>> {
   return getJson({ url: '/group/list/my', parameters: arguments });
 }
 
@@ -560,7 +560,9 @@ export interface CheckGroupPermalinkResult extends XcapJsonResult {
  * Check if a group permalink is valid and available.
  * @param groupPermalink
  */
-export function checkGroupPermalink({ groupPermalink }: { groupPermalink: string } & XcapOptionalParameters): Thunk<Promise<CheckGroupPermalinkResult>> {
+export function checkGroupPermalink({
+  groupPermalink,
+}: { groupPermalink: string } & XcapOptionalParameters): Thunk<Promise<CheckGroupPermalinkResult>> {
   return getJson({
     url: '/group/check-permalink',
     parameters: arguments,

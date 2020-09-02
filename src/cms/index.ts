@@ -7,7 +7,8 @@ import {
   ModerationStatus,
   XcapObject,
   Thunk,
-  isRunningServerSide, XcapOptionalParameters
+  isRunningServerSide,
+  XcapOptionalParameters,
 } from '../api';
 import { generatePermalink } from '../api/permalink';
 import { User } from '../user';
@@ -15,7 +16,7 @@ import { PaginatedCollection } from '../api/PaginatedCollection';
 import { Insertion, Category } from '../category';
 import { Order } from '../search';
 import { Tree, Node, newTree, newTreeNode } from '../api/tree';
-import { ModuleType } from "../stackend/modules";
+import { ModuleType } from '../stackend/modules';
 
 /**
  * Xcap Cms api constants and methods.
@@ -73,7 +74,10 @@ export interface GetContentResult extends XcapJsonResult {
  * @param id Content id (required)
  * @param permalink Content permalink (optional)
  */
-export function getContent({ id, permalink }: { id?: number; permalink?: string } & XcapOptionalParameters): Thunk<Promise<GetContentResult>> {
+export function getContent({
+  id,
+  permalink,
+}: { id?: number; permalink?: string } & XcapOptionalParameters): Thunk<Promise<GetContentResult>> {
   return getJson({ url: '/cms/get', parameters: arguments });
 }
 
@@ -319,14 +323,17 @@ export function newPage(name: string, permalink?: string): Page {
   };
 }
 
-export type EditPageResult = XcapJsonResult
+export type EditPageResult = XcapJsonResult;
 
 /**
  * Edit a cms page
  *
  * @returns {Thunk<EditPageResult>}
  */
-export function editPage({ page, parentPageId }: { page: Page; parentPageId?: number } & XcapOptionalParameters): Thunk<Promise<EditPageResult>> {
+export function editPage({
+  page,
+  parentPageId,
+}: { page: Page; parentPageId?: number } & XcapOptionalParameters): Thunk<Promise<EditPageResult>> {
   return post({
     url: '/cms/pages/edit',
     parameters: {
@@ -518,7 +525,7 @@ export type SubSite = Tree;
 
 export interface GetSubSiteResult extends XcapJsonResult {
   tree: SubSite | null;
-  referencedObjects: {[ref: string]: any};
+  referencedObjects: { [ref: string]: any };
 }
 
 export function getSubSite({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
@@ -528,7 +535,9 @@ export function getSubSite({ id }: { id: number } & XcapOptionalParameters): Thu
   });
 }
 
-export function storeSubSite({ subSite }: { subSite: SubSite } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
+export function storeSubSite({
+  subSite,
+}: { subSite: SubSite } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
   return post({
     url: '/cms/subsite/store',
     parameters: {

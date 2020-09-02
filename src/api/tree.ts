@@ -118,10 +118,7 @@ function _forEachNode(
  * @param treePath
  * @param node
  */
-export function getPermalink(
-  treePath: Array<Node>,
-  node?: Node | null
-): string {
+export function getPermalink(treePath: Array<Node>, node?: Node | null): string {
   let s = '';
   for (let i = 0; i < treePath.length; i++) {
     s += '/' + treePath[i].permalink;
@@ -190,41 +187,30 @@ export function removeTreeNode(tree: Tree, node: Node): Node | null {
     return null;
   }
 
-  const r = _forEachNode(
-    tree,
-    [],
-    (n: Node, parent: Node, parents: Array<Node>, i: number) => {
-      if (n === node) {
-        parent.children.splice(i, 1);
-        return true;
-      }
-      return false;
+  const r = _forEachNode(tree, [], (n: Node, parent: Node, parents: Array<Node>, i: number) => {
+    if (n === node) {
+      parent.children.splice(i, 1);
+      return true;
     }
-  );
+    return false;
+  });
 
   return r === null ? null : r[r.length - 1];
 }
 
-export function removeTreeNodeByPermalink(
-  tree: Tree,
-  permalink: string
-): Node | null {
+export function removeTreeNodeByPermalink(tree: Tree, permalink: string): Node | null {
   if (tree == null || !permalink) {
     return null;
   }
 
-  const r = _forEachNode(
-    tree,
-    [],
-    (n: Node, parent: Node, parents: Array<Node>, i: number) => {
-      const pl = getPermalink(parents, n);
-      if (pl === permalink) {
-        parent.children.splice(i, 1);
-        return true;
-      }
-      return false;
+  const r = _forEachNode(tree, [], (n: Node, parent: Node, parents: Array<Node>, i: number) => {
+    const pl = getPermalink(parents, n);
+    if (pl === permalink) {
+      parent.children.splice(i, 1);
+      return true;
     }
-  );
+    return false;
+  });
 
   return r == null ? null : r[r.length - 1];
 }
@@ -242,12 +228,7 @@ export enum InsertionPoint {
  * @param insertionPoint
  * @param relativeTo
  */
-export function moveTreeNode(
-  tree: Tree,
-  node: Node,
-  insertionPoint: InsertionPoint,
-  relativeTo: Node
-): boolean {
+export function moveTreeNode(tree: Tree, node: Node, insertionPoint: InsertionPoint, relativeTo: Node): boolean {
   console.assert(tree);
   console.assert(node);
   console.assert(insertionPoint);
@@ -277,7 +258,6 @@ export function moveTreeNode(
   insertionParent.children.splice(i, 0, node);
   makeNodePermalinksUnique(insertionParent.children);
   return true;
-
 }
 
 /**
@@ -301,10 +281,7 @@ export function addNode(tree: Tree, node: Node): Tree | null {
  * @param test
  * @returns {Node|null|?Node}
  */
-export function findNode(
-  tree: Tree,
-  test: (node: Node) => boolean
-): Node | null {
+export function findNode(tree: Tree, test: (node: Node) => boolean): Node | null {
   if (!tree) {
     return null;
   }
@@ -324,7 +301,6 @@ export function findNode(
   return null;
 }
 
-
 /**
  * Get the tree path to a node
  * @param tree
@@ -332,13 +308,9 @@ export function findNode(
  * @returns {?Array<Node>}
  */
 export function getNodePath(tree: Tree, permalink: string): Array<Node> | null {
-  return _forEachNode(
-    tree,
-    [],
-    (node: Node, parent: Node, parents: Array<Node>) => {
-      return getPermalink(parents, node) === permalink;
-    }
-  );
+  return _forEachNode(tree, [], (node: Node, parent: Node, parents: Array<Node>) => {
+    return getPermalink(parents, node) === permalink;
+  });
 }
 
 /**
@@ -356,7 +328,6 @@ export function getNode(tree: Tree, permalink: string): Node | null {
   return path[path.length - 1];
 }
 
-
 /**
  * Apply a function to each node
  * @param tree
@@ -373,10 +344,6 @@ export function forEachNode(
 
   return _forEachNode(tree, [], apply);
 }
-
-
-
-
 
 /**
  * Check if the path is a sub path of ofPath
@@ -397,8 +364,6 @@ export function isSubPath(path: Array<Node>, ofPath: Array<Node>): boolean {
 
   return true;
 }
-
-
 
 /**
  * Get the tree part of the permalink

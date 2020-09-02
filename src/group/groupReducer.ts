@@ -6,11 +6,10 @@ import {
   RECEIVE_GROUP_MEMBERS,
   RECEIVE_GROUPS,
   RECEIVE_GROUPS_AUTH,
-  REQUEST_GROUPS
+  REQUEST_GROUPS,
 } from './groupActions';
 import { Group, GroupMemberAuth } from './index';
 import { AuthObject } from '../user/privileges';
-
 
 export interface GroupState {
   isFetching: boolean;

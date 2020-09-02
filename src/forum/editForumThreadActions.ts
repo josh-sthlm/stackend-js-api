@@ -2,8 +2,9 @@
 import {
   ADD_QUOTE,
   EDIT_FORUM_ENTRY_TEXT,
-  EditForumThreadActions, FORUM_THREAD_TOGGLE_EDIT,
-  SET_FORUM_ENTRY_TEXT
+  EditForumThreadActions,
+  FORUM_THREAD_TOGGLE_EDIT,
+  SET_FORUM_ENTRY_TEXT,
 } from './editForumThreadReducer';
 import { Thunk } from '../api';
 

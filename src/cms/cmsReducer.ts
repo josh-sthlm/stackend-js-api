@@ -26,7 +26,7 @@ export interface ReceiveContentAction {
 
 export interface ReciveContentsAction {
   type: typeof RECEIVE_CONTENTS;
-  contents: {[id: number]: Content};
+  contents: { [id: number]: Content };
 }
 
 export interface SetContentAction {
