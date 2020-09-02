@@ -4,7 +4,7 @@ import { VoteSummary } from '../vote';
 
 /**
  * Xcap Blog poll api constants and methods.
- * @author jens
+ *
  * @since 23 mar 2017
  */
 

@@ -19,7 +19,7 @@ import { Image } from '../media';
 
 /**
  * Stackend API constants and methods.
- * @author jens
+ *
  * @since 20 apr 2017
  */
 

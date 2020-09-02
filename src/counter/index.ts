@@ -3,7 +3,7 @@ import { post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
 
 /**
  * Xcap Counter API constants and methods.
- * @author jens
+ *
  * @since 27 jun 2017
  */
 

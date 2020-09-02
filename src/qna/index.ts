@@ -14,7 +14,7 @@ import { SearchAbleType } from '../search';
 
 /**
  * Xcap QNA API constants and methods.
- * @author jens
+ *
  * @since 2 mar 2017
  */
 

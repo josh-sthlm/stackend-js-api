@@ -8,7 +8,7 @@ import { Blog } from '../blog';
 
 /**
  * Xcap group api constants and methods.
- * @author jens
+ *
  * @since 3 apr 2017
  */
 

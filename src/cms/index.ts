@@ -19,7 +19,7 @@ import { ModuleType } from "../stackend/modules";
 
 /**
  * Xcap Cms api constants and methods.
- * @author jens
+ *
  * @since 6 feb 2017
  */
 

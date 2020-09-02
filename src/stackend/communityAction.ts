@@ -25,7 +25,7 @@ export interface ResourceUsage {
  * Load communities
  *
  * @since 24 apr 2017
- * @author jens
+ *
  */
 
 export type ReceiveCommunities = {

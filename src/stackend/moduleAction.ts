@@ -9,7 +9,7 @@ import { GetModulesResult, Module, ModuleStats } from './index';
  * Load communities
  *
  * @since 24 apr 2017
- * @author jens
+ *
  */
 
 export function receiveModules(json: {

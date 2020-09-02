@@ -3,7 +3,7 @@ import { getJson, post, XcapJsonResult, XcapObject, Thunk } from '../api';
 
 /**
  * Xcap category api constants and methods.
- * @author jens
+ *
  * @since 3 apr 2017
  */
 

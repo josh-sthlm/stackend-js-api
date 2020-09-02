@@ -18,7 +18,7 @@ import { LikeDataMap } from '../like';
 
 /**
  * Search functionality
- * @author jens
+ *
  * @since 13 mar 2017
  */
 

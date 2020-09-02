@@ -19,7 +19,7 @@ import { LikeDataMap } from '../like';
 
 /**
  * Xcap Forum API constants and methods.
- * @author jens
+ *
  * @since 22 jun 2017
  */
 

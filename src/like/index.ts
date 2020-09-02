@@ -16,7 +16,7 @@ const CONTEXT = 'like';
 
 /**
  * Xcap Like API constants and methods.
- * @author jens
+ *
  * @since 20 feb 2017
  */
 
