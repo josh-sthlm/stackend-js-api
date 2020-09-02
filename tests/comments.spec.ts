@@ -5,15 +5,16 @@ import { CommentModule, getComments, GetCommentsResult } from '../src/comments';
 import { COMMUNITY_PARAMETER } from '../src/api';
 
 describe('Comments', () => {
-
   const store = createTestStore();
   const state = store.getState();
   expect(state.GroupComments).toBeDefined();
 
-  describe("getComments", () => {
-    it("List comments", async () => {
-      const r: GetCommentsResult = await store.dispatch(getComments({ referenceId: 300007,  module: CommentModule.GENERIC, [COMMUNITY_PARAMETER]: 'husdjur' }));
-      expect(r.__resultCode).toBe("success");
+  describe('getComments', () => {
+    it('List comments', async () => {
+      const r: GetCommentsResult = await store.dispatch(
+        getComments({ referenceId: 300007, module: CommentModule.GENERIC, [COMMUNITY_PARAMETER]: 'husdjur' })
+      );
+      expect(r.__resultCode).toBe('success');
       expect(r.comments).toBeDefined();
       expect(r.comments.totalSize).toBeGreaterThanOrEqual(2);
       expect(r.comments.entries).toBeDefined();
@@ -32,7 +33,6 @@ describe('Comments', () => {
       expect(t.extraInformation.referer).toBeDefined();
       expect(t.extraInformation.referer.url).toBeDefined();
        */
-    })
+    });
   });
-
 });

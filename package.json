@@ -20,7 +20,7 @@
     "lint": "eslint --ext ts src tests",
     "clean": "rimraf types {abuse,api,blog,category,cms,comments,counter,event,forum,group,like,login,media,poll,qna,rating,request,search,shop,stackend,throbber,user,vote}",
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
-    "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
+    "format": "prettier --config .prettierrc.json \"{src,tests}/**/*.ts\" \"**/*.md\" --write",
     "prepare": "npm run clean && npm run lint && npm test",
     "prepublishOnly": "npm run clean && npm run build && npm run lint && npm run format:check && npm run test",
     "preversion": "npm run lint"

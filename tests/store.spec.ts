@@ -2,13 +2,12 @@
 
 import createTestStore from './setup-redux';
 
-
 describe('Store', () => {
-	describe('store', () => {
-		it("Should contain Stackend basic values", () => {
-			const store = createTestStore();
-			const state = store.getState();
-			expect(state.config).toBeDefined();
+  describe('store', () => {
+    it('Should contain Stackend basic values', () => {
+      const store = createTestStore();
+      const state = store.getState();
+      expect(state.config).toBeDefined();
       expect(state.currentUser).toBeDefined();
       expect(state.references).toBeDefined();
       expect(state.request).toBeDefined();
@@ -29,8 +28,6 @@ describe('Store', () => {
       expect(state.shop).toBeDefined();
       expect(state.throbber).toBeDefined();
       expect(state.vote).toBeDefined();
-		})
-	})
+    });
+  });
 });
-
-

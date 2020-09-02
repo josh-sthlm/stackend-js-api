@@ -1,11 +1,9 @@
 //@flow
 
-import { vote } from '../src/vote'
-
+import { vote } from '../src/vote';
 
 describe('Vote', () => {
-  it("Compiles", () => {
+  it('Compiles', () => {
     expect(vote).toBeDefined();
   });
 });
-
