@@ -7,7 +7,6 @@
     "url": "https://github.com/josh-sthlm/stackend-js-api"
   },
   "module": "api/index.js",
-  "private": true,
   "bugs": {
     "url": "info@stackend.com"
   },
