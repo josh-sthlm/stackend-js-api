@@ -2,6 +2,7 @@
   "name": "@stackend/api",
   "version": "1.0.0",
   "description": "JS bindings to api.stackend.com",
+  "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
     "url": "https://github.com/josh-sthlm/stackend-js-api"
@@ -75,5 +76,8 @@
     "testRegex": "(/tests/.*\\.spec\\.[tj]s)$",
     "coverageProvider": "v8"
   },
-  "types": "./types/"
+  "types": "./types/",
+  "publishConfig": {
+    "access": "public"
+  }
 }
