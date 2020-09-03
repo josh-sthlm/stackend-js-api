@@ -4,7 +4,23 @@
   "description": "JS bindings to api.stackend.com",
   "keywords": [
     "comments",
-    "cms"
+    "cms",
+    "code bin",
+    "article comments",
+    "reviews",
+    "community feed",
+    "login",
+    "registration",
+    "user profiles",
+    "oAuth2",
+    "pages",
+    "sites",
+    "moderation",
+    "feed",
+    "admin",
+    "user generated",
+    "rating",
+    "threaded comments"   
   ],
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
