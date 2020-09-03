@@ -2,7 +2,10 @@
   "name": "@stackend/api",
   "version": "1.0.0",
   "description": "JS bindings to api.stackend.com",
-  "keywords": ["comments", "cms"],
+  "keywords": [
+    "comments",
+    "cms"
+  ],
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
