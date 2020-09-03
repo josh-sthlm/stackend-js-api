@@ -20,7 +20,10 @@
     "admin",
     "user generated",
     "rating",
-    "threaded comments"   
+    "threaded comments",
+    "headless cms",
+    "decoupled cms",
+    "react cms"
   ],
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
@@ -29,7 +32,7 @@
   },
   "module": "api/index.js",
   "bugs": {
-    "url": "info@stackend.com"
+    "email": "info@stackend.com"
   },
   "author": "Stackend",
   "homepage": "https://stackend.com",
