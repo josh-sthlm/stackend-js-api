@@ -2,7 +2,7 @@
 import update from 'immutability-helper';
 import { Request } from './index';
 import { isCommunityUrlBlocked } from '../stackend';
-import { AnyAction } from "redux";
+import { AnyAction } from 'redux';
 
 export const SET_REQUEST_INFO = 'SET_REQUEST_INFO';
 

@@ -693,9 +693,7 @@ export interface GetRegistrationDataResult extends XcapJsonResult {
  *
  * @returns {Thunk<GetRegistrationDataResult>}
  */
-export function getFacebookRegistrationData({}: XcapOptionalParameters): Thunk<
-  Promise<GetRegistrationDataResult>
-> {
+export function getFacebookRegistrationData({}: XcapOptionalParameters): Thunk<Promise<GetRegistrationDataResult>> {
   return getJson({
     url: '/user/register/facebook',
     parameters: arguments,
