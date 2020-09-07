@@ -83,8 +83,8 @@ export type FeedType = 'groups' | 'blog' | 'discussion';
  * Blog entry definition
  */
 export type SlideId = number; //Id of slide image
-export type SlideUrl = string; //url to image of slide
-export type Slide = SlideId | SlideUrl;
+export type SlideHtml = string; //url to image of slide
+export type Slide = SlideId | SlideHtml;
 
 export interface Slideshow {
   frame: boolean;
