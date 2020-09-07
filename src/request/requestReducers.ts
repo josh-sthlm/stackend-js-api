@@ -2,6 +2,7 @@
 import update from 'immutability-helper';
 import { Request } from './index';
 import { isCommunityUrlBlocked } from '../stackend';
+import { AnyAction } from "redux";
 
 export const SET_REQUEST_INFO = 'SET_REQUEST_INFO';
 
@@ -34,7 +35,7 @@ export const requestReducer = (
     anchor: null,
     referenceUrlId: 0,
   },
-  action: any
+  action: AnyAction
 ): Request => {
   let location = undefined;
   let communityUrl = undefined;

@@ -34,12 +34,14 @@ module.exports = {
     'no-empty-pattern': 'off',
     'prefer-const': ['warn'],
     'prefer-rest-params': "off", /* TODO: Should be warn */
-    "@typescript-eslint/ban-ts-ignore": "warn",
+    // old "@typescript-eslint/ban-ts-ignore": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
     '@typescript-eslint/no-unused-expressions': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/type-annotation-spacing': 'warn',
     '@typescript-eslint/explicit-function-return-type': 'error',
-    '@typescript-eslint/camelcase': 'warn',
+    //'@typescript-eslint/camelcase': 'warn',
+    "@typescript-eslint/no-var-requires": 'warn',
     // note you must disable the base rule as it can report incorrect errors
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["off"],
