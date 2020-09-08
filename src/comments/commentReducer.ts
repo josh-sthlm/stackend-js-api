@@ -308,7 +308,8 @@ export function openReplyBoxes(
         return state.concat(action.parentId);
       } else {
         //close replybox
-        return Object.assign([], state.splice(i, 1));
+        state.splice(i, 1);
+        return Object.assign([], state);
       }
     }
 
@@ -332,7 +333,8 @@ export function openEditComment(
         return state.concat(action.id);
       } else {
         //close Edit Comment
-        return ([] as Array<number>).concat(state.splice(i, 1));
+        state.splice(i, 1);
+        return Object.assign([], state);
       }
     }
 
