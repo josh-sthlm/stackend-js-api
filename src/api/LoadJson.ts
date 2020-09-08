@@ -222,12 +222,24 @@ export async function LoadJson({
     if (contentType && contentType.indexOf(CONTENT_TYPE_JSON) > -1) {
       const json = (await response.json()) as XcapJsonResult;
 
-      return {
+      const r: LoadJsonResult = {
         status: 200,
-        error: json.__resultCode === 'error' ? json.__resultCode : undefined,
         json: json,
         response,
       };
+
+      if (json.__resultCode !== 'success') {
+        r.error = json.__resultCode;
+        // Add error messages, if not done by server
+        if (!json.error) {
+          json.error = {
+            actionErrors: ['error'],
+            fieldErrors: {}
+          };
+        }
+      }
+
+      return r;
     } else {
       logger.error(
         'Error Status:500 The Fetch request of ' +

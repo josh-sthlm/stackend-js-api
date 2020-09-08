@@ -22,12 +22,26 @@ import {
   DeployProfile,
   setConfiguration,
   newXcapJsonResult,
-  GetInitialStoreValuesResult,
-} from '../src/api';
+  GetInitialStoreValuesResult, setLogger
+} from "../src/api";
 import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import assert from 'assert';
+import { listMy, ListResult, MediaType } from "../src/media";
+import winston from "winston";
 
 describe('API', () => {
+
+  setLogger(winston.createLogger({
+    level: 'debug',
+    format: winston.format.json(),
+    defaultMeta: { service: 'Stackend' },
+    transports: [
+      new winston.transports.Console({
+        format: winston.format.simple(),
+      }),
+    ],
+  }));
+
   const store = createTestStore();
 
   describe('invertOrder', () => {
@@ -202,6 +216,22 @@ describe('API', () => {
     });
   });
 
+
+  describe('LoadJson', () => {
+    it('Handle errors correctly', async () => {
+
+      // This request will fail
+      const r: ListResult = await store.dispatch(listMy({
+        context: 'korv',
+        mediaType: 666
+      }));
+
+      expect(r).toBeDefined();
+      expect(r.__resultCode).toBe("error");
+      expect(r.error).toBeDefined();
+    });
+  });
+
   // Must be last to not mess upp the rest of the tests
   describe('setConfig', () => {
     it('Alter the configuration', async () => {
@@ -218,4 +248,5 @@ describe('API', () => {
       expect(c.apiUrl).toBe('http://localhost:8080/stackend/api');
     });
   });
+
 });

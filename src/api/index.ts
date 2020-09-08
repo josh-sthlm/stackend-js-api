@@ -995,6 +995,7 @@ export function getJson<T extends XcapJsonResult>({
         if (result.error) {
           logger.error(getJsonErrorText(result.json) + ' ' + p);
           dispatch(setLoadingThrobberVisible(false));
+
           if (result.status === 403) {
             // Unauthorized
             logger.warn('Session has expired: ' + p);
