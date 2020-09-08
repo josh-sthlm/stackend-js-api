@@ -228,7 +228,8 @@ export async function LoadJson({
         response,
       };
 
-      if (json.__resultCode !== 'success') {
+      // The check for __resultCode exist because of media upload
+      if (json.__resultCode && json.__resultCode !== 'success') {
         r.error = json.__resultCode;
         // Add error messages, if not done by server
         if (!json.error) {
