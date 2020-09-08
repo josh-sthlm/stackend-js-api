@@ -234,7 +234,7 @@ export async function LoadJson({
         if (!json.error) {
           json.error = {
             actionErrors: ['error'],
-            fieldErrors: {}
+            fieldErrors: {},
           };
         }
       }
