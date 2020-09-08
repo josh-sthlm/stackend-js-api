@@ -228,8 +228,11 @@ export async function LoadJson({
         response,
       };
 
-      // The check for __resultCode exist because of media upload
-      if (json.__resultCode && json.__resultCode !== 'success') {
+      // The check for __resultCode exist because of media upload that does not produce the same json
+      if (
+        json.__resultCode &&
+        (json.__resultCode === 'error' || json.__resultCode === 'accessDenied' || json.__resultCode === 'notfound')
+      ) {
         r.error = json.__resultCode;
         // Add error messages, if not done by server
         if (!json.error) {
