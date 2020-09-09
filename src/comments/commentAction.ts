@@ -10,7 +10,6 @@ import {
 
 import { Comment, getMultipleComments, getComments, GetMultipleCommentsResult, CommentModule } from './index';
 import { Thunk } from '../api';
-//import { sendEventToGA } from '../analytics/analyticsFunctions';
 import { receiveVotes } from '../vote/voteActions';
 
 const DEFAULT_PAGE_SIZE = 3;
