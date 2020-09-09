@@ -13,13 +13,6 @@ export const REQUEST_COMMENTS = 'REQUEST_COMMENTS';
 export const RECEIVE_COMMENTS = 'RECEIVE_COMMENTS';
 export const UPDATE_COMMENT = 'UPDATE_COMMENT';
 export const INVALIDATE_GROUP_COMMENTS = 'INVALIDATE_GROUP_COMMENTS';
-export const TOGGLE_REPLY_BOX = 'TOGGLE_REPLY_BOX';
-export const OPEN_REPLY_BOX = 'OPEN_REPLY_BOX';
-export const CLOSE_REPLY_BOX = 'CLOSE_REPLY_BOX';
-export const OPEN_COMMENT_SECTION = 'OPEN_COMMENT_SECTION';
-export const CLOSE_COMMENT_SECTION = 'CLOSE_COMMENT_SECTION';
-export const TOGGLE_COMMENT_SECTION = 'TOGGLE_COMMENT_SECTION';
-export const TOGGLE_EDIT_COMMENT = 'TOGGLE_EDIT_COMMENT';
 
 export type CommentsActions =
   | {
@@ -66,17 +59,8 @@ export type CommentsActions =
       json: commentsApi.Comment;
     };
 
-export type openReplyBoxesActionType = 'TOGGLE_REPLY_BOX' | 'OPEN_REPLY_BOX' | 'CLOSE_REPLY_BOX';
-//TODO: implement //export type openReplyBoxesAction = {
-
-export type openCommentSectionActionType = 'OPEN_COMMENT_SECTION' | 'CLOSE_COMMENT_SECTION' | 'TOGGLE_COMMENT_SECTION';
-//TODO: implement //export type openCommentSectionAction = {
-
-export type openEditCommentActionType = 'TOGGLE_EDIT_COMMENT';
-//TODO: implement //export type openEditCommentAction = {
-
 export interface CommentsState {
-  [blogkey: string]: {
+  [blogKey: string]: {
     isFetching: boolean;
     didInvalidate: boolean;
     lastUpdated: number;
@@ -281,82 +265,3 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
 }
 
 export default GroupComments;
-
-export type OpenReplyBoxesState = Array<number>;
-
-export function openReplyBoxes(
-  state: OpenReplyBoxesState = [],
-  action: { type: string; parentId: number }
-): OpenReplyBoxesState {
-  switch (action.type) {
-    case OPEN_REPLY_BOX:
-      return state.concat(action.parentId);
-
-    case CLOSE_REPLY_BOX: {
-      const i = state.indexOf(action.parentId);
-      if (i == -1) {
-        return state;
-      }
-      return Object.assign([], state.splice(i, 1));
-    }
-
-    case TOGGLE_REPLY_BOX: {
-      //if reply box is closed
-      const i = state.indexOf(action.parentId);
-      if (i === -1) {
-        //open replybox
-        return state.concat(action.parentId);
-      } else {
-        //close replybox
-        state.splice(i, 1);
-        return Object.assign([], state);
-      }
-    }
-
-    default:
-      return state;
-  }
-}
-
-export type OpenEditCommentState = Array<number>;
-
-export function openEditComment(
-  state: OpenEditCommentState = [],
-  action: { type: string; id: number }
-): OpenEditCommentState {
-  switch (action.type) {
-    case TOGGLE_EDIT_COMMENT: {
-      //if Edit Comment is closed
-      const i = state.indexOf(action.id);
-      if (i === -1) {
-        //open Edit Comment
-        return state.concat(action.id);
-      } else {
-        //close Edit Comment
-        state.splice(i, 1);
-        return Object.assign([], state);
-      }
-    }
-
-    default:
-      return state;
-  }
-}
-
-export type OpenCommentSectionState = boolean;
-
-export function openCommentSection(
-  state: OpenCommentSectionState = false,
-  action: { type: string }
-): OpenCommentSectionState {
-  switch (action.type) {
-    case OPEN_COMMENT_SECTION:
-      return true;
-    case CLOSE_COMMENT_SECTION:
-      return false;
-    case TOGGLE_COMMENT_SECTION:
-      return !state;
-    default:
-      return state;
-  }
-}
