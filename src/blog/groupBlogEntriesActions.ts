@@ -97,7 +97,7 @@ export function fetchBlogEntries({
   categories,
   invalidatePrevious = false,
   goToBlogEntry,
-}: FetchBlogEntries): Thunk<any> {
+}: FetchBlogEntries): Thunk<Promise<any>> {
   return async (dispatch: any, getState): Promise<any> => {
     const categoryId = _.get(categories, '[0].id', null);
 
@@ -183,7 +183,7 @@ export function fetchBlogEntriesWithComments({
   page = 1,
   categories,
   goToBlogEntry,
-}: FetchBlogEntriesWithComments): Thunk<any> {
+}: FetchBlogEntriesWithComments): Thunk<Promise<any>> {
   return async (dispatch: any): Promise<any> => {
     let response = null;
     try {
@@ -216,7 +216,7 @@ export function fetchBlogEntryWithComments({
   id?: number;
   permalink?: string;
   blogKey: string;
-}): Thunk<any> {
+}): Thunk<Promise<any>> {
   return async (dispatch: any, getState: any): Promise<any> => {
     try {
       const response = await dispatch(fetchBlogEntry({ id, permalink, blogKey }));
@@ -246,7 +246,7 @@ export function fetchBlogEntryWithComments({
   };
 }
 
-function _fetchBlogEntry(blogKey: string, json: any): Thunk<any> {
+function _fetchBlogEntry(blogKey: string, json: any): Thunk<Promise<any>> {
   return (dispatch: any): Promise<any> => {
     const groupRef = _.get(json, 'blog.groupRef', _.get(json, 'blogEntry.blogRef.groupRef'));
     if (groupRef) {
@@ -287,7 +287,7 @@ export function postBlogEntry({
   type: 'PUBLISHED' | '';
   blogKey: string; //The id of the blogKey that you want to store the data in redux
   draftId?: number;
-}): Thunk<any> {
+}): Thunk<Promise<any>> {
   return async (dispatch: any, getState): Promise<any> => {
     dispatch(requestBlogEntries(blogKey));
 
@@ -325,7 +325,7 @@ export function postBlogEntry({
   };
 }
 
-export function changeBlogEntryStatus({ blogKey, id, status }: SetEntryStatus): Thunk<void> {
+export function changeBlogEntryStatus({ blogKey, id, status }: SetEntryStatus): Thunk<Promise<void>> {
   return async (dispatch: any): Promise<void> => {
     const response = await dispatch(setEntryStatus({ blogKey, id, status }));
     dispatch(updateBlogEntry(blogKey, { resultPaginated: { entries: [response.entry] } }));
