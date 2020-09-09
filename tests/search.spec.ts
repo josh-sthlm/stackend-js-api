@@ -1,6 +1,6 @@
 //@flow
 
-import createTestStore from './setup-redux';
+import createTestStore from './setup';
 import { COMMUNITY_PARAMETER } from '../src/api';
 import { search, SearchAbleType, SearchResult } from '../src/search';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';

@@ -1,6 +1,6 @@
 //@flow
 
-import createTestStore from './setup-redux';
+import createTestStore from './setup';
 import { get, GetMediaResult, list, ListResult, MediaListOrder, ThumbnailSize } from '../src/media';
 import { COMMUNITY_PARAMETER } from '../src/api';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';

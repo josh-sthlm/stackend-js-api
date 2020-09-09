@@ -1,6 +1,6 @@
 //@flow
 
-import createTestStore from './setup-redux';
+import createTestStore, { enableDebug } from './setup';
 import {
   argsToObject,
   Config,
@@ -23,27 +23,12 @@ import {
   setConfiguration,
   newXcapJsonResult,
   GetInitialStoreValuesResult,
-  setLogger,
 } from '../src/api';
 import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import assert from 'assert';
-import { listMy, ListResult, MediaType } from '../src/media';
-import winston from 'winston';
+import { listMy, ListResult } from '../src/media';
 
 describe('API', () => {
-  setLogger(
-    winston.createLogger({
-      level: 'debug',
-      format: winston.format.json(),
-      defaultMeta: { service: 'Stackend' },
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.simple(),
-        }),
-      ],
-    })
-  );
-
   const store = createTestStore();
 
   describe('invertOrder', () => {

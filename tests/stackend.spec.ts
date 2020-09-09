@@ -1,6 +1,6 @@
 //@flow
 
-import createTestStore from './setup-redux';
+import createTestStore from './setup';
 import {
   getCommunity,
   GetCommunityResult,

@@ -1,6 +1,6 @@
 //@flow
 
-import createTestStore from './setup-redux';
+import createTestStore from './setup';
 import { GetInitialStoreValuesResult } from '../src/api';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
