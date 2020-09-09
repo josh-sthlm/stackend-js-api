@@ -4,7 +4,6 @@ import { User } from '../user';
 import { Request } from '../request';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { AuthObject } from '../user/privileges';
-import { Blog } from '../blog';
 
 /**
  * Xcap group api constants and methods.
@@ -666,20 +665,4 @@ export function removeGroup({ groupId }: { groupId: number } & XcapOptionalParam
     url: '/group/remove',
     parameters: arguments,
   });
-}
-
-export function getGAGroupData({ blog }: { blog: Blog }): any {
-  let groupName, groupType, groupTypeEnum;
-  try {
-    const gl = blog.groupRef.permalink;
-    groupType = `${gl.substring(0, gl.lastIndexOf('/'))}`;
-    groupName = `${gl.substring(gl.lastIndexOf('/') + 1)}`;
-    groupTypeEnum = blog.groupRef.type;
-  } catch (e) {
-    groupName = 'unknown';
-    groupType = 'unknown';
-    groupTypeEnum = 'unknown';
-    console.error('Error setting groupName and groupType in analytics', e);
-  }
-  return { groupName, groupType, groupTypeEnum };
 }

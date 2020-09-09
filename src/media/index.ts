@@ -141,9 +141,32 @@ export interface ThumbnailConfig {
 
 /**
  * Media types
- * @type {{IMAGE: number, VIDEO: number, AUDIO: number, DOCUMENT: number}}
  */
 export enum MediaType {
+  /**
+   * Image files. Will be presented as an <img>-element
+   */
+  IMAGE = 'IMAGE',
+
+  /**
+   * Video files. Will be presented as a <video>-element
+   */
+  VIDEO = 'VIDEO',
+
+  /**
+   * Audio files. Will be presented as an <audio>-element.
+   */
+  AUDIO = 'AUDIO',
+  /**
+   * Other types of files that may be stored and will be presented as a link when inserted in text.
+   */
+  DOCUMENT = 'DOCUMENT',
+}
+
+/**
+ * Media type ids
+ */
+export enum MediaTypeId {
   IMAGE = 1,
   VIDEO = 2,
   AUDIO = 3,
@@ -153,17 +176,17 @@ export enum MediaType {
 /**
  * Media type ids
  */
-export type MediaTypeId = 1 | 2 | 3 | 4;
+export type MediaTypeIds = 1 | 2 | 3 | 4;
 
 export type MediaTypeNames = 'IMAGE' | 'VIDEO' | 'AUDIO' | 'DOCUMENT';
 /**
  * Media type names
  */
 export const MediaTypeName: { [mediaTypeId: number]: MediaTypeNames } = {
-  [MediaType.IMAGE]: 'IMAGE',
-  [MediaType.VIDEO]: 'VIDEO',
-  [MediaType.AUDIO]: 'AUDIO',
-  [MediaType.DOCUMENT]: 'DOCUMENT',
+  [MediaTypeId.IMAGE]: 'IMAGE',
+  [MediaTypeId.VIDEO]: 'VIDEO',
+  [MediaTypeId.AUDIO]: 'AUDIO',
+  [MediaTypeId.DOCUMENT]: 'DOCUMENT',
 };
 
 /**
@@ -569,7 +592,7 @@ export interface ListResult extends XcapJsonResult {
  *
  * @param context {string} Context (excluding community)
  * @param thumbnailConfigName {string} Thumbnail config name
- * @param mediaType {MediaType} Media type id (optional)
+ * @param mediaType {MediaTypeId} Media type id (optional)
  * @param referenceId {number} Reference id (optional)
  * @param categoryId {number} Category id (optional)
  * @param order {MediaListOrder} Sort order (optional)
@@ -588,7 +611,7 @@ export function listMy({
 }: {
   context: string;
   thumbnailConfigName?: string;
-  mediaType?: number;
+  mediaType?: MediaTypeId;
   referenceId?: number;
   categoryId?: number;
   order?: MediaListOrder;
@@ -603,7 +626,7 @@ export function listMy({
  *
  * @param context {string} Context (excluding community)
  * @param thumbnailConfigName {string} Thumbnail config name
- * @param mediaType {MediaType} Media type id (optional)
+ * @param mediaType {MediaTypeId} Media type id (optional)
  * @param referenceId {number} Reference id (optional)
  * @param categoryId {number} Category id (optional)
  * @param order {MediaListOrder} Sort order (optional)
@@ -622,7 +645,7 @@ export function list({
 }: {
   context: string;
   thumbnailConfigName?: string;
-  mediaType?: number;
+  mediaType?: MediaTypeId;
   referenceId?: number;
   categoryId?: number;
   order?: number;
@@ -799,7 +822,7 @@ export function constructImageThumbnail(image: Image, thumbnailConfig: string): 
     createdDate: image.createdDate,
     height: image.height,
     width: image.width,
-    mediaType: MediaTypeName[MediaType.IMAGE],
+    mediaType: MediaType.IMAGE,
     config: {
       create: false,
       gravity: 'CENTER',

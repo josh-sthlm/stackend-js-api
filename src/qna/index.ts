@@ -8,7 +8,6 @@ import {
   XcapOptionalParameters,
 } from '../api';
 import * as searchApi from '../search';
-import * as forumApi from '../forum';
 import { Request } from '../request';
 import { SearchAbleType } from '../search';
 
@@ -292,16 +291,4 @@ export function search({
   device?: string; // "ios" || "android"
 } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/question/' + searchType, parameters: arguments });
-}
-
-type GaTrackThread = {
-  forumThreadEntry: forumApi.ForumThreadEntry;
-};
-
-export function gaQuestionEventObject({ forumThreadEntry }: GaTrackThread): any {
-  return forumApi.getEventObject('question_post', forumThreadEntry);
-}
-
-export function gaAnswerEventObject({ forumThreadEntry }: GaTrackThread): any {
-  return forumApi.getEventObject('answer_post', forumThreadEntry);
 }

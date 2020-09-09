@@ -592,59 +592,6 @@ export function getVoteSummary({
   });
 }
 
-interface GaTrackForumThread extends XcapOptionalParameters {
-  forumThreadEntry: ForumThreadEntry;
-}
-
-export function gaTrackForumEventObject({ forumThreadEntry }: GaTrackForumThread): any {
-  return getEventObject('forum_post', forumThreadEntry);
-}
-
-export function gaDislikeEventObject({ forumThreadEntry }: GaTrackForumThread): any {
-  return getEventObject('dislike', forumThreadEntry);
-}
-
-export function gaLikeEventObject({ forumThreadEntry }: GaTrackForumThread): any {
-  return getEventObject('like', forumThreadEntry);
-}
-
-export function gaUnlikeEventObject({ forumThreadEntry }: GaTrackForumThread): any {
-  return getEventObject('unlike', forumThreadEntry);
-}
-
-export function getEventObject(eventAction: any, forumThreadEntry: ForumThreadEntry): any {
-  const { eventLabel, eventCategory } = getGALabels({ forumThreadEntry });
-  return {
-    event_action: eventAction,
-    event_label: eventLabel,
-    event_category: eventCategory,
-  };
-}
-
-export function getGALabels({ forumThreadEntry }: GaTrackForumThread): any {
-  const objectType = `${forumThreadEntry.__type.substring(forumThreadEntry.__type.lastIndexOf('.') + 1)}`;
-  //If this is a new parentThread, it has no threadRef
-  const threadRef = forumThreadEntry.threadRef ? forumThreadEntry.threadRef : forumThreadEntry;
-
-  //const forumLink = _.get(threadRef, `forumRef.permalink`, 'undefined');
-  const forumId = _.get(threadRef, `forumRef.id`, 'undefined');
-  const threadLink = _.get(threadRef, `permalink`, 'undefined');
-  const threadId = _.get(threadRef, `id`, 'undefined');
-  const threadEntryId = _.get(forumThreadEntry, `id`, 'undefined');
-  const isThreadParent = threadId === threadEntryId ? '_threadParent' : '';
-
-  /* Fixme: readd
-	const readableCategory = gaFunctions.getGaObjectName({
-		object: forumThreadEntry.__type,
-		relatedToObject: forumLink + isThreadParent
-	});
-	 */
-  const readableCategory = forumThreadEntry.name;
-  const eventCategory = `${readableCategory}_(${objectType}_${forumId}${isThreadParent})`;
-  const eventLabel = `${threadLink}_${forumThreadEntry.text}_(${threadId}_${threadEntryId})`;
-  return { eventLabel, eventCategory };
-}
-
 /**
  * Search the store for a ForumThreadEntry matching the id or permalink
  * @param forumThreads
