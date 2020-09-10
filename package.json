@@ -1,6 +1,6 @@
 {
   "name": "@stackend/api",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "JS bindings to api.stackend.com",
   "keywords": [
     "comments",
@@ -45,7 +45,7 @@
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
     "format": "prettier --config .prettierrc.json \"{src,tests}/**/*.ts\" \"**/*.md\" --write",
     "prepack": "npm run clean && npm run build",
-    "prepublishOnly": "npm run lint && npm run format:check && npm run clean && npm run build && npm run test",
+    "prepublishOnly": "npm run lint && npm run format:check && npm run test",
     "preversion": "npm run lint"
   },
   "types": "./",
