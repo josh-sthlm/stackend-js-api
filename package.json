@@ -1,6 +1,6 @@
 {
   "name": "@stackend/api",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "JS bindings to api.stackend.com",
   "keywords": [
     "comments",
@@ -41,12 +41,14 @@
     "watch": "tsc --watch",
     "test": "jest",
     "lint": "eslint --ext ts src tests",
-    "clean": "rimraf types {abuse,api,blog,category,cms,comments,counter,event,forum,group,like,login,media,poll,qna,rating,request,search,shop,stackend,throbber,user,vote}",
+    "clean": "rimraf types lib {abuse,api,blog,category,cms,comments,counter,event,forum,group,like,login,media,poll,qna,rating,request,search,shop,stackend,throbber,user,vote}",
     "format:check": "prettier --list-different \"{src,tests}/**/*.{js,ts}\" \"**/*.md\"",
     "format": "prettier --config .prettierrc.json \"{src,tests}/**/*.ts\" \"**/*.md\" --write",
+    "prepack": "npm run clean && npm run build",
     "prepublishOnly": "npm run lint && npm run format:check && npm run clean && npm run build && npm run test",
     "preversion": "npm run lint"
   },
+  "types": "./",
   "dependencies": {
     "@babel/runtime": "^7.11.2",
     "es6-promise": "^3.3.1",
@@ -97,7 +99,6 @@
     "testRegex": "(/tests/.*\\.spec\\.[tj]s)$",
     "coverageProvider": "v8"
   },
-  "types": "./types/",
   "publishConfig": {
     "access": "public"
   }

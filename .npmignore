@@ -1,3 +1,10 @@
 /.idea
-/node_modules/
 /stackend-api-*.tgz
+.babelrc.js
+.eslintrc.js
+.editorconfig
+.flowconfig
+stackend_logo_dark.png
+.prettierrc.json
+tsconfig.json
+tests
