@@ -8,6 +8,6 @@ interface ReceiveReferences {
 export function receiveReferences({ entries }: ReceiveReferences): reducer.ReceiveAction {
   return {
     type: reducer.RECEIVE_REFERENCES,
-    entries,
+    entries
   };
 }

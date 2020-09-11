@@ -7,7 +7,7 @@ import {
   XcapObject,
   Thunk,
   isRunningInBrowser,
-  XcapOptionalParameters,
+  XcapOptionalParameters
 } from '../api';
 //import * as groupApi from './group';
 import * as user from '../user';
@@ -71,7 +71,7 @@ export enum CommentSortCriteria {
    * Sort after creation date, but preserving replies. The commenting system
    * supports one level of replies.
    */
-  CREATED_WITH_REPLIES = 'CREATED_WITH_REPLIES',
+  CREATED_WITH_REPLIES = 'CREATED_WITH_REPLIES'
 }
 
 /**
@@ -86,7 +86,7 @@ export enum CommentModule {
   /**
    * Blog comment module
    */
-  BLOG = 'blog',
+  BLOG = 'blog'
 }
 
 export interface GetCommentsResult extends XcapJsonResult {
@@ -114,7 +114,7 @@ export function getComments({
   pageSize = null,
   sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
   order = SortOrder.DESCENDING,
-  useVotes = false,
+  useVotes = false
 }: any): Thunk<Promise<GetCommentsResult>> {
   if (isNaN(referenceId)) {
     throw Error('Parameter referenceId is required');
@@ -122,7 +122,7 @@ export function getComments({
 
   return getJson({
     url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/list',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -156,7 +156,7 @@ export function getMultipleComments({
   referenceIds,
   pageSize = null,
   sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
-  order = SortOrder.DESCENDING,
+  order = SortOrder.DESCENDING
 }: any): Thunk<Promise<GetMultipleCommentsResult>> {
   if (!Array.isArray(referenceIds)) {
     throw Error('Parameter referenceIds is required');
@@ -164,7 +164,7 @@ export function getMultipleComments({
 
   return getJson({
     url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/list-multiple',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -195,7 +195,7 @@ export function postComment({
   subject,
   body,
   extraInformation,
-  referenceUrl,
+  referenceUrl
 }: {
   commentId?: number;
   referenceId: number;
@@ -214,6 +214,6 @@ export function postComment({
 
   return post({
     url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/post',
-    parameters: arguments,
+    parameters: arguments
   });
 }

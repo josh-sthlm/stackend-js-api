@@ -33,7 +33,7 @@ export const BASE_REDUCERS: { [name: string]: Reducer<any, any> } = {
   request,
   communities,
   modules,
-  throbber,
+  throbber
 };
 
 /**
@@ -63,5 +63,5 @@ export const STANDARD_REDUCERS: { [name: string]: Reducer<any, any> } = {
   qna,
   search,
   shop,
-  vote,
+  vote
 };

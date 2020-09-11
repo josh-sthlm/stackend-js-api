@@ -42,31 +42,31 @@ const initialState = {
   text: '',
   iteration: 0,
   quote: '',
-  editThreadId: 0,
+  editThreadId: 0
 };
 
 export default createReducer(initialState, {
   EDIT_FORUM_ENTRY_TEXT: (state: EditForumThreadState, action: Edit) =>
     update(state, {
       text: { $set: action.text },
-      quote: { $set: '' },
+      quote: { $set: '' }
     }),
 
   SET_FORUM_ENTRY_TEXT: (state: EditForumThreadState, action: Set) =>
     update(state, {
       text: { $set: action.text },
       iteration: { $set: state.iteration + 1 },
-      quote: { $set: '' },
+      quote: { $set: '' }
     }),
 
   ADD_QUOTE: (state: EditForumThreadState, action: AddQuote) =>
     update(state, {
-      quote: { $set: action.quote },
+      quote: { $set: action.quote }
     }),
 
   FORUM_THREAD_TOGGLE_EDIT: (state: EditForumThreadState, action: ToggleEdit) =>
     update(state, {
       editForumPermalink: { $set: action.forumPermalink },
-      editThreadId: { $set: action.editThreadId },
-    }),
+      editThreadId: { $set: action.editThreadId }
+    })
 });

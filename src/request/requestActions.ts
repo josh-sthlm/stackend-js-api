@@ -19,6 +19,6 @@ export function setRequestInfo(request: {
 }): AnyAction {
   return {
     type: SET_REQUEST_INFO,
-    request,
+    request
   };
 }

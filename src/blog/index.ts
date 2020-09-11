@@ -7,7 +7,7 @@ import {
   XcapObject,
   Thunk,
   logger,
-  XcapOptionalParameters,
+  XcapOptionalParameters
 } from '../api';
 import * as event from '../event';
 import { Poll } from '../poll';
@@ -61,7 +61,7 @@ export const BLOG_ENTRY_CLASS = 'net.josh.community.blog.BlogEntry';
 export enum BlogEntryStatus {
   PUBLISHED = 'PUBLISHED',
   DRAFT = 'DRAFT',
-  DELETED = 'DELETED',
+  DELETED = 'DELETED'
 }
 
 export enum DisplayType {
@@ -72,7 +72,7 @@ export enum DisplayType {
   FeedEntryTopList = 'FeedEntryTopList',
   BlogEntryTopList = 'BlogEntryTopList',
   //SearchListing = 'searchListing',
-  EntrySearchResult = 'entrySearchResult',
+  EntrySearchResult = 'entrySearchResult'
 }
 
 //export type DisplayType = 'feedEntry' | 'blogEntry' | 'BLOG_ENTRY_PORTFOLIO' | 'entrySearchResult';
@@ -191,7 +191,7 @@ export function getBlogEntryUrl({ request, entry }: { request: Request; entry: B
 
     return createCommunityUrl({
       request,
-      path: '/' + blogPermalink + '/posts/' + entry.permalink,
+      path: '/' + blogPermalink + '/posts/' + entry.permalink
     });
   } catch (e) {
     logger.error(e, 'Could not find Entry url:' + JSON.stringify(entry));
@@ -224,7 +224,7 @@ export function newBlogEntry(blogKey: string): any {
       bg: { color: '#EAEAEA', opacity: 0.9 },
       autoHeaderColor: null,
       autoStyle: false,
-      paletteColors: [],
+      paletteColors: []
     },
     slideshow: {
       frame: false,
@@ -232,10 +232,10 @@ export function newBlogEntry(blogKey: string): any {
       slides: [],
       hasImageSlide: false,
       hasVideoSlide: false,
-      empty: true,
+      empty: true
     },
     tags: [],
-    products: [],
+    products: []
   };
 }
 
@@ -282,7 +282,7 @@ export function getEntries({
   pageSize,
   categoryPermaLink,
   categoryId,
-  goToBlogEntry,
+  goToBlogEntry
 }: XcapOptionalParameters & {
   q?: string;
   blogKey?: string;
@@ -297,7 +297,7 @@ export function getEntries({
 }): Thunk<Promise<GetEntriesResult>> {
   return getJson({
     url: '/blog/entries/list',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -310,7 +310,7 @@ export function getEntries({
  */
 export function getMyEntries({
   p,
-  pageSize,
+  pageSize
 }: { p?: number; pageSize?: number } & XcapOptionalParameters): Thunk<Promise<BlogEntryListingResult>> {
   return getJson({ url: '/blog/entries/my', parameters: arguments });
 }
@@ -324,7 +324,7 @@ export function getMyEntries({
  */
 export function getMostPopularEntries({
   p,
-  pageSize,
+  pageSize
 }: {
   p?: number;
   pageSize?: number;
@@ -354,7 +354,7 @@ export function getMostCommentedEntries({
   startDate = null,
   endDate = null,
   p = 1,
-  pageSize,
+  pageSize
 }: {
   daysBack?: number;
   startDate?: any;
@@ -374,7 +374,7 @@ export function getMostCommentedEntries({
  */
 export function getRecommendedEntries({
   p,
-  pageSize,
+  pageSize
 }: {
   p?: number;
   pageSize?: number;
@@ -406,7 +406,7 @@ export function getEntry({
   id,
   entryPermaLink,
   blogKey,
-  blogId,
+  blogId
 }: {
   id?: number;
   entryPermaLink?: string;
@@ -460,7 +460,7 @@ export function saveEntry({
   blogEntryJson,
   type,
   draftId,
-  blogKey,
+  blogKey
 }: {
   blogEntryJson: any;
   type: any;
@@ -473,8 +473,8 @@ export function saveEntry({
       blogEntryJson: JSON.stringify(blogEntryJson),
       draftId,
       type,
-      blogKey,
-    },
+      blogKey
+    }
   });
 }
 

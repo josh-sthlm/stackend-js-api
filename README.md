@@ -75,7 +75,7 @@ const store = createStore(combineReducers(STANDARD_REDUCERS), {}, compose(applyM
 
 await store.dispatch(
   initialize({
-    permalink: 'stackend-com' /* Replace with your community permalink */,
+    permalink: 'stackend-com' /* Replace with your community permalink */
   })
 );
 
@@ -105,10 +105,10 @@ await store.dispatch(
       defaultMeta: { service: 'Stackend' },
       transports: [
         new winston.transports.Console({
-          format: winston.format.simple(),
-        }),
-      ],
-    }),
+          format: winston.format.simple()
+        })
+      ]
+    })
   })
 );
 ```

@@ -6,7 +6,7 @@ import {
   GetCommunityResult,
   getReferenceUrl,
   isCommunityUrlBlocked,
-  STACKEND_COM_COMMUNITY_PERMALINK,
+  STACKEND_COM_COMMUNITY_PERMALINK
 } from '../src/stackend';
 import assert from 'assert';
 

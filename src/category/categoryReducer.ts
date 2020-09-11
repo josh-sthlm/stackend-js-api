@@ -56,9 +56,9 @@ function categories(state: CategoriesState = {}, action: CategoriesAction): Cate
             update(context || { selected: {} }, {
               isFetching: { $set: true },
               didInvalidate: { $set: false },
-              available: { $set: state[action.context] ? state[action.context].available : '' },
-            }),
-        },
+              available: { $set: state[action.context] ? state[action.context].available : '' }
+            })
+        }
       });
 
     case RECEIVE_AVAILABLE_CATEGORIES:
@@ -69,9 +69,9 @@ function categories(state: CategoriesState = {}, action: CategoriesAction): Cate
               isFetching: { $set: false },
               didInvalidate: { $set: false },
               available: { $set: action.json },
-              lastUpdated: { $set: Date.now() },
-            }),
-        },
+              lastUpdated: { $set: Date.now() }
+            })
+        }
       });
 
     case INVALIDATE_AVAILABLE_CATEGORIES:
@@ -79,9 +79,9 @@ function categories(state: CategoriesState = {}, action: CategoriesAction): Cate
         [action.context]: {
           $apply: (context): any =>
             update(context || { selected: {} }, {
-              didInvalidate: { $set: true },
-            }),
-        },
+              didInvalidate: { $set: true }
+            })
+        }
       });
 
     case CATEGORIES_TOGGLE_SELECTED: {
@@ -103,12 +103,11 @@ function categories(state: CategoriesState = {}, action: CategoriesAction): Cate
               update(context || { selected: {} }, {
                 selected: {
                   [action.reference]: {
-                    $apply: (reference: string): any =>
-                      update(reference || [], { $splice: [[idOfClickedCategory, 1]] }),
-                  },
-                },
-              }),
-          },
+                    $apply: (reference: string): any => update(reference || [], { $splice: [[idOfClickedCategory, 1]] })
+                  }
+                }
+              })
+          }
         });
       } else {
         //category clicked is not selected -> set selection
@@ -118,11 +117,11 @@ function categories(state: CategoriesState = {}, action: CategoriesAction): Cate
               update(context || { selected: {} }, {
                 selected: {
                   [action.reference]: {
-                    $apply: (reference: any): any => update(reference || [], { $push: [action.category] }),
-                  },
-                },
-              }),
-          },
+                    $apply: (reference: any): any => update(reference || [], { $push: [action.category] })
+                  }
+                }
+              })
+          }
         });
       }
     }
@@ -135,11 +134,11 @@ function categories(state: CategoriesState = {}, action: CategoriesAction): Cate
               // @ts-ignore
               selected: {
                 [action.reference]: {
-                  $apply: (reference: string): any => update(reference || [], { $set: [] }),
-                },
-              },
-            }),
-        },
+                  $apply: (reference: string): any => update(reference || [], { $set: [] })
+                }
+              }
+            })
+        }
       });
     default:
       return state;

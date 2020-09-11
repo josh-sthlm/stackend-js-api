@@ -28,7 +28,7 @@ const qnaReducer = (state: QnaState = { pageType: 'Search' }, action: QnaActions
     case CHANGE_QNA_PAGE:
       return (state = {
         pageType: action.pageType,
-        forumThreadPermalink: action.forumThreadPermalink,
+        forumThreadPermalink: action.forumThreadPermalink
       });
     default:
       return state;
@@ -48,8 +48,8 @@ const xcapModuleSettings: XcapModuleSettings = {
   qna: {
     server: '',
     game: { id: 0, name: '' },
-    styling: {},
-  },
+    styling: {}
+  }
 };
 
 //Reducer
@@ -79,7 +79,7 @@ export function qnaAvailableFilters(
     filterPlatforms: [],
     filterIssues: [],
     filterDevices: [],
-    filterError: false,
+    filterError: false
   },
   action: { type: string; filters: any }
 ): any {
@@ -94,18 +94,18 @@ export function qnaAvailableFilters(
 const defaultQnaSelectedFiltersState = {
   askQuestion: {
     game: xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.game && xcapModuleSettings.qna.game.id,
-    searchType: 'All',
+    searchType: 'All'
   },
   tags: {
     game:
       xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.game && xcapModuleSettings.qna.game.name,
-    searchType: 'Trending',
+    searchType: 'Trending'
   },
   searchSearchInput: {
     game:
       xcapModuleSettings && xcapModuleSettings.qna && xcapModuleSettings.qna.game && xcapModuleSettings.qna.game.name,
-    searchType: 'All',
-  },
+    searchType: 'All'
+  }
 };
 type QnaSelectedFiltersChangeFilter = {
   type: 'CHANGE_FILTER';
@@ -135,13 +135,13 @@ const qnaSelectedFilters = (
       ) {
         // the current clicked filter is selected, Un-check current filter selection
         return update(state, {
-          [action.contentType]: { $merge: { [Object.keys(action.filter)[0]]: '' } },
+          [action.contentType]: { $merge: { [Object.keys(action.filter)[0]]: '' } }
         });
       }
 
       //Check new filter selection
       return update(state, {
-        [action.contentType]: { $merge: action.filter },
+        [action.contentType]: { $merge: action.filter }
       });
     default:
       return state;
@@ -158,7 +158,7 @@ export function qnaSearchResult(
     entries: [],
     relatedObjects: [],
     categoryCounts: [],
-    error: false,
+    error: false
   },
   action: { type: string; result: any }
 ): any {
@@ -199,7 +199,7 @@ const defaultStyle = {
   buttonFontColor: '',
 
   linkColor: '',
-  textDetailColor: '',
+  textDetailColor: ''
 };
 
 const qnaStyling = (

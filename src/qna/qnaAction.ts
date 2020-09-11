@@ -8,7 +8,7 @@ import {
   CHANGE_FILTER,
   SET_QNA_AVAILABLE_FILTERS,
   RECEIVE_SEARCH_RESULT,
-  QnaActions,
+  QnaActions
 } from './qnaReducer';
 import { isRunningInBrowser, Thunk, XcapJsonResult } from '../api';
 import { Request, getRequest } from '../request';
@@ -19,7 +19,7 @@ export function changeQnaPage(pageType: string, forumThreadPermalink: string): Q
   return {
     type: CHANGE_QNA_PAGE,
     pageType,
-    forumThreadPermalink,
+    forumThreadPermalink
   };
 }
 
@@ -98,8 +98,8 @@ export function changeFilter({ filter, contentType, triggerSearch = true }: Chan
               q: search.q,
               selectedFilters: qnaSelectedFilters.searchSearchInput,
               p: 1,
-              gameId: 16 /* FIXME: hardcoded id */,
-            },
+              gameId: 16 /* FIXME: hardcoded id */
+            }
           })
         );
       }
@@ -111,7 +111,7 @@ function _changeFilter({ filter, contentType }: ChangeFilter): AnyAction {
   return {
     type: CHANGE_FILTER,
     filter,
-    contentType,
+    contentType
   };
 }
 
@@ -126,7 +126,7 @@ export function getAvailableFilters() {
           filterPlatforms: [],
           filterIssues: [],
           filterDevices: [],
-          filterError: categoryInfo.error,
+          filterError: categoryInfo.error
         })
       );
     } else {
@@ -136,7 +136,7 @@ export function getAvailableFilters() {
           filterPlatforms: categoryInfo.gamePlatformCategories,
           filterIssues: categoryInfo.gameIssueCategories,
           filterDevices: categoryInfo.gameDeviceCategories,
-          filterError: false,
+          filterError: false
         })
       );
     }
@@ -155,7 +155,7 @@ function setAvailableFilters(filters: {
 }): AnyAction {
   return {
     type: SET_QNA_AVAILABLE_FILTERS,
-    filters,
+    filters
   };
 }
 
@@ -167,7 +167,7 @@ function receiveSearchResult(result: {
 }): AnyAction {
   return {
     type: RECEIVE_SEARCH_RESULT,
-    result,
+    result
   };
 }
 
@@ -182,7 +182,7 @@ export function searchQna({ searchString, selectedFilters, game }: any) {
           entries: [],
           relatedObjects: [],
           categoryCounts: {},
-          error: searchResult.error,
+          error: searchResult.error
         })
       );
     } else {
@@ -191,7 +191,7 @@ export function searchQna({ searchString, selectedFilters, game }: any) {
           entries: searchResult.results.entries,
           relatedObjects: searchResult.__relatedObjects,
           categoryCounts: searchResult.categoryCounts,
-          error: false,
+          error: false
         })
       );
     }

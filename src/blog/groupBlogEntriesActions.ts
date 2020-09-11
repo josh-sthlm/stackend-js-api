@@ -18,7 +18,7 @@ import {
   UPDATE_GROUP_BLOG_ENTRY,
   GroupBlogEntriesActions,
   UpdateBlogEntry,
-  OpenBlogEntryWriteCommentSectionActions,
+  OpenBlogEntryWriteCommentSectionActions
 } from './groupBlogEntriesReducer';
 
 import {
@@ -29,7 +29,7 @@ import {
   SetEntryStatus,
   setEntryStatus,
   GetEntriesResult,
-  GetBlogEntryResult,
+  GetBlogEntryResult
   //gaPostEventObject,
   //gaEditPostEventObject
 } from './index';
@@ -48,7 +48,7 @@ function receiveBlogEntries(blogKey: string, json: GetEntriesResult): GroupBlogE
     type: RECEIVE_GROUP_BLOG_ENTRIES,
     blogKey,
     json,
-    receivedAt: Date.now(),
+    receivedAt: Date.now()
   };
 }
 
@@ -56,7 +56,7 @@ function receiveBlogEntries(blogKey: string, json: GetEntriesResult): GroupBlogE
 export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): GroupBlogEntriesActions {
   return {
     type: INVALIDATE_GROUP_BLOG_ENTRIES,
-    blogKey,
+    blogKey
   };
 }
 
@@ -64,7 +64,7 @@ export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): GroupBl
 function requestBlogEntries(blogKey: string): GroupBlogEntriesActions {
   return {
     type: REQUEST_GROUP_BLOG_ENTRIES,
-    blogKey,
+    blogKey
   };
 }
 
@@ -74,7 +74,7 @@ function updateBlogEntry(blogKey: string, json: UpdateBlogEntry): GroupBlogEntri
     type: UPDATE_GROUP_BLOG_ENTRY,
     blogKey,
     json,
-    receivedAt: Date.now(),
+    receivedAt: Date.now()
   };
 }
 
@@ -96,7 +96,7 @@ export function fetchBlogEntries({
   p = 1,
   categories,
   invalidatePrevious = false,
-  goToBlogEntry,
+  goToBlogEntry
 }: FetchBlogEntries): Thunk<Promise<any>> {
   return async (dispatch: any, getState): Promise<any> => {
     const categoryId = _.get(categories, '[0].id', null);
@@ -144,7 +144,7 @@ export function fetchBlogEntries({
 export function fetchBlogEntry({
   id,
   permalink,
-  blogKey,
+  blogKey
 }: {
   id?: number;
   permalink?: string;
@@ -182,7 +182,7 @@ export function fetchBlogEntriesWithComments({
   blogKey,
   page = 1,
   categories,
-  goToBlogEntry,
+  goToBlogEntry
 }: FetchBlogEntriesWithComments): Thunk<Promise<any>> {
   return async (dispatch: any): Promise<any> => {
     let response = null;
@@ -198,7 +198,7 @@ export function fetchBlogEntriesWithComments({
         commentActions.fetchMultipleComments({
           module: commentApi.CommentModule.BLOG,
           referenceIds,
-          referenceGroupId: response.json.blogId,
+          referenceGroupId: response.json.blogId
         })
       );
     } catch (e) {
@@ -211,7 +211,7 @@ export function fetchBlogEntriesWithComments({
 export function fetchBlogEntryWithComments({
   id,
   permalink,
-  blogKey,
+  blogKey
 }: {
   id?: number;
   permalink?: string;
@@ -226,7 +226,7 @@ export function fetchBlogEntryWithComments({
           commentActions.fetchComments({
             module: commentApi.CommentModule.BLOG,
             referenceId: blogEntry.id,
-            referenceGroupId: blogEntry.blogId,
+            referenceGroupId: blogEntry.blogId
           })
         );
       } else {
@@ -261,9 +261,9 @@ function _fetchBlogEntry(blogKey: string, json: any): Thunk<Promise<any>> {
       receiveBlogEntries(blogKey, {
         // @ts-ignore
         resultPaginated: {
-          entries: [json.blogEntry],
+          entries: [json.blogEntry]
         },
-        likes: json.likes,
+        likes: json.likes
       })
     );
   };
@@ -281,7 +281,7 @@ export function postBlogEntry({
   blogEntryJson,
   type,
   draftId,
-  blogKey,
+  blogKey
 }: {
   blogEntryJson: any;
   type: 'PUBLISHED' | '';
@@ -296,7 +296,7 @@ export function postBlogEntry({
         blogEntryJson,
         type,
         draftId,
-        blogKey,
+        blogKey
       })
     );
 
@@ -306,7 +306,7 @@ export function postBlogEntry({
 
     //In order to keep pagination-object we need to merge with current state
     const resultPaginated = update(_.get(getState(), `groupBlogEntries[${blogKey}].json.resultPaginated`), {
-      entries: { $push: [response.entry] },
+      entries: { $push: [response.entry] }
     });
     const state = { resultPaginated };
 
@@ -335,7 +335,7 @@ export function changeBlogEntryStatus({ blogKey, id, status }: SetEntryStatus): 
 //Toggle Reply editor for selected parent comment id
 export function toggleWriteCommentOrEdit({
   blogEntryId,
-  editorType,
+  editorType
 }: {
   blogEntryId: number; //BlogEntry id
   editorType: 'EDIT' | 'COMMENT';
@@ -343,7 +343,7 @@ export function toggleWriteCommentOrEdit({
   return {
     type: TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
     blogEntryId,
-    editorType,
+    editorType
   };
 }
 

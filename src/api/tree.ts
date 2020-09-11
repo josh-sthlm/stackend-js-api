@@ -38,7 +38,7 @@ export function newTree(name: string): Tree {
     children: [],
     data: {},
     totalChildNodes: 0,
-    referenceId: 0,
+    referenceId: 0
   };
 }
 
@@ -57,7 +57,7 @@ export function newTreeNode(name: string): Node {
     ref: null,
     children: [],
     data: {},
-    referenceId: 0,
+    referenceId: 0
   };
 }
 
@@ -218,7 +218,7 @@ export function removeTreeNodeByPermalink(tree: Tree, permalink: string): Node |
 export enum InsertionPoint {
   BEFORE = 'BEFORE',
   AFTER = 'AFTER',
-  CHILD = 'CHILD',
+  CHILD = 'CHILD'
 }
 
 /**

@@ -25,7 +25,7 @@ export function newPaginatedCollection<T>({
   entries = [],
   page = 1,
   pageSize = 10,
-  totalSize = 0,
+  totalSize = 0
 }: {
   entries?: Array<T>;
   page?: number;
@@ -50,7 +50,7 @@ export function newPaginatedCollection<T>({
     firstPage: 1,
     nextPage,
     previousPage,
-    entries: e,
+    entries: e
   };
 }
 

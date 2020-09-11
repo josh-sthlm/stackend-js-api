@@ -22,7 +22,7 @@ import {
   DeployProfile,
   setConfiguration,
   newXcapJsonResult,
-  GetInitialStoreValuesResult,
+  GetInitialStoreValuesResult
 } from '../src/api';
 import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import assert from 'assert';
@@ -121,10 +121,10 @@ describe('API', () => {
       expect(parseReference('a:b-t-1')).toStrictEqual({
         communityContext: {
           community: 'a',
-          context: 'b',
+          context: 'b'
         },
         type: 't',
-        id: 1,
+        id: 1
       });
     });
   });
@@ -134,7 +134,7 @@ describe('API', () => {
       expect(constructReference('c55', 'comments', 'se.josh.xcap.comment.Comment', 1)).toStrictEqual({
         communityContext: { community: 'c55', context: 'comments' },
         type: 'se.josh.xcap.comment.Comment',
-        id: 1,
+        id: 1
       });
     });
   });
@@ -151,7 +151,7 @@ describe('API', () => {
       expect(
         templateReplace('Hello {{name}}, how are you?', {
           name: 'World',
-          extra: 'Wow',
+          extra: 'Wow'
         })
       ).toBe('Hello World, how are you?');
 
@@ -159,7 +159,7 @@ describe('API', () => {
         templateReplace('{{a}}, {{b}}, {{noValue}}, {{c}}', {
           a: 'a',
           b: 'b',
-          c: 'c',
+          c: 'c'
         })
       ).toBe('a, b, , c');
     });
@@ -209,7 +209,7 @@ describe('API', () => {
       const r: ListResult = await store.dispatch(
         listMy({
           context: 'korv',
-          mediaType: 666,
+          mediaType: 666
         })
       );
 
@@ -225,7 +225,7 @@ describe('API', () => {
       await store.dispatch(
         setConfiguration({
           server: 'http://localhost:8080/',
-          contextPath: '/stackend/',
+          contextPath: '/stackend/'
         })
       );
 

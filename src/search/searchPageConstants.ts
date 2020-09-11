@@ -16,7 +16,7 @@ const TITLES = {
   ARTICLE,
   BLOG,
   GROUP,
-  USER,
+  USER
 };
 
 export function findSearchTitle(searchKey: string): string | null | undefined {

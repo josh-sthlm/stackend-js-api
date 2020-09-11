@@ -5,7 +5,7 @@ import {
   RECEIVE_GROUP_COMMENTS,
   REQUEST_COMMENTS,
   REQUEST_GROUP_COMMENTS,
-  UPDATE_COMMENT,
+  UPDATE_COMMENT
 } from './commentReducer';
 
 import { Comment, getMultipleComments, getComments, GetMultipleCommentsResult, CommentModule } from './index';
@@ -54,7 +54,7 @@ export function receiveGroupComments(
     module,
     referenceGroupId,
     json,
-    receivedAt: Date.now(),
+    receivedAt: Date.now()
   };
 }
 
@@ -63,7 +63,7 @@ export function requestGroupComments(module: string, referenceGroupId: number): 
   return {
     type: REQUEST_GROUP_COMMENTS,
     module,
-    referenceGroupId,
+    referenceGroupId
   };
 }
 
@@ -73,7 +73,7 @@ export function fetchMultipleComments({
   referenceIds,
   referenceGroupId,
   p = 1,
-  pageSize = DEFAULT_PAGE_SIZE,
+  pageSize = DEFAULT_PAGE_SIZE
 }: {
   module: string; // Module See Comments.CommentModule
   referenceIds: Array<number>; //Array of reference to fetch comments for
@@ -110,7 +110,7 @@ export function receiveComments(
     referenceId,
     referenceGroupId,
     receivedAt: Date.now(),
-    json,
+    json
   };
 }
 
@@ -120,14 +120,14 @@ export function requestComments(module: string, referenceId: number, referenceGr
     type: REQUEST_COMMENTS,
     module,
     referenceId,
-    referenceGroupId,
+    referenceGroupId
   };
 }
 
 //Invalidate group-comments from the server
 export function invalidateComments({
   module,
-  referenceGroupId,
+  referenceGroupId
 }: {
   module: string;
   referenceGroupId: number;
@@ -135,7 +135,7 @@ export function invalidateComments({
   return {
     type: INVALIDATE_GROUP_COMMENTS,
     module,
-    referenceGroupId,
+    referenceGroupId
   };
 }
 
@@ -154,7 +154,7 @@ export function updateComment(
     referenceGroupId,
     module,
     receivedAt: Date.now(),
-    json,
+    json
   };
 }
 
@@ -176,7 +176,7 @@ export function fetchComments({
   referenceGroupId = 0,
   p = 1,
   pageSize = DEFAULT_PAGE_SIZE,
-  useVotes = false,
+  useVotes = false
 }: FetchComments): Thunk<any> {
   return async (dispatch: any): Promise<any> => {
     dispatch(requestComments(module, referenceId, referenceGroupId));
@@ -193,7 +193,7 @@ export function fetchComments({
         receiveComments(module, referenceId, referenceGroupId, {
           comments,
           likesByCurrentUser,
-          error,
+          error
         })
       );
     } catch (e) {

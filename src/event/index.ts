@@ -47,7 +47,7 @@ export enum RSVPStatus {
   UNKNOWN = 'UNKNOWN',
   ACCEPTED = 'ACCEPTED',
   INTERESTED = 'INTERESTED',
-  DECLINED = 'DECLINED',
+  DECLINED = 'DECLINED'
 }
 
 /**
@@ -57,7 +57,7 @@ export enum RSVPStatus {
  */
 export function rsvp({
   eventId,
-  status,
+  status
 }: { eventId: number; status: RSVPStatus } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/blog/event/rsvp', parameters: arguments });
 }
@@ -75,7 +75,7 @@ export function listRsvpUsers({
   eventId,
   status,
   p,
-  pageSize,
+  pageSize
 }: {
   eventId: number;
   status: RSVPStatus;

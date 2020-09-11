@@ -70,7 +70,7 @@ export default function communityReducer(state: CommunityState = {}, action: Com
     case REQUEST_COMMUNITIES:
       return Object.assign({}, state, {
         isFetching: true,
-        didInvalidate: false,
+        didInvalidate: false
       });
 
     case RECEIVE_COMMUNITIES:
@@ -79,7 +79,7 @@ export default function communityReducer(state: CommunityState = {}, action: Com
         didInvalidate: false,
         lastUpdated: action.receivedAt,
         communities: action.json.results,
-        statistics: action.json.statistics,
+        statistics: action.json.statistics
       });
 
     case UPDATE_COMMUNITY: {
@@ -110,7 +110,7 @@ export default function communityReducer(state: CommunityState = {}, action: Com
           isFetching: { $set: false },
           didInvalidate: { $set: false },
           lastUpdated: { $set: action.receivedAt },
-          communities: { $set: newCommunities },
+          communities: { $set: newCommunities }
         });
       }
 
@@ -128,11 +128,11 @@ export default function communityReducer(state: CommunityState = {}, action: Com
 
       const x = {
         objectsRequiringModeration: action.objectsRequiringModeration,
-        ...action.community,
+        ...action.community
       };
 
       return update(state, {
-        community: { $set: x },
+        community: { $set: x }
       });
     }
 
@@ -143,7 +143,7 @@ export default function communityReducer(state: CommunityState = {}, action: Com
 
     case REMOVE_COMMUNITY:
       return update(state, {
-        community: { $set: null },
+        community: { $set: null }
       });
 
     case RECEIVE_RESOURCE_USAGE:
@@ -153,9 +153,9 @@ export default function communityReducer(state: CommunityState = {}, action: Com
             maximumUseBeforeCharge: action.maximumUseBeforeCharge,
             resourceUsageLast30Days: action.resourceUsageLast30Days,
             hasPaymentMethod: action.hasPaymentMethod,
-            isUserExcludedFromBilling: action.isUserExcludedFromBilling,
-          },
-        },
+            isUserExcludedFromBilling: action.isUserExcludedFromBilling
+          }
+        }
       });
 
     default:

@@ -14,7 +14,7 @@ import {
   _getContextPath,
   _getConfig,
   Thunk,
-  XcapOptionalParameters,
+  XcapOptionalParameters
 } from '../api';
 import { User } from '../user';
 import _ from 'lodash';
@@ -26,7 +26,7 @@ export enum MediaStatus {
   OK = 'OK',
   NOT_OK = 'NOT_OK',
   NOT_PROCESSED = 'NOT_PROCESSED',
-  TEMPORARY = 'TEMPORARY',
+  TEMPORARY = 'TEMPORARY'
 }
 
 export interface Media extends XcapObject {
@@ -160,7 +160,7 @@ export enum MediaType {
   /**
    * Other types of files that may be stored and will be presented as a link when inserted in text.
    */
-  DOCUMENT = 'DOCUMENT',
+  DOCUMENT = 'DOCUMENT'
 }
 
 /**
@@ -170,7 +170,7 @@ export enum MediaTypeId {
   IMAGE = 1,
   VIDEO = 2,
   AUDIO = 3,
-  DOCUMENT = 4,
+  DOCUMENT = 4
 }
 
 /**
@@ -186,7 +186,7 @@ export const MediaTypeName: { [mediaTypeId: number]: MediaTypeNames } = {
   [MediaTypeId.IMAGE]: 'IMAGE',
   [MediaTypeId.VIDEO]: 'VIDEO',
   [MediaTypeId.AUDIO]: 'AUDIO',
-  [MediaTypeId.DOCUMENT]: 'DOCUMENT',
+  [MediaTypeId.DOCUMENT]: 'DOCUMENT'
 };
 
 /**
@@ -203,7 +203,7 @@ export enum MediaListOrder {
   TITLE_ASC = 8,
   USER_DESC = 9,
   USER_ASC = 10,
-  RANDOM = 11,
+  RANDOM = 11
 }
 
 /**
@@ -215,7 +215,7 @@ export const ThumbnailSize = {
   TINY: 'tiny',
   SMALL: 'small',
   MEDIUM: 'medium',
-  LARGE: 'large',
+  LARGE: 'large'
 };
 
 /**
@@ -226,7 +226,7 @@ export const ThumbnailSize = {
  */
 export function getThumbnailUrl({
   url,
-  size = ThumbnailSize.MEDIUM,
+  size = ThumbnailSize.MEDIUM
 }: {
   url?: string | null;
   size?: string;
@@ -249,7 +249,7 @@ export function getThumbnailUrl({
  */
 export function getContextPrefix({
   config,
-  communityPermalink,
+  communityPermalink
 }: {
   config: Config;
   communityPermalink?: string;
@@ -277,7 +277,7 @@ export function getContextPrefix({
 export function getAbsoluteContextPrefix({
   config,
   communityPermalink,
-  context,
+  context
 }: {
   config: Config;
   communityPermalink?: string;
@@ -289,7 +289,7 @@ export function getAbsoluteContextPrefix({
     key: 'media-upload-server',
     componentName: 'media',
     context,
-    defaultValue: _getServer(config),
+    defaultValue: _getServer(config)
   });
 
   const cp = getContextPrefix({ config, communityPermalink });
@@ -316,7 +316,7 @@ export function getMediaUploadUrl({
   temporary = false,
   thumbnail,
   maxWidth,
-  maxHeight,
+  maxHeight
 }: {
   config: Config;
   referenceId?: number;
@@ -376,7 +376,7 @@ export function getContextMediaUploadUrl({
   thumbnail = undefined,
   maxWidth = undefined,
   maxHeight = undefined,
-  responsive = undefined,
+  responsive = undefined
 }: {
   config: Config;
   referenceId?: number;
@@ -478,7 +478,7 @@ export async function uploadMediaFile({
   thumbnail,
   maxWidth,
   maxHeight,
-  responsive = undefined,
+  responsive = undefined
 }: {
   config: Config;
 } & UploadMediaFileRequest &
@@ -498,7 +498,7 @@ export async function uploadMediaFile({
     thumbnail,
     maxWidth,
     maxHeight,
-    responsive,
+    responsive
   });
   //console.log("url", url);
 
@@ -510,7 +510,7 @@ export async function uploadMediaFile({
     url,
     method: 'POST',
     parameters: {},
-    body: data,
+    body: data
   });
 
   // FIXME: Handle cookies
@@ -521,7 +521,7 @@ export async function uploadMediaFile({
       error: r.error,
       files: [],
       html: {},
-      thumbnails: {},
+      thumbnails: {}
     };
   }
 
@@ -552,7 +552,7 @@ export function upload({
   maxWidth,
   maxHeight,
   responsive = undefined,
-  communityPermalink = undefined,
+  communityPermalink = undefined
 }: UploadMediaFileRequest & XcapOptionalParameters): Thunk<Promise<UploadMediaFileResult>> {
   let cpl = communityPermalink;
   if (typeof cpl === 'undefined') {
@@ -577,7 +577,7 @@ export function upload({
       thumbnail,
       maxWidth,
       maxHeight,
-      responsive,
+      responsive
     });
   };
 }
@@ -607,7 +607,7 @@ export function listMy({
   categoryId,
   order = MediaListOrder.CREATED_DESC,
   pageSize,
-  p = 1,
+  p = 1
 }: {
   context: string;
   thumbnailConfigName?: string;
@@ -641,7 +641,7 @@ export function list({
   categoryId,
   order = MediaListOrder.CREATED_DESC,
   pageSize,
-  p = 1,
+  p = 1
 }: {
   context: string;
   thumbnailConfigName?: string;
@@ -665,7 +665,7 @@ export function list({
 export function remove({
   communityPermalink,
   context,
-  id,
+  id
 }: {
   communityPermalink?: string;
   context: string;
@@ -681,7 +681,7 @@ export function remove({
   return post({
     url: '/media/remove',
     parameters: arguments,
-    community: communityPermalink,
+    community: communityPermalink
   });
 }
 
@@ -710,7 +710,7 @@ export function get({
   thumbnailConfigName = 'medium',
   id,
   permalink,
-  responsive,
+  responsive
 }: {
   context: string;
   thumbnailConfigName?: string;
@@ -764,7 +764,7 @@ export function embed({
   thumbnailConfigName,
   maxWidth,
   responsive,
-  communityPermalink,
+  communityPermalink
 }: {
   context: string;
   embedCode: string;
@@ -777,7 +777,7 @@ export function embed({
   return getJson({
     url: '/media/embed',
     parameters: arguments,
-    community: communityPermalink,
+    community: communityPermalink
   });
 }
 
@@ -793,14 +793,14 @@ export interface SearchUsesResult extends XcapJsonResult {
  */
 export function searchUses({
   context,
-  mediaId,
+  mediaId
 }: {
   context: string;
   mediaId?: number;
 } & XcapOptionalParameters): Thunk<Promise<SearchUsesResult>> {
   return getJson({
     url: '/media/search-uses',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -830,7 +830,7 @@ export function constructImageThumbnail(image: Image, thumbnailConfig: string): 
       method: 0,
       paddingColor: 'pink',
       type: 'DEFAULT',
-      width: image.width,
-    },
+      width: image.width
+    }
   };
 }

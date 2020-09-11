@@ -40,7 +40,7 @@ export default function moduleReducer(state: ModuleState = {}, action: ModuleAct
     case REQUEST_MODULES:
       return Object.assign({}, state, {
         isFetching: true,
-        didInvalidate: false,
+        didInvalidate: false
       });
 
     case RECEIVE_MODULES:
@@ -48,7 +48,7 @@ export default function moduleReducer(state: ModuleState = {}, action: ModuleAct
         isFetching: false,
         didInvalidate: false,
         lastUpdated: action.receivedAt,
-        ...action.json,
+        ...action.json
       });
 
     case RESET_MODULES:
@@ -59,7 +59,7 @@ export default function moduleReducer(state: ModuleState = {}, action: ModuleAct
         stats: {},
         communityId: 0,
         supportedModuleContexts: [],
-        __relatedObjects: {},
+        __relatedObjects: {}
       });
 
     default:

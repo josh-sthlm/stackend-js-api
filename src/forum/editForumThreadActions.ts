@@ -4,28 +4,28 @@ import {
   EDIT_FORUM_ENTRY_TEXT,
   EditForumThreadActions,
   FORUM_THREAD_TOGGLE_EDIT,
-  SET_FORUM_ENTRY_TEXT,
+  SET_FORUM_ENTRY_TEXT
 } from './editForumThreadReducer';
 import { Thunk } from '../api';
 
 export function editForumEntyText({ text }: { text: string }): EditForumThreadActions {
   return {
     type: EDIT_FORUM_ENTRY_TEXT,
-    text,
+    text
   };
 }
 
 export function setForumEntyText({ text }: { text: string }): EditForumThreadActions {
   return {
     type: SET_FORUM_ENTRY_TEXT,
-    text,
+    text
   };
 }
 
 export function addForumEntryQuote({ quote }: { quote: string }): EditForumThreadActions {
   return {
     type: ADD_QUOTE,
-    quote,
+    quote
   };
 }
 
@@ -40,7 +40,7 @@ export function toggleEditForumThread({ forumPermalink, editThreadId, text }: To
     dispatch({
       type: FORUM_THREAD_TOGGLE_EDIT,
       forumPermalink,
-      editThreadId,
+      editThreadId
     });
     dispatch(setForumEntyText({ text }));
   };

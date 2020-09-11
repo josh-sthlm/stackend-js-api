@@ -15,7 +15,7 @@ describe('CMS', () => {
       const r: GetContentResult = await store.dispatch(
         getContent({
           permalink: 'my-first-stack-instructions',
-          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK,
+          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK
         })
       );
 
@@ -51,7 +51,7 @@ describe('CMS', () => {
       const r: GetSubSiteResult = await store.dispatch(
         getSubSite({
           id: 1,
-          [COMMUNITY_PARAMETER]: 'husdjur',
+          [COMMUNITY_PARAMETER]: 'husdjur'
         })
       );
 

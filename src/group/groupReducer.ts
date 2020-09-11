@@ -6,7 +6,7 @@ import {
   RECEIVE_GROUP_MEMBERS,
   RECEIVE_GROUPS,
   RECEIVE_GROUPS_AUTH,
-  REQUEST_GROUPS,
+  REQUEST_GROUPS
 } from './groupActions';
 import { Group, GroupMemberAuth } from './index';
 import { AuthObject } from '../user/privileges';
@@ -26,7 +26,7 @@ const initialState: GroupState = {
   lastUpdated: Date.now(),
   entries: {},
   auth: {},
-  groupMembers: {},
+  groupMembers: {}
 };
 
 export default function groups(state: GroupState = initialState, action: GroupActions): GroupState {
@@ -34,7 +34,7 @@ export default function groups(state: GroupState = initialState, action: GroupAc
     case REQUEST_GROUPS:
       return update(state, {
         isFetching: { $set: true },
-        didInvalidate: { $set: false },
+        didInvalidate: { $set: false }
       });
     case RECEIVE_GROUPS:
       // FIXME: action.errors not passed on
@@ -47,20 +47,20 @@ export default function groups(state: GroupState = initialState, action: GroupAc
           isFetching: { $set: false },
           didInvalidate: { $set: false },
           lastUpdated: { $set: Date.now() },
-          entries: { $merge: uniqueGroupEntries },
+          entries: { $merge: uniqueGroupEntries }
         });
       } else {
         return update(state, {
           isFetching: { $set: false },
           didInvalidate: { $set: false },
           lastUpdated: { $set: Date.now() },
-          entries: { $merge: [] },
+          entries: { $merge: [] }
         });
       }
 
     case INVALIDATE_GROUPS:
       return update(state, {
-        didInvalidate: { $set: true },
+        didInvalidate: { $set: true }
       });
 
     case RECEIVE_GROUPS_AUTH:
@@ -68,7 +68,7 @@ export default function groups(state: GroupState = initialState, action: GroupAc
         isFetching: { $set: false },
         didInvalidate: { $set: false },
         lastUpdated: { $set: Date.now() },
-        auth: { $set: action.entries },
+        auth: { $set: action.entries }
       });
 
     case RECEIVE_GROUP_MEMBERS:
@@ -76,7 +76,7 @@ export default function groups(state: GroupState = initialState, action: GroupAc
         isFetching: { $set: false },
         didInvalidate: { $set: false },
         lastUpdated: { $set: Date.now() },
-        groupMembers: { $merge: action.groupMembers },
+        groupMembers: { $merge: action.groupMembers }
       });
     default:
       return state;

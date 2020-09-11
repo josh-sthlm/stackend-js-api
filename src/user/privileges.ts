@@ -14,7 +14,7 @@ export enum Privilege {
   BLOCKED = 'BLOCKED',
   TRUSTED = 'TRUSTED',
   ADMIN = 'ADMIN',
-  SUPER_ADMIN = 'SUPER_ADMIN',
+  SUPER_ADMIN = 'SUPER_ADMIN'
 }
 
 export enum PrivilegeTypeId {
@@ -24,7 +24,7 @@ export enum PrivilegeTypeId {
   BLOCKED = 8,
   TRUSTED = 16,
   ADMIN = 32,
-  SUPER_ADMIN = 64,
+  SUPER_ADMIN = 64
 }
 
 /**
@@ -37,7 +37,7 @@ export const PRIVILEGE_TYPE_IDS = {
   [Privilege.BLOCKED]: 8,
   [Privilege.TRUSTED]: 16,
   [Privilege.ADMIN]: 32,
-  [Privilege.SUPER_ADMIN]: 64,
+  [Privilege.SUPER_ADMIN]: 64
 };
 
 export type PrivilegeTypeIds = 1 | 2 | 4 | 8 | 16 | 32 | 64;
@@ -52,7 +52,7 @@ const PRIVILEGE_NAMES: { [id: string]: string } = {
   '8': 'Blocked',
   '16': 'Author',
   '32': 'Admin',
-  '64': 'Super-Admin',
+  '64': 'Super-Admin'
 };
 
 /**

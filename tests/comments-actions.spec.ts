@@ -12,7 +12,7 @@ describe('Comment actions', () => {
     it('List comments', async () => {
       await store.dispatch(
         loadInitialStoreValues({
-          permalink: 'husdjur',
+          permalink: 'husdjur'
         })
       );
 

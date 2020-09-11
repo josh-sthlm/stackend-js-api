@@ -9,7 +9,7 @@ import {
   _getApiUrl,
   Thunk,
   isRunningInBrowser,
-  XcapOptionalParameters,
+  XcapOptionalParameters
 } from '../api';
 
 declare let browserHistory: { push: (location: string) => any }; // FIXME: for backward compatibility with react-router
@@ -37,14 +37,14 @@ export enum AuthenticationType {
   /**
    * Custom oauth solution
    */
-  OAUTH2 = 'OAUTH2',
+  OAUTH2 = 'OAUTH2'
 }
 
 const AUTH_NAMES: { [key: string]: string } = {
   [AuthenticationType.FACEBOOK]: 'Facebook',
   [AuthenticationType.GOOGLE]: 'Google',
   [AuthenticationType.XCAP]: 'E-mail & password',
-  [AuthenticationType.OAUTH2]: 'OAuth2',
+  [AuthenticationType.OAUTH2]: 'OAuth2'
 };
 
 export function getAuthenticationTypeName(type: AuthenticationType): string {
@@ -88,7 +88,7 @@ export function _getLoginUrl({
   request,
   returnUrl,
   communityPermalink,
-  provider,
+  provider
 }: {
   config: Config;
   request?: Request | null;
@@ -123,7 +123,7 @@ export function _getLoginUrl({
       return _getApiUrl({
         state: { request, config, communities: {} },
         url: '/user/login',
-        parameters,
+        parameters
       });
     }
 
@@ -183,7 +183,7 @@ function _getReturnUrl({ request, returnUrl }: { request: Request; returnUrl?: s
 export function _getLogoutUrl({
   config,
   request,
-  returnUrl,
+  returnUrl
 }: {
   config: Config;
   request: Request;
@@ -194,7 +194,7 @@ export function _getLogoutUrl({
   return _getApiUrl({
     state: { request, config, communities: {} },
     url: '/user/logout',
-    parameters: { redirectUrl: ru },
+    parameters: { redirectUrl: ru }
   });
 
   //const pfx = _getServerWithContextPath(config);
@@ -207,11 +207,11 @@ export function _getLogoutUrl({
  * @returns {Thunk<XcapJsonResult>}
  */
 export function logout({
-  redirectUrl,
+  redirectUrl
 }: { redirectUrl?: string | null } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/user/logout',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -258,9 +258,9 @@ export function login({
           returnUrl,
           c: communityPermalink,
           xcap_email,
-          xcap_password,
+          xcap_password
         },
-        community: communityPermalink,
+        community: communityPermalink
       });
     }
 
@@ -291,7 +291,7 @@ export function performLoginRedirect({
   loginResult,
   request,
   email,
-  returnUrl,
+  returnUrl
 }: {
   loginResult: LoginResult;
   request: Request;
@@ -363,7 +363,7 @@ export function performLoginRedirect({
 export function sendPasswordChangeToken({ email }: { email: string }): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/user/send-password-change-token',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -390,7 +390,7 @@ export function changePassword({
   checkCode,
   oldPassword,
   password,
-  returnUrl,
+  returnUrl
 }: {
   email: string;
   checkCode?: string;
@@ -400,6 +400,6 @@ export function changePassword({
 } & XcapOptionalParameters): Thunk<Promise<ChangePasswordResult>> {
   return post({
     url: '/user/change-password',
-    parameters: arguments,
+    parameters: arguments
   });
 }

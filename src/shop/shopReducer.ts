@@ -6,7 +6,7 @@ import {
   GraphQLListNode,
   ListProductsAndTypesResult,
   ListProductTypesResult,
-  Product,
+  Product
 } from './index';
 import _ from 'lodash';
 
@@ -52,7 +52,7 @@ export default function shopReducer(
     productTypes: [],
     products: {},
     productsByType: {},
-    basket: [],
+    basket: []
   },
   action: ShopActions
 ): ShopState {
@@ -61,7 +61,7 @@ export default function shopReducer(
       const edges: Array<GraphQLListNode<string>> = _.get(action, 'json.productTypes.edges', []);
       const productTypes = edges.map(e => e.node);
       return Object.assign({}, state, {
-        productTypes,
+        productTypes
       });
     }
 
@@ -69,11 +69,11 @@ export default function shopReducer(
       const product = _.get(action, 'json.product');
       if (product) {
         const products = Object.assign({}, state.products, {
-          [product.handle]: product,
+          [product.handle]: product
         });
 
         return Object.assign({}, state, {
-          products,
+          products
         });
       }
       break;
@@ -87,11 +87,11 @@ export default function shopReducer(
       state.productsByType[productType] = products;
 
       const productsByType = Object.assign({}, state.productsByType, {
-        [productType]: products,
+        [productType]: products
       });
 
       return Object.assign({}, state, {
-        productsByType,
+        productsByType
       });
     }
 
@@ -103,7 +103,7 @@ export default function shopReducer(
       }
 
       return Object.assign({}, state, {
-        basket,
+        basket
       });
     }
   }

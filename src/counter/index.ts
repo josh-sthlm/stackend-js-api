@@ -17,7 +17,7 @@ import { post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
  */
 export function increment({
   context,
-  referenceId,
+  referenceId
 }: { context: string; referenceId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/counter/increment', parameters: arguments });
 }
@@ -33,7 +33,7 @@ export function increment({
  */
 export function putFootprint({
   context,
-  referenceId,
+  referenceId
 }: {
   context: string;
   referenceId: number;

@@ -6,7 +6,7 @@ import { BlogActions } from './blogReducer';
 export function receiveBlogs({ entries }: { entries: Array<Blog> }): BlogActions {
   return {
     type: reducer.RECEIVE_BLOGS,
-    entries,
+    entries
   };
 }
 

@@ -12,7 +12,7 @@ describe('Poll', () => {
       const r: GetPollResult = await store.dispatch(
         getPoll({
           referenceId: 39,
-          [COMMUNITY_PARAMETER]: 'husdjur',
+          [COMMUNITY_PARAMETER]: 'husdjur'
         })
       );
 

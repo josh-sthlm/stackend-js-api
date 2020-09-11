@@ -19,7 +19,7 @@ export function updateSearchString({ q, p = 1 }: UpdateSearchString): SearchActi
   return {
     type: reducer.UPDATE_SEARCH_STRING,
     q,
-    p,
+    p
   };
 }
 
@@ -38,7 +38,7 @@ function _updateSelectedType({ selectedType, p = 1 }: _UpdateSelectedType): Sear
   return {
     type: reducer.UPDATE_SELECTED_TYPE,
     selectedType,
-    p,
+    p
   };
 }
 
@@ -134,7 +134,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
                 // @ts-ignore
                 // FIXME: Clean up this mess
                 searchType: qnaSearchType,
-                game,
+                game
               })
             );
             return json;
@@ -178,7 +178,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
               _search({
                 ...convertSearchTypeToOrderBy(parsedSearchParams),
                 type: SearchAbleType.BLOG_ARTICLE,
-                categoryId,
+                categoryId
               })
             );
           } catch (e) {
@@ -206,7 +206,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
               _search({
                 ...convertSearchTypeToOrderBy(parsedSearchParams),
                 community: filter === 'user' ? '' : undefined,
-                type: filter,
+                type: filter
               })
             );
 

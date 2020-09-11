@@ -15,7 +15,7 @@ export function fetchContent({ id, permalink }: { id: number; permalink?: string
     dispatch({
       type: REQUEST_CONTENT,
       id,
-      permalink,
+      permalink
     });
 
     try {
@@ -25,7 +25,7 @@ export function fetchContent({ id, permalink }: { id: number; permalink?: string
         type: RECEIVE_CONTENT,
         id,
         permalink,
-        json: r,
+        json: r
       });
     } catch (e) {
       console.error("Couldn't fetch cms content " + id, e);
@@ -37,7 +37,7 @@ export function setContent(content: Content): Thunk<any> {
   return (dispatch /*, getState: any*/): any => {
     return dispatch({
       type: SET_CONTENT,
-      content,
+      content
     });
   };
 }
@@ -50,7 +50,7 @@ export function receiveContents(contents: { [id: number]: Content }): Thunk<any>
   return async (dispatch: any): Promise<any> => {
     return await dispatch({
       type: RECEIVE_CONTENTS,
-      contents,
+      contents
     });
   };
 }

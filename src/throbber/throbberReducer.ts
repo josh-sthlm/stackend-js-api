@@ -40,7 +40,7 @@ const throbberReducer = (
         visible: n > 0,
         n,
         loading: state.loading,
-        requests: state.requests,
+        requests: state.requests
       };
     }
 
@@ -50,7 +50,7 @@ const throbberReducer = (
         visible: m > 0,
         n: m,
         loading: state.loading,
-        requests: state.requests,
+        requests: state.requests
       };
     }
 
@@ -60,7 +60,7 @@ const throbberReducer = (
         visible: state.visible,
         n: state.n,
         loading: requests > 0,
-        requests: requests,
+        requests: requests
       };
     }
 
@@ -70,7 +70,7 @@ const throbberReducer = (
         visible: state.visible,
         n: state.n,
         loading: x > 0,
-        requests: x,
+        requests: x
       };
     }
 

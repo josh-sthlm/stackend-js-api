@@ -15,7 +15,7 @@ describe('Like', () => {
         getToplist({
           interval: '1year',
           objectContext: 'comments',
-          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK,
+          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK
         })
       );
 

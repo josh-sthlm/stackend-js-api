@@ -15,7 +15,7 @@ describe('API actions', () => {
       const r: GetInitialStoreValuesResult = await store.dispatch(
         loadInitialStoreValues({
           permalink: STACKEND_COM_COMMUNITY_PERMALINK,
-          subSiteIds: [1],
+          subSiteIds: [1]
         })
       );
 

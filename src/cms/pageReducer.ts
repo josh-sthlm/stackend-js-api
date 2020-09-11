@@ -42,7 +42,7 @@ export default function (
   state: PagesState = {
     byId: {},
     idByPermalink: {},
-    subSiteById: {},
+    subSiteById: {}
   },
   action: PageActions
 ): PagesState {
@@ -71,7 +71,7 @@ export default function (
     case CLEAR_PAGES:
       return Object.assign({}, state, {
         byId: {},
-        idByPermalink: {},
+        idByPermalink: {}
       });
 
     case CLEAR_PAGE: {
@@ -100,7 +100,7 @@ export default function (
 
     case CLEAR_SUB_SITES: {
       return Object.assign({}, state, {
-        subSiteByIdById: {},
+        subSiteByIdById: {}
       });
     }
 

@@ -8,7 +8,7 @@ import {
   XcapObject,
   Thunk,
   XcapOptionalParameters,
-  ModerationStatus,
+  ModerationStatus
 } from '../api';
 import * as categoryApi from '../category';
 import * as userApi from '../user';
@@ -101,7 +101,7 @@ export function getForumUrl({
   forumPermalink,
   threadPermalink,
   community,
-  absolute,
+  absolute
 }: {
   request: Request;
   forumPermalink?: string;
@@ -120,13 +120,13 @@ export function getForumUrl({
     return createCommunityUrl({
       request,
       path: '/support' + (forumPermalink ? '/' + forumPermalink : '') + (threadPermalink ? '/' + threadPermalink : ''),
-      absolute,
+      absolute
     });
   } else {
     return createCommunityUrl({
       request,
       path: '/forum' + (forumPermalink ? '/' + forumPermalink : '') + (threadPermalink ? '/' + threadPermalink : ''),
-      absolute,
+      absolute
     });
   }
 }
@@ -153,14 +153,14 @@ export const QNA_FORUM_PERMALINK = 'question';
  */
 export function getCreateThreadUrl({
   request,
-  forumPermalink = '',
+  forumPermalink = ''
 }: {
   request: Request;
   forumPermalink?: string;
 }): string {
   return createCommunityUrl({
     request,
-    path: `/forum${forumPermalink ? `/${forumPermalink}` : ''}/create-a-thread`,
+    path: `/forum${forumPermalink ? `/${forumPermalink}` : ''}/create-a-thread`
   });
 }
 
@@ -184,7 +184,7 @@ export interface ListForumsResult extends XcapJsonResult {
  */
 export function listForums({
   p,
-  pageSize,
+  pageSize
 }: { p?: number; pageSize?: number } & XcapOptionalParameters): Thunk<Promise<ListForumsResult>> {
   return getJson({ url: '/forum/list', parameters: arguments });
 }
@@ -211,7 +211,7 @@ export interface ListThreadsResult extends XcapJsonResult {
 export function listThreads({
   forumPermalink,
   p,
-  pageSize,
+  pageSize
 }: {
   forumPermalink: string;
   p?: number;
@@ -251,13 +251,13 @@ export function listEntries({
   entryId,
   p,
   pageSize,
-  isQna,
+  isQna
 }: ListEntries): Thunk<Promise<ListEntriesResult>> {
   return getJson({
     url: '/forum/entries/list',
     parameters: arguments,
     context: CONTEXT,
-    componentName: COMPONENT_NAME,
+    componentName: COMPONENT_NAME
   });
 }
 
@@ -266,7 +266,7 @@ export function listEntries({
  * @param watchesHavingNewEntriesOnly {boolean} Set to true to only list threads with new entries.
  */
 export function listWatchedThreads({
-  watchesHavingNewEntriesOnly,
+  watchesHavingNewEntriesOnly
 }: {
   watchesHavingNewEntriesOnly?: boolean;
 } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
@@ -281,7 +281,7 @@ export function listWatchedThreads({
  */
 export function setThreadWatch({
   threadId,
-  watch = true,
+  watch = true
 }: {
   threadId: number;
   watch: boolean;
@@ -296,7 +296,7 @@ export function setThreadWatch({
  * @param threadId {number} Thread id.
  */
 export function pinForumThread({
-  threadId,
+  threadId
 }: { threadId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/forum/thread/pin', parameters: arguments });
 }
@@ -307,7 +307,7 @@ export function pinForumThread({
  * @param threadId {number} Thread id.
  */
 export function closeForumThread({
-  threadId,
+  threadId
 }: { threadId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/forum/thread/close', parameters: arguments });
 }
@@ -321,7 +321,7 @@ export interface RemoveForumThreadEntryResult extends XcapJsonResult {
  * @param v {number} Forum thread entry id.
  */
 export function removeForumThreadEntry({
-  entryId,
+  entryId
 }: { entryId: number } & XcapOptionalParameters): Thunk<Promise<RemoveForumThreadEntryResult>> {
   return post({ url: '/forum/thread/remove', parameters: arguments });
 }
@@ -334,7 +334,7 @@ export function removeForumThreadEntry({
  */
 export function moveForumThread({
   threadId,
-  forumId,
+  forumId
 }: { threadId: number; forumId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/forum/thread/move', parameters: arguments });
 }
@@ -346,7 +346,7 @@ export function moveForumThread({
  * @param entryId {number} Entry id.
  */
 export function pinForumEntry({
-  entryId,
+  entryId
 }: { entryId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/forum/thread/pin', parameters: arguments });
 }
@@ -361,7 +361,7 @@ export function pinForumEntry({
 export function moveForumEntry({
   entryId,
   threadId,
-  includeReplies = true,
+  includeReplies = true
 }: {
   entryId: number;
   threadId: number;
@@ -382,7 +382,7 @@ export function listLastActiveThreads({
   categoryIds,
   categoryPermalinks,
   p = 1,
-  pageSize,
+  pageSize
 }: {
   categoryIds?: Array<number>;
   categoryPermalinks?: Array<string>;
@@ -404,7 +404,7 @@ export function listLastCreatedThreads({
   categoryIds,
   categoryPermalinks,
   p = 1,
-  pageSize,
+  pageSize
 }: {
   categoryIds?: Array<number>;
   categoryPermalinks?: Array<string>;
@@ -428,7 +428,7 @@ export function listMostActiveThreds({
   categoryIds,
   categoryPermalinks,
   p = 1,
-  pageSize,
+  pageSize
 }: {
   daysBack?: number;
   categoryIds?: Array<number>;
@@ -453,7 +453,7 @@ export function listMostViewedThreds({
   categoryIds,
   categoryPermalinks,
   p = 1,
-  pageSize,
+  pageSize
 }: {
   daysBack?: number;
   categoryIds?: Array<number>;
@@ -478,7 +478,7 @@ export function listMostActiveForums({
   categoryIds,
   categoryPermalinks,
   p = 1,
-  pageSize,
+  pageSize
 }: {
   daysBack?: number;
   categoryIds?: Array<number>;
@@ -500,7 +500,7 @@ export function listMostActiveForums({
  */
 export function addThreadCategories({
   threadId,
-  categoryIds,
+  categoryIds
 }: {
   threadId: number;
   categoryIds: Array<number>;
@@ -518,7 +518,7 @@ export function addThreadCategories({
  */
 export function removeThreadCategories({
   threadId,
-  categoryIds,
+  categoryIds
 }: {
   threadId: number;
   categoryIds: Array<number>;
@@ -558,7 +558,7 @@ export interface VoteReturn {
  */
 export function vote({
   forumThreadEntry,
-  score,
+  score
 }: {
   /** 1 for thumbs down, 2 for thumbs up */
   score: number;
@@ -572,8 +572,8 @@ export function vote({
     parameters: {
       referenceId: forumThreadEntryId,
       score,
-      referenceGroupId: forumId,
-    },
+      referenceGroupId: forumId
+    }
   });
 }
 
@@ -582,13 +582,13 @@ export function vote({
  * @param entryId
  */
 export function getVoteSummary({
-  entryId,
+  entryId
 }: { entryId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({
     url: '/forum/entry/get-vote-summary',
     parameters: {
-      referenceId: entryId,
-    },
+      referenceId: entryId
+    }
   });
 }
 
@@ -603,7 +603,7 @@ export function getThreadEntryFromRedux({
   forumThreads,
   id,
   forumPermalink,
-  forumThreadPermalink,
+  forumThreadPermalink
 }: {
   forumThreads: any;
   id?: number;
@@ -614,7 +614,7 @@ export function getThreadEntryFromRedux({
     // FIXME: What is this? Fix
     // @ts-ignore
     return _.find(_.flatten(Object.values(forumThreads.forums)), {
-      id /*, __type:FTE_COMPONENT_CLASS*/,
+      id /*, __type:FTE_COMPONENT_CLASS*/
     });
   }
 
@@ -641,7 +641,7 @@ export function getThreadFromRedux({
   forumThreads,
   id,
   forumPermalink,
-  forumThreadPermalink,
+  forumThreadPermalink
 }: {
   forumThreads: any;
   id?: number;
@@ -651,7 +651,7 @@ export function getThreadFromRedux({
   if (id) {
     // @ts-ignore
     return _.find(_.flatten(Object.values(forumThreads.forums)), {
-      id /*, __type:FT_COMPONENT_CLASS*/,
+      id /*, __type:FT_COMPONENT_CLASS*/
     });
   }
   const forumThread = _.get(forumThreads, `forums[${forumPermalink}]`, []).filter(

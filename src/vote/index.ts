@@ -54,7 +54,7 @@ export function vote({
   referenceId,
   referenceGroupId,
   score,
-  module,
+  module
 }: {
   referenceId: number;
   referenceGroupId: number;
@@ -63,6 +63,6 @@ export function vote({
 } & XcapOptionalParameters): Thunk<Promise<VoteResult>> {
   return post({
     url: (module && module !== CommentModule.GENERIC ? module : '') + '/comments/vote/vote',
-    parameters: arguments,
+    parameters: arguments
   });
 }

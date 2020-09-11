@@ -32,14 +32,14 @@ const initialState: ForumState = {
   isFetching: false,
   didInvalidate: false,
   lastUpdated: 0,
-  entries: [],
+  entries: []
 };
 
 export default createReducer(initialState, {
   REQUEST_FORUMS: (state: ForumState, action: RequestForumsAction) =>
     update(state, {
       isFetching: { $set: true },
-      didInvalidate: { $set: false },
+      didInvalidate: { $set: false }
     }),
 
   RECEIVE_FORUMS: (state: ForumState, action: ReceiveForumsAction) => {
@@ -53,12 +53,12 @@ export default createReducer(initialState, {
       isFetching: { $set: false },
       didInvalidate: { $set: false },
       lastUpdated: { $set: Date.now() },
-      entries: { $set: uniqueForums },
+      entries: { $set: uniqueForums }
     });
   },
 
   INVALIDATE_FORUMS: (state: ForumState, action: InvalidateForumsAction) =>
     update(state, {
-      didInvalidate: { $set: true },
-    }),
+      didInvalidate: { $set: true }
+    })
 });

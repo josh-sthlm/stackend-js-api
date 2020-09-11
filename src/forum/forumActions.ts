@@ -20,6 +20,6 @@ export function requestForums(): ForumActions {
 export function receiveForums({ entries }: { entries: Array<Forum> }): ForumActions {
   return {
     type: RECEIVE_FORUMS,
-    entries,
+    entries
   };
 }

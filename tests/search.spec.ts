@@ -15,7 +15,7 @@ describe('Search', () => {
           q: '',
           type: SearchAbleType.ARTICLE,
           pageSize: 1,
-          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK,
+          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK
         })
       );
 

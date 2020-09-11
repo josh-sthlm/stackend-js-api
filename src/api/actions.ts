@@ -7,7 +7,7 @@ import {
   newXcapJsonResult,
   setConfigDefaults,
   setLogger,
-  Thunk,
+  Thunk
 } from './index';
 import { receiveLoginData } from '../login/loginAction';
 import { loadCommunity, receiveResourceUsage } from '../stackend/communityAction';
@@ -39,7 +39,7 @@ export function initialize({
   communityId,
   permalink,
   config,
-  winstonLogger,
+  winstonLogger
 }: InitializeRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
   return async (dispatch: any): Promise<GetInitialStoreValuesResult> => {
     if (!communityId && !permalink) {
@@ -61,7 +61,7 @@ export function initialize({
 function receiveInitialStoreValues(json: any): AnyAction {
   return {
     type: XCAP_INITIAL_STORE_DATA_RECEIVED,
-    json,
+    json
   };
 }
 
@@ -91,7 +91,7 @@ export function loadInitialStoreValues({
   pageIds,
   subSiteIds,
   referenceUrl,
-  stackendMode = false,
+  stackendMode = false
 }: LoadInitialStoreValuesRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
   return async (dispatch: any): Promise<GetInitialStoreValuesResult> => {
     const r = await dispatch(
@@ -105,7 +105,7 @@ export function loadInitialStoreValues({
         pageIds,
         subSiteIds,
         referenceUrl,
-        stackendMode,
+        stackendMode
       })
     );
 

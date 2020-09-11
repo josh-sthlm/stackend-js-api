@@ -16,24 +16,24 @@ export enum GroupType {
   OPEN = 'OPEN',
   CLOSED = 'CLOSED',
   BLOG = 'BLOG',
-  DISCUSSION = 'DISCUSSION',
+  DISCUSSION = 'DISCUSSION'
 }
 
 export const GROUP_TYPES_BY_ID: { [id: string]: GroupType } = {
   '1': GroupType.CLOSED,
   '2': GroupType.OPEN,
   '3': GroupType.DISCUSSION,
-  '4': GroupType.BLOG,
+  '4': GroupType.BLOG
 };
 
 export enum Visibility {
   VISIBLE = 'VISIBLE',
-  HIDDEN = 'HIDDEN',
+  HIDDEN = 'HIDDEN'
 }
 
 export const VisibilityId: { [vis: string]: number } = {
   [Visibility.VISIBLE]: 1,
-  [Visibility.HIDDEN]: 2,
+  [Visibility.HIDDEN]: 2
 };
 
 /**
@@ -135,7 +135,7 @@ export enum SortBy {
   /**
    * Sort by creation date.
    */
-  CREATION_DATE = 4,
+  CREATION_DATE = 4
 }
 
 export type sortBy = SortBy; // For backwards compatibility
@@ -145,7 +145,7 @@ export type sortBy = SortBy; // For backwards compatibility
  */
 export enum GroupMemberSortOrder {
   JOIN_DATE_ASC = 'JOIN_DATE_ASC',
-  JOIN_DATE_DESC = 'JOIN_DATE_DESC',
+  JOIN_DATE_DESC = 'JOIN_DATE_DESC'
 }
 
 /**
@@ -172,20 +172,20 @@ export enum MemberShipRequestType {
   /**
    * Toggle admin status (available to group admin only)
    */
-  TOGGLE_ADMIN = 'TOGGLE_ADMIN',
+  TOGGLE_ADMIN = 'TOGGLE_ADMIN'
 }
 
 export function getUrl({ request }: { request: Request }): string {
   return createCommunityUrl({
     request,
-    path: '/groups',
+    path: '/groups'
   });
 }
 
 export function getBlogUrl({ request }: { request: Request }): string {
   return createCommunityUrl({
     request,
-    path: '/blog',
+    path: '/blog'
   });
 }
 
@@ -196,7 +196,7 @@ export function getBlogUrl({ request }: { request: Request }): string {
 export function getBlogPostUrl({
   request,
   blogPermalink,
-  entryPermalink,
+  entryPermalink
 }: {
   request: Request;
   blogPermalink?: string;
@@ -207,13 +207,13 @@ export function getBlogPostUrl({
   if (entryPermalink) {
     return createCommunityUrl({
       request,
-      path: u + '/' + entryPermalink,
+      path: u + '/' + entryPermalink
     });
   }
 
   return createCommunityUrl({
     request,
-    path: u + '/posts',
+    path: u + '/posts'
   });
 }
 
@@ -226,14 +226,14 @@ export function getBlogPostUrl({
 export function getGroupUrl({ request, group }: { request: Request; group: Group }): string {
   return createCommunityUrl({
     request,
-    path: '/' + group.permalink,
+    path: '/' + group.permalink
   });
 }
 
 export function getGroupSettingsUrl({ request, group }: { request: Request; group: Group }): string {
   return createCommunityUrl({
     request,
-    path: '/' + group.permalink + '/settings',
+    path: '/' + group.permalink + '/settings'
   });
 }
 
@@ -317,7 +317,7 @@ export function search({
   sortBy,
   order,
   pageSize,
-  p = 1,
+  p = 1
 }: {
   q?: string; //Search expression.
   categoryId?: number;
@@ -341,7 +341,7 @@ export function search({
 export function listGroupsByTag({
   tag,
   pageSize,
-  p = 1,
+  p = 1
 }: {
   tag: string;
   pageSize?: number;
@@ -362,7 +362,7 @@ export interface GetGroupResult extends XcapJsonResult {
  */
 export function getGroup({
   groupPermalink,
-  groupId,
+  groupId
 }: {
   groupPermalink?: string;
   groupId?: number;
@@ -384,7 +384,7 @@ export interface SubscribeResult extends XcapJsonResult {
  */
 export function subscribe({
   groupPermalink,
-  groupId,
+  groupId
 }: {
   groupPermalink?: string;
   groupId?: number;
@@ -399,7 +399,7 @@ export function subscribe({
  */
 export function unsubscribe({
   groupPermalink,
-  groupId,
+  groupId
 }: {
   groupPermalink?: string;
   groupId?: number;
@@ -414,7 +414,7 @@ export function unsubscribe({
  */
 export function applyForMembership({
   groupPermalink,
-  groupId,
+  groupId
 }: {
   groupPermalink?: string;
   groupId?: number;
@@ -438,7 +438,7 @@ export function editMembership({
   groupPermalink,
   groupId,
   userId,
-  privilegeType,
+  privilegeType
 }: {
   action: string;
   groupPermalink?: string;
@@ -454,8 +454,8 @@ export function editMembership({
       userId,
       memberShipRequestType: action,
       privilegeType,
-      ignoreDuplicates: true,
-    },
+      ignoreDuplicates: true
+    }
   });
 }
 
@@ -468,7 +468,7 @@ export function editMembership({
  */
 export function listMembershipRequests({
   groupPermalink,
-  groupId,
+  groupId
 }: {
   groupPermalink?: string;
   groupId?: number;
@@ -493,7 +493,7 @@ export function listMembers({
   groupPermalink,
   groupId,
   groupMemberPrivilegeType,
-  sortOrder = GroupMemberSortOrder.JOIN_DATE_DESC,
+  sortOrder = GroupMemberSortOrder.JOIN_DATE_DESC
 }: {
   groupPermalink?: string; // ex: blog/king
   groupId?: number;
@@ -530,7 +530,7 @@ export function editGroup({
   contentVisibility,
   isOpenForApplications,
   categoryId,
-  tags,
+  tags
 }: {
   groupId?: number;
   groupPermalink?: string;
@@ -545,7 +545,7 @@ export function editGroup({
 } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/group/edit',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -560,11 +560,11 @@ export interface CheckGroupPermalinkResult extends XcapJsonResult {
  * @param groupPermalink
  */
 export function checkGroupPermalink({
-  groupPermalink,
+  groupPermalink
 }: { groupPermalink: string } & XcapOptionalParameters): Thunk<Promise<CheckGroupPermalinkResult>> {
   return getJson({
     url: '/group/check-permalink',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -576,7 +576,7 @@ export function checkGroupPermalink({
  */
 export function setGroupLogotypeImage({
   groupId,
-  imageId,
+  imageId
 }: {
   groupId: number;
   imageId: number;
@@ -586,8 +586,8 @@ export function setGroupLogotypeImage({
     parameters: {
       groupId,
       imageId,
-      type: 'LOGOTYPE',
-    },
+      type: 'LOGOTYPE'
+    }
   });
 }
 
@@ -599,7 +599,7 @@ export function setGroupLogotypeImage({
  */
 export function setGroupBackgroundImage({
   groupId,
-  imageId,
+  imageId
 }: {
   groupId: number;
   imageId: number;
@@ -609,8 +609,8 @@ export function setGroupBackgroundImage({
     parameters: {
       groupId,
       imageId,
-      type: 'BACKGROUND',
-    },
+      type: 'BACKGROUND'
+    }
   });
 }
 
@@ -651,7 +651,7 @@ export function setGroupStyle({
 } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/group/set-style',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -663,6 +663,6 @@ export function setGroupStyle({
 export function removeGroup({ groupId }: { groupId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/group/remove',
-    parameters: arguments,
+    parameters: arguments
   });
 }

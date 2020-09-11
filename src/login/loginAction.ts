@@ -27,20 +27,20 @@ export type LoginActions =
 //Action Creator
 export function reduxLogin(): LoginActions {
   return {
-    type: LOGIN,
+    type: LOGIN
   };
 }
 
 export function reduxLogout(): LoginActions {
   return {
-    type: LOGOUT,
+    type: LOGOUT
   };
 }
 
 //Action Creator
 function requestLoginData(): LoginActions {
   return {
-    type: REQUEST_LOGIN_DATA,
+    type: REQUEST_LOGIN_DATA
   };
 }
 
@@ -77,6 +77,6 @@ export function refreshLoginData(params?: any): Thunk<any> {
 export function receiveLoginData(json: { user: User | null }): LoginActions {
   return {
     type: UPDATE_LOGIN_DATA,
-    json,
+    json
   };
 }

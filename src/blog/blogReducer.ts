@@ -24,7 +24,7 @@ export default function blogs(
     isFetching: false,
     didInvalidate: false,
     entries: {},
-    lastUpdated: Date.now(),
+    lastUpdated: Date.now()
   },
   action: BlogActions
 ): BlogState {
@@ -32,7 +32,7 @@ export default function blogs(
     case REQUEST_BLOGS:
       return update(state, {
         isFetching: { $set: true },
-        didInvalidate: { $set: false },
+        didInvalidate: { $set: false }
       });
 
     case RECEIVE_BLOGS: {
@@ -43,13 +43,13 @@ export default function blogs(
         isFetching: { $set: false },
         didInvalidate: { $set: false },
         lastUpdated: { $set: Date.now() },
-        entries: { $merge: newBlogs },
+        entries: { $merge: newBlogs }
       });
     }
 
     case INVALIDATE_BLOGS:
       return update(state, {
-        didInvalidate: { $set: true },
+        didInvalidate: { $set: true }
       });
 
     default:

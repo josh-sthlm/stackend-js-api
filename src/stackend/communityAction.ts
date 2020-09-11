@@ -6,7 +6,7 @@ import {
   REMOVE_COMMUNITIES,
   REMOVE_COMMUNITY,
   RECEIVE_RESOURCE_USAGE,
-  CommunityActions,
+  CommunityActions
 } from './communityReducer';
 
 import { Thunk } from '../api';
@@ -39,13 +39,13 @@ export function receiveCommunities(json: ReceiveCommunities): CommunityActions {
   return {
     type: RECEIVE_COMMUNITIES,
     json,
-    receivedAt: Date.now(),
+    receivedAt: Date.now()
   };
 }
 
 export function requestCommunities(status: string): CommunityActions {
   return {
-    type: REQUEST_COMMUNITIES,
+    type: REQUEST_COMMUNITIES
   };
 }
 
@@ -53,19 +53,19 @@ export function loadCommunity(community: Community, objectsRequiringModeration?:
   return {
     type: SET_COMMUNITY_SETTINGS,
     community: community,
-    objectsRequiringModeration,
+    objectsRequiringModeration
   };
 }
 
 export function removeCommunities(): CommunityActions {
   return {
-    type: REMOVE_COMMUNITIES,
+    type: REMOVE_COMMUNITIES
   };
 }
 
 export function removeCommunity(): CommunityActions {
   return {
-    type: REMOVE_COMMUNITY,
+    type: REMOVE_COMMUNITY
   };
 }
 
@@ -89,7 +89,7 @@ export function fetchCommunities({
   creatorUserId,
   status = '*',
   p = 1,
-  pageSize = 10,
+  pageSize = 10
 }: FetchCommunities): Thunk<any> {
   return async (dispatch: any /*, getState: any*/): Promise<any> => {
     dispatch(requestCommunities(status));
@@ -102,7 +102,7 @@ function updateCommunity(community: Community): CommunityActions {
   return {
     type: UPDATE_COMMUNITY,
     receivedAt: Date.now(),
-    community,
+    community
   };
 }
 
@@ -113,7 +113,7 @@ export function editCommunity({
   description = '',
   status = CommunityStatus.VISIBLE,
   locale = 'en_US',
-  domains = [],
+  domains = []
 }: {
   id?: number; // Post id
   name: string;
@@ -135,8 +135,8 @@ export function editCommunity({
           results: {
             pageSize: 1,
             page: 1,
-            entries: [response.storedCommunity],
-          },
+            entries: [response.storedCommunity]
+          }
         })
       );
     }
@@ -146,7 +146,7 @@ export function editCommunity({
 export function loadCommunitySettings({
   id,
   permalink,
-  domain,
+  domain
 }: {
   id?: number;
   permalink?: string;
@@ -172,6 +172,6 @@ export function receiveResourceUsage(json: ResourceUsage): CommunityActions {
     maximumUseBeforeCharge: json.maximumUseBeforeCharge,
     resourceUsageLast30Days: json.resourceUsageLast30Days,
     hasPaymentMethod: json.hasPaymentMethod,
-    isUserExcludedFromBilling: json.isUserExcludedFromBilling,
+    isUserExcludedFromBilling: json.isUserExcludedFromBilling
   };
 }

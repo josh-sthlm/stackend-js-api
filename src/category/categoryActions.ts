@@ -22,21 +22,21 @@ function recieveCategories({ context, json }: ContextObject & { json: any }): An
   return {
     type: reducer.RECEIVE_AVAILABLE_CATEGORIES,
     context,
-    json,
+    json
   };
 }
 
 function requestCategories({ context }: ContextObject): AnyAction {
   return {
     type: reducer.REQUEST_AVAILABLE_CATEGORIES,
-    context,
+    context
   };
 }
 
 export function invalidateCategories({ context }: ContextObject): AnyAction {
   return {
     type: reducer.INVALIDATE_AVAILABLE_CATEGORIES,
-    context,
+    context
   };
 }
 
@@ -59,8 +59,8 @@ export function toggleSelected({ context, reference, category }: ToggleSelected)
             q: getState().search.q,
             selectedFilters: getState().qnaSelectedFilters.searchSearchInput,
             gameId: 16,
-            p: 1,
-          },
+            p: 1
+          }
         })
       );
     };
@@ -74,7 +74,7 @@ function _toggleSelected({ context, reference, category }: ToggleSelected): AnyA
     type: reducer.CATEGORIES_TOGGLE_SELECTED,
     context,
     reference,
-    category,
+    category
   };
 }
 
@@ -97,8 +97,8 @@ export function removeSelection({ context, reference }: RemoveSelection): any {
             q: getState().search.q,
             selectedFilters: getState().qnaSelectedFilters.searchSearchInput,
             gameId: 16,
-            p: 1,
-          },
+            p: 1
+          }
         })
       );
     };
@@ -111,6 +111,6 @@ function _removeSelection({ context, reference }: RemoveSelection): AnyAction {
   return {
     type: reducer.CATEGORIES_REMOVE_SELECTION,
     context,
-    reference,
+    reference
   };
 }

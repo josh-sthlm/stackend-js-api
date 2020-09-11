@@ -17,7 +17,7 @@ describe('Media', () => {
           id: 2,
           context: DEFAULT_CMS_CONTEXT,
           thumbnailConfigName: ThumbnailSize.MEDIUM,
-          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK,
+          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK
         })
       );
 
@@ -40,7 +40,7 @@ describe('Media', () => {
           context: DEFAULT_CMS_CONTEXT,
           pageSize: 2,
           order: MediaListOrder.CREATED_ASC,
-          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK,
+          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK
         })
       );
 

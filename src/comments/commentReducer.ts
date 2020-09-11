@@ -90,8 +90,8 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         [key]: {
           isFetching: true,
           didInvalidate: false,
-          json: typeof state[key] !== 'undefined' ? state[key].json : '',
-        },
+          json: typeof state[key] !== 'undefined' ? state[key].json : ''
+        }
       });
 
     case RECEIVE_GROUP_COMMENTS:
@@ -107,8 +107,8 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
             isFetching: false,
             didInvalidate: false,
             lastUpdated: action.receivedAt,
-            json,
-          },
+            json
+          }
         });
       } else {
         return Object.assign({}, state, {
@@ -116,8 +116,8 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
             isFetching: false,
             didInvalidate: false,
             lastUpdated: action.receivedAt,
-            json: action.json,
-          },
+            json: action.json
+          }
         });
       }
 
@@ -129,12 +129,12 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         state[key] ? state[key].json.comments[action.referenceId] : {},
         {
           isFetching: true,
-          didInvalidate: false,
+          didInvalidate: false
         }
       );
 
       const requestBlogEntiesWithComments = Object.assign({}, state[key] ? state[key].json.comments : {}, {
-        [action.referenceId]: requestBlogEntryComments,
+        [action.referenceId]: requestBlogEntryComments
       });
 
       const likesByCurrentUser = Object.assign({}, state[key] ? state[key].json.likesByCurrentUser : {});
@@ -145,9 +145,9 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
           didInvalidate: false,
           json: {
             comments: requestBlogEntiesWithComments,
-            likesByCurrentUser,
-          },
-        },
+            likesByCurrentUser
+          }
+        }
       });
     }
 
@@ -169,12 +169,12 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
                     isFetching: false,
                     didInvalidate: false,
                     lastUpdated: action.receivedAt,
-                    error: action.json.error,
-                  },
-                },
-              },
-            },
-          },
+                    error: action.json.error
+                  }
+                }
+              }
+            }
+          }
         });
       }
 
@@ -201,7 +201,7 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
       pagination.totalSize += action.json.comments.entries.length;
 
       const x = update(action.json.comments, {
-        entries: { $set: referenceIdUniqueComments },
+        entries: { $set: referenceIdUniqueComments }
       });
 
       // Work around for $merge not beeing able to $set
@@ -219,12 +219,12 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
               [referenceId]: {
                 [op]: {
                   ...pagination,
-                  ...x,
-                },
-              },
-            },
-          },
-        },
+                  ...x
+                }
+              }
+            }
+          }
+        }
       });
     }
 
@@ -243,12 +243,12 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
             comments: {
               [action.referenceId]: {
                 entries: {
-                  [indexOfUpdatedComment]: { $set: action.json },
-                },
-              },
-            },
-          },
-        },
+                  [indexOfUpdatedComment]: { $set: action.json }
+                }
+              }
+            }
+          }
+        }
       });
     }
 
@@ -256,8 +256,8 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
       key = commentAction._getCommentsStateKey(action);
       return Object.assign({}, state, {
         [key]: {
-          didInvalidate: true,
-        },
+          didInvalidate: true
+        }
       });
     default:
       return state;

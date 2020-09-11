@@ -11,7 +11,7 @@ import {
   listMembers,
   getGroup,
   ListMembersResult,
-  SubscribeResult,
+  SubscribeResult
 } from './index';
 
 import { Thunk, XcapJsonResult } from '../api';
@@ -64,7 +64,7 @@ export function addGroup({ groupPermalink, groupId }: { groupPermalink?: string;
  */
 export function subscribe({
   groupPermalink,
-  groupId,
+  groupId
 }: {
   groupPermalink?: string;
   groupId?: number;
@@ -93,7 +93,7 @@ export function subscribe({
  */
 export function unsubscribe({
   groupPermalink,
-  groupId,
+  groupId
 }: {
   groupPermalink?: string;
   groupId?: number;
@@ -137,7 +137,7 @@ export interface ReceiveGroups {
 export function receiveGroups({ entries }: ReceiveGroups): Receive {
   return {
     type: RECEIVE_GROUPS,
-    entries,
+    entries
   };
 }
 
@@ -157,7 +157,7 @@ type ReceiveGroupsAuth = {
 export function receiveGroupsAuth({ entries }: ReceiveGroupsAuth): ReceiveAuth {
   return {
     type: RECEIVE_GROUPS_AUTH,
-    entries,
+    entries
   };
 }
 
@@ -168,7 +168,7 @@ type ReceiveGroupMembers = {
 export function receiveGroupMembers({ groupMembers }: ReceiveGroupMembers): ReceiveMembers {
   return {
     type: RECEIVE_GROUP_MEMBERS,
-    groupMembers,
+    groupMembers
   };
 }
 
@@ -177,7 +177,7 @@ export function receiveGroupMembers({ groupMembers }: ReceiveGroupMembers): Rece
  */
 export function fetchGroupMembers({
   groupId,
-  groupPermalink,
+  groupPermalink
 }: {
   groupId?: number;
   groupPermalink?: string;

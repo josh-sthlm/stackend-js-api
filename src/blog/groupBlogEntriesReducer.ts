@@ -84,9 +84,9 @@ export const groupBlogEntries = createReducer(
               isFetching: { $set: true },
               didInvalidate: { $set: false },
               // @ts-ignore
-              json: { $set: _.get(state, `[${action.blogKey}].json`, {}) },
-            }),
-        },
+              json: { $set: _.get(state, `[${action.blogKey}].json`, {}) }
+            })
+        }
       }),
 
     RECEIVE_GROUP_BLOG_ENTRIES: (state: GroupBlogEntriesState, action: Receive) => {
@@ -102,9 +102,9 @@ export const groupBlogEntries = createReducer(
                 lastUpdated: { $set: action.receivedAt },
                 // @ts-ignore
                 json: { $merge: { resultPaginated: { page: 1, totalSize: 0, entries: [] } } },
-                error: { $set: action.json.error },
-              }),
-          },
+                error: { $set: action.json.error }
+              })
+          }
         });
       }
 
@@ -136,12 +136,12 @@ export const groupBlogEntries = createReducer(
                 $apply: (context): any =>
                   update(Object.assign({}, context, action.json), {
                     resultPaginated: {
-                      entries: { $set: uniqueBlogEntries },
-                    },
-                  }),
-              },
-            }),
-        },
+                      entries: { $set: uniqueBlogEntries }
+                    }
+                  })
+              }
+            })
+        }
       });
     },
 
@@ -150,9 +150,9 @@ export const groupBlogEntries = createReducer(
         ...state,
         ...{
           [action.blogKey]: {
-            didInvalidate: true,
-          },
-        },
+            didInvalidate: true
+          }
+        }
       };
     },
 
@@ -171,13 +171,13 @@ export const groupBlogEntries = createReducer(
           json: {
             resultPaginated: {
               entries: {
-                [indexOfUpdatedEntry]: { $set: updatedBlogEntry },
-              },
-            },
-          },
-        },
+                [indexOfUpdatedEntry]: { $set: updatedBlogEntry }
+              }
+            }
+          }
+        }
       });
-    },
+    }
   }
 );
 
@@ -209,7 +209,7 @@ export function openBlogEntryWriteCommentSection(
       } else {
         return {
           blogEntryId: action.blogEntryId,
-          editorType: action.editorType,
+          editorType: action.editorType
         };
       }
     case REACT_ROUTER_REDUX_LOCATION_CHANGE:

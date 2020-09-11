@@ -37,7 +37,7 @@ export interface Product {
  */
 export function getShopConfiguration(): Thunk<Promise<XcapJsonResult>> {
   return getJson({
-    url: '/shop/admin/get-config',
+    url: '/shop/admin/get-config'
   });
 }
 
@@ -49,14 +49,14 @@ export function getShopConfiguration(): Thunk<Promise<XcapJsonResult>> {
  */
 export function storeShopConfiguration({
   shop,
-  storeFrontAccessToken,
+  storeFrontAccessToken
 }: {
   shop: string | null;
   storeFrontAccessToken: string | null;
 } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/shop/admin/store-config',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -76,12 +76,12 @@ export interface ListProductTypesResult extends XcapJsonResult {
 export function listProductTypes(req: ListProductTypesRequest): Thunk<Promise<ListProductTypesResult>> {
   return getJson({
     url: '/shop/list-product-types',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
 export enum ProductSortKeys {
-  RELEVANCE = 'RELEVANCE',
+  RELEVANCE = 'RELEVANCE'
 }
 
 export interface ListProductsRequest extends XcapOptionalParameters {
@@ -105,7 +105,7 @@ export interface ListProductsResult extends XcapJsonResult {
 export function listProducts(req: ListProductsRequest): Thunk<Promise<ListProductsResult>> {
   return getJson({
     url: '/shop/list-products',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -125,7 +125,7 @@ export interface GetProductResult extends XcapJsonResult {
 export function getProduct(req: GetProductRequest): Thunk<Promise<GetProductResult>> {
   return getJson({
     url: '/shop/get-product',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -141,7 +141,7 @@ export interface ListProductsAndTypesResult extends ListProductsResult {
 export function listProductsAndTypes(req: ListProductsRequest): Thunk<Promise<ListProductsAndTypesResult>> {
   return getJson({
     url: '/shop/list-products-and-types',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -171,7 +171,7 @@ function _createNodes(root: ProductTypeTree, parts: Array<string>): ProductTypeT
   const name = parts[0];
 
   const t: ProductTypeTree = {
-    name,
+    name
   };
 
   let match = null;
@@ -200,7 +200,7 @@ function _addNode(root: ProductTypeTree, name: string): ProductTypeTree {
   const parts = name.split(/\s*[/;]\s*/);
 
   const t: ProductTypeTree = {
-    name: parts[parts.length - 1],
+    name: parts[parts.length - 1]
   };
 
   _createNodes(root, parts);
@@ -225,7 +225,7 @@ export function constructProductTypeTree(productTypes: GraphQLList<string>): Pro
   }
 
   const t: ProductTypeTree = {
-    name: '',
+    name: ''
   };
 
   if (productTypes.edges.length !== 0) {

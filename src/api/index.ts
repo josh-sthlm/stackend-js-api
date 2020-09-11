@@ -20,9 +20,9 @@ function createDefaultLogger(): Logger {
     defaultMeta: { service: 'Stackend' },
     transports: [
       new winston.transports.Console({
-        format: winston.format.simple(),
-      }),
-    ],
+        format: winston.format.simple()
+      })
+    ]
   });
 }
 
@@ -83,7 +83,7 @@ export interface Config {
  */
 export enum DeployProfile {
   STACKEND = 'stackend',
-  CASTLE = 'castle',
+  CASTLE = 'castle'
 }
 
 export let configDefaults: Partial<Config> = {
@@ -92,7 +92,7 @@ export let configDefaults: Partial<Config> = {
   apiUrl: STACKEND_DEFAULT_SERVER + STACKEND_DEFAULT_CONTEXT_PATH + '/api',
   recaptchaSiteKey: null,
   gaKey: null,
-  deployProfile: DeployProfile.STACKEND,
+  deployProfile: DeployProfile.STACKEND
 };
 
 /**
@@ -165,7 +165,7 @@ export const RICH_CONTENT_CHAIN_PARAMETER = 'xcap.rich-content-chain';
 export enum Order {
   ASCENDING = 'ASCENDING',
   DESCENDING = 'DESCENDING',
-  UNORDERED = 'UNORDERED',
+  UNORDERED = 'UNORDERED'
 }
 
 /**
@@ -249,7 +249,7 @@ export function invertOrder(order: Order): Order {
  */
 export enum SortOrder {
   ASCENDING = 'ASCENDING',
-  DESCENDING = 'DESCENDING',
+  DESCENDING = 'DESCENDING'
 }
 
 /**
@@ -276,7 +276,7 @@ const typeNames: { [type: string]: string } = {
   'net.josh.community.media.Video': 'Video',
   'se.josh.xcap.cms.Content': 'CMS Content',
   'se.josh.xcap.cms.impl.ContentImpl': 'CMS Content',
-  'se.josh.xcap.community.Community': 'Site',
+  'se.josh.xcap.community.Community': 'Site'
 };
 
 /**
@@ -335,7 +335,7 @@ export enum ModerationVisibility {
   /**
    * All objects pending moderation, all premoderated and postmoderated items regardless of expiration.
    */
-  MODERATION_PENDING = 'MODERATION_PENDING',
+  MODERATION_PENDING = 'MODERATION_PENDING'
 }
 
 /**
@@ -365,7 +365,7 @@ export enum ModerationStatus {
   /**
    * Post moderation required within the specified TTL 5
    */
-  POST = 'POST',
+  POST = 'POST'
 }
 
 const ModerationStatusNames = {
@@ -373,7 +373,7 @@ const ModerationStatusNames = {
   [ModerationStatus.NOT_PASSED]: 'Disapproved',
   [ModerationStatus.PASSED]: 'Approved',
   [ModerationStatus.POST]: 'Post moderation',
-  [ModerationStatus.PRE]: 'Hidden, requires moderation',
+  [ModerationStatus.PRE]: 'Hidden, requires moderation'
 };
 
 export function getModerationStatus(n: number): ModerationStatus {
@@ -406,7 +406,7 @@ export const ModerationStatusCode = {
   [ModerationStatus.PASSED]: 1,
   [ModerationStatus.NOT_PASSED]: 2,
   [ModerationStatus.PRE]: 4,
-  [ModerationStatus.POST]: 5,
+  [ModerationStatus.POST]: 5
 };
 
 export type ModerationStatusCodes = 0 | 1 | 2 | 4 | 5;
@@ -441,7 +441,7 @@ export function _constructConfig(): Config {
       deployProfile: DeployProfile.STACKEND,
       apiUrl: null,
       gaKey: null,
-      recaptchaSiteKey: null,
+      recaptchaSiteKey: null
     },
     configDefaults
   );
@@ -476,7 +476,7 @@ export function setConfiguration(config: Partial<Config>): Thunk<any> {
   return (dispatch, getState): any => {
     return dispatch({
       type: XCAP_SET_CONFIG,
-      config,
+      config
     });
   };
 }
@@ -718,7 +718,7 @@ export function getAbsoluteApiBaseUrl(community: string): Thunk<string> {
  */
 export function _getAbsoluteApiBaseUrl({
   config,
-  communityPermalink,
+  communityPermalink
 }: {
   config: Config;
   communityPermalink?: string;
@@ -782,7 +782,7 @@ export function _getApiUrl({
   notFromApi = false,
   community,
   componentName,
-  context,
+  context
 }: {
   state: State;
   url: string; //extra url
@@ -814,7 +814,7 @@ export function _getApiUrl({
       componentName,
       context,
       key: 'server',
-      defaultValue: _getServer(state.config),
+      defaultValue: _getServer(state.config)
     });
 
     const contextPath = _getConfig({
@@ -822,14 +822,14 @@ export function _getApiUrl({
       componentName,
       context,
       key: 'contextPath',
-      defaultValue: _getContextPath(state.config),
+      defaultValue: _getContextPath(state.config)
     });
 
     const apiUrlOverride = _getConfig({
       config: state.config || {},
       componentName,
       context,
-      key: 'api-url',
+      key: 'api-url'
     });
 
     let pfx = server + contextPath;
@@ -875,7 +875,7 @@ export function getApiUrl({
   notFromApi = false,
   community,
   componentName,
-  context,
+  context
 }: {
   url: string;
   parameters?: any;
@@ -892,7 +892,7 @@ export function getApiUrl({
       notFromApi,
       community,
       componentName,
-      context,
+      context
     });
   };
 }
@@ -954,7 +954,7 @@ export function getJson<T extends XcapJsonResult>({
   community,
   componentName,
   context,
-  cookie,
+  cookie
 }: XcapJsonRequest): Thunk<Promise<T>> {
   return async (dispatch: any): Promise<T> => {
     let p = url;
@@ -968,7 +968,7 @@ export function getJson<T extends XcapJsonResult>({
           notFromApi,
           community,
           componentName,
-          context,
+          context
         })
       );
 
@@ -1034,7 +1034,7 @@ export function getJson<T extends XcapJsonResult>({
  */
 export function getJsonOutsideApi({
   url,
-  parameters,
+  parameters
 }: {
   url: string;
   parameters?: any;
@@ -1080,7 +1080,7 @@ export function post<T extends XcapJsonResult>({
   parameters,
   community,
   componentName,
-  context,
+  context
 }: {
   url: string;
   parameters?: Parameters | IArguments;
@@ -1101,7 +1101,7 @@ export function post<T extends XcapJsonResult>({
         notFromApi: false,
         community,
         componentName,
-        context,
+        context
       })
     );
 
@@ -1111,7 +1111,7 @@ export function post<T extends XcapJsonResult>({
       url: p,
       method: 'POST',
       parameters: params,
-      xpressToken: xpressToken.xpressToken,
+      xpressToken: xpressToken.xpressToken
     });
 
     if (result) {
@@ -1145,7 +1145,7 @@ export interface GetExpressTokenResult extends XcapJsonResult {
 export function getXpressToken({
   community,
   componentName,
-  context,
+  context
 }: {
   community?: string | null;
   componentName?: string | null;
@@ -1155,7 +1155,7 @@ export function getXpressToken({
     url: '/xpresstoken',
     community,
     componentName,
-    context,
+    context
   });
 }
 
@@ -1179,7 +1179,7 @@ export function getConfig({
   key,
   componentName,
   context,
-  defaultValue = '',
+  defaultValue = ''
 }: {
   key: string;
   componentName?: string;
@@ -1197,7 +1197,7 @@ export function _getConfig({
   key,
   componentName,
   context,
-  defaultValue = '',
+  defaultValue = ''
 }: {
   config: Config;
   key: string;
@@ -1291,7 +1291,7 @@ export function createCommunityUrl({
   path,
   params,
   hash,
-  absolute,
+  absolute
 }: {
   request?: Request;
   path: string;
@@ -1327,7 +1327,7 @@ export function createCommunityUrl({
 export function argsToObject(args: Parameters | IArguments | undefined | null): null | Parameters {
   if (typeof args === 'string') {
     return {
-      [args]: args,
+      [args]: args
     };
   }
 
@@ -1508,7 +1508,7 @@ export function _newXcapJsonResult<T extends XcapJsonResult>(
 ): T {
   const x = {
     __resultCode: resultCode,
-    ...data,
+    ...data
   };
 
   if (actionErrors || fieldErrors) {
@@ -1523,11 +1523,11 @@ export function _newXcapJsonResult<T extends XcapJsonResult>(
 
     x.error = {
       actionErrors: ae,
-      fieldErrors: fieldErrors || {},
+      fieldErrors: fieldErrors || {}
     };
   } else if (resultCode === 'error') {
     x.error = {
-      actionErrors: ['error'],
+      actionErrors: ['error']
     };
   }
 
@@ -1625,7 +1625,7 @@ export function getInitialStoreValues({
   subSiteIds,
   cookie,
   referenceUrl,
-  stackendMode,
+  stackendMode
 }: {
   permalink?: string;
   domain?: string;
@@ -1649,10 +1649,10 @@ export function getInitialStoreValues({
       pageIds,
       subSiteIds,
       referenceUrl,
-      stackendMode,
+      stackendMode
     },
     community: DEFAULT_COMMUNITY,
-    cookie,
+    cookie
   });
 }
 
@@ -1692,7 +1692,7 @@ export async function logJsError(error: any /* Error */): Promise<any> {
     line: error.lineNumber || -1,
     column: error.columnNumber || -1,
     url: error.fileName || '',
-    pageUrl: document.location.href,
+    pageUrl: document.location.href
   };
 
   const url = _getServer(null) + _getContextPath(null) + +'/api/js-log';
@@ -1702,7 +1702,7 @@ export async function logJsError(error: any /* Error */): Promise<any> {
     r = await LoadJson({
       url,
       method: 'POST',
-      parameters: params,
+      parameters: params
     });
   } catch (e) {
     logger.error('Failed to log: ' + JSON.stringify(params), '\nCause: ' + JSON.stringify(e));
@@ -1727,7 +1727,7 @@ export function parseCommunityContext(communityContext: string | null): Communit
 
   return {
     community: p[0],
-    context: p[1],
+    context: p[1]
   };
 }
 
@@ -1759,7 +1759,7 @@ export function parseReference(reference: string | null): Reference | null {
   return {
     communityContext: cc,
     type: p[1],
-    id,
+    id
   };
 }
 
@@ -1780,7 +1780,7 @@ export function constructReference(xcapCommunityName: string, context: string, t
   return {
     communityContext: cc,
     type,
-    id,
+    id
   };
 }
 

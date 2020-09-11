@@ -111,7 +111,7 @@ export async function LoadJson({
   body = null,
   bodyContentType = CONTENT_TYPE_X_WWW_FORM_URLENCODED,
   xpressToken,
-  cookie,
+  cookie
 }: {
   url: string;
   method?: string;
@@ -142,7 +142,7 @@ export async function LoadJson({
     mode: 'cors',
     cache: 'default',
     credentials: 'include',
-    body: undefined,
+    body: undefined
   };
 
   // Encode json if needed
@@ -198,7 +198,7 @@ export async function LoadJson({
         return {
           error: response.status + ': ' + response.statusText,
           status: response.status,
-          response,
+          response
         };
       } else {
         const status = response.status ? 'Error Status:' + response.status : '';
@@ -213,7 +213,7 @@ export async function LoadJson({
         return {
           error: response.status + ': ' + response.statusText,
           status: response.status,
-          response,
+          response
         };
       }
     }
@@ -225,7 +225,7 @@ export async function LoadJson({
       const r: LoadJsonResult = {
         status: 200,
         json: json,
-        response,
+        response
       };
 
       // The check for __resultCode exist because of media upload that does not produce the same json
@@ -238,7 +238,7 @@ export async function LoadJson({
         if (!json.error) {
           json.error = {
             actionErrors: ['error'],
-            fieldErrors: {},
+            fieldErrors: {}
           };
         }
       }
@@ -255,7 +255,7 @@ export async function LoadJson({
       return {
         error: 'Response is not a json object',
         status: 200,
-        response,
+        response
       };
     }
   } catch (e) {
@@ -264,13 +264,13 @@ export async function LoadJson({
       return {
         error: "Can't access stackend api. Please make sure you've allowed this domain in your stack settings.",
         status: 500,
-        response,
+        response
       };
     }
     return {
       error: e,
       status: 500,
-      response,
+      response
     };
   }
 }

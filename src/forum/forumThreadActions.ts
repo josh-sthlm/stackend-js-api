@@ -13,7 +13,7 @@ import {
   RECEIVE_LIKE_FORUM_THREAD,
   RECEIVE_VOTE_FORUM_THREAD,
   REQUEST_FORUM_THREADS,
-  UPDATE_FORUM_THREAD_ENTRY,
+  UPDATE_FORUM_THREAD_ENTRY
 } from './forumThreadReducer';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 
@@ -31,7 +31,7 @@ export interface FetchForumThreads {
 export function fetchForumThreads({
   forumPermalink,
   page,
-  pageSize = 25,
+  pageSize = 25
 }: FetchForumThreads): Thunk<Promise<ListThreadsResult | { error: string }>> {
   return async (dispatch: any): Promise<ListThreadsResult | { error: string }> => {
     dispatch(requestForumThreads());
@@ -45,14 +45,14 @@ export function fetchForumThreads({
       forumActions.receiveForums({
         entries: Object.keys(json.__relatedObjects)
           .filter(entryKey => json.__relatedObjects[entryKey].__type === 'net.josh.community.forum.impl.ForumImpl')
-          .reduce((obj, key) => obj.concat(json.__relatedObjects[key]), []),
+          .reduce((obj, key) => obj.concat(json.__relatedObjects[key]), [])
       })
     );
     dispatch(
       receiveForumThreads({
         entries: _.get(json, 'threadsPaginated.entries', []),
         pageSize,
-        forumPermalink,
+        forumPermalink
       })
     );
     return json;
@@ -76,7 +76,7 @@ export function fetchForumThreadEntries({
   forumThreadPermalink,
   entryId,
   pageSize = 15,
-  p,
+  p
 }: FetchForumThreadEntries): Thunk<Promise<PaginatedCollection<ForumThreadEntry> | { error: string }>> {
   return async (dispatch: any): Promise<PaginatedCollection<ForumThreadEntry> | { error: string }> => {
     try {
@@ -87,7 +87,7 @@ export function fetchForumThreadEntries({
           entryId,
           pageSize,
           p,
-          isQna: forumPermalink === 'question',
+          isQna: forumPermalink === 'question'
         })
       );
       if (data.error) {
@@ -98,14 +98,14 @@ export function fetchForumThreadEntries({
         forumActions.receiveForums({
           entries: Object.keys(data.__relatedObjects)
             .filter(entryKey => data.__relatedObjects[entryKey].__type === 'net.josh.community.forum.impl.ForumImpl')
-            .reduce((obj, key) => obj.concat(data.__relatedObjects[key]), []),
+            .reduce((obj, key) => obj.concat(data.__relatedObjects[key]), [])
         })
       );
       dispatch(
         receiveForumThreads({
           entries: data.entriesPaginated.entries.concat(data.thread),
           forumPermalink,
-          pageSize,
+          pageSize
         })
       );
       return data.entriesPaginated;
@@ -123,7 +123,7 @@ export function requestForumThreads(): ForumThreadActions {
 export function receiveForumThreads({
   entries,
   forumPermalink,
-  pageSize,
+  pageSize
 }: {
   entries: Array<forumApi.ForumThreadEntry>;
   forumPermalink: string;
@@ -133,13 +133,13 @@ export function receiveForumThreads({
     type: RECEIVE_FORUM_THREADS,
     entries,
     forumPermalink,
-    pageSize,
+    pageSize
   };
 }
 
 export function updateForumThreadEntry({
   entry,
-  forumPermalink,
+  forumPermalink
 }: {
   entry: forumApi.ForumThreadEntry;
   forumPermalink: string;
@@ -147,7 +147,7 @@ export function updateForumThreadEntry({
   return {
     type: UPDATE_FORUM_THREAD_ENTRY,
     entry,
-    forumPermalink,
+    forumPermalink
   };
 }
 
@@ -156,7 +156,7 @@ export function updateForumThreadEntry({
  */
 export function rateForumThreadEntry({
   forumThreadEntry,
-  score,
+  score
 }: {
   /**1 for thumbs down, 2 for thumbs up*/
   score: number;
@@ -181,7 +181,7 @@ export function rateForumThreadEntry({
 
 export function recieveVoteForumThread({
   voteJson,
-  forumPermalink,
+  forumPermalink
 }: {
   voteJson: forumApi.VoteReturn;
   forumPermalink: string;
@@ -189,7 +189,7 @@ export function recieveVoteForumThread({
   return {
     type: RECEIVE_VOTE_FORUM_THREAD,
     voteJson,
-    forumPermalink,
+    forumPermalink
   };
 }
 
@@ -203,7 +203,7 @@ export function likeForumThreadEntry({ referenceId, likedByCurrentUser, context 
   return async (dispatch: any, getState): Promise<any> => {
     const forumThreadEntry = forumApi.getThreadEntryFromRedux({
       forumThreads: getState().forumThreads,
-      id: referenceId,
+      id: referenceId
     });
     if (!forumThreadEntry) {
       throw Error("Can't find forumThreadEntry in redux Store");
@@ -237,13 +237,13 @@ export interface ReceiveLikeForumThreadEntry {
 function _receiveLikeForumThreadEntry({
   receivedLikes,
   forumPermalink,
-  referenceId,
+  referenceId
 }: ReceiveLikeForumThreadEntry): ForumThreadActions {
   return {
     type: RECEIVE_LIKE_FORUM_THREAD,
     receivedLikes,
     referenceId,
-    forumPermalink,
+    forumPermalink
   };
 }
 
@@ -266,6 +266,6 @@ export function deleteForumThreadEntry({ forumThreadEntryId, modalName }: Delete
 function _deleteForumThreadEntry({ entry }: { entry: ForumThreadEntry }): ForumThreadActions {
   return {
     type: DELETE_FORUM_THREAD,
-    entry,
+    entry
   };
 }

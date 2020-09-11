@@ -24,7 +24,7 @@ export const requestReducer = (
       port: 80,
       protocol: 'http:',
       search: '',
-      query: {},
+      query: {}
     },
     cookie: null,
     absoluteUrl: '',
@@ -33,7 +33,7 @@ export const requestReducer = (
     communityFromDomain: false,
     contextPath: '',
     anchor: null,
-    referenceUrlId: 0,
+    referenceUrlId: 0
   },
   action: AnyAction
 ): Request => {
@@ -109,7 +109,7 @@ export const requestReducer = (
         location: { $merge: { ...location, href: state.absoluteUrl + location.pathname } },
         absoluteUrl: { $set: absoluteUrl },
         communityUrl: { $set: communityUrl },
-        absoluteCommunityUrl: { $set: absoluteCommunityUrl },
+        absoluteCommunityUrl: { $set: absoluteCommunityUrl }
       });
 
     case SET_REQUEST_INFO: {
@@ -134,7 +134,7 @@ export const requestReducer = (
         communityFromDomain: { $set: communityFromDomain },
         contextPath: { $set: contextPath },
         referenceUrlId: { $set: action.request.referenceUrlId || state.referenceUrlId || 0 },
-        anchor: { $set: anchor },
+        anchor: { $set: anchor }
       });
     }
 

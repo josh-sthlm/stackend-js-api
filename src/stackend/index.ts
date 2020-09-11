@@ -8,7 +8,7 @@ import {
   Order,
   XcapObject,
   ModerationStatus,
-  Thunk,
+  Thunk
 } from '../api';
 import { fetchModules } from './moduleAction';
 import { hasElevatedPrivilege, User } from '../user';
@@ -30,7 +30,7 @@ import { Image } from '../media';
 export enum CommunityStatus {
   VISIBLE = 'VISIBLE',
   HIDDEN = 'HIDDEN',
-  REMOVED = 'REMOVED',
+  REMOVED = 'REMOVED'
 }
 
 /**
@@ -79,7 +79,7 @@ export const CommmunitySettings = {
   TERMS_AND_CONDITIONS_LINK: 'termsAndConditionsLink',
   FACEBOOK_LOGIN: 'facebookLogin',
   GOOGLE_LOGIN: 'googleLogin',
-  OAUTH2_LOGIN: 'oauth2Login',
+  OAUTH2_LOGIN: 'oauth2Login'
 };
 
 export interface Module {
@@ -126,7 +126,7 @@ export interface CommunityStats {
  * A community theme
  */
 export const Theme = {
-  STACKEND: 'stackend',
+  STACKEND: 'stackend'
 };
 
 /**
@@ -134,7 +134,7 @@ export const Theme = {
  */
 export enum OrderBy {
   NAME = 'NAME',
-  CREATED_DATE = 'CREATED_DATE',
+  CREATED_DATE = 'CREATED_DATE'
 }
 
 /**
@@ -190,7 +190,7 @@ export interface GetCommunityResult extends XcapJsonResult {
 export function getCommunity({
   id,
   permalink,
-  domain,
+  domain
 }: {
   id?: number;
   permalink?: string;
@@ -201,9 +201,9 @@ export function getCommunity({
     parameters: {
       id,
       permalink,
-      domain,
+      domain
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -221,7 +221,7 @@ export interface ValidateCommunityPermalinkResult extends XcapJsonResult {
  */
 export function validateCommunityPermalink({
   permalink,
-  name,
+  name
 }: {
   permalink: string;
   name?: string;
@@ -230,9 +230,9 @@ export function validateCommunityPermalink({
     url: '/stackend/community/validate-permalink',
     parameters: {
       permalink,
-      name,
+      name
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -253,7 +253,7 @@ export function newCommunity(name: string, permalink: string): any {
     logotypeId: 0,
     admins: [],
     moderators: [],
-    theme: Theme.STACKEND,
+    theme: Theme.STACKEND
   };
 }
 
@@ -291,7 +291,7 @@ export function storeCommunity({
   admins = [],
   moderators = [],
   theme,
-  style = undefined,
+  style = undefined
 }: {
   id?: number;
   permalink?: string;
@@ -322,9 +322,9 @@ export function storeCommunity({
       moderators,
       theme,
       style: style ? JSON.stringify(style) : '{}',
-      settings: settings ? JSON.stringify(settings) : '{}',
+      settings: settings ? JSON.stringify(settings) : '{}'
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -336,7 +336,7 @@ export function storeCommunity({
  */
 export function setCommunitySettings({
   id,
-  settings,
+  settings
 }: {
   id: number;
   settings: any;
@@ -344,7 +344,7 @@ export function setCommunitySettings({
   return post({
     url: '/stackend/community/set-settings',
     parameters: { id, settings: JSON.stringify(settings) },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -358,7 +358,7 @@ export function setCommunitySettings({
 export function setCommunitySetting({
   id,
   name,
-  value,
+  value
 }: {
   id: number;
   name: string;
@@ -367,7 +367,7 @@ export function setCommunitySetting({
   return post({
     url: '/stackend/community/set-setting',
     parameters: { id, name, value: JSON.stringify(value) },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -382,7 +382,7 @@ export type GetCommunityPrivateSettingsResult = XcapJsonResult;
 export function getCommunityPrivateSettings({
   key,
   prefix,
-  community,
+  community
 }: {
   key?: string | null;
   prefix?: string | null;
@@ -391,7 +391,7 @@ export function getCommunityPrivateSettings({
   return getJson({
     url: '/stackend/community/private/get-settings',
     parameters: { key, prefix },
-    community: community,
+    community: community
   });
 }
 
@@ -408,7 +408,7 @@ export function storeCommunityPrivateSettings({
   key,
   value,
   values,
-  community,
+  community
 }: {
   key?: string | null;
   value?: any | null;
@@ -417,13 +417,13 @@ export function storeCommunityPrivateSettings({
 }): Thunk<Promise<XcapJsonResult>> {
   const x = {
     key: key,
-    values: values ? JSON.stringify(values) : null,
+    values: values ? JSON.stringify(values) : null
   };
 
   return post({
     url: '/stackend/community/private/store-settings',
     parameters: x,
-    community: community,
+    community: community
   });
 }
 
@@ -432,7 +432,7 @@ export function storeCommunityPrivateSettings({
  */
 export function setCommunityStatus({
   id,
-  status,
+  status
 }: {
   id?: number;
   status: CommunityStatus.VISIBLE | CommunityStatus.HIDDEN;
@@ -440,7 +440,7 @@ export function setCommunityStatus({
   return post({
     url: '/stackend/community/set-status',
     parameters: { id, status },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -457,7 +457,7 @@ export interface RemoveCommunityResult extends XcapJsonResult {
  */
 export function removeCommunity({
   id,
-  removeData,
+  removeData
 }: {
   id: number;
   removeData: boolean;
@@ -465,7 +465,7 @@ export function removeCommunity({
   return post({
     url: '/stackend/community/remove',
     parameters: { id, removeData },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -493,7 +493,7 @@ export function searchCommunity({
   p = 1,
   pageSize,
   orderBy = OrderBy.NAME,
-  order = Order.ASCENDING,
+  order = Order.ASCENDING
 }: {
   myCommunities?: boolean;
   creatorUserId?: number;
@@ -514,9 +514,9 @@ export function searchCommunity({
       p,
       pageSize,
       orderBy,
-      order,
+      order
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -526,7 +526,7 @@ export function searchCommunity({
 export function getCurrentStackendUser(): Thunk<Promise<XcapJsonResult>> {
   return getJson({
     url: '/user/get',
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -573,7 +573,7 @@ export function isCommunityUrlBlocked(communityUrl: string): boolean {
     billing: true,
     oauth2: true,
     google: true,
-    facebook: true,
+    facebook: true
   };
 
   // Remove inital /
@@ -773,9 +773,9 @@ export function getModules({ communityId }: { communityId: number }): Thunk<Prom
     url: '/stackend/module/list',
     parameters: {
       communityId,
-      pageSize: 1000,
+      pageSize: 1000
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -795,7 +795,7 @@ export interface GetModuleResult extends XcapJsonResult {
  */
 export function getModule({
   communityId,
-  moduleId,
+  moduleId
 }: {
   communityId: number;
   moduleId: number;
@@ -804,9 +804,9 @@ export function getModule({
     url: '/stackend/module/get',
     parameters: {
       communityId,
-      moduleId,
+      moduleId
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -820,7 +820,7 @@ export function getModule({
 export function getSingletonModule({
   communityId,
   componentClass,
-  componentContext,
+  componentContext
 }: {
   communityId: number;
   componentClass: string;
@@ -831,9 +831,9 @@ export function getSingletonModule({
     parameters: {
       communityId,
       singletonComponentClass: componentClass,
-      singletonComponentContext: componentContext,
+      singletonComponentContext: componentContext
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -848,7 +848,7 @@ export function newModule({
   communityId,
   componentClass,
   componentContext,
-  name,
+  name
 }: {
   communityId: number;
   componentClass: string;
@@ -877,7 +877,7 @@ export function newModule({
     ruleTypeId: 0,
     settings: {},
     style: {},
-    extraData: {},
+    extraData: {}
   };
 }
 
@@ -923,7 +923,7 @@ export function storeModule({
   ruleTypeId,
   settings,
   style,
-  extraData,
+  extraData
 }: {
   id?: number;
   communityId: number;
@@ -950,9 +950,9 @@ export function storeModule({
           ruleTypeId,
           settings: settings ? JSON.stringify(settings) : '{}',
           style: style ? JSON.stringify(style) : '{}',
-          extraData: extraData ? JSON.stringify(extraData) : '{}',
+          extraData: extraData ? JSON.stringify(extraData) : '{}'
         },
-        community: STACKEND_COMMUNITY,
+        community: STACKEND_COMMUNITY
       })
     );
     dispatch(fetchModules({ communityId })); // FIXME: Update state without re-fetch
@@ -980,7 +980,7 @@ export function storeModuleRules({
   moduleId,
   rule,
   commentRule,
-  trustedUsers,
+  trustedUsers
 }: {
   communityId: number;
   moduleId: number;
@@ -992,7 +992,7 @@ export function storeModuleRules({
     createPrivilege: rule.createPrivilege,
     moderationStatus: rule.moderationStatus,
     contentFiltering: rule.contentFiltering,
-    postModerationTtlMinutes: rule.postModerationTtlMinutes,
+    postModerationTtlMinutes: rule.postModerationTtlMinutes
   };
 
   let cr = null;
@@ -1002,7 +1002,7 @@ export function storeModuleRules({
       createPrivilege: commentRule.createPrivilege,
       moderationStatus: commentRule.moderationStatus,
       contentFiltering: commentRule.contentFiltering,
-      postModerationTtlMinutes: commentRule.postModerationTtlMinutes,
+      postModerationTtlMinutes: commentRule.postModerationTtlMinutes
     };
   }
 
@@ -1013,9 +1013,9 @@ export function storeModuleRules({
       moduleId,
       trustedUsers,
       rule: JSON.stringify(r),
-      commentRule: JSON.stringify(cr),
+      commentRule: JSON.stringify(cr)
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -1030,9 +1030,9 @@ export function removeModule({ id, communityId }: { id: number; communityId: num
     url: '/stackend/module/remove',
     parameters: {
       id,
-      communityId,
+      communityId
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -1044,9 +1044,9 @@ export function detectModules({ communityId }: { communityId: number }): Thunk<P
   return post({
     url: '/stackend/modules/update',
     parameters: {
-      communityId,
+      communityId
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -1063,7 +1063,7 @@ const COMPONENT_CLASS_TO_MODULE_NAME: { [name: string]: string } = {
   'se.josh.xcap.cms.impl.CmsManagerImpl': 'CMS',
   'se.josh.xcap.like.impl.LikeManagerImpl': 'Like',
   'net.josh.community.group.GroupManager': 'Group',
-  'net.josh.community.category.CategoryManager': 'Page',
+  'net.josh.community.category.CategoryManager': 'Page'
 };
 
 const MODULE_TYPE_TO_COMPONENT_CLASS: { [name: string]: string } = {
@@ -1072,7 +1072,7 @@ const MODULE_TYPE_TO_COMPONENT_CLASS: { [name: string]: string } = {
   forum: 'net.josh.community.forum.impl.ForumManagerImpl',
   cms: 'se.josh.xcap.cms.impl.CmsManagerImpl',
   group: 'net.josh.community.group.GroupManager',
-  page: 'net.josh.community.category.CategoryManager',
+  page: 'net.josh.community.category.CategoryManager'
 };
 
 /**
@@ -1114,9 +1114,9 @@ export function listAdminUsers({ privilege }: { privilege: number }): Thunk<Prom
   return getJson({
     url: '/stackend/user/list-admins',
     parameters: {
-      privilege,
+      privilege
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -1129,7 +1129,7 @@ export function listAdminUsers({ privilege }: { privilege: number }): Thunk<Prom
  */
 export function setAdminStatus({
   userId,
-  privilege,
+  privilege
 }: {
   userId: number;
   privilege: number;
@@ -1138,9 +1138,9 @@ export function setAdminStatus({
     url: '/stackend/user/set-admin-status',
     parameters: {
       userId,
-      privilege,
+      privilege
     },
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -1153,7 +1153,7 @@ export function setAdminStatus({
 export function setCommunityAccess({
   communityId,
   userId,
-  privilegeType,
+  privilegeType
 }: {
   communityId: number;
   userId: number;
@@ -1162,7 +1162,7 @@ export function setCommunityAccess({
   return post({
     url: '/stackend/user/set-community-access',
     parameters: arguments,
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -1179,7 +1179,7 @@ export function inviteUserToCommunity({
   email,
   communityId,
   communityPrivilegeType,
-  message,
+  message
 }: {
   email: string;
   communityId: number;
@@ -1189,7 +1189,7 @@ export function inviteUserToCommunity({
   return post({
     url: '/stackend/user/invite',
     parameters: arguments,
-    community: STACKEND_COMMUNITY,
+    community: STACKEND_COMMUNITY
   });
 }
 
@@ -1217,7 +1217,7 @@ export function getStackendUrl({
   request,
   community,
   module,
-  path,
+  path
 }: {
   request: Request;
   community?: Community | null;
@@ -1251,6 +1251,6 @@ export function getStackendUrl({
 export function removeUser({ userId }: { userId: number }): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/user/remove',
-    parameters: arguments,
+    parameters: arguments
   });
 }

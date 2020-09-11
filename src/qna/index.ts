@@ -5,7 +5,7 @@ import {
   createCommunityUrl,
   XcapJsonResult,
   Thunk,
-  XcapOptionalParameters,
+  XcapOptionalParameters
 } from '../api';
 import * as searchApi from '../search';
 import { Request } from '../request';
@@ -36,7 +36,7 @@ export enum QnaSearchType {
   Answered = 'Answered',
   Recent = 'Recent',
   Posted = 'Posted',
-  Search = 'search', // FIXME: Hack
+  Search = 'search' // FIXME: Hack
 }
 
 export const COMPONENT_NAME = 'forum';
@@ -47,7 +47,7 @@ function getJson(args: any): Thunk<Promise<XcapJsonResult>> {
       apiGetJson({
         ...args,
         componentName: COMPONENT_NAME,
-        context: CONTEXT,
+        context: CONTEXT
       })
     );
   };
@@ -59,7 +59,7 @@ function post(args: any): Thunk<Promise<XcapJsonResult>> {
       apiPost({
         ...args,
         componentName: COMPONENT_NAME,
-        context: CONTEXT,
+        context: CONTEXT
       })
     );
   };
@@ -79,7 +79,7 @@ export function getQnaSearchSortOrders(): Array<string> {
 export function getQnaUrl({
   request,
   section = '',
-  article = '',
+  article = ''
 }: {
   request: Request;
   section?: string;
@@ -92,13 +92,13 @@ export function getQnaUrl({
       // FIXME: What is this
       // @ts-ignore
       searchType: 'search',
-      filter: section,
+      filter: section
     });
   }
 
   return createCommunityUrl({
     request,
-    path: '/support' + (article ? '/question/' + article : ''),
+    path: '/support' + (article ? '/question/' + article : '')
   });
 }
 
@@ -110,7 +110,7 @@ export function getQnaAskUrl({ request }: { request: Request }): string {
   return createCommunityUrl({
     request,
     path: '/support/ask-a-question',
-    absolute: true,
+    absolute: true
   });
 }
 
@@ -120,7 +120,7 @@ export function getQnaAskUrl({ request }: { request: Request }): string {
 export function getQnaQuestionUrl({
   request,
   permalink,
-  absolute,
+  absolute
 }: {
   request: Request;
   permalink: string;
@@ -130,7 +130,7 @@ export function getQnaQuestionUrl({
   return createCommunityUrl({
     request,
     absolute: absolute ? absolute : true,
-    path: '/support/question/' + permalink,
+    path: '/support/question/' + permalink
   });
 }
 
@@ -143,7 +143,7 @@ export function getQnaQuestionUrl({
  */
 export function listTrendingQuestions({
   p,
-  pageSize,
+  pageSize
 }: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/question/trending', parameters: arguments });
 }
@@ -157,7 +157,7 @@ export function listTrendingQuestions({
  */
 export function listSolvedQuestions({
   p,
-  pageSize,
+  pageSize
 }: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/question/solved', parameters: arguments });
 }
@@ -170,7 +170,7 @@ export function listSolvedQuestions({
  */
 export function listAnsweredQuestions({
   p,
-  pageSize,
+  pageSize
 }: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/question/answered', parameters: arguments });
 }
@@ -183,7 +183,7 @@ export function listAnsweredQuestions({
  */
 export function listPostedQuestions({
   p,
-  pageSize,
+  pageSize
 }: { p: number; pageSize: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return getJson({ url: '/question/posted', parameters: arguments });
 }
@@ -193,7 +193,7 @@ export function listPostedQuestions({
  */
 export function getQuestion({
   id,
-  forumThreadPermalink,
+  forumThreadPermalink
 }: {
   id?: number;
   forumThreadPermalink?: string;
@@ -213,7 +213,7 @@ export function askQuestion({
   gamePermalink,
   entryId,
   forumThreadPermalink,
-  forumPermalink = 'question',
+  forumPermalink = 'question'
 }: {
   subject: string;
   text: string;
@@ -238,7 +238,7 @@ export function submitAnswer({
   gamePermalink,
   entryId,
   forumThreadPermalink = null,
-  forumPermalink = 'question',
+  forumPermalink = 'question'
 }: {
   text: string;
   subject?: string;
@@ -257,7 +257,7 @@ export function submitAnswer({
  * @param answerId {int} Id.
  */
 export function solveQuestion({
-  answerId,
+  answerId
 }: { answerId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/question/solve', parameters: arguments });
 }
@@ -279,7 +279,7 @@ export function search({
   issue,
   p,
   pageSize,
-  game,
+  game
 }: {
   searchType: QnaSearchType;
   q: string; //Search term

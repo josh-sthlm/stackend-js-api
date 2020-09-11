@@ -27,7 +27,7 @@ const configReducer = (
     server: STACKEND_DEFAULT_SERVER,
     deployProfile: DeployProfile.STACKEND,
     gaKey: null,
-    recaptchaSiteKey: null,
+    recaptchaSiteKey: null
   },
   action: ConfigActions
 ): Config => {

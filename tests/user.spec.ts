@@ -14,7 +14,7 @@ describe('User', () => {
       const r: GetUserResult = await store.dispatch(
         getUser({
           id: 1,
-          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK,
+          [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK
         })
       );
 

@@ -22,7 +22,7 @@ export function report({
   obfuscatedReference,
   abuseText,
   context = null,
-  componentName = null,
+  componentName = null
 }: {
   obfuscatedReference: string;
   abuseText: string;
@@ -33,6 +33,6 @@ export function report({
     url: '/abuse/report',
     parameters: arguments,
     context: context || 'abuse',
-    componentName: componentName || COMPONENT_NAME,
+    componentName: componentName || COMPONENT_NAME
   });
 }

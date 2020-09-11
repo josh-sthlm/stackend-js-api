@@ -18,7 +18,7 @@ export enum AnchorType {
   BLOG = 'blog',
   USER = 'user',
   SITE = 'site',
-  COMMENT = 'comment',
+  COMMENT = 'comment'
 }
 
 /**
@@ -140,7 +140,7 @@ export function parseAnchor(anchor: string | null): StackendAnchor | null {
   const a: StackendAnchor = {
     type: '',
     permalink: '/' + s,
-    items: [],
+    items: []
   };
 
   for (let i = 0; i < v.length; i++) {
@@ -175,7 +175,7 @@ function parseAnchorInt(anchor: string): StackendAnchor | null {
 
   const a: StackendAnchor = {
     type,
-    permalink,
+    permalink
   };
 
   const v = permalink.split('/');

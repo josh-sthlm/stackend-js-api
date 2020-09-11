@@ -43,7 +43,7 @@ function updateVotes({
   votes,
   vote,
   hasVoted,
-  myReview,
+  myReview
 }: {
   state: VoteState;
   context: string;
@@ -66,7 +66,7 @@ function updateVotes({
       voteSummary,
       votes: {},
       hasVoted: false,
-      myReview: null,
+      myReview: null
     };
   }
 
@@ -76,7 +76,7 @@ function updateVotes({
 
   if (votes) {
     v = update(v, {
-      votes: { $merge: votes },
+      votes: { $merge: votes }
     });
   }
 
@@ -112,7 +112,7 @@ const voteReducer = (state: VoteState = {}, action: VoteActions): VoteState => {
         voteSummary: action.voteSummary,
         votes: action.votes,
         hasVoted: action.hasVoted,
-        myReview: action.myReview,
+        myReview: action.myReview
       });
       break;
 
@@ -123,7 +123,7 @@ const voteReducer = (state: VoteState = {}, action: VoteActions): VoteState => {
         voteSummary: action.voteSummary,
         vote: action.vote,
         hasVoted: action.hasVoted,
-        myReview: action.myReview,
+        myReview: action.myReview
       });
       //console.log('XCAP_VOTES_UPDATE', state, c, 'same=', state === c);
       break;

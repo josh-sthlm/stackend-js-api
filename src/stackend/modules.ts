@@ -34,7 +34,7 @@ export enum ModuleType {
   PAGE = 'stackend-page',
 
   /** A container that allows the user to navigate pages, much like an iframe  */
-  SUBSITE = 'stackend-site',
+  SUBSITE = 'stackend-site'
 }
 
 export interface ModuleInfo {
@@ -80,7 +80,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: true,
     complex: false,
     xcapModuleType: 'group',
-    defaultContext: 'groups',
+    defaultContext: 'groups'
   },
   [ModuleType.FAQ]: {
     name: 'FAQ',
@@ -92,7 +92,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: true,
     complex: false,
     xcapModuleType: 'forum',
-    defaultContext: 'question',
+    defaultContext: 'question'
   },
   [ModuleType.LOGIN]: {
     name: 'Login',
@@ -104,7 +104,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: false,
     complex: false,
     xcapModuleType: null,
-    defaultContext: 'members',
+    defaultContext: 'members'
   },
   [ModuleType.PROFILE]: {
     name: 'Profile',
@@ -116,7 +116,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: false,
     complex: false,
     xcapModuleType: null,
-    defaultContext: 'members',
+    defaultContext: 'members'
   },
   [ModuleType.COMMENTS]: {
     name: 'Comments',
@@ -128,7 +128,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: true,
     complex: false,
     xcapModuleType: 'comment',
-    defaultContext: 'comments',
+    defaultContext: 'comments'
   },
   [ModuleType.CMS]: {
     name: 'Code Bin',
@@ -140,7 +140,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: true,
     complex: false,
     xcapModuleType: 'cms',
-    defaultContext: 'cms',
+    defaultContext: 'cms'
   },
   [ModuleType.PAGE]: {
     name: 'Page',
@@ -152,7 +152,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: true,
     complex: false,
     xcapModuleType: 'page',
-    defaultContext: 'cms',
+    defaultContext: 'cms'
   },
   [ModuleType.SUBSITE]: {
     name: 'Site',
@@ -164,7 +164,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: true,
     complex: false,
     xcapModuleType: 'tree',
-    defaultContext: 'cms',
+    defaultContext: 'cms'
   },
   [ModuleType.BLOG]: {
     name: 'Blog',
@@ -176,7 +176,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: true,
     complex: false,
     xcapModuleType: 'blog',
-    defaultContext: 'news',
+    defaultContext: 'news'
   },
   [ModuleType.SLIDESHOW]: {
     name: 'Slideshow',
@@ -188,7 +188,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: false,
     complex: true,
     xcapModuleType: null,
-    defaultContext: null,
+    defaultContext: null
   },
   [ModuleType.THROBBER]: {
     name: 'Throbber',
@@ -200,8 +200,8 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: false,
     complex: false,
     xcapModuleType: null,
-    defaultContext: null,
-  },
+    defaultContext: null
+  }
 };
 
 /**
@@ -211,7 +211,7 @@ export const AUTOMATIC_MODULE_TYPES: Array<ModuleType> = [
   ModuleType.GLOBAL_STYLE,
   ModuleType.LOGIN,
   ModuleType.PROFILE,
-  ModuleType.THROBBER,
+  ModuleType.THROBBER
 ];
 
 /**

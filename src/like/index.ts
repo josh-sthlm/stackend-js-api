@@ -46,7 +46,7 @@ export function getLikeData(likes: LikeDataMap, object: any): LikeData {
 
   return {
     likes: 0,
-    likedByCurrentUser: false,
+    likedByCurrentUser: false
   };
 }
 
@@ -65,7 +65,7 @@ export interface LikeResult extends XcapJsonResult {
 export function like({
   obfuscatedReference,
   reference,
-  context = CONTEXT,
+  context = CONTEXT
 }: {
   obfuscatedReference?: string;
   reference?: string;
@@ -75,7 +75,7 @@ export function like({
     url: '/like/like',
     parameters: { obfuscatedReference, reference },
     componentName: COMPONENT_NAME,
-    context,
+    context
   });
 }
 
@@ -90,7 +90,7 @@ export function like({
 export function removeLike({
   obfuscatedReference,
   reference,
-  context = CONTEXT,
+  context = CONTEXT
 }: {
   obfuscatedReference?: string;
   reference?: string;
@@ -100,7 +100,7 @@ export function removeLike({
     url: '/like/like',
     parameters: { obfuscatedReference, reference, remove: true },
     componentName: COMPONENT_NAME,
-    context,
+    context
   });
 }
 
@@ -115,7 +115,7 @@ export function setLike({
   obfuscatedReference,
   reference,
   like = true,
-  context = CONTEXT,
+  context = CONTEXT
 }: {
   obfuscatedReference?: string;
   reference?: string;
@@ -126,7 +126,7 @@ export function setLike({
     url: '/like/like',
     parameters: { obfuscatedReference, reference, remove: !like },
     componentName: COMPONENT_NAME,
-    context,
+    context
   });
 }
 
@@ -183,11 +183,11 @@ export function getToplist({
   objectType,
   objectContext,
   p,
-  pageSize,
+  pageSize
 }: GetToplist): Thunk<Promise<GetLikeToplistResult>> {
   return getJson({
     url: '/like/toplist',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -200,7 +200,7 @@ export function getToplistUrl({
   p,
   pageSize,
   community,
-  config,
+  config
 }: GetToplist & { community: Community; config: Config }): string {
   const url = '/like/toplist';
   const communityPermalink = _.get(community, 'permalink');
@@ -215,10 +215,10 @@ export function getToplistUrl({
       objectType,
       objectContext,
       p,
-      pageSize,
+      pageSize
     },
     community: communityPermalink,
     componentName: COMPONENT_NAME,
-    context: CONTEXT,
+    context: CONTEXT
   });
 }

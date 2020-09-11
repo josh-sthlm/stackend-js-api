@@ -37,9 +37,9 @@ export function enableDebug(): void {
       defaultMeta: { service: 'Stackend' },
       transports: [
         new winston.transports.Console({
-          format: winston.format.simple(),
-        }),
-      ],
+          format: winston.format.simple()
+        })
+      ]
     })
   );
 }

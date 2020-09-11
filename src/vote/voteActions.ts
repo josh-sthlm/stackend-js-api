@@ -18,7 +18,7 @@ export function receiveVotes(
     voteSummary,
     votes,
     hasVoted,
-    myReview,
+    myReview
   };
 }
 
@@ -35,7 +35,7 @@ export function updateVotes(
     vote,
     voteSummary,
     hasVoted,
-    myReview,
+    myReview
   };
 }
 

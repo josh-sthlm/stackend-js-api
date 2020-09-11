@@ -8,7 +8,7 @@ import {
   XcapObject,
   Thunk,
   isRunningServerSide,
-  XcapOptionalParameters,
+  XcapOptionalParameters
 } from '../api';
 import { generatePermalink } from '../api/permalink';
 import { User } from '../user';
@@ -76,7 +76,7 @@ export interface GetContentResult extends XcapJsonResult {
  */
 export function getContent({
   id,
-  permalink,
+  permalink
 }: { id?: number; permalink?: string } & XcapOptionalParameters): Thunk<Promise<GetContentResult>> {
   return getJson({ url: '/cms/get', parameters: arguments });
 }
@@ -93,7 +93,7 @@ export interface PopulateTemplateContent extends XcapJsonResult {
  */
 export function populateTemplateContent({
   id,
-  permalink,
+  permalink
 }: {
   id?: number;
   permalink?: string;
@@ -116,7 +116,7 @@ export interface ListContentResult extends XcapJsonResult {
 export function listContent({
   permalink,
   p = 1,
-  pageSize,
+  pageSize
 }: {
   permalink?: string;
   p?: number;
@@ -128,8 +128,8 @@ export function listContent({
       permalink,
       getPermalinkFromUrl: false,
       p,
-      pageSize,
-    },
+      pageSize
+    }
   });
 }
 
@@ -148,7 +148,7 @@ export function search({
   q,
   p = 1,
   pageSize,
-  orderBy,
+  orderBy
 }: {
   q?: string;
   p?: number;
@@ -161,8 +161,8 @@ export function search({
       q,
       p,
       pageSize,
-      orderBy,
-    },
+      orderBy
+    }
   });
 }
 
@@ -198,7 +198,7 @@ export interface PageContent {
 export enum MenuVisibility {
   HORIZONTAL = 'HORIZONTAL',
   VERTICAL = 'VERTICAL',
-  OFF = 'OFF',
+  OFF = 'OFF'
 }
 
 export function parseMenuVisibility(v: string): MenuVisibility {
@@ -236,7 +236,7 @@ export function editContent({
   headline,
   teaser,
   body,
-  categoryId,
+  categoryId
 }: {
   id?: number;
   permalink?: string;
@@ -255,7 +255,7 @@ export function editContent({
  */
 export function setModerationStatus({
   id,
-  moderationStatus,
+  moderationStatus
 }: {
   id: number;
   moderationStatus: ModerationStatus;
@@ -282,7 +282,7 @@ export function moveContent({
   newCategoryId,
   oldCategoryId,
   insertion,
-  insertionPoint,
+  insertionPoint
 }: {
   id: number;
   newCategoryId: number;
@@ -297,8 +297,8 @@ export function moveContent({
       newCategoryId,
       oldCategoryId,
       insertion,
-      insertionPoint,
-    },
+      insertionPoint
+    }
   });
 }
 
@@ -319,7 +319,7 @@ export function newPage(name: string, permalink?: string): Page {
     ogImageUrl: null,
     content: [],
     parentPageId: 0,
-    childCount: 0,
+    childCount: 0
   };
 }
 
@@ -332,14 +332,14 @@ export type EditPageResult = XcapJsonResult;
  */
 export function editPage({
   page,
-  parentPageId,
+  parentPageId
 }: { page: Page; parentPageId?: number } & XcapOptionalParameters): Thunk<Promise<EditPageResult>> {
   return post({
     url: '/cms/pages/edit',
     parameters: {
       page: JSON.stringify(page),
-      parentPageId,
-    },
+      parentPageId
+    }
   });
 }
 
@@ -368,7 +368,7 @@ export function getPage({
   id,
   permalink,
   p = 1,
-  pageSize = 100,
+  pageSize = 100
 }: {
   id: number;
   permalink?: string;
@@ -381,8 +381,8 @@ export function getPage({
       id,
       permalink,
       p,
-      pageSize,
-    },
+      pageSize
+    }
   });
 }
 
@@ -396,7 +396,7 @@ export function getPage({
 export function searchContentUse({
   contentId,
   p = 1,
-  pageSize = 10,
+  pageSize = 10
 }: {
   contentId: number;
   p?: number;
@@ -407,8 +407,8 @@ export function searchContentUse({
     parameters: {
       contentId,
       p,
-      pageSize,
-    },
+      pageSize
+    }
   });
 }
 
@@ -430,7 +430,7 @@ export function searchPages({
   p,
   pageSize,
   orderBy,
-  order,
+  order
 }: {
   q: string;
   p: number | null;
@@ -440,7 +440,7 @@ export function searchPages({
 } & XcapOptionalParameters): Thunk<Promise<SearchPagesResult>> {
   return getJson({
     url: '/cms/pages/search',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -458,7 +458,7 @@ export interface GetPagesResult extends XcapJsonResult {
 export function getPages({
   pageIds,
   permalinks,
-  communityPermalink,
+  communityPermalink
 }: {
   pageIds?: Array<number>;
   permalinks?: Array<string>;
@@ -469,8 +469,8 @@ export function getPages({
     parameters: {
       pageId: pageIds,
       permalink: permalinks,
-      [COMMUNITY_PARAMETER]: communityPermalink,
-    },
+      [COMMUNITY_PARAMETER]: communityPermalink
+    }
   });
 }
 
@@ -486,14 +486,14 @@ export interface SearchPageContentResult extends XcapJsonResult {
  */
 export function searchPageContent({
   q,
-  codeBinOnly,
+  codeBinOnly
 }: {
   q: string;
   codeBinOnly: boolean;
 } & XcapOptionalParameters): Thunk<Promise<SearchPageContentResult>> {
   return getJson({
     url: '/cms/pages/search-page-content',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -509,14 +509,14 @@ export interface GetAvailablePagePermalinkResult extends XcapJsonResult {
  */
 export function getAvailablePagePermalink({
   pageId,
-  permalink,
+  permalink
 }: {
   pageId?: number | null;
   permalink: string;
 } & XcapOptionalParameters): Thunk<Promise<GetAvailablePagePermalinkResult>> {
   return getJson({
     url: '/cms/pages/get-available-permalink',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -531,18 +531,18 @@ export interface GetSubSiteResult extends XcapJsonResult {
 export function getSubSite({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
   return getJson({
     url: '/cms/subsite/get',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
 export function storeSubSite({
-  subSite,
+  subSite
 }: { subSite: SubSite } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
   return post({
     url: '/cms/subsite/store',
     parameters: {
-      tree: JSON.stringify(subSite),
-    },
+      tree: JSON.stringify(subSite)
+    }
   });
 }
 
@@ -553,7 +553,7 @@ export interface RemoveSubSiteResult extends XcapJsonResult {
 export function removeSubSite({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<RemoveSubSiteResult>> {
   return post({
     url: '/cms/subsite/remove',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -564,7 +564,7 @@ export interface SearchSubSiteResult extends XcapJsonResult {
 export function searchSubSites({
   q,
   p,
-  pageSize,
+  pageSize
 }: {
   q?: string | null;
   p?: number;
@@ -572,7 +572,7 @@ export function searchSubSites({
 } & XcapOptionalParameters): Thunk<Promise<SearchSubSiteResult>> {
   return getJson({
     url: '/cms/subsite/list',
-    parameters: arguments,
+    parameters: arguments
   });
 }
 
@@ -762,7 +762,7 @@ export function extractContentValues(
   return {
     htmlValue: html ? html.innerHTML : '',
     javascriptValue: javascript ? javascript.innerHTML : '',
-    cssValue: css ? css.innerHTML : '',
+    cssValue: css ? css.innerHTML : ''
   };
 }
 

@@ -24,19 +24,19 @@ export function receiveModules(json: {
   return {
     type: RECEIVE_MODULES,
     json,
-    receivedAt: Date.now(),
+    receivedAt: Date.now()
   };
 }
 
 export function requestModules(communityId: number): ModuleActions {
   return {
-    type: REQUEST_MODULES,
+    type: REQUEST_MODULES
   };
 }
 
 export function resetModules(): ModuleActions {
   return {
-    type: RESET_MODULES,
+    type: RESET_MODULES
   };
 }
 

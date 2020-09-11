@@ -28,7 +28,7 @@ export type SearchState = {
 const initSearchReducer = {
   q: '',
   filter: 'all',
-  p: 1,
+  p: 1
 };
 
 export default function searchReducer(state: SearchState = initSearchReducer, action: SearchActions): SearchState {
@@ -36,13 +36,13 @@ export default function searchReducer(state: SearchState = initSearchReducer, ac
     case UPDATE_SEARCH_STRING:
       return update(state, {
         q: { $set: action.q },
-        p: { $set: action.p || state.p },
+        p: { $set: action.p || state.p }
       });
 
     case UPDATE_SELECTED_TYPE:
       return update(state, {
         filter: { $set: action.selectedType },
-        p: { $set: action.p || state.p },
+        p: { $set: action.p || state.p }
       });
 
     default:

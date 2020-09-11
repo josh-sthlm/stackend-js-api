@@ -53,7 +53,7 @@ export interface GetPollResult extends XcapJsonResult {
  * @param referenceId {number} Reference id. Required.
  */
 export function getPoll({
-  referenceId,
+  referenceId
 }: {
   referenceId: number;
 } & XcapOptionalParameters): Thunk<Promise<GetPollResult>> {
@@ -70,7 +70,7 @@ export function getPoll({
  */
 export function vote({
   referenceId,
-  answerId,
+  answerId
 }: {
   referenceId: number;
   answerId: number;
@@ -96,7 +96,7 @@ export function edit({
   endDate,
   description,
   view,
-  pollAnswers,
+  pollAnswers
 }: {
   referenceId: number;
   startDate?: string;
@@ -115,7 +115,7 @@ export function edit({
       endDate,
       description,
       view,
-      pollAnswers: ans,
-    },
+      pollAnswers: ans
+    }
   });
 }

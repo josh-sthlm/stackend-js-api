@@ -64,14 +64,14 @@ const initialState: ForumThreadState = {
   isFetching: false,
   didInvalidate: false,
   lastUpdated: 0,
-  forums: {},
+  forums: {}
 };
 
 export default createReducer(initialState, {
   REQUEST_FORUM_THREADS: (state: ForumThreadState) =>
     update(state, {
       isFetching: { $set: true },
-      didInvalidate: { $set: false },
+      didInvalidate: { $set: false }
     }),
 
   RECEIVE_FORUM_THREADS: (state: ForumThreadState, action: Receive) => {
@@ -91,9 +91,9 @@ export default createReducer(initialState, {
         [action.forumPermalink]: {
           // FIXME: Error?
           // @ts-ignore
-          $apply: (forumPermalink: string): any => update(forumPermalink || [], { $set: uniqueForumThreads }),
-        },
-      },
+          $apply: (forumPermalink: string): any => update(forumPermalink || [], { $set: uniqueForumThreads })
+        }
+      }
     });
   },
 
@@ -111,15 +111,15 @@ export default createReducer(initialState, {
       lastUpdated: { $set: Date.now() },
       forums: {
         [action.forumPermalink]: {
-          [indexOfUpdatedEntry]: { $set: action.entry },
-        },
-      },
+          [indexOfUpdatedEntry]: { $set: action.entry }
+        }
+      }
     });
   },
 
   INVALIDATE_FORUM_THREADS: (state: ForumThreadState) =>
     update(state, {
-      didInvalidate: { $set: true },
+      didInvalidate: { $set: true }
     }),
 
   RECEIVE_VOTE_FORUM_THREAD: (state: ForumThreadState, action: Rate) => {
@@ -133,10 +133,10 @@ export default createReducer(initialState, {
         [action.forumPermalink]: {
           [forumThreadKey]: {
             voteByCurrentUser: { $set: action.voteJson.score },
-            voteSummary: { $set: action.voteJson.voteSummary },
-          },
-        },
-      },
+            voteSummary: { $set: action.voteJson.voteSummary }
+          }
+        }
+      }
     });
   },
 
@@ -153,13 +153,13 @@ export default createReducer(initialState, {
                 update(context || {}, {
                   likes: { $set: action.receivedLikes.numberOfLikes },
                   likedByCurrentUser: {
-                    $set: !action.receivedLikes.remove,
-                  },
-                }),
-            },
-          },
-        },
-      },
+                    $set: !action.receivedLikes.remove
+                  }
+                })
+            }
+          }
+        }
+      }
     });
   },
 
@@ -170,9 +170,9 @@ export default createReducer(initialState, {
     return update(state, {
       forums: {
         [action.entry.forumRef.permalink]: {
-          [forumThreadEntryKey]: { $set: action.entry },
-        },
-      },
+          [forumThreadEntryKey]: { $set: action.entry }
+        }
+      }
     });
-  },
+  }
 });

@@ -9,7 +9,7 @@ import {
   PagesState,
   RECEIVE_SUB_SITES,
   PageAndLoadedState,
-  PageActions,
+  PageActions
 } from './pageReducer';
 
 import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode, SubSite } from './index';
@@ -21,7 +21,7 @@ import { getPermalink } from '../api/tree';
 export function requestPages({
   pageIds,
   permalinks,
-  communityPermalink,
+  communityPermalink
 }: {
   pageIds?: Array<number>;
   permalinks?: Array<string>;
@@ -31,7 +31,7 @@ export function requestPages({
     const r = await dispatch(getPages({ pageIds, permalinks, communityPermalink }));
     await dispatch({
       type: RECEIVE_PAGES,
-      json: r,
+      json: r
     });
     return r;
   };
@@ -47,7 +47,7 @@ export function requestPages({
 export function requestMissingPages({
   pageIds,
   permalinks,
-  communityPermalink,
+  communityPermalink
 }: {
   pageIds?: Array<number>;
   permalinks?: Array<string>;
@@ -88,7 +88,7 @@ export function requestMissingPages({
       requestPages({
         pageIds: fetchPageIds,
         permalinks: fetchPermalinks,
-        communityPermalink,
+        communityPermalink
       })
     );
   };
@@ -133,7 +133,7 @@ export function requestPageByPermalink(permalink: string): Thunk<Promise<GetPage
 export function clearPages(): Thunk<PageActions> {
   return (dispatch /*, getState: any*/): PageActions => {
     return dispatch({
-      type: CLEAR_PAGES,
+      type: CLEAR_PAGES
     });
   };
 }
@@ -147,7 +147,7 @@ export function clearPage(pageId: number): Thunk<PageActions> {
   return (dispatch /*, getState: any*/): PageActions => {
     return dispatch({
       type: CLEAR_PAGE,
-      id: pageId,
+      id: pageId
     });
   };
 }
@@ -156,7 +156,7 @@ export function receivePages(json: GetPagesResult): Thunk<any> {
   return (dispatch /*, getState: any*/): PageActions => {
     return dispatch({
       type: RECEIVE_PAGES,
-      json,
+      json
     });
   };
 }
@@ -181,7 +181,7 @@ export function requestSubSite(id: number): Thunk<Promise<GetSubSiteResult>> {
       await dispatch(
         receivePages(
           newXcapJsonResult('success', {
-            pages,
+            pages
           })
         )
       );
@@ -195,7 +195,7 @@ export function receiveSubSites({ subSites }: { subSites: { [id: number]: SubSit
   return (dispatch /*, getState: any*/): PageActions => {
     return dispatch({
       type: RECEIVE_SUB_SITES,
-      subSites,
+      subSites
     });
   };
 }
@@ -227,7 +227,7 @@ export const SITE_HASH_PREFIX = '#/site';
  */
 export function getSubSitePageHashPermalink({
   treePath,
-  permalink,
+  permalink
 }: {
   treePath?: Array<SubSiteNode> | null;
   permalink?: string | null;

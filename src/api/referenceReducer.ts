@@ -15,5 +15,5 @@ interface ReferenceState {
 const initialState: ReferenceState = {};
 
 export default createReducer(initialState, {
-  RECEIVE_REFERENCES: (state: ReferenceState, action: ReceiveAction) => update(state, { $merge: action.entries }),
+  RECEIVE_REFERENCES: (state: ReferenceState, action: ReceiveAction) => update(state, { $merge: action.entries })
 });

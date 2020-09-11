@@ -8,7 +8,7 @@ import { getJson, post, XcapJsonResult, XcapObject, Thunk } from '../api';
  */
 
 export const References = {
-  BLOGEDITOR: 'BlogEditor',
+  BLOGEDITOR: 'BlogEditor'
 };
 
 export type Context = string; // Context name, for example "news"
@@ -46,7 +46,7 @@ export enum Insertion {
   BEFORE_REFERENCE_ID = 'BEFORE_REFERENCE_ID',
   AFTER_REFERENCE_ID = 'AFTER_REFERENCE_ID',
   MOVE_UP = 'MOVE_UP',
-  MOVE_DOWN = 'MOVE_DOWN',
+  MOVE_DOWN = 'MOVE_DOWN'
 }
 
 /**
@@ -74,7 +74,7 @@ export interface GetCategoryResult extends XcapJsonResult {
 export function get({
   context,
   categoryId,
-  permaLink,
+  permaLink
 }: {
   context: string;
   categoryId?: number;
@@ -87,7 +87,7 @@ export function get({
     url: '/category/get',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME,
+    componentName: COMPONENT_NAME
   });
 }
 
@@ -104,7 +104,7 @@ export interface GetByReferenceIdResult extends XcapJsonResult {
  */
 export function getByReferenceId({
   context,
-  referenceId,
+  referenceId
 }: {
   context: string;
   referenceId: number;
@@ -113,7 +113,7 @@ export function getByReferenceId({
     url: '/category/get-by-reference-id',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME,
+    componentName: COMPONENT_NAME
   });
 }
 
@@ -135,7 +135,7 @@ export interface ListCategoriesResult extends XcapJsonResult {
 export function list({
   context,
   categoryId,
-  permaLink,
+  permaLink
 }: {
   context: string;
   categoryId?: number;
@@ -145,7 +145,7 @@ export function list({
     url: '/category/list',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME,
+    componentName: COMPONENT_NAME
   });
 }
 
@@ -168,7 +168,7 @@ export function edit({
   name,
   description,
   parentCategoryId,
-  sortOrder,
+  sortOrder
 }: {
   context: string;
   categoryId?: number;
@@ -181,7 +181,7 @@ export function edit({
     url: '/category/edit',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME,
+    componentName: COMPONENT_NAME
   });
 }
 
@@ -198,6 +198,6 @@ export function remove({ context, id }: { context: string; id: number }): Thunk<
     url: '/category/remove',
     parameters: arguments,
     context,
-    componentName: COMPONENT_NAME,
+    componentName: COMPONENT_NAME
   });
 }

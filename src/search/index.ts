@@ -8,7 +8,7 @@ import {
   XcapJsonResult,
   XcapObject,
   Thunk,
-  XcapOptionalParameters,
+  XcapOptionalParameters
 } from '../api';
 import * as qnaApi from '../qna';
 import _ from 'lodash';
@@ -31,13 +31,13 @@ export enum OrderBy {
   SOLVED_DATE = 'SOLVED_DATE', //Solved date - only applies to question/forum thread
   ANSWERS = 'ANSWERS', //Number of answers - only applies to question/forum thread
   DUPLICATES = 'DUPLICATES', //Number of duplicates - only applies to question/forum thread
-  HAVE_QUESTION_TOO = 'HAVE_QUESTION_TOO', //Have this question too
+  HAVE_QUESTION_TOO = 'HAVE_QUESTION_TOO' //Have this question too
 }
 
 export enum Order {
   UNORDERED = 'UNORDERED', //No particular order
   ASCENDING = 'ASCENDING', //Ascending: lowest first
-  DESCENDING = 'DESCENDING', //Descending: highest first
+  DESCENDING = 'DESCENDING' //Descending: highest first
 }
 
 /**
@@ -55,7 +55,7 @@ export enum SearchAbleType {
   CMS = 'cms', //Cms-object
   BLOG_GROUP = 'blog-group',
   BLOG_ARTICLE = 'blog-article',
-  FORUM_THREADS = 'forumthreads',
+  FORUM_THREADS = 'forumthreads'
 }
 
 /**
@@ -102,7 +102,7 @@ export const searchableTypeNameConverter = {
   faq: 'FAQ',
   question: 'Questions',
   'blog-article': 'Blog',
-  forumthreads: 'Forum',
+  forumthreads: 'Forum'
   /*{key:'discussion', text:'Discussions'}*/
 };
 
@@ -141,7 +141,7 @@ export function getSearchUrl({ request, type, searchType, filter, urlArguments }
 
   return createCommunityUrl({
     request,
-    path: searchUrl,
+    path: searchUrl
   });
 }
 
@@ -174,7 +174,7 @@ export function search({ community, ...urlArguments }: Search): Thunk<Promise<Se
     parameters: urlArguments as any,
     community: community,
     context: CONTEXT,
-    componentName: COMPONENT_NAME,
+    componentName: COMPONENT_NAME
   });
 }
 
@@ -189,7 +189,7 @@ export function getSearchApiUrl({
   config,
   community,
   type,
-  urlArguments,
+  urlArguments
 }: {
   config: Config;
   community: any;
@@ -217,7 +217,7 @@ export function getSearchApiUrl({
     parameters: urlArguments,
     community: communityPermalink,
     componentName,
-    context,
+    context
   });
 }
 
@@ -241,7 +241,7 @@ export function getStatistics({
   aggregateToDays,
   moderationVisibility,
   pageSize,
-  page = 1,
+  page = 1
 }: {
   facetCount?: string;
   createdStartDate?: string;
@@ -261,36 +261,36 @@ export function getStatistics({
 export const SEARCH_INDEX_POPULATORS: Array<{ name: string; className: string }> = [
   {
     name: 'Blogs and blog entries',
-    className: 'se.josh.xcap.search.populate.BlogEntrySearchIndexPopulator',
+    className: 'se.josh.xcap.search.populate.BlogEntrySearchIndexPopulator'
   },
   {
     name: 'Comments',
-    className: 'se.josh.xcap.search.populate.CommentSearchIndexPopulator',
+    className: 'se.josh.xcap.search.populate.CommentSearchIndexPopulator'
   },
   {
     name: 'Events (ignores the date setting)',
-    className: 'se.josh.xcap.search.populate.EventSearchIndexPopulator',
+    className: 'se.josh.xcap.search.populate.EventSearchIndexPopulator'
   },
   {
     name: 'Forum',
-    className: 'se.josh.xcap.search.populate.ForumThreadEntrySearchIndexPopulator',
+    className: 'se.josh.xcap.search.populate.ForumThreadEntrySearchIndexPopulator'
   },
   {
     name: 'Users',
-    className: 'se.josh.xcap.search.populate.UserSearchIndexPopulator',
+    className: 'se.josh.xcap.search.populate.UserSearchIndexPopulator'
   },
   {
     name: 'Media',
-    className: 'se.josh.xcap.search.populate.MediaSearchIndexPopulator',
+    className: 'se.josh.xcap.search.populate.MediaSearchIndexPopulator'
   },
   {
     name: 'Group',
-    className: 'se.josh.xcap.search.populate.GroupSearchIndexPopulator',
+    className: 'se.josh.xcap.search.populate.GroupSearchIndexPopulator'
   },
   {
     name: 'Abuse reports',
-    className: 'se.josh.xcap.search.populate.ReferencedAbuseSearchIndexPopulator',
-  },
+    className: 'se.josh.xcap.search.populate.ReferencedAbuseSearchIndexPopulator'
+  }
 ];
 
 export interface PopulateSearchIndexResult extends XcapJsonResult {
@@ -311,13 +311,13 @@ export interface PopulateSearchIndexResult extends XcapJsonResult {
  */
 export function populateSearchIndex({
   modifiedSince,
-  populator,
+  populator
 }: {
   modifiedSince: string | null;
   populator: Array<string> | null;
 } & XcapOptionalParameters): Thunk<Promise<PopulateSearchIndexResult>> {
   return post({
     url: '/search/admin/populate-index',
-    parameters: arguments,
+    parameters: arguments
   });
 }
