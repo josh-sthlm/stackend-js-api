@@ -158,7 +158,7 @@ function makeNodePermalinksUnique(children: Array<Node>): void {
  * @param tree
  * @param node
  */
-export function getTreePath(tree: Tree, node: Node): Array<Node> | null {
+export function getTreePath(tree: Tree | null, node: Node | null): Array<Node> | null {
   if (!tree || !node) {
     return null;
   }

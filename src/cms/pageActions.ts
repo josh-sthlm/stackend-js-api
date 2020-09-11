@@ -206,8 +206,8 @@ export function receiveSubSites({ subSites }: { subSites: { [id: number]: SubSit
  * @param permalink
  * @returns {null|Page}
  */
-export function getPageByPermalink(pages: PagesState, permalink: string): Page | null {
-  if (!pages) {
+export function getPageByPermalink(pages: PagesState, permalink: string | null): Page | null {
+  if (!pages || !permalink) {
     return null;
   }
   const id = pages.idByPermalink[permalink];
@@ -229,8 +229,8 @@ export function getSubSitePageHashPermalink({
   treePath,
   permalink,
 }: {
-  treePath: Array<SubSiteNode> | null;
-  permalink: string | null;
+  treePath?: Array<SubSiteNode> | null;
+  permalink?: string | null;
 }): string | null {
   if (treePath) {
     return SITE_HASH_PREFIX + getPermalink(treePath);
