@@ -2,7 +2,7 @@
 import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginReducer';
 import { getCurrentUser, User } from '../user';
 import { Thunk } from '../api';
-import _ from 'lodash';
+import get from 'lodash/get';
 
 const LOGIN_TTL: number = 60 * 1000;
 
@@ -55,7 +55,7 @@ export function refreshLoginData(params?: any): Thunk<any> {
     try {
       const { currentUser } = getState();
 
-      const useCache = !_.get(params, 'force', false);
+      const useCache = !get(params, 'force', false);
 
       // Don't refresh more than once a minute if logged in
       if (useCache && typeof currentUser !== 'undefined' && currentUser.isLoggedIn) {

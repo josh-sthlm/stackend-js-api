@@ -1,5 +1,5 @@
 import { Thunk } from '../api';
-import _ from 'lodash';
+import get from 'lodash/get';
 
 export interface Location {
   hash: string;
@@ -82,7 +82,7 @@ export interface Request {
  */
 export function getRequest(): Thunk<Request> {
   return (dispatch, getState): Request => {
-    return _.get(getState(), 'request');
+    return get(getState(), 'request');
   };
 }
 

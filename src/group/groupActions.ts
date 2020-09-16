@@ -1,5 +1,5 @@
 // @flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import { AuthObject } from '../user/privileges';
 import {
   Group,
@@ -80,7 +80,7 @@ export function subscribe({
     }
 
     const myGroups = await dispatch(listMyGroups({}));
-    dispatch(receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
+    dispatch(receiveGroupsAuth({ entries: get(myGroups, 'groupAuth') }));
 
     return json;
   };
@@ -107,7 +107,7 @@ export function unsubscribe({
     }
 
     const myGroups = await dispatch(listMyGroups({}));
-    dispatch(receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
+    dispatch(receiveGroupsAuth({ entries: get(myGroups, 'groupAuth') }));
     return json;
   };
 }
@@ -121,7 +121,7 @@ export function applyForMembership({ groupPermalink, groupId }: ApplyForMembersh
   return async (dispatch: any /*, getState: any*/): Promise<XcapJsonResult> => {
     const json = await dispatch(_applyForMembership({ groupPermalink, groupId }));
     const myGroups = await dispatch(listMyGroups({}));
-    dispatch(receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
+    dispatch(receiveGroupsAuth({ entries: get(myGroups, 'groupAuth') }));
     return json;
   };
 }

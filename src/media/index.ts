@@ -17,7 +17,7 @@ import {
   XcapOptionalParameters
 } from '../api';
 import { User } from '../user';
-import _ from 'lodash';
+import _get from 'lodash/get';
 
 /**
  * Image
@@ -564,7 +564,7 @@ export function upload({
     const { config, communities } = getState();
 
     if (!cpl) {
-      cpl = _.get(communities, 'community.permalink');
+      cpl = _get(communities, 'community.permalink');
     }
 
     return uploadMediaFile({

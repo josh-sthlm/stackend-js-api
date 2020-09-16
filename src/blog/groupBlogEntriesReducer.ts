@@ -1,6 +1,6 @@
-// @flow
-import _ from 'lodash';
-
+import get from 'lodash/get';
+import concat from 'lodash/concat';
+import assign from 'lodash/assign';
 import update from 'immutability-helper';
 import * as blogApi from './index';
 import createReducer from '../api/createReducer';
@@ -84,7 +84,7 @@ export const groupBlogEntries = createReducer(
               isFetching: { $set: true },
               didInvalidate: { $set: false },
               // @ts-ignore
-              json: { $set: _.get(state, `[${action.blogKey}].json`, {}) }
+              json: { $set: get(state, `[${action.blogKey}].json`, {}) }
             })
         }
       }),
@@ -110,18 +110,18 @@ export const groupBlogEntries = createReducer(
 
       // Combine the existing and new entries, update the existing if needed
       // @ts-ignore
-      const origEntries: Array<BlogEntry> = _.get(state, `[${action.blogKey}].json.resultPaginated.entries`, []);
+      const origEntries: Array<BlogEntry> = get(state, `[${action.blogKey}].json.resultPaginated.entries`, []);
       const addEntries: Array<BlogEntry> = [];
       action.json.resultPaginated.entries.forEach(e => {
         const existingEntry = origEntries.find(o => o.id === e.id);
         if (existingEntry) {
-          _.assign(existingEntry, e);
+          assign(existingEntry, e);
         } else {
           addEntries.push(e);
         }
       });
 
-      const uniqueBlogEntries = _.concat(origEntries, addEntries);
+      const uniqueBlogEntries = concat(origEntries, addEntries);
 
       //console.log("RECEIVE_GROUP_BLOG_ENTRIES", action.json);
 

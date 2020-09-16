@@ -8,7 +8,7 @@ import {
   ListProductTypesResult,
   Product
 } from './index';
-import _ from 'lodash';
+import get from 'lodash/get';
 
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
@@ -58,7 +58,7 @@ export default function shopReducer(
 ): ShopState {
   switch (action.type) {
     case RECEIVE_PRODUCT_TYPES: {
-      const edges: Array<GraphQLListNode<string>> = _.get(action, 'json.productTypes.edges', []);
+      const edges: Array<GraphQLListNode<string>> = get(action, 'json.productTypes.edges', []);
       const productTypes = edges.map(e => e.node);
       return Object.assign({}, state, {
         productTypes
@@ -66,7 +66,7 @@ export default function shopReducer(
     }
 
     case RECEIVE_PRODUCT: {
-      const product = _.get(action, 'json.product');
+      const product = get(action, 'json.product');
       if (product) {
         const products = Object.assign({}, state.products, {
           [product.handle]: product
@@ -80,7 +80,7 @@ export default function shopReducer(
     }
 
     case RECEIVE_PRODUCTS: {
-      const products = _.get(action, 'json.products');
+      const products = get(action, 'json.products');
       const productType = DEFAULT_PRODUCT_TYPE; // FIXME: Get requested type from backend
 
       // FIXME: Pagination
@@ -97,7 +97,7 @@ export default function shopReducer(
 
     case ADD_TO_BASKET: {
       const basket = [...state.basket];
-      const p: Product = _.get(action, 'product');
+      const p: Product = get(action, 'product');
       if (p) {
         basket.push(p);
       }

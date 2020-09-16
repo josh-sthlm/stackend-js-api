@@ -1,5 +1,7 @@
 // @flow
-import _ from 'lodash';
+import get from 'lodash/get';
+import concat from 'lodash/concat';
+import assign from 'lodash/assign';
 import update from 'immutability-helper';
 import * as commentAction from './commentAction';
 import * as commentsApi from './index';
@@ -178,20 +180,20 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         });
       }
 
-      const origComments: any = _.get(state, `[${key}].json.comments[${referenceId}].entries`, []);
+      const origComments: any = get(state, `[${key}].json.comments[${referenceId}].entries`, []);
       const newComments: Array<Comment> = [];
       action.json.comments.entries.forEach(e => {
         const orig = origComments.find((o: Comment) => o.id === e.id);
         if (orig) {
-          _.assign(orig, e);
+          assign(orig, e);
         } else {
           newComments.push(e);
         }
       });
 
-      const referenceIdUniqueComments: Array<Comment> = _.concat(origComments, newComments);
+      const referenceIdUniqueComments: Array<Comment> = concat(origComments, newComments);
       // @ts-ignore
-      const pagination: PaginatedCollection<Comment> = _.get(
+      const pagination: PaginatedCollection<Comment> = get(
         state,
         `[${key}].json.comments[${referenceId}]`,
         emptyPaginatedCollection()

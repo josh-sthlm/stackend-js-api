@@ -1,5 +1,5 @@
 //@flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import { User } from '../user';
 
 export const LOGIN = 'LOGIN';
@@ -29,7 +29,7 @@ export const loginReducer = (
       return state;
 
     case UPDATE_LOGIN_DATA:
-      if (_.get(action, 'json.user')) {
+      if (get(action, 'json.user')) {
         return Object.assign({}, { isLoggedIn: true, lastUpdate: now }, action.json);
       }
       return Object.assign({}, state, { isLoggedIn: false, lastUpdated: now });

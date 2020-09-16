@@ -1,5 +1,5 @@
 // @flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import { post, getJson, XcapJsonResult, _getApiUrl, Config, Thunk, XcapOptionalParameters } from '../api';
 import type { PaginatedCollection } from '../api/PaginatedCollection';
 import type { Community } from '../stackend';
@@ -203,7 +203,7 @@ export function getToplistUrl({
   config
 }: GetToplist & { community: Community; config: Config }): string {
   const url = '/like/toplist';
-  const communityPermalink = _.get(community, 'permalink');
+  const communityPermalink = get(community, 'permalink');
 
   return _getApiUrl({
     state: { communities: { community }, config },

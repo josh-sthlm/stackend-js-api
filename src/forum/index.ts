@@ -1,5 +1,5 @@
 // @flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import {
   getJson,
   post,
@@ -618,10 +618,10 @@ export function getThreadEntryFromRedux({
     });
   }
 
-  return _.get(
-    _.get(forumThreads, `forums[${forumPermalink ? forumPermalink : ''}]`, []).filter(
+  return get(
+    get(forumThreads, `forums[${forumPermalink ? forumPermalink : ''}]`, []).filter(
       (thread: ForumThreadEntry) =>
-        _.get(thread, 'threadRef.permalink') === forumThreadPermalink &&
+        get(thread, 'threadRef.permalink') === forumThreadPermalink &&
         // @ts-ignore
         // FIXME: Type definition
         thread.threadId === thread.id
@@ -654,17 +654,17 @@ export function getThreadFromRedux({
       id /*, __type:FT_COMPONENT_CLASS*/
     });
   }
-  const forumThread = _.get(forumThreads, `forums[${forumPermalink}]`, []).filter(
+  const forumThread = get(forumThreads, `forums[${forumPermalink}]`, []).filter(
     (thread: ForumThreadEntry) =>
-      (_.get(thread, 'threadRef.permalink') === forumThreadPermalink &&
+      (get(thread, 'threadRef.permalink') === forumThreadPermalink &&
         // @ts-ignore
         thread.threadId === thread.id) ||
-      _.get(thread, 'permalink') === forumThreadPermalink
+      get(thread, 'permalink') === forumThreadPermalink
   );
 
   if (forumThread.threadRef) {
-    return _.get(forumThread, '[0].threadRef');
+    return get(forumThread, '[0].threadRef');
   } else {
-    return _.get(forumThread, '[0]');
+    return get(forumThread, '[0]');
   }
 }

@@ -1,5 +1,5 @@
 // @flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import update from 'immutability-helper';
 import * as categoryApi from '../category';
 import * as groupActions from '../group/groupActions';
@@ -99,16 +99,16 @@ export function fetchBlogEntries({
   goToBlogEntry
 }: FetchBlogEntries): Thunk<Promise<any>> {
   return async (dispatch: any, getState): Promise<any> => {
-    const categoryId = _.get(categories, '[0].id', null);
+    const categoryId = get(categories, '[0].id', null);
 
     try {
       dispatch(requestBlogEntries(blogKey));
       const { currentUser, groups } = getState();
-      const auth = _.get(groups, 'auth', {});
+      const auth = get(groups, 'auth', {});
       try {
-        if (_.get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
+        if (get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
           const myGroups = await dispatch(listMyGroups({}));
-          dispatch(groupActions.receiveGroupsAuth({ entries: _.get(myGroups, 'groupAuth') }));
+          dispatch(groupActions.receiveGroupsAuth({ entries: get(myGroups, 'groupAuth') }));
         }
       } catch (e) {
         console.error("Couldn't receiveGroupsAuth in fetchBlogEntries for " + blogKey + ': ', e);
@@ -116,13 +116,13 @@ export function fetchBlogEntries({
 
       const blogEntries = await dispatch(getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry }));
       // FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
-      const groupRef = _.get(blogEntries, 'blog.groupRef');
+      const groupRef = get(blogEntries, 'blog.groupRef');
       if (groupRef) {
         await dispatch(groupActions.receiveGroups({ entries: groupRef }));
       } else {
         console.error("Couldn't receiveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
       }
-      const blogRef = _.get(blogEntries, 'blog');
+      const blogRef = get(blogEntries, 'blog');
       if (blogRef) {
         await dispatch(blogActions.receiveBlogs({ entries: [blogRef] }));
       } else {
@@ -155,10 +155,10 @@ export function fetchBlogEntry({
     try {
       await dispatch(requestBlogEntries(blogKey));
       const { currentUser, groups } = getState();
-      const auth = _.get(groups, 'auth', {});
-      if (_.get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
+      const auth = get(groups, 'auth', {});
+      if (get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
         const json = await dispatch(listMyGroups({}));
-        await dispatch(groupActions.receiveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
+        await dispatch(groupActions.receiveGroupsAuth({ entries: get(json, 'groupAuth') }));
       }
 
       const json = await dispatch(getEntry({ id, entryPermaLink: permalink, blogKey }));
@@ -248,11 +248,11 @@ export function fetchBlogEntryWithComments({
 
 function _fetchBlogEntry(blogKey: string, json: any): Thunk<Promise<any>> {
   return (dispatch: any): Promise<any> => {
-    const groupRef = _.get(json, 'blog.groupRef', _.get(json, 'blogEntry.blogRef.groupRef'));
+    const groupRef = get(json, 'blog.groupRef', get(json, 'blogEntry.blogRef.groupRef'));
     if (groupRef) {
       dispatch(groupActions.receiveGroups({ entries: groupRef }));
     }
-    const blogRef = _.get(json, 'blog', _.get(json, 'blogEntry.blogRef'));
+    const blogRef = get(json, 'blog', get(json, 'blogEntry.blogRef'));
     if (blogRef) {
       dispatch(blogActions.receiveBlogs({ entries: blogRef }));
     }
@@ -305,7 +305,7 @@ export function postBlogEntry({
     }
 
     //In order to keep pagination-object we need to merge with current state
-    const resultPaginated = update(_.get(getState(), `groupBlogEntries[${blogKey}].json.resultPaginated`), {
+    const resultPaginated = update(get(getState(), `groupBlogEntries[${blogKey}].json.resultPaginated`), {
       entries: { $push: [response.entry] }
     });
     const state = { resultPaginated };

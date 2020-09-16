@@ -1,7 +1,8 @@
 //@flow
 
 import { appendQueryString, LoadJson, LoadJsonResult, urlEncodeParameters } from './LoadJson';
-import _ from 'lodash';
+import get from 'lodash/get';
+import forIn from 'lodash/forIn';
 import { receiveReferences } from './referenceActions';
 import { Request, getRequest } from '../request';
 import { Community, Module } from '../stackend';
@@ -459,7 +460,7 @@ export function _constructConfig(): Config {
  */
 export function getConfiguration(): Thunk<Config> {
   return (dispatch, getState): Config => {
-    const c = _.get(getState(), 'config');
+    const c = get(getState(), 'config');
     if (c) {
       return c;
     }
@@ -491,7 +492,7 @@ export function getServer(): Thunk<string> {
     if (typeof getState !== 'function') {
       logger.error('getServer: Wrong invocation');
     } else {
-      s = _.get(getState(), 'config.server');
+      s = get(getState(), 'config.server');
       if (s) {
         return s;
       }
@@ -506,7 +507,7 @@ export function getServer(): Thunk<string> {
  * @type {string}
  */
 export function _getServer(config: Config | null): string {
-  const s = _.get(config, 'server');
+  const s = get(config, 'server');
   if (s) {
     return s;
   }
@@ -523,7 +524,7 @@ export function getDeployProfile(): Thunk<string> {
     if (typeof getState !== 'function') {
       logger.error('getDeployProfile: Wrong invocation');
     } else {
-      const s = _.get(getState(), 'config.deployProfile');
+      const s = get(getState(), 'config.deployProfile');
       if (s) {
         return s;
       }
@@ -538,7 +539,7 @@ export function getDeployProfile(): Thunk<string> {
  * @return a profile name, or the empty string.
  */
 export function _getDeployProfile(config: Config | null): string {
-  const s = _.get(config, 'deployProfile');
+  const s = get(config, 'deployProfile');
   if (s) {
     return s;
   }
@@ -554,7 +555,7 @@ export function getContextPath(): Thunk<string> {
     if (typeof getState !== 'function') {
       logger.error('getContextPath: Wrong invocation');
     } else {
-      const s = _.get(getState(), 'config.contextPath');
+      const s = get(getState(), 'config.contextPath');
       if (s) {
         return s;
       }
@@ -569,7 +570,7 @@ export function getContextPath(): Thunk<string> {
  * @type {string}
  */
 export function _getContextPath(config: Config | null): string {
-  const s = _.get(config, 'contextPath');
+  const s = get(config, 'contextPath');
   if (s) {
     return s;
   }
@@ -588,8 +589,8 @@ export function getServerWithContextPath(): Thunk<string> {
       logger.error('getServerWithContextPath: Wrong invocation');
     } else {
       const state = getState();
-      server = _.get(state, 'config.server');
-      contextPath = _.get(state, 'config.contextPath');
+      server = get(state, 'config.server');
+      contextPath = get(state, 'config.contextPath');
     }
 
     if (!server || !contextPath) {
@@ -637,7 +638,7 @@ export function getCommunityPath(): Thunk<string> {
     if (typeof getState !== 'function') {
       throw Error('getCommunityPath : Wrong invocation');
     }
-    return _.get(getState(), 'request.communityUrl', '');
+    return get(getState(), 'request.communityUrl', '');
   };
 }
 
@@ -647,7 +648,7 @@ export function getCommunityPath(): Thunk<string> {
  * @return never null
  */
 export function getCommunityPathFromStore({ request }: { request: Request }): string {
-  return _.get(request, 'communityUrl', '');
+  return get(request, 'communityUrl', '');
 }
 
 /**
@@ -661,7 +662,7 @@ export function getAbsoluteCommunityPath(): Thunk<string> {
     if (typeof getState !== 'function') {
       throw Error('getAbsoluteCommunityPath: Wrong invocation');
     }
-    return _.get(getState(), 'request.absoluteCommunityUrl', '');
+    return get(getState(), 'request.absoluteCommunityUrl', '');
   };
 }
 
@@ -672,13 +673,13 @@ export function getAbsoluteCommunityPath(): Thunk<string> {
 export function getEffectiveCommunityPath(): Thunk<string> {
   return (dispatch, getState): string => {
     const state = getState();
-    if (/\/stacks\//.exec(_.get(state, 'request.location.pathname', ''))) {
+    if (/\/stacks\//.exec(get(state, 'request.location.pathname', ''))) {
       // Ignore /stacks/xxx
       return _getContextPath(state.config);
     }
 
     // Outside stackend
-    const p = _.get(state, 'request.communityPath', null);
+    const p = get(state, 'request.communityPath', null);
     if (p !== null) {
       return p;
     }
@@ -747,7 +748,7 @@ export function _getAbsoluteApiBaseUrl({
  */
 export function getCurrentCommunity(): Thunk<Community | null> {
   return (dispatch, getState): Community | null => {
-    return _.get(getState(), 'communities.community', null);
+    return get(getState(), 'communities.community', null);
   };
 }
 
@@ -758,7 +759,7 @@ export function getCurrentCommunity(): Thunk<Community | null> {
  */
 export function getCurrentCommunityPermalink(): Thunk<string | null> {
   return (dispatch, getState): string | null => {
-    return _.get(getState(), 'communities.community.permalink', null);
+    return get(getState(), 'communities.community.permalink', null);
   };
 }
 
@@ -801,7 +802,7 @@ export function _getApiUrl({
       delete (params as any)[COMMUNITY_PARAMETER];
     }
     if (typeof community === 'undefined') {
-      community = _.get(state, 'communities.community.permalink', DEFAULT_COMMUNITY);
+      community = get(state, 'communities.community.permalink', DEFAULT_COMMUNITY);
     }
   }
 
@@ -1187,7 +1188,7 @@ export function getConfig({
   defaultValue?: any;
 }): Thunk<any> {
   return (dispatch: any, getState: any): any => {
-    const config = _.get(getState(), 'config');
+    const config = get(getState(), 'config');
     return _getConfig({ config, key, componentName, context, defaultValue });
   };
 }
@@ -1422,12 +1423,12 @@ function _postProcessApiResult(
       }
     } else if (n === 'obfuscatedReference') {
       //Check for likes
-      const likeObject = _.get(likes, `[${result[n]}]`, undefined);
+      const likeObject = get(likes, `[${result[n]}]`, undefined);
       if (likeObject) {
         result.likedByCurrentUser = likeObject;
       }
       //Check for votes
-      const voteObject = _.get(votes, `[${result[n]}].voteByCurrentUser`, undefined);
+      const voteObject = get(votes, `[${result[n]}].voteByCurrentUser`, undefined);
       if (voteObject) {
         result.voteByCurrentUser = voteObject;
       }
@@ -1482,7 +1483,7 @@ export function getJsonErrorText(response?: XcapJsonResult): string {
     }
   }
 
-  _.forIn(response.error.fieldErrors, (value, key) => {
+  forIn(response.error.fieldErrors, (value, key) => {
     if (m.length > 0) {
       m += '\n';
     }

@@ -1,5 +1,5 @@
 // @flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import { Forum, listForums } from './index';
 import { Thunk } from '../api';
 import { ForumActions, RECEIVE_FORUMS, REQUEST_FORUMS } from './forumReducer';
@@ -9,7 +9,7 @@ export function fetchForums(): Thunk<void> {
   return async (dispatch: any): Promise<void> => {
     dispatch(requestForums());
     const json = await dispatch(listForums({}));
-    dispatch(receiveForums({ entries: _.get(json, 'forumsPaginated.entries', []) }));
+    dispatch(receiveForums({ entries: get(json, 'forumsPaginated.entries', []) }));
   };
 }
 

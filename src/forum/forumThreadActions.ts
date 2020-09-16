@@ -1,5 +1,5 @@
 // @flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import * as forumApi from './index';
 import { Forum, ForumThreadEntry, ListThreadsResult, removeForumThreadEntry } from './index';
 import * as likeApi from '../like';
@@ -50,7 +50,7 @@ export function fetchForumThreads({
     );
     dispatch(
       receiveForumThreads({
-        entries: _.get(json, 'threadsPaginated.entries', []),
+        entries: get(json, 'threadsPaginated.entries', []),
         pageSize,
         forumPermalink
       })
@@ -208,8 +208,8 @@ export function likeForumThreadEntry({ referenceId, likedByCurrentUser, context 
     if (!forumThreadEntry) {
       throw Error("Can't find forumThreadEntry in redux Store");
     }
-    const obfuscatedReference = _.get(forumThreadEntry, `.obfuscatedReference`);
-    const forumPermalink = _.get(forumThreadEntry, `.forumRef.permalink`, undefined);
+    const obfuscatedReference = get(forumThreadEntry, `.obfuscatedReference`);
+    const forumPermalink = get(forumThreadEntry, `.forumRef.permalink`, undefined);
     let receivedLikes;
     if (!obfuscatedReference) {
       throw Error("can't get obfuscatedReference from forumThreadEntry in redux");

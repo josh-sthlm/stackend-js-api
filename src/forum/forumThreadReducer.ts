@@ -1,5 +1,10 @@
 // @flow
-import _ from 'lodash';
+
+// @ts-ignore
+import chain from 'lodash/chain';
+import get from 'lodash/get';
+import spread from 'lodash/spread';
+import merge from 'lodash/merge';
 import update from 'immutability-helper';
 import createReducer from '../api/createReducer';
 import * as forumApi from './index';
@@ -75,10 +80,10 @@ export default createReducer(initialState, {
     }),
 
   RECEIVE_FORUM_THREADS: (state: ForumThreadState, action: Receive) => {
-    const uniqueForumThreads = _(action.entries)
-      .concat(_.get(state, `forums[${action.forumPermalink}]`, []))
+    const uniqueForumThreads = chain(action.entries)
+      .concat(get(state, `forums[${action.forumPermalink}]`, []))
       .groupBy('id')
-      .map(_.spread(_.merge))
+      .map(spread(merge))
       .value()
       .sort((a: ForumThreadEntry, b: ForumThreadEntry) => (a.sticky ? 1 : 0) - (b.sticky ? 1 : 0));
 

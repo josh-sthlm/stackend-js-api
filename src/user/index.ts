@@ -13,7 +13,7 @@ import { Request } from '../request';
 import { AuthenticationType } from '../login';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import moment from 'moment';
-import _ from 'lodash';
+import get from 'lodash/get';
 import { CurrentUserType } from '../login/loginReducer';
 import { Community } from '../stackend';
 import { AuthObject, PrivilegeTypeId, PrivilegeTypeIds } from './privileges';
@@ -250,7 +250,7 @@ export function getProfileLink(
   url: string;
   isRemote: boolean;
 } {
-  const useRemoteProfileLink = _.get(community, 'settings.useRemoteProfileLink', false);
+  const useRemoteProfileLink = get(community, 'settings.useRemoteProfileLink', false);
   let profileLink = null;
   let isRemote = false;
   if (useRemoteProfileLink && user.profile && user.profile.remoteProfileUrl) {
@@ -362,7 +362,7 @@ export function getMutableUser(user: User): any {
     birthMonth = undefined,
     birthDay = undefined;
 
-  const profileEntries = _.get(user, 'profile', {});
+  const profileEntries = get(user, 'profile', {});
   if (user && user.birthDate) {
     const d = moment(user.birthDate);
     birthYear = d.year();
@@ -371,17 +371,17 @@ export function getMutableUser(user: User): any {
   }
 
   return {
-    id: _.get(user, 'id'),
-    email: _.get(user, 'email'),
-    firstName: _.get(user, 'firstName', ''),
-    lastName: _.get(user, 'lastName', ''),
-    gender: _.get(user, 'gender', GenderId.UNKNOWN),
-    cityId: _.get(user, 'cityId', 0),
+    id: get(user, 'id'),
+    email: get(user, 'email'),
+    firstName: get(user, 'firstName', ''),
+    lastName: get(user, 'lastName', ''),
+    gender: get(user, 'gender', GenderId.UNKNOWN),
+    cityId: get(user, 'cityId', 0),
     birthYear,
     birthMonth,
     birthDay,
     showBirthDay: birthYear ? true : false,
-    zipCode: _.get(user, 'zipCode', undefined),
+    zipCode: get(user, 'zipCode', undefined),
     termsAccept: true,
     ...profileEntries
   };

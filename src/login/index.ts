@@ -1,5 +1,5 @@
 //@flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import { Request } from '../request';
 import {
   XcapJsonResult,
@@ -117,8 +117,8 @@ export function _getLoginUrl({
         parameters.c = communityPermalink;
       }
 
-      parameters.email = _.get(arguments[0], 'email');
-      parameters.password = _.get(arguments[0], 'password');
+      parameters.email = get(arguments[0], 'email');
+      parameters.password = get(arguments[0], 'password');
 
       return _getApiUrl({
         state: { request, config, communities: {} },
@@ -152,8 +152,8 @@ function _getReturnUrl({ request, returnUrl }: { request: Request; returnUrl?: s
   let pfx = '';
   if (!returnUrl) {
     returnUrl = '';
-    returnUrl += _.get(request, 'location.href', '');
-    returnUrl += _.get(request, 'location.search', '');
+    returnUrl += get(request, 'location.href', '');
+    returnUrl += get(request, 'location.search', '');
     return encodeURIComponent(returnUrl);
   } else {
     // No proto

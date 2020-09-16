@@ -8,3 +8,4 @@ stackend_logo_dark.png
 .prettierrc.json
 tsconfig.json
 tests
+jest.config.js

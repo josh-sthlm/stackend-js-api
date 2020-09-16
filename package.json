@@ -1,6 +1,6 @@
 {
   "name": "@stackend/api",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "JS bindings to api.stackend.com",
   "keywords": [
     "comments",
@@ -90,6 +90,7 @@
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-hooks": "^2.5.1",
     "jest": "^26.4.2",
+    "ts-jest": "^26.3.0",
     "prettier": "^2.1.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.0.2",

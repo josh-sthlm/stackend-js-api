@@ -1,5 +1,5 @@
 // @flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import * as groupActions from '../group/groupActions';
 import { getCurrentCommunityPermalink, Thunk } from '../api';
 import { getActiveSearchTypes, Order, OrderBy, search as _search, SearchAbleType } from './index';
@@ -114,12 +114,12 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
   return (dispatch: any, getState: any): any => {
     const { type } = searchParams;
     const filters =
-      !!singleTypeSearch && !!type ? type : getActiveSearchTypes(_.get(getState(), 'communities.community.settings'));
+      !!singleTypeSearch && !!type ? type : getActiveSearchTypes(get(getState(), 'communities.community.settings'));
 
     return filters.map(filter => {
       return (async (): Promise<any> => {
         const { type, ...parsedSearchParams } = searchParams;
-        if (filter !== _.get(type, '[0]')) {
+        if (filter !== get(type, '[0]')) {
           parsedSearchParams.p = 1;
         }
         //const storageName = reduxStorageUrl + '-' + filter;
@@ -169,7 +169,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
 					}
 				*/
         } else if (filter === 'blog-article') {
-          const categoryId = _.get(getState(), 'categories.news.selected.search-input', []).map(
+          const categoryId = get(getState(), 'categories.news.selected.search-input', []).map(
             (category: Category) => category.id
           )[0];
           try {
@@ -187,12 +187,12 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
         } else {
           if (
             (filter === 'group' || filter[0] === 'group') &&
-            _.get(getState(), 'currentUser.isLoggedIn', false) &&
-            Object.keys(_.get(getState(), 'groups.auth')).length === 0
+            get(getState(), 'currentUser.isLoggedIn', false) &&
+            Object.keys(get(getState(), 'groups.auth')).length === 0
           ) {
             try {
               const json = await dispatch(groupApi.listMyGroups({}));
-              dispatch(groupActions.receiveGroupsAuth({ entries: _.get(json, 'groupAuth') }));
+              dispatch(groupActions.receiveGroupsAuth({ entries: get(json, 'groupAuth') }));
             } catch (e) {
               console.error('searchApi.search listMyGroups caught an error: ', e);
             }
@@ -211,7 +211,7 @@ export function search({ reduxStorageUrl, searchParams, singleTypeSearch }: Sear
             );
 
             if (filter === 'group' || filter[0] === 'group') {
-              dispatch(groupActions.receiveGroups({ entries: _.get(json, 'results.entries') }));
+              dispatch(groupActions.receiveGroups({ entries: get(json, 'results.entries') }));
             }
             //return dispatch(loadJsonActions.recieveJson(storageName, json));
           } catch (e) {

@@ -11,7 +11,7 @@ import {
   XcapOptionalParameters
 } from '../api';
 import * as qnaApi from '../qna';
-import _ from 'lodash';
+import get from 'lodash/get';
 import { Request } from '../request';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { LikeDataMap } from '../like';
@@ -196,7 +196,7 @@ export function getSearchApiUrl({
   type: string;
   urlArguments: any;
 } & XcapOptionalParameters): string {
-  const communityPermalink = _.get(community, 'permalink', null);
+  const communityPermalink = get(community, 'permalink', null);
   let url = `/search${type ? `/${type}` : ''}`;
 
   let componentName, context;

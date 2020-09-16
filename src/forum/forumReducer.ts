@@ -1,6 +1,10 @@
 // @flow
 import update from 'immutability-helper';
-import _ from 'lodash';
+// @ts-ignore
+import chain from 'lodash/chain';
+import get from 'lodash/get';
+import spread from 'lodash/spread';
+import merge from 'lodash/merge';
 import createReducer from '../api/createReducer';
 import * as forumApi from './index';
 
@@ -43,10 +47,10 @@ export default createReducer(initialState, {
     }),
 
   RECEIVE_FORUMS: (state: ForumState, action: ReceiveForumsAction) => {
-    const uniqueForums = _(action.entries)
-      .concat(_.get(state, `entries`, []))
+    const uniqueForums = chain(action.entries)
+      .concat(get(state, `entries`, []))
       .groupBy('id')
-      .map(_.spread(_.merge))
+      .map(spread(merge))
       .value();
 
     return update(state, {

@@ -1,5 +1,5 @@
 //@flow
-import _ from 'lodash';
+import get from 'lodash/get';
 import { Config, DeployProfile, STACKEND_DEFAULT_CONTEXT_PATH, STACKEND_DEFAULT_SERVER } from './index';
 import { Action } from 'redux';
 
@@ -33,7 +33,7 @@ const configReducer = (
 ): Config => {
   switch (action.type) {
     case XCAP_INITIAL_STORE_DATA_RECEIVED:
-      return _.get(action, 'json.xcapApiConfiguration', {});
+      return get(action, 'json.xcapApiConfiguration', {});
 
     case XCAP_SET_CONFIG: {
       const c = (action as SetConfigAction).config;

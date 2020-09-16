@@ -1,5 +1,6 @@
 //@flow
-import _ from 'lodash';
+import get from 'lodash/get';
+import find from 'lodash/find';
 
 const ALL = { key: 'all', value: null };
 //const FAQ = { key: 'faq', value: 'FAQs' };
@@ -20,6 +21,6 @@ const TITLES = {
 };
 
 export function findSearchTitle(searchKey: string): string | null | undefined {
-  const title = _.find(TITLES, item => searchKey === item.key);
-  return _.get(title, 'value', undefined);
+  const title = find(TITLES, item => searchKey === item.key);
+  return get(title, 'value', undefined);
 }

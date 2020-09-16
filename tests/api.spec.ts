@@ -1,6 +1,6 @@
 //@flow
 
-import createTestStore, { enableDebug } from './setup';
+import createTestStore from './setup';
 import {
   argsToObject,
   Config,
