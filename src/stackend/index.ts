@@ -1132,7 +1132,7 @@ export function setAdminStatus({
   privilege
 }: {
   userId: number;
-  privilege: number;
+  privilege: PrivilegeTypeIds;
 }): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/stackend/user/set-admin-status',
