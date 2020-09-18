@@ -284,7 +284,7 @@ export function hasElevatedPrivilege(
   currentUser: CurrentUserType | User | null,
   componentContext: string,
   componentClass: string,
-  privilegeType: PrivilegeTypeId
+  privilegeTypeId: PrivilegeTypeId
 ): boolean {
   if (!currentUser) {
     return false;
@@ -313,7 +313,7 @@ export function hasElevatedPrivilege(
     }
 
     const pt = parseInt(p.split(',')[2]);
-    if (pt >= privilegeType) {
+    if (pt >= privilegeTypeId) {
       return true;
     }
   }

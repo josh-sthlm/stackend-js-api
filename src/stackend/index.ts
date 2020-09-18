@@ -689,7 +689,7 @@ export function isCommunityAdmin(community: Community | null, userId?: number | 
  * @param currentUser
  * @returns {boolean}
  */
-export function hasStackendAdminAccess(currentUser: CurrentUserType): boolean {
+export function hasStackendAdminAccess(currentUser: CurrentUserType | User | null,): boolean {
   return hasElevatedPrivilege(currentUser, COMMUNITY_MANAGER_CONTEXT, COMPONENT_CLASS, PrivilegeTypeId.ADMIN);
 }
 
