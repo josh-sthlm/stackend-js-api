@@ -1,7 +1,7 @@
 //@flow
 
 import { Thunk } from '../api';
-import { REQUEST_CONTENT, RECEIVE_CONTENT, RECEIVE_CONTENTS, SET_CONTENT, CmsState } from "./cmsReducer";
+import { REQUEST_CONTENT, RECEIVE_CONTENT, RECEIVE_CONTENTS, SET_CONTENT, CmsState } from './cmsReducer';
 import { getContent, Content } from './index';
 
 /**

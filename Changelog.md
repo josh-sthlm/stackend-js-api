@@ -5,7 +5,6 @@
 CMS improvements
 Removed moment
 
-
 ## 1.0.10 - 16 sept 2020
 
 Specific lodash includes

@@ -282,7 +282,7 @@ export default LoadJson;
  * @param parameters
  * @return {FormData}
  */
-export function createFormData(parameters: {[key: string]: any }): FormData {
+export function createFormData(parameters: { [key: string]: any }): FormData {
   const formData = new FormData();
   if (typeof parameters !== 'undefined') {
     for (const i in parameters) {

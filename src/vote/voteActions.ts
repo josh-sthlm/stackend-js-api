@@ -1,6 +1,6 @@
 //@flow
 
-import { VoteActions, VoteState, XCAP_VOTES_RECEIVED, XCAP_VOTES_UPDATE } from "./voteReducer";
+import { VoteActions, VoteState, XCAP_VOTES_RECEIVED, XCAP_VOTES_UPDATE } from './voteReducer';
 import { Vote, VoteSummary } from './index';
 import { VoteInfo } from './voteReducer';
 import { Comment } from '../comments';

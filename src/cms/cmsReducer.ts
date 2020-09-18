@@ -9,15 +9,14 @@ export const RECEIVE_CONTENTS = 'RECEIVE_CONTENTS';
 export const SET_CONTENT = 'SET_CONTENT';
 
 export interface CmsState {
-
   /** Cms content by id */
-  "byId": {
+  byId: {
     [id: string]: Content;
-  },
+  };
 
-  "idByPermalink": {
-    [permalink: string]: number
-  }
+  idByPermalink: {
+    [permalink: string]: number;
+  };
   // For backwards compatibility, we also add
   // [id: string]: Content,
 }
@@ -45,27 +44,29 @@ export interface SetContentAction {
 
 export type CmsActionTypes = RequestContentAction | ReceiveContentAction | ReceiveContentsAction | SetContentAction;
 
-export default function (state: CmsState = {
-  byId: {},
-  idByPermalink: {}
-}, action: CmsActionTypes): CmsState {
+export default function (
+  state: CmsState = {
+    byId: {},
+    idByPermalink: {}
+  },
+  action: CmsActionTypes
+): CmsState {
   switch (action.type) {
-
     case RECEIVE_CONTENT: {
       if (action.json.error) {
         console.error(
           'Could not get content ' +
-          (action.id ? action.id : '') +
-          (action.permalink ? action.permalink : '') +
-          ': ' +
-          getJsonErrorText(action.json)
+            (action.id ? action.id : '') +
+            (action.permalink ? action.permalink : '') +
+            ': ' +
+            getJsonErrorText(action.json)
         );
         return state;
       }
 
       const content = action.json.content;
       if (content) {
-        const s =  Object.assign({}, state, {
+        const s = Object.assign({}, state, {
           [content.id + '']: content
         });
 
@@ -95,21 +96,20 @@ export default function (state: CmsState = {
         }
       }
 
-      return  s;
+      return s;
     }
 
     case SET_CONTENT:
-        if (action.content) {
-          const c = action.content;
-          const s = Object.assign({}, state);
-          s.byId[c.id] = c;
-          s.idByPermalink[c.permalink] = c.id;
-          (s as any)[c.id] = c;
-          return s;
-        }
+      if (action.content) {
+        const c = action.content;
+        const s = Object.assign({}, state);
+        s.byId[c.id] = c;
+        s.idByPermalink[c.permalink] = c.id;
+        (s as any)[c.id] = c;
+        return s;
+      }
 
       return state;
-
 
     default:
       return state;

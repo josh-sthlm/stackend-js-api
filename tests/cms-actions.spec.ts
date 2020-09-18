@@ -2,21 +2,19 @@
 
 import createTestStore from './setup';
 
-import { initialize, loadInitialStoreValues } from "../src/api/actions";
+import { initialize, loadInitialStoreValues } from '../src/api/actions';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
-import { fetchContent, getContentById, getContentByPermalink } from "../src/cms/cmsActions";
-import { CmsState } from "../src/cms/cmsReducer";
-import assert from "assert";
+import { fetchContent, getContentById, getContentByPermalink } from '../src/cms/cmsActions';
+import { CmsState } from '../src/cms/cmsReducer';
+import assert from 'assert';
 
-describe('CMS Actions',  () => {
+describe('CMS Actions', () => {
   const store = createTestStore();
   const permalink = 'my-first-stack-instructions';
 
   describe('fetchContent', () => {
     it('Fetch cms content', async () => {
-      await store.dispatch(
-        initialize({ permalink: STACKEND_COM_COMMUNITY_PERMALINK })
-      );
+      await store.dispatch(initialize({ permalink: STACKEND_COM_COMMUNITY_PERMALINK }));
 
       const id = 84;
       await store.dispatch(
@@ -41,7 +39,6 @@ describe('CMS Actions',  () => {
       expect(cmsContent.idByPermalink[permalink]).toBe(id);
       expect(cmsContent.byId[id]).toBeDefined();
 
-
       expect(cmsContent.byId[id].id).toBe(id);
       expect(cmsContent.byId[id].permalink).toBe(permalink);
 
@@ -57,11 +54,12 @@ describe('CMS Actions',  () => {
 
   describe('receiveContents', () => {
     it('Arrange received content', async () => {
-
-      await store.dispatch(loadInitialStoreValues({
-        permalink: STACKEND_COM_COMMUNITY_PERMALINK,
-        contentIds: [ 84, 4 ]
-      }));
+      await store.dispatch(
+        loadInitialStoreValues({
+          permalink: STACKEND_COM_COMMUNITY_PERMALINK,
+          contentIds: [84, 4]
+        })
+      );
 
       const state = store.getState();
       const cmsContent: CmsState = state.cmsContent;
@@ -75,5 +73,5 @@ describe('CMS Actions',  () => {
       expect(cmsContent.byId[84].permalink).toBe(permalink);
       expect(cmsContent.byId[4].permalink).toBe('footer');
     });
-  })
-})
+  });
+});

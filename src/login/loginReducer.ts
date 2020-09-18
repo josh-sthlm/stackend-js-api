@@ -1,7 +1,7 @@
 //@flow
 import get from 'lodash/get';
 import { User } from '../user';
-import { LoginActions } from "./loginAction";
+import { LoginActions } from './loginAction';
 
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
