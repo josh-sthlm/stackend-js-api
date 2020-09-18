@@ -36,9 +36,9 @@ export type LikeDataMap = { [ref: string]: LikeData };
  * @param object
  * @return a like object, never null
  */
-export function getLikeData(likes: LikeDataMap, object: any): LikeData {
-  if (!!likes && !!object && !!object.obfuscatedReference) {
-    const l = likes[object.obfuscatedReference];
+export function getLikeData(likes: LikeDataMap, object: unknown): LikeData {
+  if (likes && object && (object as any)?.obfuscatedReference) {
+    const l = likes[(object as any)?.obfuscatedReference];
     if (l) {
       return l;
     }

@@ -1,6 +1,6 @@
 //@flow
 
-import { VoteActions, XCAP_VOTES_RECEIVED, XCAP_VOTES_UPDATE } from './voteReducer';
+import { VoteActions, VoteState, XCAP_VOTES_RECEIVED, XCAP_VOTES_UPDATE } from "./voteReducer";
 import { Vote, VoteSummary } from './index';
 import { VoteInfo } from './voteReducer';
 import { Comment } from '../comments';
@@ -39,7 +39,7 @@ export function updateVotes(
   };
 }
 
-export function getVoteInfo(state: any, context: string, referenceId: number): VoteInfo | null {
+export function getVoteInfo(state: VoteState, context: string, referenceId: number): VoteInfo | null {
   if (!state || !referenceId || !context) {
     return null;
   }
@@ -56,7 +56,7 @@ export function getVoteInfo(state: any, context: string, referenceId: number): V
   return y;
 }
 
-export function getVote(state: any, context: string, referenceId: number, referenceGroupId: number): Vote | null {
+export function getVote(state: VoteState, context: string, referenceId: number, referenceGroupId: number): Vote | null {
   const vi = getVoteInfo(state, context, referenceId);
   if (!vi) {
     return null;
@@ -66,13 +66,13 @@ export function getVote(state: any, context: string, referenceId: number, refere
   return v ? v : null;
 }
 
-export function getVoteSummary(state: any, context: string, referenceId: number): VoteSummary | null {
+export function getVoteSummary(state: VoteState, context: string, referenceId: number): VoteSummary | null {
   const vi = getVoteInfo(state, context, referenceId);
   return vi ? vi.voteSummary : null;
 }
 
 export function getVotes(
-  state: any,
+  state: VoteState,
   context: string,
   referenceId: number
 ): { [referenceGroupId: number]: Vote } | null {

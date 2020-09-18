@@ -50,7 +50,7 @@ function requestLoginData(): LoginActions {
  * @param params { force?:boolean }
  * @returns
  */
-export function refreshLoginData(params?: any): Thunk<any> {
+export function refreshLoginData(params?: { force?: boolean }): Thunk<Promise<any>> {
   return async (dispatch: any, getState): Promise<any> => {
     try {
       const { currentUser } = getState();

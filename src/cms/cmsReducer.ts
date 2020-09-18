@@ -9,8 +9,17 @@ export const RECEIVE_CONTENTS = 'RECEIVE_CONTENTS';
 export const SET_CONTENT = 'SET_CONTENT';
 
 export interface CmsState {
+
   /** Cms content by id */
-  [id: string]: Content;
+  "byId": {
+    [id: string]: Content;
+  },
+
+  "idByPermalink": {
+    [permalink: string]: number
+  }
+  // For backwards compatibility, we also add
+  // [id: string]: Content,
 }
 
 export interface RequestContentAction {
@@ -24,7 +33,7 @@ export interface ReceiveContentAction {
   json: GetContentResult;
 }
 
-export interface ReciveContentsAction {
+export interface ReceiveContentsAction {
   type: typeof RECEIVE_CONTENTS;
   contents: { [id: number]: Content };
 }
@@ -34,44 +43,73 @@ export interface SetContentAction {
   content?: Content | null;
 }
 
-export type CmsActionTypes = RequestContentAction | ReceiveContentAction | ReciveContentsAction | SetContentAction;
+export type CmsActionTypes = RequestContentAction | ReceiveContentAction | ReceiveContentsAction | SetContentAction;
 
-export default function (state: CmsState = {}, action: CmsActionTypes): CmsState {
+export default function (state: CmsState = {
+  byId: {},
+  idByPermalink: {}
+}, action: CmsActionTypes): CmsState {
   switch (action.type) {
-    case RECEIVE_CONTENT:
+
+    case RECEIVE_CONTENT: {
       if (action.json.error) {
         console.error(
           'Could not get content ' +
-            (action.id ? action.id : '') +
-            (action.permalink ? action.permalink : '') +
-            ': ' +
-            getJsonErrorText(action.json)
+          (action.id ? action.id : '') +
+          (action.permalink ? action.permalink : '') +
+          ': ' +
+          getJsonErrorText(action.json)
         );
         return state;
       }
 
-      if (action.json.content) {
-        return Object.assign({}, state, { [action.json.content.id + '']: action.json.content });
+      const content = action.json.content;
+      if (content) {
+        const s =  Object.assign({}, state, {
+          [content.id + '']: content
+        });
+
+        s.byId[content.id] = content;
+        s.idByPermalink[content.permalink] = content.id;
+
+        return s;
       }
 
       console.warn('No such content: ' + (action.id ? action.id : '') + (action.permalink ? action.permalink : ''));
 
       return state;
+    }
 
-    // Recieve multiple contents
-    case RECEIVE_CONTENTS:
+    // Receive multiple contents
+    case RECEIVE_CONTENTS: {
       if (!action.contents) {
         return state;
       }
 
-      return Object.assign({}, state, action.contents);
-
-    case SET_CONTENT:
-      if (action.content) {
-        return Object.assign({}, state, { [action.content.id + '']: action.content });
+      const s = Object.assign({}, state);
+      for (const [id, c] of Object.entries(action.contents)) {
+        if (c) {
+          s.byId[id] = c;
+          s.idByPermalink[c.permalink] = c.id;
+          (s as any)[id] = c;
+        }
       }
 
+      return  s;
+    }
+
+    case SET_CONTENT:
+        if (action.content) {
+          const c = action.content;
+          const s = Object.assign({}, state);
+          s.byId[c.id] = c;
+          s.idByPermalink[c.permalink] = c.id;
+          (s as any)[c.id] = c;
+          return s;
+        }
+
       return state;
+
 
     default:
       return state;

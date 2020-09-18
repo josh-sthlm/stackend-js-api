@@ -12,7 +12,6 @@ import {
 import { Request } from '../request';
 import { AuthenticationType } from '../login';
 import { PaginatedCollection } from '../api/PaginatedCollection';
-import moment from 'moment';
 import get from 'lodash/get';
 import { CurrentUserType } from '../login/loginReducer';
 import { Community } from '../stackend';
@@ -364,10 +363,10 @@ export function getMutableUser(user: User): any {
 
   const profileEntries = get(user, 'profile', {});
   if (user && user.birthDate) {
-    const d = moment(user.birthDate);
-    birthYear = d.year();
-    birthMonth = d.month() + 1;
-    birthDay = d.date();
+    const d = new Date(user.birthDate);
+    birthYear = d.getFullYear();
+    birthMonth = d.getMonth() + 1;
+    birthDay = d.getDate();
   }
 
   return {

@@ -1,6 +1,7 @@
 //@flow
 import get from 'lodash/get';
 import { User } from '../user';
+import { LoginActions } from "./loginAction";
 
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
@@ -15,8 +16,8 @@ export interface CurrentUserType {
 
 export const loginReducer = (
   state: CurrentUserType = { isLoggedIn: false, lastUpdated: 0, user: null },
-  action: any
-): CurrentUserType => {
+  action: LoginActions
+): Partial<CurrentUserType> => {
   const now = new Date().getTime();
   switch (action.type) {
     case LOGIN:

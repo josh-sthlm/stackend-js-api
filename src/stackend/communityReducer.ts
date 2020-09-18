@@ -24,12 +24,7 @@ export interface CommunityState {
       })
     | null;
   communities?: PaginatedCollection<Community>;
-  resourceUsage?: {
-    maximumUseBeforeCharge: any | null;
-    resourceUsageLast30Days: any | null;
-    hasPaymentMethod: boolean;
-    isUserExcludedFromBilling: boolean;
-  };
+  resourceUsage?: ResourceUsage;
   isFetching?: boolean;
   didInvalidate?: boolean;
   lastUpdated?: number;

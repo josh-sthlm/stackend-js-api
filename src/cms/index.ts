@@ -550,6 +550,10 @@ export interface RemoveSubSiteResult extends XcapJsonResult {
   removed: boolean;
 }
 
+/**
+ * Remove a sub site
+ * @param id
+ */
 export function removeSubSite({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<RemoveSubSiteResult>> {
   return post({
     url: '/cms/subsite/remove',
@@ -561,6 +565,12 @@ export interface SearchSubSiteResult extends XcapJsonResult {
   trees: PaginatedCollection<SubSite>;
 }
 
+/**
+ * Search for sub sites
+ * @param q
+ * @param p
+ * @param pageSize
+ */
 export function searchSubSites({
   q,
   p,
@@ -577,14 +587,14 @@ export function searchSubSites({
 }
 
 /**
- * Create, but does not store a new subsite
+ * Create, but does not store a new sub site
  */
 export function newSubSite(name: string): SubSite {
   return newTree(name);
 }
 
 /**
- * Create, but does not store a new subsite node
+ * Create, but does not store a new sub site node
  */
 export function newSubSiteNode(name: string): SubSiteNode {
   return newTreeNode(name);
@@ -685,7 +695,7 @@ export function addContentToDom(parent: Element, content: Content): void {
  * Remove all child nodes of an element
  * @param element
  */
-export function removeAllChildNodes(element: any): void {
+export function removeAllChildNodes(element: Element): void {
   while (element.childNodes.length > 0) {
     element.removeChild(element.childNodes[0]);
   }
