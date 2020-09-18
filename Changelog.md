@@ -1,5 +1,9 @@
 # Changelog for Stackend JS API
 
+## 1.0.12 - 18 sept 2020
+
+Fixed failed isCommunityAdmin access check
+
 ## 1.0.11 - 18 sept 2020
 
 CMS improvements

@@ -674,7 +674,7 @@ export function isCommunityModerator(community: Community | null, userId: number
  * @returns {boolean}
  */
 export function isCommunityAdmin(community: Community | null, userId?: number | null): boolean {
-  if (typeof community === 'undefined' || community === null || !!userId || userId === null || userId === 0) {
+  if (typeof community === 'undefined' || community === null || !userId) {
     return false;
   }
 
@@ -689,7 +689,7 @@ export function isCommunityAdmin(community: Community | null, userId?: number | 
  * @param currentUser
  * @returns {boolean}
  */
-export function hasStackendAdminAccess(currentUser: CurrentUserType | User | null,): boolean {
+export function hasStackendAdminAccess(currentUser: CurrentUserType | User | null): boolean {
   return hasElevatedPrivilege(currentUser, COMMUNITY_MANAGER_CONTEXT, COMPONENT_CLASS, PrivilegeTypeId.ADMIN);
 }
 
