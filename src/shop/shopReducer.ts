@@ -45,7 +45,11 @@ export type ShopActions =
   | {
       type: typeof ADD_TO_BASKET;
       product: Product;
-    };
+    }
+  | {
+    type: typeof REMOVE_FROM_BASKET;
+    product: Product;
+  };
 
 export default function shopReducer(
   state: ShopState = {
@@ -101,6 +105,22 @@ export default function shopReducer(
       if (p) {
         basket.push(p);
       }
+
+      return Object.assign({}, state, {
+        basket
+      });
+    }
+
+    case REMOVE_FROM_BASKET: {
+
+      const p: Product = get(action, 'product');
+      const i = state.basket.findIndex(x => x.id == p.id);
+      if (i === -1) {
+        return state;
+      }
+
+      const basket = [...state.basket];
+      basket.splice(i, 1);
 
       return Object.assign({}, state, {
         basket
