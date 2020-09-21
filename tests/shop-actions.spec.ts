@@ -9,7 +9,6 @@ import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { ShopState } from '../src/shop/shopReducer';
 import assert from 'assert';
-import { Product } from '../src/shop';
 
 describe('Shop Actions/Reducers', () => {
   const store = createTestStore();
