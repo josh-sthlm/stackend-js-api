@@ -44,6 +44,7 @@ describe('API actions', () => {
       );
 
       console.log('Keys in cmsContent', Object.keys(cmsContent));
+      // @ts-ignore
       expect(cmsContent['39']).toBeDefined(); // Content for start page
     });
   });
