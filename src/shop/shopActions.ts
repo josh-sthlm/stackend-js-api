@@ -11,9 +11,9 @@ import {
   ListProductsResult,
   listProductTypes,
   ListProductTypesRequest,
-  ListProductTypesResult,
+  ListProductTypesResult, Product,
   ProductSortKeys
-} from './index';
+} from "./index";
 import {
   ADD_TO_BASKET,
   CLEAR_CACHE,
@@ -23,7 +23,7 @@ import {
   REMOVE_FROM_BASKET,
   ShopState
 } from './shopReducer';
-import { Thunk } from '../api';
+import { logger, Thunk } from "../api";
 
 /**
  * Load product types into store
@@ -154,4 +154,67 @@ export function findInBasket(shop: ShopState, handle: string, variant?: string):
  */
 export function basketContains(shop: ShopState, handle: string, variant?: string): boolean {
   return findInBasket(shop, handle, variant) !== -1;
+}
+
+/**
+ * Get products from a listing
+ * @param shop
+ * @param key
+ */
+export function getProductListingByKey(shop: ShopState, key: string): Array<Product> | null {
+
+  const handles = shop.productListings[key];
+  if (!handles) {
+    return null;
+  }
+
+  const products: Array<Product> = [];
+
+  handles.forEach(handle => {
+    const p = shop.products[handle];
+    if (p) {
+      products.push(p);
+    } else {
+      logger.warn("Product " + handle + " is missing for " + key);
+    }
+  });
+
+  return products;
+}
+
+/**
+ * Get products from a listing
+ * @param shop
+ * @param req
+ */
+export function getProductListing(shop: ShopState, req: ListProductsRequest): Array<Product> | null {
+  const key = getProductListKey(req);
+  return getProductListingByKey(shop, key);
+}
+
+/**
+ * List the products in the basket
+ * @param shop
+ */
+export function getBasketListing(shop: ShopState): Array<Product> {
+  const products: Array<Product> = [];
+
+  shop.basket.forEach(i => {
+    const p = shop.products[i.handle];
+    if (p) {
+      products.push(p);
+    } else {
+      logger.warn("Product " + i.handle + " in basket is missing");
+    }
+  });
+
+  products.sort( (a, b) => {
+    const i = a.title.localeCompare(b.title);
+    if (i != 0) {
+      return i;
+    }
+    return a.id.localeCompare(b.id);
+  })
+
+  return products;
 }

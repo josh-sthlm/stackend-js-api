@@ -1,10 +1,10 @@
 import {
-  addToBasket,
+  addToBasket, getBasketListing, getProductListing,
   getProductListKey,
   removeFromBasket,
   requestProduct,
   requestProducts
-} from '../src/shop/shopActions';
+} from "../src/shop/shopActions";
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { ShopState } from '../src/shop/shopReducer';
@@ -68,6 +68,11 @@ describe('Shop Actions/Reducers', () => {
       EXPECTED_HANDLES.forEach(h => {
         expect(shop.products[h]).toBeDefined();
       });
+
+      const products = getProductListing(shop, req);
+      assert(products);
+      expect(products.length).toBe(3);
+      expect(products[0].handle).toBe('snare-boot');
     });
   });
 
@@ -107,6 +112,12 @@ describe('Shop Actions/Reducers', () => {
           variant: undefined
         }
       ]);
+
+      const products = getBasketListing(shop);
+      expect(products.length).toBe(1);
+      expect(products[0].handle).toBe('pin-boot');
+      expect(products[0].availableForSale).toBeTruthy();
+
 
       await store.dispatch(removeFromBasket('pin-boot'));
       s = store.getState();
