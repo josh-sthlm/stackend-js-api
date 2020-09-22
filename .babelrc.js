@@ -12,13 +12,15 @@ module.exports = {
         exclude: ['transform-async-to-generator', 'transform-regenerator'],
         modules: false,
         loose: true,
-        useBuiltIns: 'usage'
+        useBuiltIns: 'usage',
+        corejs: 2
       }
     ]
   ],
   plugins: [
     // don't use `loose` mode here - need to copy symbols when spreading
     '@babel/proposal-object-rest-spread',
+    '@babel/plugin-proposal-class-properties',
     NODE_ENV === 'test' && '@babel/transform-modules-commonjs'
   ].filter(Boolean)
 }

@@ -26,11 +26,18 @@ export interface BasketItem {
   variant: string | undefined;
 }
 
+export type ProductTypeTree = Array<ProductTypeTreeNode>;
+
 export interface ShopState {
   /**
    * Product types
    */
   productTypes: Array<string>;
+
+  /**
+   * Product types as a tree
+   */
+  productTypeTree: ProductTypeTree;
 
   /**
    * Products by handle
@@ -83,6 +90,7 @@ export type ShopActions =
 export default function shopReducer(
   state: ShopState = {
     productTypes: [],
+    productTypeTree: [],
     products: {},
     productListings: {},
     basket: []
@@ -93,8 +101,10 @@ export default function shopReducer(
     case RECEIVE_PRODUCT_TYPES: {
       const edges: Array<GraphQLListNode<string>> = get(action, 'json.productTypes.edges', []);
       const productTypes = edges.map(e => e.node);
+
       return Object.assign({}, state, {
-        productTypes
+        productTypes,
+        productTypeTree: buildProductTypeTree(edges)
       });
     }
 
@@ -192,4 +202,75 @@ export default function shopReducer(
   }
 
   return state;
+}
+
+export function buildProductTypeTree(productTypes: Array<GraphQLListNode<string>>): ProductTypeTree {
+  const pt: Array<string> = productTypes.map(n => n.node);
+  const i = pt.indexOf('');
+  if (i !== -1) {
+    pt.splice(i, 1);
+  }
+  pt.sort((a, b) => a.localeCompare(b));
+
+  const t: ProductTypeTree = [];
+  const treeHash: { [productType: string]: ProductTypeTreeNode } = {};
+
+  pt.forEach(x => {
+    const n = new ProductTypeTreeNode(x);
+    treeHash[x] = n;
+
+    const parent = n.getParentProductType();
+    if (parent) {
+      const pn = treeHash[parent];
+      pn.add(n);
+    } else {
+      t.push(n);
+    }
+  });
+
+  return t;
+}
+
+export class ProductTypeTreeNode {
+  /**
+   * Simple name
+   */
+  public readonly name: string;
+
+  /**
+   * Full name
+   */
+  public readonly productType: string;
+
+  /**
+   * Child nodes
+   */
+  public readonly children: Array<ProductTypeTreeNode>;
+
+  constructor(productType: string) {
+    this.productType = productType;
+
+    let name = productType;
+    const i = name.lastIndexOf('/');
+    if (i !== -1) {
+      name = name.substring(i + 1);
+    }
+    this.name = name;
+    this.children = [];
+  }
+
+  public getParentProductType(): string | null {
+    const i = this.productType.lastIndexOf('/');
+    if (i === -1) {
+      return null;
+    }
+
+    return this.productType.substring(0, i);
+  }
+
+  public add(node: ProductTypeTreeNode): void {
+    if (node) {
+      this.children.push(node);
+    }
+  }
 }

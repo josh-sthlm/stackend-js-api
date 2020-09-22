@@ -5,15 +5,56 @@ import {
   getProductListKey,
   removeFromBasket,
   requestProduct,
-  requestProducts
+  requestProducts,
+  requestProductTypes
 } from '../src/shop/shopActions';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
-import { ShopState } from '../src/shop/shopReducer';
+import { buildProductTypeTree, ShopState } from '../src/shop/shopReducer';
 import assert from 'assert';
 
 describe('Shop Actions/Reducers', () => {
   const store = createTestStore();
+
+  describe('buildProductTypeTree', () => {
+    it('Creates a product tree', () => {
+      let t = buildProductTypeTree([]);
+      assert(t);
+      expect(t.length).toBe(0);
+
+      t = buildProductTypeTree([{ node: 'c' }, { node: 'b' }, { node: 'a' }]);
+      assert(t);
+      expect(t.length).toBe(3);
+      expect(t[0].children.length).toBe(0);
+      expect(t[0].name).toBe('a');
+      expect(t[0].productType).toBe('a');
+
+      expect(t[2].children.length).toBe(0);
+      expect(t[2].name).toBe('c');
+      expect(t[2].productType).toBe('c');
+
+      t = buildProductTypeTree([{ node: 'a/b' }, { node: 'c' }, { node: 'a' }]);
+      assert(t);
+      expect(t.length).toBe(2);
+      expect(t[0].name).toBe('a');
+      expect(t[0].productType).toBe('a');
+      expect(t[0].children[0].productType).toBe('a/b');
+      expect(t[0].children[0].name).toBe('b');
+      expect(t[0].children[0].children.length).toBe(0);
+      expect(t[1].productType).toBe('c');
+
+      t = buildProductTypeTree([{ node: 'c' }, { node: 'a/a' }, { node: 'a/b' }, { node: 'a/b/c' }, { node: 'a' }]);
+      assert(t);
+      expect(t.length).toBe(2);
+      expect(t[0].name).toBe('a');
+      expect(t[1].productType).toBe('c');
+      expect(t[0].children.length).toBe(2);
+      expect(t[0].children[0].productType).toBe('a/a');
+      expect(t[0].children[1].productType).toBe('a/b');
+      expect(t[0].children[1].children.length).toBe(1);
+      expect(t[0].children[1].children[0].productType).toBe('a/b/c');
+    });
+  });
 
   describe('getProductListKey', () => {
     it('Gets a uniqe key', () => {
@@ -75,6 +116,18 @@ describe('Shop Actions/Reducers', () => {
       assert(products);
       expect(products.length).toBe(3);
       expect(products[0].handle).toBe('snare-boot');
+    });
+  });
+
+  describe('requestProductTypes', () => {
+    it('Loads product types into store', async () => {
+      await store.dispatch(requestProductTypes({}));
+      const s = store.getState();
+      const shop: ShopState = s.shop;
+      assert(shop);
+      expect(shop.productTypes).toBeDefined();
+      expect(shop.productTypes.length).toBeGreaterThanOrEqual(1);
+      expect(shop.productTypeTree.length).toBeGreaterThanOrEqual(1);
     });
   });
 
