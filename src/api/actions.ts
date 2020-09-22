@@ -18,8 +18,7 @@ import { receiveContents } from '../cms/cmsActions';
 import { receivePages, receiveSubSites } from '../cms/pageActions';
 import { AnyAction } from 'redux';
 import { Logger } from 'winston';
-import { Page } from '../cms/index';
-import { Content, PageContent } from '../cms';
+import { Page, Content, PageContent } from '../cms';
 import { ModuleType } from '../stackend/modules';
 //import { receiveNotificationCounts } from './notifications/notificationActions';
 

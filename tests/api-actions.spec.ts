@@ -1,11 +1,12 @@
 //@flow
 
 import createTestStore from './setup';
-import { GetInitialStoreValuesResult } from '../src/api';
-import { loadInitialStoreValues } from '../src/api/actions';
+import { _getApiUrl, getApiUrl, GetInitialStoreValuesResult } from '../src/api';
+import { initialize, loadInitialStoreValues } from '../src/api/actions';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import { PagesState } from '../src/cms/pageReducer';
 import { CmsState } from '../src/cms/cmsReducer';
+import assert from 'assert';
 
 describe('API actions', () => {
   const store = createTestStore();
@@ -46,6 +47,47 @@ describe('API actions', () => {
       console.log('Keys in cmsContent', Object.keys(cmsContent));
       // @ts-ignore
       expect(cmsContent['39']).toBeDefined(); // Content for start page
+    });
+  });
+
+  describe('initialize', () => {
+    it('Initialize stackend', async () => {
+      const r: GetInitialStoreValuesResult = await store.dispatch(
+        initialize({
+          permalink: STACKEND_COM_COMMUNITY_PERMALINK
+        })
+      );
+      assert(r);
+      assert(r.stackendCommunity);
+      expect(r.stackendCommunity.permalink).toBe(STACKEND_COM_COMMUNITY_PERMALINK);
+
+      // STACKEND_COM_COMMUNITY_PERMALINK should now be default
+      let u = await store.dispatch(
+        getApiUrl({
+          url: '/test',
+          parameters: { a: 1 }
+        })
+      );
+
+      expect(u).toBe('https://api.stackend.com/' + STACKEND_COM_COMMUNITY_PERMALINK + '/api/test?a=1');
+
+      await store.dispatch(
+        initialize({
+          permalink: 'husdjur'
+        })
+      );
+
+      // husdjur should now be default
+      u = await store.dispatch(
+        getApiUrl({
+          url: '/test2',
+          parameters: { a: 2 }
+        })
+      );
+      expect(u).toBe('https://api.stackend.com/husdjur/api/test2?a=2');
+
+      u = _getApiUrl({ state: store.getState(), url: '/test3', parameters: { b: 3 } });
+      expect(u).toBe('https://api.stackend.com/husdjur/api/test3?b=3');
     });
   });
 });
