@@ -11,7 +11,10 @@ export function generateClassName(s: string | null | undefined): string {
   }
 
   let c: string = deburr(s);
-  c = c.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/--+/g, '-');
+  c = c
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/--+/g, '-');
 
   if (c) {
     return c;
