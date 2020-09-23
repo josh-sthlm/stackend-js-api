@@ -81,7 +81,15 @@ export function listProductTypes(req: ListProductTypesRequest): Thunk<Promise<Li
 }
 
 export enum ProductSortKeys {
-  RELEVANCE = 'RELEVANCE'
+  VENDOR = 'VENDOR',
+  CREATED_AT = 'CREATED_AT',
+  ID = 'ID',
+  PRICE = 'PRICE',
+  PRODUCT_TYPE = 'PRODUCT_TYPE',
+  RELEVANCE = 'RELEVANCE',
+  TITLE = 'TITLE',
+  UPDATED_AT = 'UPDATED_AT',
+  BEST_SELLING = 'BEST_SELLING'
 }
 
 export interface ListProductsRequest extends XcapOptionalParameters {
@@ -158,87 +166,124 @@ export function getFirstImage(product: Product | null): ProductImage | null {
   return images.edges[0].node;
 }
 
-export interface ProductTypeTree {
-  name: string;
-  children?: Array<ProductTypeTree>;
+export class BasketItem {
+  public readonly handle: string;
+  public readonly variant: string | undefined;
+  public quantity: number;
+
+  constructor(handle: string, variant?: string, quantity?: number) {
+    this.handle = handle;
+    this.quantity = quantity || 1;
+    this.variant = variant;
+  }
+
+  matches(handle: string, variant?: string): boolean {
+    return handle === this.handle && variant === this.variant;
+  }
+
+  static COMPARATOR = (a: BasketItem, b: BasketItem): number => {
+    const i = a.handle.localeCompare(b.handle);
+    if (i !== 0) {
+      return i;
+    }
+
+    if (a.variant) {
+      if (b.variant) return a.variant.localeCompare(b.variant);
+      return 1;
+    } else {
+      if (b.variant) return -1;
+    }
+
+    return 0;
+  };
 }
 
-function _createNodes(root: ProductTypeTree, parts: Array<string>): ProductTypeTree | null {
-  if (parts.length === 0) {
-    return null;
+export class Basket {
+  public readonly items: Array<BasketItem>;
+
+  constructor() {
+    this.items = [];
   }
 
-  const name = parts[0];
-
-  const t: ProductTypeTree = {
-    name
-  };
-
-  let match = null;
-  if (root.children) {
-    match = root.children.find(c => c.name === name);
-  }
-
-  if (!match) {
-    match = root;
-  }
-
-  if (!match.children) {
-    match.children = [];
-  }
-  match.children.push(t);
-
-  if (parts.length === 1) {
-    return t;
-  }
-
-  const remainingParts = parts.slice(1);
-  return _createNodes(match, remainingParts);
-}
-
-function _addNode(root: ProductTypeTree, name: string): ProductTypeTree {
-  const parts = name.split(/\s*[/;]\s*/);
-
-  const t: ProductTypeTree = {
-    name: parts[parts.length - 1]
-  };
-
-  _createNodes(root, parts);
-
-  return t;
-}
-
-/**
- * Given a flat list with product types, construct a tree structure from the labels:
- *
- * Hockey
- * Hockey / Pucks
- * Soccer
- * Soccer / Balls
- *
- * @param productTypes
- * @returns {null}
- */
-export function constructProductTypeTree(productTypes: GraphQLList<string>): ProductTypeTree | null {
-  if (!productTypes) {
-    return null;
-  }
-
-  const t: ProductTypeTree = {
-    name: ''
-  };
-
-  if (productTypes.edges.length !== 0) {
-    t.children = [];
-
-    productTypes.edges.forEach(p => {
-      const name = p.node;
-      if (name === '') {
-        return;
+  /**
+   * Find a basket item
+   * @param handle
+   * @param variant
+   */
+  find(handle: string, variant?: string): BasketItem | null {
+    for (const i of this.items) {
+      if (i.matches(handle, variant)) {
+        return i;
       }
-      _addNode(t, name);
-    });
+    }
+    return null;
   }
 
-  return t;
+  /**
+   * Add an item
+   * @param handle
+   * @param variant
+   * @param quantity
+   */
+  add(handle: string, variant?: string, quantity?: number): number {
+    const q = quantity || 1;
+    let i = this.find(handle, variant);
+    if (i) {
+      i.quantity += q;
+      return i.quantity;
+    }
+
+    i = new BasketItem(handle, variant, q);
+    this.items.push(i);
+    this.items.sort(BasketItem.COMPARATOR);
+    return q;
+  }
+
+  /**
+   * Remove an item
+   * @param handle
+   * @param variant
+   * @param quantity
+   */
+  remove(handle: string, variant?: string, quantity?: number): number {
+    const q = quantity || 1;
+
+    for (let i = 0; i < this.items.length; i++) {
+      const x = this.items[i];
+      if (x.matches(handle, variant)) {
+        x.quantity -= q;
+        if (x.quantity > 0) {
+          return x.quantity;
+        }
+        this.items.splice(i, 1);
+      }
+    }
+
+    return 0;
+  }
+
+  toString(): string {
+    return JSON.stringify(this);
+  }
+
+  static fromString(s: string): Basket {
+    if (!s) {
+      return new Basket();
+    }
+
+    const json: any = JSON.parse(s);
+    const b = new Basket();
+    if (json.items) {
+      for (const i of json.items) {
+        if (i.handle) {
+          const bi = new BasketItem(i.handle, i.variant, i.quantity);
+          b.items.push(bi);
+        }
+      }
+
+      b.items.sort(BasketItem.COMPARATOR);
+    }
+
+    return b;
+  }
 }

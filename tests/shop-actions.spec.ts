@@ -43,7 +43,7 @@ describe('Shop Actions/Reducers', () => {
       expect(t[0].children[0].children.length).toBe(0);
       expect(t[1].productType).toBe('c');
 
-      t = buildProductTypeTree([{ node: 'c' }, { node: 'a/a' }, { node: 'a/b' }, { node: 'a/b/c' }, { node: 'a' }]);
+      t = buildProductTypeTree([{ node: 'c' }, { node: 'a/b/c' }, { node: 'a/a' }, { node: 'a/b' }]);
       assert(t);
       expect(t.length).toBe(2);
       expect(t[0].name).toBe('a');

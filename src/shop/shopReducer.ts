@@ -9,7 +9,7 @@ import {
   Product
 } from './index';
 import get from 'lodash/get';
-import { basketContains, findInBasket, getProductListKey } from './shopActions';
+import { getProductListKey } from './shopActions';
 
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
@@ -19,12 +19,6 @@ export const REMOVE_FROM_BASKET = 'REMOVE_FROM_BASKET';
 export const CLEAR_CACHE = 'CLEAR_CACHE';
 
 export const DEFAULT_PRODUCT_TYPE = '';
-
-export interface BasketItem {
-  quantity: number;
-  handle: string;
-  variant: string | undefined;
-}
 
 export type ProductTypeTree = Array<ProductTypeTreeNode>;
 
@@ -52,11 +46,6 @@ export interface ShopState {
      */
     [key: string]: Array<string>;
   };
-
-  /**
-   * Shopping basket
-   */
-  basket: Array<BasketItem>;
 }
 
 export type ShopActions =
@@ -74,16 +63,6 @@ export type ShopActions =
       request: ListProductsRequest;
     }
   | {
-      type: typeof ADD_TO_BASKET;
-      handle: string;
-      variant?: string;
-    }
-  | {
-      type: typeof REMOVE_FROM_BASKET;
-      handle: string;
-      variant?: string;
-    }
-  | {
       type: typeof CLEAR_CACHE;
     };
 
@@ -92,8 +71,7 @@ export default function shopReducer(
     productTypes: [],
     productTypeTree: [],
     products: {},
-    productListings: {},
-    basket: []
+    productListings: {}
   },
   action: ShopActions
 ): ShopState {
@@ -144,59 +122,10 @@ export default function shopReducer(
       });
     }
 
-    case ADD_TO_BASKET: {
-      if (!action.handle) {
-        return state;
-      }
-
-      const basket = [...state.basket];
-
-      const i = findInBasket(state, action.handle, action.variant);
-      if (i === -1) {
-        basket.push({
-          quantity: 1,
-          handle: action.handle,
-          variant: action.variant
-        });
-      } else {
-        basket[i].quantity++;
-      }
-
-      return Object.assign({}, state, {
-        basket
-      });
-    }
-
-    case REMOVE_FROM_BASKET: {
-      const i = findInBasket(state, action.handle, action.variant);
-      if (i === -1) {
-        return state;
-      }
-
-      const basket = [...state.basket];
-      if (basket[i].quantity === 1) {
-        basket.splice(i, 1);
-      } else {
-        basket[i].quantity--;
-      }
-
-      return Object.assign({}, state, {
-        basket
-      });
-    }
-
     case CLEAR_CACHE: {
-      const products: { [handle: string]: Product } = {};
-
-      Object.keys(state.products).forEach(handle => {
-        if (basketContains(state, handle)) {
-          products[handle] = state.products[handle];
-        }
-      });
-
       return Object.assign({}, state, {
         productListings: {},
-        products
+        products: {}
       });
     }
   }
@@ -221,7 +150,14 @@ export function buildProductTypeTree(productTypes: Array<GraphQLListNode<string>
 
     const parent = n.getParentProductType();
     if (parent) {
-      const pn = treeHash[parent];
+      let pn = treeHash[parent];
+      if (!pn) {
+        pn = new ProductTypeTreeNode(parent);
+        treeHash[parent] = pn;
+        if (pn.isRoot()) {
+          t.push(pn);
+        }
+      }
       pn.add(n);
     } else {
       t.push(n);
@@ -266,6 +202,14 @@ export class ProductTypeTreeNode {
     }
 
     return this.productType.substring(0, i);
+  }
+
+  public isRoot(): boolean {
+    return this.productType.indexOf('/') === -1;
+  }
+
+  public hasChildren(): boolean {
+    return this.children.length !== 0;
   }
 
   public add(node: ProductTypeTreeNode): void {

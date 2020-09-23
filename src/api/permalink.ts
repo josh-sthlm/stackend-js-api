@@ -1,4 +1,4 @@
-//@flow
+import deburr from 'lodash/deburr';
 
 /**
  * Given a permalink, calculate the parent permalink
@@ -47,12 +47,14 @@ export function generatePermalink(permalink: string, typingMode?: boolean): stri
 
   // FIXME: Improve this. Does not match backend with regards to national characters. Should probably use the api.
   let pl = permalink.toLowerCase();
-  pl = pl.replace(/å/g, 'a');
-  pl = pl.replace(/ä/g, 'a');
-  pl = pl.replace(/ö/g, 'o');
+
+  pl = deburr(pl);
+
   pl = pl.replace(/[ .:,;?!+_]/g, '-');
   pl = pl.replace(/[^a-z0-9\-/]/g, '');
   pl = pl.replace(/^-/, '');
+  pl = pl.replace(/--+/, '-');
+
   if (typeof typingMode === 'undefined' || !typingMode) {
     pl = pl.replace(/-$/, '');
   }

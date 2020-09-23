@@ -1,6 +1,7 @@
 //@flow
 
 import {
+  Basket,
   getProduct,
   GetProductRequest,
   GetProductResult,
@@ -15,16 +16,9 @@ import {
   Product,
   ProductSortKeys
 } from './index';
-import {
-  ADD_TO_BASKET,
-  CLEAR_CACHE,
-  RECEIVE_PRODUCT,
-  RECEIVE_PRODUCT_TYPES,
-  RECEIVE_PRODUCTS,
-  REMOVE_FROM_BASKET,
-  ShopState
-} from './shopReducer';
-import { logger, Thunk } from '../api';
+import { CLEAR_CACHE, RECEIVE_PRODUCT, RECEIVE_PRODUCT_TYPES, RECEIVE_PRODUCTS, ShopState } from './shopReducer';
+import { isRunningServerSide, logger, Thunk } from '../api';
+import get from 'lodash/get';
 
 /**
  * Load product types into store
@@ -75,24 +69,48 @@ export const requestProduct = (req: GetProductRequest): Thunk<Promise<GetProduct
   return r;
 };
 
-// FIXME: Should be product variant
 /**
- * Add a product to the basket
- * @param handle
- * @param variant
+ * Get the basket from local storage
  */
-export const addToBasket = (handle: string, variant?: string): Thunk<Promise<void>> => async (
-  dispatch: any
-): Promise<void> => {
-  await dispatch({ type: ADD_TO_BASKET, handle, variant });
+export const getBasket = (): Thunk<Basket> => (dispatch: any, getState: any): Basket => {
+  if (isRunningServerSide()) {
+    return new Basket();
+  }
+
+  const state = getState();
+  const cpl = get(state, 'communities.community.permalink', '');
+  const json = localStorage.getItem(cpl + '-basket');
+  if (!json) {
+    return new Basket();
+  }
+
+  return Basket.fromString(json);
 };
 
 /**
- * Remove a product from the basket
- * @param handle
+ * Persist the basket in local storage
+ * @param basket
  */
-export const removeFromBasket = (handle: string): Thunk<Promise<void>> => async (dispatch: any): Promise<void> => {
-  await dispatch({ type: REMOVE_FROM_BASKET, handle });
+export const storeBasket = (basket: Basket): Thunk<void> => (dispatch: any, getState: any): void => {
+  if (isRunningServerSide()) {
+    return;
+  }
+
+  const state = getState();
+  const cpl = get(state, 'communities.community.permalink', '');
+  localStorage.setItem(cpl + '-basket', basket.toString());
+};
+
+/**
+ * Clear the basket from local storage
+ */
+export const clearBasket = (): Thunk<void> => (dispatch: any, getState: any): void => {
+  if (isRunningServerSide()) {
+    return;
+  }
+  const state = getState();
+  const cpl = get(state, 'communities.community.permalink', '');
+  localStorage.removeItem(cpl + '-basket');
 };
 
 /**
@@ -121,41 +139,11 @@ export function getProductHandles(shop: ShopState, req: ListProductsRequest): Ar
 }
 
 /**
- * Clear store cache. Does not empty basket
+ * Clear store cache. Does not empty basket or product types
  */
 export const clearCache = (): Thunk<Promise<void>> => async (dispatch: any): Promise<void> => {
   await dispatch({ type: CLEAR_CACHE });
 };
-
-/**
- * Find the index of a product in the basket
- * @param shop
- * @param handle
- * @param variant
- */
-export function findInBasket(shop: ShopState, handle: string, variant?: string): number {
-  return shop.basket.findIndex(i => {
-    if (i.handle !== handle) {
-      return false;
-    }
-
-    if (variant && variant !== i.variant) {
-      return false;
-    }
-
-    return true;
-  });
-}
-
-/**
- * Check if the basket contains a product
- * @param shop
- * @param handle
- * @param variant
- */
-export function basketContains(shop: ShopState, handle: string, variant?: string): boolean {
-  return findInBasket(shop, handle, variant) !== -1;
-}
 
 /**
  * Get products from a listing
@@ -196,10 +184,10 @@ export function getProductListing(shop: ShopState, req: ListProductsRequest): Ar
  * List the products in the basket
  * @param shop
  */
-export function getBasketListing(shop: ShopState): Array<Product> {
+export function getBasketListing(shop: ShopState, basket: Basket): Array<Product> {
   const products: Array<Product> = [];
 
-  shop.basket.forEach(i => {
+  basket.items.forEach(i => {
     const p = shop.products[i.handle];
     if (p) {
       products.push(p);
