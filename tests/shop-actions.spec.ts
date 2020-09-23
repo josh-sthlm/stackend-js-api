@@ -1,9 +1,6 @@
 import {
-  addToBasket,
-  getBasketListing,
   getProductListing,
   getProductListKey,
-  removeFromBasket,
   requestProduct,
   requestProducts,
   requestProductTypes
@@ -79,7 +76,7 @@ describe('Shop Actions/Reducers', () => {
     expect(shop.productListings).toBeDefined();
     expect(shop.products).toBeDefined();
     expect(shop.productTypes).toBeDefined();
-    expect(shop.basket).toBeDefined();
+    expect(shop.productTypeTree).toBeDefined();
   });
 
   describe('requestProducts', () => {
@@ -138,56 +135,6 @@ describe('Shop Actions/Reducers', () => {
       const shop: ShopState = s.shop;
       assert(shop);
       expect(shop.products['pin-boot']).toBeDefined();
-    });
-  });
-
-  describe('Basket add/remove', () => {
-    it('Add/removes a product to the basket', async () => {
-      await store.dispatch(addToBasket('pin-boot'));
-      let s = store.getState();
-      let shop: ShopState = s.shop;
-      assert(shop);
-
-      expect(shop.basket).toBeDefined();
-      expect(shop.basket).toStrictEqual([
-        {
-          handle: 'pin-boot',
-          quantity: 1,
-          variant: undefined
-        }
-      ]);
-
-      await store.dispatch(addToBasket('pin-boot'));
-      s = store.getState();
-      shop = s.shop;
-      expect(shop.basket).toStrictEqual([
-        {
-          handle: 'pin-boot',
-          quantity: 2,
-          variant: undefined
-        }
-      ]);
-
-      const products = getBasketListing(shop);
-      expect(products.length).toBe(1);
-      expect(products[0].handle).toBe('pin-boot');
-      expect(products[0].availableForSale).toBeTruthy();
-
-      await store.dispatch(removeFromBasket('pin-boot'));
-      s = store.getState();
-      shop = s.shop;
-      expect(shop.basket).toStrictEqual([
-        {
-          handle: 'pin-boot',
-          quantity: 1,
-          variant: undefined
-        }
-      ]);
-
-      await store.dispatch(removeFromBasket('pin-boot'));
-      s = store.getState();
-      shop = s.shop;
-      expect(shop.basket).toStrictEqual([]);
     });
   });
 });
