@@ -18,6 +18,7 @@ describe('Util', () => {
       expect(generateClassName('')).toBe('0');
       expect(generateClassName('räksmörgås')).toBe('raksmorgas');
       expect(generateClassName('a b & c')).toBe('a-b-c');
+      expect(generateClassName('Apan Ola')).toBe('apan-ola');
     });
   });
 });
