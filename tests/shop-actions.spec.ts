@@ -1,4 +1,5 @@
 import {
+  getAllProductTypes,
   getProductListing,
   getProductListKey,
   requestProduct,
@@ -50,11 +51,13 @@ describe('Shop Actions/Reducers', () => {
       expect(t[0].children[1].productType).toBe('a/b');
       expect(t[0].children[1].children.length).toBe(1);
       expect(t[0].children[1].children[0].productType).toBe('a/b/c');
+
+      expect(getAllProductTypes(t[0])).toStrictEqual(['a', 'a/a', 'a/b', 'a/b/c']);
     });
   });
 
   describe('getProductListKey', () => {
-    it('Gets a uniqe key', () => {
+    it('Gets a unique key', () => {
       expect(getProductListKey({})).toBe(';;;RELEVANCE;;;');
 
       expect(

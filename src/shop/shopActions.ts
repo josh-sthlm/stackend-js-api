@@ -16,7 +16,14 @@ import {
   Product,
   ProductSortKeys
 } from './index';
-import { CLEAR_CACHE, RECEIVE_PRODUCT, RECEIVE_PRODUCT_TYPES, RECEIVE_PRODUCTS, ShopState } from './shopReducer';
+import {
+  CLEAR_CACHE,
+  RECEIVE_PRODUCT,
+  RECEIVE_PRODUCT_TYPES,
+  RECEIVE_PRODUCTS,
+  BASKET_UPDATED,
+  ShopState
+} from './shopReducer';
 import { isRunningServerSide, logger, Thunk } from '../api';
 import get from 'lodash/get';
 
@@ -99,6 +106,7 @@ export const storeBasket = (basket: Basket): Thunk<void> => (dispatch: any, getS
   const state = getState();
   const cpl = get(state, 'communities.community.permalink', '');
   localStorage.setItem(cpl + '-basket', basket.toString());
+  dispatch({ type: BASKET_UPDATED });
 };
 
 /**
@@ -205,4 +213,95 @@ export function getBasketListing(shop: ShopState, basket: Basket): Array<Product
   });
 
   return products;
+}
+
+export interface ProductTypeTreeNode {
+  /**
+   * Simple name
+   */
+  name: string;
+
+  /**
+   * Full name
+   */
+  productType: string;
+
+  /**
+   * Child nodes
+   */
+  children: Array<ProductTypeTreeNode>;
+}
+
+/**
+ * Construct a new product type tree node
+ * @param productType
+ */
+export function newProductTypeTreeNode(productType: string): ProductTypeTreeNode {
+  let name = productType;
+  const i = name.lastIndexOf('/');
+  if (i !== -1) {
+    name = name.substring(i + 1);
+  }
+
+  return {
+    productType,
+    name,
+    children: []
+  };
+}
+
+/**
+ * Get the parent product type
+ * @param n
+ */
+export function getParentProductType(n: ProductTypeTreeNode | string): string | null {
+  let pt: string;
+  if (typeof n === 'object') {
+    pt = n.productType;
+  } else {
+    pt = n;
+  }
+
+  const i = pt.lastIndexOf('/');
+  if (i === -1) {
+    return null;
+  }
+
+  return pt.substring(0, i);
+}
+
+/**
+ * Is the product type a root type?
+ * @param n
+ */
+export function isRoot(n: ProductTypeTreeNode): boolean {
+  return n.productType.indexOf('/') === -1;
+}
+
+export function hasChildren(n: ProductTypeTreeNode): boolean {
+  return n.children.length !== 0;
+}
+
+export function addNode(parent: ProductTypeTreeNode, node: ProductTypeTreeNode): void {
+  if (parent && node) {
+    parent.children.push(node);
+  }
+}
+
+/**
+ * Get all product types under a tree node as a flat list
+ * @param p
+ * @param result
+ */
+export function getAllProductTypes(p: ProductTypeTreeNode, result?: Array<string>): Array<string> {
+  if (typeof result === 'undefined') {
+    result = [];
+  }
+
+  result.push(p.productType);
+  for (const c of p.children) {
+    getAllProductTypes(c, result);
+  }
+
+  return result;
 }

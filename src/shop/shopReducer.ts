@@ -9,14 +9,20 @@ import {
   Product
 } from './index';
 import get from 'lodash/get';
-import { getProductListKey } from './shopActions';
+import {
+  addNode,
+  getParentProductType,
+  getProductListKey,
+  isRoot,
+  newProductTypeTreeNode,
+  ProductTypeTreeNode
+} from './shopActions';
 
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
 export const RECEIVE_PRODUCTS = 'RECEIVE_PRODUCTS';
-export const ADD_TO_BASKET = 'ADD_TO_BASKET';
-export const REMOVE_FROM_BASKET = 'REMOVE_FROM_BASKET';
 export const CLEAR_CACHE = 'CLEAR_CACHE';
+export const BASKET_UPDATED = 'BASKET_UPDATED';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -46,6 +52,8 @@ export interface ShopState {
      */
     [key: string]: Array<string>;
   };
+
+  basketUpdated: number;
 }
 
 export type ShopActions =
@@ -64,6 +72,9 @@ export type ShopActions =
     }
   | {
       type: typeof CLEAR_CACHE;
+    }
+  | {
+      type: typeof BASKET_UPDATED;
     };
 
 export default function shopReducer(
@@ -71,7 +82,8 @@ export default function shopReducer(
     productTypes: [],
     productTypeTree: [],
     products: {},
-    productListings: {}
+    productListings: {},
+    basketUpdated: 0
   },
   action: ShopActions
 ): ShopState {
@@ -122,12 +134,16 @@ export default function shopReducer(
       });
     }
 
-    case CLEAR_CACHE: {
+    case CLEAR_CACHE:
       return Object.assign({}, state, {
         productListings: {},
         products: {}
       });
-    }
+
+    case BASKET_UPDATED:
+      return Object.assign({}, state, {
+        basketUpdated: Date.now()
+      });
   }
 
   return state;
@@ -145,76 +161,24 @@ export function buildProductTypeTree(productTypes: Array<GraphQLListNode<string>
   const treeHash: { [productType: string]: ProductTypeTreeNode } = {};
 
   pt.forEach(x => {
-    const n = new ProductTypeTreeNode(x);
+    const n = newProductTypeTreeNode(x);
     treeHash[x] = n;
 
-    const parent = n.getParentProductType();
+    const parent = getParentProductType(n);
     if (parent) {
       let pn = treeHash[parent];
       if (!pn) {
-        pn = new ProductTypeTreeNode(parent);
+        pn = newProductTypeTreeNode(parent);
         treeHash[parent] = pn;
-        if (pn.isRoot()) {
+        if (isRoot(pn)) {
           t.push(pn);
         }
       }
-      pn.add(n);
+      addNode(pn, n);
     } else {
       t.push(n);
     }
   });
 
   return t;
-}
-
-export class ProductTypeTreeNode {
-  /**
-   * Simple name
-   */
-  public readonly name: string;
-
-  /**
-   * Full name
-   */
-  public readonly productType: string;
-
-  /**
-   * Child nodes
-   */
-  public readonly children: Array<ProductTypeTreeNode>;
-
-  constructor(productType: string) {
-    this.productType = productType;
-
-    let name = productType;
-    const i = name.lastIndexOf('/');
-    if (i !== -1) {
-      name = name.substring(i + 1);
-    }
-    this.name = name;
-    this.children = [];
-  }
-
-  public getParentProductType(): string | null {
-    const i = this.productType.lastIndexOf('/');
-    if (i === -1) {
-      return null;
-    }
-
-    return this.productType.substring(0, i);
-  }
-
-  public isRoot(): boolean {
-    return this.productType.indexOf('/') === -1;
-  }
-
-  public hasChildren(): boolean {
-    return this.children.length !== 0;
-  }
-
-  public add(node: ProductTypeTreeNode): void {
-    if (node) {
-      this.children.push(node);
-    }
-  }
 }

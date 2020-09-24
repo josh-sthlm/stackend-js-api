@@ -1,7 +1,12 @@
 import assert from 'assert';
 import { Basket } from '../src/shop';
+import createTestStore from './setup';
+import { getBasket, storeBasket } from '../src/shop/shopActions';
+import { ShopState } from '../src/shop/shopReducer';
 
 describe('Shop', () => {
+  const store = createTestStore();
+
   describe('Basket', () => {
     it('Add/remove/find/toString', () => {
       const b = new Basket();
@@ -46,6 +51,19 @@ describe('Shop', () => {
       expect(b.items[1].handle).toBe('test');
       expect(b.items[1].variant).toBe('korv');
       expect(b.items[1].quantity).toBe(1);
+    });
+
+    it('get/store', () => {
+      const basket: Basket = store.dispatch(getBasket());
+      assert(basket);
+      basket.add('test');
+
+      let shop: ShopState = store.getState().shop;
+      const basketUpdated = shop.basketUpdated;
+
+      store.dispatch(storeBasket(basket));
+      shop = store.getState().shop;
+      expect(shop.basketUpdated).toBeGreaterThan(basketUpdated);
     });
   });
 });
