@@ -27,7 +27,7 @@ import {
   ShopState,
   RECEIVE_MULTIPLE_PRODUCTS
 } from './shopReducer';
-import { isRunningServerSide, logger, Thunk } from '../api';
+import { isRunningServerSide, logger, newXcapJsonResult, Thunk } from "../api";
 import get from 'lodash/get';
 
 /**
@@ -106,6 +106,10 @@ export const requestMissingProducts = (handles: Array<string>): Thunk<Promise<Ge
     if (!shop.products[h]) {
       fetchHandles.push(h);
     }
+  }
+
+  if (fetchHandles.length == 0) {
+    return newXcapJsonResult("success", { products: {}}) as GetProductsResult;
   }
 
   const r = await dispatch(getProducts({ handles: fetchHandles }));
