@@ -2,6 +2,7 @@
 
 import {
   GetProductResult,
+  GetProductsRequest,
   GraphQLListNode,
   ListProductsAndTypesResult,
   ListProductsRequest,
@@ -20,6 +21,7 @@ import {
 
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
+export const RECEIVE_MULTIPLE_PRODUCTS = 'RECEIVE_MULTIPLE_PRODUCTS';
 export const RECEIVE_PRODUCTS = 'RECEIVE_PRODUCTS';
 export const CLEAR_CACHE = 'CLEAR_CACHE';
 export const BASKET_UPDATED = 'BASKET_UPDATED';
@@ -66,6 +68,10 @@ export type ShopActions =
       json: GetProductResult;
     }
   | {
+      type: typeof RECEIVE_MULTIPLE_PRODUCTS;
+      json: GetProductsRequest;
+    }
+  | {
       type: typeof RECEIVE_PRODUCTS;
       json: ListProductsAndTypesResult;
       request: ListProductsRequest;
@@ -105,6 +111,17 @@ export default function shopReducer(
           [product.handle]: product
         });
 
+        return Object.assign({}, state, {
+          products
+        });
+      }
+      break;
+    }
+
+    case RECEIVE_MULTIPLE_PRODUCTS: {
+      const receivedProducts = get(action, 'json.products');
+      if (receivedProducts) {
+        const products = Object.assign({}, state.products, receivedProducts);
         return Object.assign({}, state, {
           products
         });

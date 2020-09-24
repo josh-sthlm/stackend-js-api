@@ -5,6 +5,8 @@ import {
   getProduct,
   GetProductRequest,
   GetProductResult,
+  getProducts,
+  GetProductsResult,
   listProducts,
   listProductsAndTypes,
   ListProductsAndTypesResult,
@@ -22,7 +24,8 @@ import {
   RECEIVE_PRODUCT_TYPES,
   RECEIVE_PRODUCTS,
   BASKET_UPDATED,
-  ShopState
+  ShopState,
+  RECEIVE_MULTIPLE_PRODUCTS
 } from './shopReducer';
 import { isRunningServerSide, logger, Thunk } from '../api';
 import get from 'lodash/get';
@@ -40,7 +43,7 @@ export const requestProductTypes = (req: ListProductTypesRequest): Thunk<Promise
 };
 
 /**
- * Load products into store
+ * Request a product listing
  * @param req
  */
 export const requestProducts = (req: ListProductsRequest): Thunk<Promise<ListProductsResult>> => async (
@@ -73,6 +76,40 @@ export const requestProduct = (req: GetProductRequest): Thunk<Promise<GetProduct
 ): Promise<GetProductResult> => {
   const r = await dispatch(getProduct(req));
   await dispatch({ type: RECEIVE_PRODUCT, json: r });
+  return r;
+};
+
+/**
+ * Request multiple products
+ * @param handles
+ */
+export const requestMultipleProducts = (handles: Array<string>): Thunk<Promise<GetProductsResult>> => async (
+  dispatch: any
+): Promise<GetProductsResult> => {
+  const r = await dispatch(getProducts({ handles }));
+  await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
+  return r;
+};
+
+/**
+ * Request missing products
+ * @param handles
+ */
+export const requestMissingProducts = (handles: Array<string>): Thunk<Promise<GetProductsResult>> => async (
+  dispatch: any,
+  getState: () => any
+): Promise<GetProductsResult> => {
+  const shop: ShopState = getState().shop;
+
+  const fetchHandles: Array<string> = [];
+  for (const h of handles) {
+    if (!shop.products[h]) {
+      fetchHandles.push(h);
+    }
+  }
+
+  const r = await dispatch(getProducts({ handles: fetchHandles }));
+  await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
   return r;
 };
 

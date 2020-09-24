@@ -137,6 +137,28 @@ export function getProduct(req: GetProductRequest): Thunk<Promise<GetProductResu
   });
 }
 
+export interface GetProductsRequest extends XcapOptionalParameters {
+  handles: Array<string>;
+}
+
+export interface GetProductsResult extends XcapJsonResult {
+  products: {
+    [handle: string]: Product;
+  };
+}
+
+/**
+ * Get multiple products
+ * @param req
+ * @returns {Thunk<XcapJsonResult>}
+ */
+export function getProducts(req: GetProductsRequest): Thunk<Promise<GetProductsResult>> {
+  return getJson({
+    url: '/shop/get-products',
+    parameters: arguments
+  });
+}
+
 export interface ListProductsAndTypesResult extends ListProductsResult {
   productTypes: GraphQLList<string>;
 }

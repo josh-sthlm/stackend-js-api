@@ -2,6 +2,7 @@ import {
   getAllProductTypes,
   getProductListing,
   getProductListKey,
+  requestMissingProducts,
   requestProduct,
   requestProducts,
   requestProductTypes
@@ -10,6 +11,7 @@ import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { buildProductTypeTree, ShopState } from '../src/shop/shopReducer';
 import assert from 'assert';
+import { ProductSortKeys } from '../src/shop';
 
 describe('Shop Actions/Reducers', () => {
   const store = createTestStore();
@@ -138,6 +140,39 @@ describe('Shop Actions/Reducers', () => {
       const shop: ShopState = s.shop;
       assert(shop);
       expect(shop.products['pin-boot']).toBeDefined();
+    });
+  });
+
+  describe('requestProducts', () => {
+    it('List products', async () => {
+      const req = {
+        sort: ProductSortKeys.BEST_SELLING,
+        first: 1
+      };
+      await store.dispatch(requestProducts(req));
+      const s = store.getState();
+      const shop: ShopState = s.shop;
+      assert(shop);
+      const list = getProductListing(shop, req);
+      assert(list);
+      expect(list.length).toBe(1);
+      expect(list[0].handle).toBeDefined();
+    });
+  });
+
+  describe('requestMissingProducts', () => {
+    it('Loads missing products into store', async () => {
+      await store.dispatch(
+        requestMissingProducts([
+          'pin-boot', // already loaded
+          'hanra-shirt'
+        ])
+      );
+      const s = store.getState();
+      const shop: ShopState = s.shop;
+      assert(shop);
+      expect(shop.products['pin-boot']).toBeDefined();
+      expect(shop.products['hanra-shirt']).toBeDefined();
     });
   });
 });
