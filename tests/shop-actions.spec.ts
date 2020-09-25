@@ -1,12 +1,13 @@
 import {
   getAllProductTypes,
   getProductListing,
-  getProductListKey, getProductTypeLabel,
+  getProductListKey,
+  getProductTypeLabel,
   requestMissingProducts,
   requestProduct,
   requestProducts,
   requestProductTypes
-} from "../src/shop/shopActions";
+} from '../src/shop/shopActions';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { buildProductTypeTree, ShopState } from '../src/shop/shopReducer';
@@ -60,12 +61,12 @@ describe('Shop Actions/Reducers', () => {
 
   describe('getProductTypeLabel', () => {
     it('Get the label part of a product type', () => {
-      expect(getProductTypeLabel('')).toBe("");
+      expect(getProductTypeLabel('')).toBe('');
       expect(getProductTypeLabel('A')).toBe('A');
       expect(getProductTypeLabel('A/B')).toBe('B');
       expect(getProductTypeLabel('A/B/C')).toBe('C');
-    })
-  })
+    });
+  });
 
   describe('getProductListKey', () => {
     it('Gets a unique key', () => {

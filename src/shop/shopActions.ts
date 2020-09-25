@@ -351,16 +351,15 @@ export function getAllProductTypes(p: ProductTypeTreeNode, result?: Array<string
  * Get the last part of the product type
  * @param productType
  */
-export function getProductTypeLabel(productType: string): string
-{
+export function getProductTypeLabel(productType: string): string {
   if (!productType) {
     return '';
   }
 
-  const i = productType.lastIndexOf("/");
+  const i = productType.lastIndexOf('/');
   if (i === -1) {
     return productType;
   }
 
-  return productType.substring(i+1);
+  return productType.substring(i + 1);
 }
