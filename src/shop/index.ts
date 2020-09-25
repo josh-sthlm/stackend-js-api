@@ -11,24 +11,68 @@ export interface GraphQLList<T> {
 }
 
 export interface ProductImage {
-  id: string;
   altText: string | null;
   transformedSrc: string;
 }
 
+export interface PriceV2 {
+  amount: number;
+  currencyCode: string;
+}
+
+/**
+ * A variant of a product
+ */
+export interface ProductVariant {
+  id: string;
+  availableForSale: boolean;
+  quantityAvailable: number | null;
+  sku: string;
+  image: ProductImage | null;
+  priceV2: PriceV2;
+}
+
+/**
+ * A product, including variants
+ */
 export interface Product {
   id: string;
   /** permalink */
   handle: string;
   title: string;
+  /**
+   * Description as plain text
+   */
   description: string;
+
+  /**
+   * Description as html
+   */
+  descriptionHtml: string;
+
   /** Format: "2019-07-11T14:09:26Z" */
   updatedAt: string;
   /** Format: "2019-07-11T14:09:26Z" */
   createdAt: string;
   availableForSale: boolean;
+
+  /**
+   * Product type
+   */
+  productType: string;
+
+  /**
+   * Tags
+   */
+  tags: Array<string>;
+
   /** Actual number of images and size depends on context/listing */
   images: GraphQLList<ProductImage>;
+
+  /**
+   * Variants of the product
+   */
+  variants: GraphQLList<ProductVariant>;
 }
 
 /**
@@ -175,6 +219,10 @@ export function listProductsAndTypes(req: ListProductsRequest): Thunk<Promise<Li
   });
 }
 
+/**
+ * Get the first image of a product
+ * @param product
+ */
 export function getFirstImage(product: Product | null): ProductImage | null {
   if (!product) {
     return null;
@@ -186,6 +234,68 @@ export function getFirstImage(product: Product | null): ProductImage | null {
   }
 
   return images.edges[0].node;
+}
+
+/**
+ * Get a product variant
+ * @param product
+ * @param variant
+ */
+export function getProductVariant(product: Product, variant: string): ProductVariant | null {
+  const n = product.variants.edges.find(v => {
+    return v.node.id === variant;
+  });
+  return n ? n.node : null;
+}
+
+/**
+ * Iterate product variants
+ * @param product
+ * @param predicate
+ */
+export function forEachProductVariant(
+  product: Product,
+  predicate: (variant: ProductVariant, index: number, product: Product) => void
+): void {
+  product.variants.edges.forEach((x, index) => {
+    predicate(x.node, index, product);
+  });
+}
+
+/**
+ * Map each product variant
+ * @param product
+ * @param apply
+ */
+export function mapProductVariants<T>(
+  product: Product,
+  apply: (variant: ProductVariant, product: Product) => T
+): Array<T> {
+  return product.variants.edges.map(x => apply(x.node, product));
+}
+
+/**
+ * Get the variant image
+ */
+export function getVariantImage(product: Product, variant: string): ProductImage | null {
+  const v = getProductVariant(product, variant);
+  return v ? v.image : null;
+}
+
+/**
+ * Get the lowest variant price available
+ * @param product
+ */
+export function getLowestVariantPrice(product: Product): PriceV2 | null {
+  let p: PriceV2 | null = null;
+
+  forEachProductVariant(product, variant => {
+    if (p === null || variant.priceV2.amount < p.amount) {
+      p = variant.priceV2;
+    }
+  });
+
+  return p;
 }
 
 export class BasketItem {

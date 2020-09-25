@@ -1,8 +1,18 @@
 import assert from 'assert';
-import { Basket } from '../src/shop';
+import {
+  Basket,
+  forEachProductVariant,
+  getLowestVariantPrice,
+  getProduct,
+  GetProductResult,
+  getProductVariant,
+  getVariantImage,
+  mapProductVariants
+} from '../src/shop';
 import createTestStore from './setup';
 import { getBasket, storeBasket } from '../src/shop/shopActions';
 import { ShopState } from '../src/shop/shopReducer';
+import { loadInitialStoreValues } from '../src/api/actions';
 
 describe('Shop', () => {
   const store = createTestStore();
@@ -64,6 +74,67 @@ describe('Shop', () => {
       store.dispatch(storeBasket(basket));
       shop = store.getState().shop;
       expect(shop.basketUpdated).toBeGreaterThan(basketUpdated);
+    });
+  });
+
+  describe('Product', () => {
+    it('get/functions', async () => {
+      await store.dispatch(
+        loadInitialStoreValues({
+          permalink: 'husdjur'
+        })
+      );
+
+      const r: GetProductResult = await store.dispatch(getProduct({ handle: 'snare-boot' }));
+      assert(r);
+      expect(r.error).toBeUndefined();
+
+      const p = r.product;
+      assert(p);
+
+      expect(p.id).toBe('Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzk4OTUyNzYwOTk=');
+      expect(p.handle).toBe('snare-boot');
+      expect(p.description).toBeDefined();
+      expect(p.descriptionHtml).toBeDefined();
+      expect(p.availableForSale).toBeTruthy();
+      expect(p.tags).toBeDefined();
+      expect(p.productType).toBeDefined();
+      expect(p.createdAt).toBeDefined();
+      expect(p.variants).toBeDefined();
+      expect(p.images).toBeDefined();
+
+      expect(p.variants.edges.length).toBeGreaterThan(1);
+
+      let v = getProductVariant(p, 'x');
+      expect(v).toBeNull();
+
+      v = getProductVariant(p, 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zNjYwNzYyMjA4Mw==');
+      expect(v).toBeDefined();
+
+      let j = 0;
+      forEachProductVariant(p, (v, i, p) => {
+        expect(v).toBeDefined();
+        expect(p).toBeDefined();
+        expect(v.id).toBeDefined();
+        expect(i).toBe(j);
+        j++;
+      });
+      expect(j).toBe(p.variants.edges.length);
+
+      const x = mapProductVariants(p, (variant, product) => variant.id);
+      expect(x).toBeDefined();
+      expect(x.length).toBe(p.variants.edges.length);
+      expect(x[0]).toBe(p.variants.edges[0].node.id);
+
+      const img = getVariantImage(p, 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zNjYwNzYyMjA4Mw==');
+      assert(img);
+      expect(img.transformedSrc).toBeDefined();
+      expect(img.altText).toBeDefined();
+
+      const vp = getLowestVariantPrice(p);
+      assert(vp);
+      expect(vp.currencyCode).toBeDefined();
+      expect(vp.amount).toBeDefined();
     });
   });
 });
