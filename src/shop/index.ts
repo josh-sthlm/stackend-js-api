@@ -1,6 +1,7 @@
 //@flow
 
 import { getJson, post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
+import { ShopState } from './shopReducer';
 
 export interface GraphQLListNode<T> {
   node: T;
@@ -418,4 +419,31 @@ export class Basket {
 
     return b;
   }
+}
+
+/**
+ * Get the total price of all items
+ */
+export function getBasketTotalPrice(shop: ShopState, basket: Basket): PriceV2 {
+  const total: PriceV2 = {
+    amount: 0,
+    currencyCode: ''
+  };
+
+  basket.items.forEach(i => {
+    if (i.variant) {
+      const p = shop.products[i.handle];
+      if (p) {
+        const v = getProductVariant(p, i.variant);
+        if (v) {
+          total.amount += v.priceV2.amount * i.quantity;
+          if (!total.currencyCode) {
+            total.currencyCode = v.priceV2.currencyCode;
+          }
+        }
+      }
+    }
+  });
+
+  return total;
 }

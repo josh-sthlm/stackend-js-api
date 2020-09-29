@@ -9,8 +9,8 @@ export const RECEIVE_SUB_SITES = 'RECEIVE_SUB_SITES';
 export const CLEAR_SUB_SITES = 'CLEAR_SUB_SITES';
 
 export interface PagesState {
-  byId: { [id: string]: PageAndLoadedState };
-  idByPermalink: { [permalink: string]: number };
+  byId: { [id: string]: PageAndLoadedState | null };
+  idByPermalink: { [permalink: string]: number | null };
   subSiteById: { [id: string]: SubSite };
 }
 
@@ -22,6 +22,8 @@ export type PageActions =
   | {
       type: typeof RECEIVE_PAGES;
       json: GetPagesResult;
+      pageIds?: Array<number>;
+      permalinks?: Array<string>;
     }
   | {
       type: typeof CLEAR_PAGE;
@@ -47,15 +49,16 @@ export default function (
   action: PageActions
 ): PagesState {
   switch (action.type) {
-    case RECEIVE_PAGES:
+    case RECEIVE_PAGES: {
       if (action.json.error) {
         console.error('Could not get pages ' + getJsonErrorText(action.json));
         return state;
       }
 
+      const s: PagesState = Object.assign({}, state);
+      const now = new Date().getTime();
+
       if (action.json.pages) {
-        const s: PagesState = Object.assign({}, state);
-        const now = new Date().getTime();
         Object.entries(action.json.pages).forEach(([id, page]) => {
           const p = page as Page;
           s.byId[id] = Object.assign(p, { loaded: now });
@@ -63,10 +66,27 @@ export default function (
         });
 
         //console.log('Received pages', s);
-        return s;
       }
 
-      return state;
+      // Cache missing pages
+      if (action.pageIds) {
+        for (const id of action.pageIds) {
+          if (!s.byId[id]) {
+            s.byId[id] = null;
+          }
+        }
+      }
+
+      if (action.permalinks) {
+        for (const permalink of action.permalinks) {
+          if (!s.idByPermalink[permalink]) {
+            s.idByPermalink[permalink] = null;
+          }
+        }
+      }
+
+      return s;
+    }
 
     case CLEAR_PAGES:
       return Object.assign({}, state, {

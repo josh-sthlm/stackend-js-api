@@ -31,7 +31,9 @@ export function requestPages({
     const r = await dispatch(getPages({ pageIds, permalinks, communityPermalink }));
     await dispatch({
       type: RECEIVE_PAGES,
-      json: r
+      json: r,
+      pageIds,
+      permalinks
     });
     return r;
   };
@@ -80,8 +82,7 @@ export function requestMissingPages({
     }
 
     if (fetchPageIds.length === 0 && fetchPermalinks.length === 0) {
-      return newXcapJsonResult('success', { pages: '' }) as GetPagesResult;
-      //return { pages: {} };
+      return newXcapJsonResult('success', { pages: {} }) as GetPagesResult;
     }
 
     return await dispatch(
@@ -94,9 +95,13 @@ export function requestMissingPages({
   };
 }
 
-export function shouldFetchPage(p: Page | PageAndLoadedState | null, now: number): boolean {
-  if (!p) {
+export function shouldFetchPage(p: Page | PageAndLoadedState | null | undefined, now: number): boolean {
+  if (typeof p === 'undefined') {
     return true;
+  }
+
+  if (p === null) {
+    return false; // Has cached the fact that p does not exists
   }
 
   const s = p as PageAndLoadedState;
@@ -206,15 +211,19 @@ export function receiveSubSites({ subSites }: { subSites: { [id: number]: SubSit
  * @param permalink
  * @returns {null|Page}
  */
-export function getPageByPermalink(pages: PagesState, permalink: string | null): Page | null {
+export function getPageByPermalink(pages: PagesState, permalink: string | null): Page | undefined | null {
   if (!pages || !permalink) {
-    return null;
+    return null; // For cache
   }
   const id = pages.idByPermalink[permalink];
+  if (id === null) {
+    return null;
+  }
+
   if (id) {
     return pages.byId[id];
   }
-  return null;
+  return undefined;
 }
 
 export const SITE_HASH_PREFIX = '#/site';
