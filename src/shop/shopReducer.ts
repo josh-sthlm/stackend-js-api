@@ -25,6 +25,8 @@ export const RECEIVE_MULTIPLE_PRODUCTS = 'RECEIVE_MULTIPLE_PRODUCTS';
 export const RECEIVE_PRODUCTS = 'RECEIVE_PRODUCTS';
 export const CLEAR_CACHE = 'CLEAR_CACHE';
 export const BASKET_UPDATED = 'BASKET_UPDATED';
+export const ADD_TO_BASKET = 'ADD_TO_BASKET';
+export const REMOVE_FROM_BASKET = 'REMOVE_FROM_BASKET';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -78,6 +80,18 @@ export type ShopActions =
     }
   | {
       type: typeof CLEAR_CACHE;
+    }
+  | {
+      type: typeof ADD_TO_BASKET;
+      product: Product;
+      variant?: string;
+      quantity: number;
+    }
+  | {
+      type: typeof REMOVE_FROM_BASKET;
+      product: Product;
+      variant?: string;
+      quantity: number;
     }
   | {
       type: typeof BASKET_UPDATED;
@@ -158,6 +172,8 @@ export default function shopReducer(
       });
 
     case BASKET_UPDATED:
+    case ADD_TO_BASKET:
+    case REMOVE_FROM_BASKET:
       return Object.assign({}, state, {
         basketUpdated: Date.now()
       });

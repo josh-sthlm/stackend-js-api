@@ -25,7 +25,9 @@ import {
   RECEIVE_PRODUCTS,
   BASKET_UPDATED,
   ShopState,
-  RECEIVE_MULTIPLE_PRODUCTS
+  RECEIVE_MULTIPLE_PRODUCTS,
+  ADD_TO_BASKET,
+  REMOVE_FROM_BASKET
 } from './shopReducer';
 import { isRunningServerSide, logger, newXcapJsonResult, Thunk } from '../api';
 import get from 'lodash/get';
@@ -125,9 +127,8 @@ export const getBasket = (): Thunk<Basket> => (dispatch: any, getState: any): Ba
     return new Basket();
   }
 
-  const state = getState();
-  const cpl = get(state, 'communities.community.permalink', '');
-  const json = localStorage.getItem(cpl + '-basket');
+  const key = getLocalStorageKey(getState());
+  const json = localStorage.getItem(key);
   if (!json) {
     return new Basket();
   }
@@ -135,6 +136,9 @@ export const getBasket = (): Thunk<Basket> => (dispatch: any, getState: any): Ba
   return Basket.fromString(json);
 };
 
+function getLocalStorageKey(state: any): string {
+  return get(state, 'communities.community.permalink', 'stackend') + '-basket';
+}
 /**
  * Persist the basket in local storage
  * @param basket
@@ -144,10 +148,58 @@ export const storeBasket = (basket: Basket): Thunk<void> => (dispatch: any, getS
     return;
   }
 
-  const state = getState();
-  const cpl = get(state, 'communities.community.permalink', '');
-  localStorage.setItem(cpl + '-basket', basket.toString());
+  const key = getLocalStorageKey(getState());
+  localStorage.setItem(key, basket.toString());
   dispatch({ type: BASKET_UPDATED });
+};
+
+/**
+ * Add item(s) to the basket and persist it in local storage
+ * @param basket
+ * @param product
+ * @param variant
+ * @param quantity
+ */
+export const addToBasket = (basket: Basket, product: Product, variant?: string, quantity?: number): Thunk<void> => (
+  dispatch: any,
+  getState: any
+): void => {
+  if (isRunningServerSide()) {
+    return;
+  }
+
+  const q = quantity || 1;
+  basket.add(product.handle, variant, q);
+
+  const key = getLocalStorageKey(getState());
+  localStorage.setItem(key, basket.toString());
+  dispatch({ type: ADD_TO_BASKET, product, variant, quantity: q });
+};
+
+/**
+ * Remove items from the basket and persist it in local storage
+ * @param basket
+ * @param product
+ * @param variant
+ * @param quantity
+ */
+export const removeFromBasket = (
+  basket: Basket,
+  product: Product,
+  variant?: string,
+  quantity?: number
+): Thunk<void> => (dispatch: any, getState: any): void => {
+  if (isRunningServerSide()) {
+    return;
+  }
+
+  const q = quantity || 1;
+
+  basket.remove(product.handle, variant, q);
+
+  const key = getLocalStorageKey(getState());
+  localStorage.setItem(key, basket.toString());
+  dispatch({ type: REMOVE_FROM_BASKET, product, variant, quantity: q });
 };
 
 /**
@@ -157,9 +209,9 @@ export const clearBasket = (): Thunk<void> => (dispatch: any, getState: any): vo
   if (isRunningServerSide()) {
     return;
   }
-  const state = getState();
-  const cpl = get(state, 'communities.community.permalink', '');
-  localStorage.removeItem(cpl + '-basket');
+  const key = getLocalStorageKey(getState());
+  localStorage.removeItem(key);
+  dispatch({ type: BASKET_UPDATED });
 };
 
 /**
