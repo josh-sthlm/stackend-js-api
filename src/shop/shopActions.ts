@@ -22,12 +22,13 @@ import {
   CLEAR_CACHE,
   RECEIVE_PRODUCT,
   RECEIVE_PRODUCT_TYPES,
-  RECEIVE_PRODUCTS,
+  RECEIVE_LISTING,
   BASKET_UPDATED,
   ShopState,
   RECEIVE_MULTIPLE_PRODUCTS,
   ADD_TO_BASKET,
-  REMOVE_FROM_BASKET
+  REMOVE_FROM_BASKET,
+  ProductListing
 } from './shopReducer';
 import { isRunningServerSide, logger, newXcapJsonResult, Thunk } from '../api';
 import get from 'lodash/get';
@@ -52,7 +53,7 @@ export const requestProducts = (req: ListProductsRequest): Thunk<Promise<ListPro
   dispatch: any
 ): Promise<ListProductsResult> => {
   const r = await dispatch(listProducts(req));
-  await dispatch({ type: RECEIVE_PRODUCTS, json: r, request: req });
+  await dispatch({ type: RECEIVE_LISTING, json: r, request: req });
   return r;
 };
 
@@ -64,7 +65,7 @@ export const requestProductsAndProductTypes = (
   req: ListProductsRequest
 ): Thunk<Promise<ListProductsAndTypesResult>> => async (dispatch: any): Promise<ListProductsAndTypesResult> => {
   const r = await dispatch(listProductsAndTypes(req));
-  await dispatch({ type: RECEIVE_PRODUCTS, json: r, request: req });
+  await dispatch({ type: RECEIVE_LISTING, json: r, request: req });
   await dispatch({ type: RECEIVE_PRODUCT_TYPES, json: r });
   return r;
 };
@@ -236,7 +237,8 @@ export function getProductListKey(req: ListProductsRequest): string {
  */
 export function getProductHandles(shop: ShopState, req: ListProductsRequest): Array<string> | undefined {
   const key = getProductListKey(req);
-  return shop.productListings[key];
+  const listing = shop.productListings[key];
+  return listing ? listing.handles : undefined;
 }
 
 /**
@@ -251,15 +253,15 @@ export const clearCache = (): Thunk<Promise<void>> => async (dispatch: any): Pro
  * @param shop
  * @param key
  */
-export function getProductListingByKey(shop: ShopState, key: string): Array<Product> | null {
-  const handles = shop.productListings[key];
-  if (!handles) {
+export function getProductListingByKey(shop: ShopState, key: string): ProductListing | null {
+  const listing = shop.productListings[key];
+  if (!listing) {
     return null;
   }
 
   const products: Array<Product> = [];
 
-  handles.forEach(handle => {
+  listing.handles.forEach(handle => {
     const p = shop.products[handle];
     if (p) {
       products.push(p);
@@ -268,7 +270,14 @@ export function getProductListingByKey(shop: ShopState, key: string): Array<Prod
     }
   });
 
-  return products;
+  const { hasNextPage, hasPreviousPage, nextCursor, previousCursor } = listing;
+  return {
+    products,
+    hasNextPage,
+    hasPreviousPage,
+    nextCursor,
+    previousCursor
+  };
 }
 
 /**
@@ -276,7 +285,7 @@ export function getProductListingByKey(shop: ShopState, key: string): Array<Prod
  * @param shop
  * @param req
  */
-export function getProductListing(shop: ShopState, req: ListProductsRequest): Array<Product> | null {
+export function getProductListing(shop: ShopState, req: ListProductsRequest): ProductListing | null {
   const key = getProductListKey(req);
   return getProductListingByKey(shop, key);
 }

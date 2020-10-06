@@ -114,20 +114,30 @@ describe('Shop Actions/Reducers', () => {
 
       expect(shop.productListings).toBeDefined();
       const key = getProductListKey(req);
-      expect(shop.productListings[key]).toBeDefined();
-      expect(shop.productListings[key].length).toBeGreaterThanOrEqual(1);
+      const list = shop.productListings[key];
+      expect(list).toBeDefined();
+      expect(list.handles.length).toBeGreaterThanOrEqual(1);
+      expect(list.hasPreviousPage).toBeFalsy();
+      expect(list.hasNextPage).toBeTruthy();
+      expect(list.nextCursor).toBeDefined();
+      expect(list.previousCursor).toBeDefined();
 
       const EXPECTED_HANDLES = ['snare-boot', 'neptune-boot', 'arena-zip-boot'];
-      expect(shop.productListings[key]).toStrictEqual(EXPECTED_HANDLES);
+      expect(list.handles).toStrictEqual(EXPECTED_HANDLES);
 
       EXPECTED_HANDLES.forEach(h => {
         expect(shop.products[h]).toBeDefined();
       });
 
-      const products = getProductListing(shop, req);
-      assert(products);
-      expect(products.length).toBe(3);
-      expect(products[0].handle).toBe('snare-boot');
+      const listing = getProductListing(shop, req);
+      assert(listing);
+      expect(listing.products).toBeDefined();
+      expect(listing.products.length).toBe(3);
+      expect(listing.hasNextPage).toBeTruthy();
+      expect(listing.hasPreviousPage).toBeFalsy();
+      expect(listing.nextCursor).toBeDefined();
+      expect(listing.previousCursor).toBeDefined();
+      expect(listing.products[0].handle).toBe('snare-boot');
     });
   });
 
@@ -163,10 +173,11 @@ describe('Shop Actions/Reducers', () => {
       const s = store.getState();
       const shop: ShopState = s.shop;
       assert(shop);
-      const list = getProductListing(shop, req);
-      assert(list);
-      expect(list.length).toBe(1);
-      expect(list[0].handle).toBeDefined();
+      const listing = getProductListing(shop, req);
+      assert(listing);
+      expect(listing.products).toBeDefined();
+      expect(listing.products.length).toBe(1);
+      expect(listing.products[0].handle).toBeDefined();
     });
   });
 

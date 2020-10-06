@@ -1,6 +1,6 @@
-//Action Type
-
 import {
+  getNextCursor,
+  getPreviousCursor,
   GetProductResult,
   GetProductsRequest,
   GraphQLListNode,
@@ -22,7 +22,7 @@ import {
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
 export const RECEIVE_MULTIPLE_PRODUCTS = 'RECEIVE_MULTIPLE_PRODUCTS';
-export const RECEIVE_PRODUCTS = 'RECEIVE_PRODUCTS';
+export const RECEIVE_LISTING = 'RECEIVE_LISTING';
 export const CLEAR_CACHE = 'CLEAR_CACHE';
 export const BASKET_UPDATED = 'BASKET_UPDATED';
 export const ADD_TO_BASKET = 'ADD_TO_BASKET';
@@ -31,6 +31,31 @@ export const REMOVE_FROM_BASKET = 'REMOVE_FROM_BASKET';
 export const DEFAULT_PRODUCT_TYPE = '';
 
 export type ProductTypeTree = Array<ProductTypeTreeNode>;
+
+export interface AbstractProductListing {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+
+  /** Cursor not next page */
+  nextCursor: string | null;
+
+  /** Cursor to previous page */
+  previousCursor: string | null;
+}
+
+export interface ProductHandleListing extends AbstractProductListing {
+  /**
+   * Product handles for this page in the listing
+   */
+  handles: Array<string>;
+}
+
+export interface ProductListing extends AbstractProductListing {
+  /**
+   * Products for this page in the listing
+   */
+  products: Array<Product>;
+}
 
 export interface ShopState {
   /**
@@ -50,11 +75,11 @@ export interface ShopState {
     [handle: string]: Product;
   };
 
+  /**
+   * Product listing arranged by getProductListKey
+   */
   productListings: {
-    /**
-     *
-     */
-    [key: string]: Array<string>;
+    [key: string]: ProductHandleListing;
   };
 
   basketUpdated: number;
@@ -74,7 +99,7 @@ export type ShopActions =
       json: GetProductsRequest;
     }
   | {
-      type: typeof RECEIVE_PRODUCTS;
+      type: typeof RECEIVE_LISTING;
       json: ListProductsAndTypesResult;
       request: ListProductsRequest;
     }
@@ -143,20 +168,26 @@ export default function shopReducer(
       break;
     }
 
-    case RECEIVE_PRODUCTS: {
+    case RECEIVE_LISTING: {
       const receivedProducts = action.json.products;
 
       const key = getProductListKey(action.request);
-      const handles: Array<string> = [];
+      const listing: ProductHandleListing = {
+        handles: [],
+        hasNextPage: receivedProducts.pageInfo.hasNextPage,
+        hasPreviousPage: receivedProducts.pageInfo.hasPreviousPage,
+        nextCursor: getNextCursor(receivedProducts),
+        previousCursor: getPreviousCursor(receivedProducts)
+      };
       const products = Object.assign({}, state.products, {});
 
       receivedProducts.edges.forEach(n => {
-        handles.push(n.node.handle);
+        listing.handles.push(n.node.handle);
         products[n.node.handle] = n.node;
       });
 
       const productListings = Object.assign({}, state.productListings, {
-        [key]: handles
+        [key]: listing
       });
 
       return Object.assign({}, state, {
