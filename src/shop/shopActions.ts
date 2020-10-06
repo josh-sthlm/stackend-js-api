@@ -270,8 +270,9 @@ export function getProductListingByKey(shop: ShopState, key: string): ProductLis
     }
   });
 
-  const { hasNextPage, hasPreviousPage, nextCursor, previousCursor } = listing;
+  const { hasNextPage, hasPreviousPage, nextCursor, previousCursor, selection } = listing;
   return {
+    selection,
     products,
     hasNextPage,
     hasPreviousPage,

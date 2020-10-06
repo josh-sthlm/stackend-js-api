@@ -138,6 +138,9 @@ describe('Shop Actions/Reducers', () => {
       expect(listing.nextCursor).toBeDefined();
       expect(listing.previousCursor).toBeDefined();
       expect(listing.products[0].handle).toBe('snare-boot');
+      expect(listing.selection).toBeDefined();
+      expect(listing.selection.first).toBe(req.first);
+      expect(listing.selection.productTypes).toStrictEqual(['Boots']);
     });
   });
 
@@ -178,6 +181,9 @@ describe('Shop Actions/Reducers', () => {
       expect(listing.products).toBeDefined();
       expect(listing.products.length).toBe(1);
       expect(listing.products[0].handle).toBeDefined();
+      expect(listing.selection).toBeDefined();
+      expect(listing.selection.sort).toBe(req.sort);
+      expect(listing.selection.first).toBe(req.first);
     });
   });
 

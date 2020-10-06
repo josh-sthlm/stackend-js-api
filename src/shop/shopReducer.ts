@@ -41,6 +41,11 @@ export interface AbstractProductListing {
 
   /** Cursor to previous page */
   previousCursor: string | null;
+
+  /**
+   * The ListProductsRequest
+   */
+  selection: ListProductsRequest;
 }
 
 export interface ProductHandleListing extends AbstractProductListing {
@@ -177,7 +182,8 @@ export default function shopReducer(
         hasNextPage: receivedProducts.pageInfo.hasNextPage,
         hasPreviousPage: receivedProducts.pageInfo.hasPreviousPage,
         nextCursor: getNextCursor(receivedProducts),
-        previousCursor: getPreviousCursor(receivedProducts)
+        previousCursor: getPreviousCursor(receivedProducts),
+        selection: action.request
       };
       const products = Object.assign({}, state.products, {});
 
