@@ -3,11 +3,17 @@ import {
   Basket,
   forEachProductVariant,
   getLowestVariantPrice,
+  getNextCursor,
+  getPreviousCursor,
   getProduct,
   GetProductResult,
   getProductVariant,
   getVariantImage,
-  mapProductVariants
+  listProducts,
+  ListProductsRequest,
+  ListProductsResult,
+  mapProductVariants,
+  ProductSortKeys
 } from '../src/shop';
 import createTestStore from './setup';
 import { getBasket, storeBasket } from '../src/shop/shopActions';
@@ -102,6 +108,8 @@ describe('Shop', () => {
       expect(p.createdAt).toBeDefined();
       expect(p.variants).toBeDefined();
       expect(p.images).toBeDefined();
+      expect(p.options).toBeDefined();
+      expect(p.vendor).toBeDefined();
 
       expect(p.variants.edges.length).toBeGreaterThan(1);
 
@@ -135,6 +143,50 @@ describe('Shop', () => {
       assert(vp);
       expect(vp.currencyCode).toBeDefined();
       expect(vp.amount).toBeDefined();
+    });
+
+    it('listProducts', async () => {
+      const req: ListProductsRequest = {
+        first: 1,
+        sort: ProductSortKeys.ID
+      };
+      let r: ListProductsResult = await store.dispatch(listProducts(req));
+      assert(r);
+      expect(r.error).toBeUndefined();
+      expect(r.products).toBeDefined();
+      expect(r.products.pageInfo).toBeDefined();
+      expect(r.products.pageInfo.hasNextPage).toBeTruthy();
+      expect(r.products.pageInfo.hasPreviousPage).toBeFalsy();
+      expect(r.products.edges).toBeDefined();
+      expect(r.products.edges.length).toBe(1);
+      expect(r.products.edges[0]).toBeDefined();
+      expect(r.products.edges[0].cursor).toBeDefined();
+      expect(r.products.edges[0].node).toBeDefined();
+      expect(r.products.edges[0].node.handle).toBe('snare-boot');
+
+      let c = getNextCursor(r.products);
+      expect(c).toBe(r.products.edges[0].cursor);
+      expect(getPreviousCursor(r.products)).toBeNull();
+
+      // Pagination
+      req.after = r.products.edges[0].cursor;
+      r = await store.dispatch(listProducts(req));
+
+      assert(r);
+      expect(r.error).toBeUndefined();
+      expect(r.products).toBeDefined();
+      expect(r.products.pageInfo.hasNextPage).toBeTruthy();
+      expect(r.products.pageInfo.hasPreviousPage).toBeTruthy();
+      expect(r.products.edges.length).toBe(1);
+      expect(r.products.edges[0]).toBeDefined();
+      expect(r.products.edges[0].cursor).toBeDefined();
+      expect(r.products.edges[0].node.handle).toBe('neptune-boot');
+      assert(r.products.edges[0].cursor !== req.after);
+
+      c = getNextCursor(r.products);
+      expect(c).toBe(r.products.edges[0].cursor);
+      //const n = getPreviousCursor(r.products);
+      // FIXME: Broken
     });
   });
 });

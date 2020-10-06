@@ -11,6 +11,21 @@ export interface GraphQLList<T> {
   edges: Array<GraphQLListNode<T>>;
 }
 
+export interface PaginatedGraphQLListNode<T> {
+  node: T;
+  cursor: string;
+}
+
+export interface PageInfo {
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface PaginatedGraphQLList<T> {
+  edges: Array<PaginatedGraphQLListNode<T>>;
+  pageInfo: PageInfo;
+}
+
 export interface ProductImage {
   altText: string | null;
   transformedSrc: string;
@@ -22,12 +37,21 @@ export interface PriceV2 {
 }
 
 /**
+ * Options for the product: size, color etc
+ */
+export interface ProductOption {
+  id: string;
+  name: string;
+  values: Array<string>;
+}
+
+/**
  * A variant of a product
  */
 export interface ProductVariant {
   id: string;
+  title: string;
   availableForSale: boolean;
-  quantityAvailable: number | null;
   sku: string;
   image: ProductImage | null;
   priceV2: PriceV2;
@@ -57,6 +81,9 @@ export interface Product {
   createdAt: string;
   availableForSale: boolean;
 
+  /** Vendor name */
+  vendor: string;
+
   /**
    * Product type
    */
@@ -69,6 +96,8 @@ export interface Product {
 
   /** Actual number of images and size depends on context/listing */
   images: GraphQLList<ProductImage>;
+
+  options: Array<ProductOption>;
 
   /**
    * Variants of the product
@@ -147,7 +176,7 @@ export interface ListProductsRequest extends XcapOptionalParameters {
 }
 
 export interface ListProductsResult extends XcapJsonResult {
-  products: GraphQLList<Product>;
+  products: PaginatedGraphQLList<Product>;
 }
 
 /**
@@ -446,4 +475,30 @@ export function getBasketTotalPrice(shop: ShopState, basket: Basket): PriceV2 {
   });
 
   return total;
+}
+
+/**
+ * Get the next cursor for a list, or null, if not available
+ * @param list
+ */
+export function getNextCursor(list: PaginatedGraphQLList<any>): string | null {
+  if (list.pageInfo.hasNextPage && list.edges.length !== 0) {
+    const x = list.edges[list.edges.length - 1];
+    return x.cursor;
+  }
+
+  return null;
+}
+
+/**
+ * Get the previous cursor for a list, or null, if not available
+ * @param list
+ */
+export function getPreviousCursor(list: PaginatedGraphQLList<any>): string | null {
+  if (list.pageInfo.hasPreviousPage && list.edges.length !== 0) {
+    const x = list.edges[0];
+    return x.cursor;
+  }
+
+  return null;
 }
