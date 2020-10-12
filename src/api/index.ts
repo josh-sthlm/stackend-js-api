@@ -10,18 +10,19 @@ import { User } from '../user';
 import { setLoadingThrobberVisible } from '../throbber/throbberActions';
 import { Content, Page, SubSite } from '../cms';
 import { Privilege } from '../user/privileges';
-import winston, { Logger } from 'winston';
+import  { createLogger, format, Logger, transports  } from 'winston';
+
 import { XCAP_SET_CONFIG } from './configReducer';
 import { Dispatch } from 'redux';
 
 function createDefaultLogger(): Logger {
-  return winston.createLogger({
+  return createLogger({
     level: 'info',
-    format: winston.format.json(),
+    format: format.json(),
     defaultMeta: { service: 'Stackend' },
     transports: [
-      new winston.transports.Console({
-        format: winston.format.simple()
+      new transports.Console({
+        format: format.simple()
       })
     ]
   });
