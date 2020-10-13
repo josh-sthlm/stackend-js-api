@@ -1,18 +1,22 @@
 import assert from 'assert';
 import {
   Basket,
+  findAllProductVariants,
+  findExactProductVariant,
   forEachProductVariant,
   getLowestVariantPrice,
   getNextCursor,
   getPreviousCursor,
   getProduct,
   GetProductResult,
+  getProductSelection,
   getProductVariant,
   getVariantImage,
   listProducts,
   ListProductsRequest,
   ListProductsResult,
   mapProductVariants,
+  ProductSelection,
   ProductSortKeys
 } from '../src/shop';
 import createTestStore from './setup';
@@ -187,6 +191,32 @@ describe('Shop', () => {
       expect(c).toBe(r.products.edges[0].cursor);
       //const n = getPreviousCursor(r.products);
       // FIXME: Broken
+    });
+
+    it('selection', async () => {
+      const r: GetProductResult = await store.dispatch(getProduct({ handle: 'snare-boot' }));
+      assert(r);
+      const p = r.product;
+      assert(p);
+
+      const s: ProductSelection = {};
+      expect(findExactProductVariant(p, s)).toBeNull();
+      s.Color = 'Brown';
+      s.Size = '9';
+      const v = findExactProductVariant(p, s);
+      assert(v);
+      expect(v.title).toBe('Brown / 9');
+
+      const vs = findAllProductVariants(p, { Color: 'Brown' });
+      assert(vs);
+      expect(vs.length).toBeGreaterThan(1);
+      for (const o of vs) {
+        expect(o.title).toMatch(/Brown \//);
+      }
+
+      const x = getProductSelection(p, p.variants.edges[0].node);
+      assert(x);
+      expect(x).toStrictEqual({ Color: 'Black', Size: '7' });
     });
   });
 });

@@ -45,6 +45,13 @@ export interface ProductOption {
   values: Array<string>;
 }
 
+export interface SelectedProductOption {
+  name: string;
+  value: string;
+}
+
+export type SelectedProductOptions = Array<SelectedProductOption>;
+
 /**
  * A variant of a product
  */
@@ -55,6 +62,7 @@ export interface ProductVariant {
   sku: string;
   image: ProductImage | null;
   priceV2: PriceV2;
+  selectedOptions: SelectedProductOptions;
 }
 
 /**
@@ -501,4 +509,137 @@ export function getPreviousCursor(list: PaginatedGraphQLList<any>): string | nul
   }
 
   return null;
+}
+
+/**
+ * Find a product variant given an image
+ * @param product
+ * @param image
+ */
+export function findProductVariantByImage(product: Product, image: ProductImage): ProductVariant | null {
+  if (!product || !image) {
+    return null;
+  }
+
+  const x = product.variants.edges.find(v => {
+    return v.node?.image?.transformedSrc === image.transformedSrc;
+  });
+
+  return x ? x.node : null;
+}
+
+export interface ProductSelection {
+  [name: string]: string;
+}
+
+/**
+ * Given a selection, find the product variant
+ * @param product
+ * @param selection
+ */
+export function findExactProductVariant(product: Product, selection: ProductSelection): ProductVariant | null {
+  if (!product || !selection || product.variants.edges.length === 0) {
+    return null;
+  }
+
+  const x = product.variants.edges.find(v => matchSelection(v.node, selection, false));
+
+  return x ? x.node : null;
+}
+
+export function findAllProductVariants(product: Product, selection: ProductSelection): Array<ProductVariant> {
+  if (!product || !selection || product.variants.edges.length === 0) {
+    return [];
+  }
+
+  const m: Array<ProductVariant> = [];
+
+  product.variants.edges.forEach(v => {
+    if (matchSelection(v.node, selection, true)) {
+      m.push(v.node);
+    }
+  });
+
+  return m;
+}
+
+/**
+ * Check if a product variant matches the selection
+ * @param variant
+ * @param selection
+ * @param returnPartialMatches
+ */
+export function matchSelection(
+  variant: ProductVariant,
+  selection: ProductSelection,
+  returnPartialMatches: boolean
+): boolean {
+  if (!variant) {
+    return false;
+  }
+
+  for (const o of variant.selectedOptions) {
+    const x = selection[o.name];
+    if (x) {
+      if (x !== o.value) {
+        return false;
+      }
+    } else {
+      if (!returnPartialMatches) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Given a variant, construct the corresponding selection
+ * @param product
+ * @param variant
+ * @returns {Selection}
+ */
+export function getProductSelection(product: Product, variant: ProductVariant): ProductSelection {
+  const s: ProductSelection = {};
+  if (!product || !variant) {
+    return s;
+  }
+
+  for (const o of variant.selectedOptions) {
+    s[o.name] = o.value;
+  }
+
+  return s;
+}
+
+/**
+ * Get unique product images, including variant images
+ * @param product
+ */
+export function getAllUniqueImages(product: Product): Array<ProductImage> {
+  const images: Array<ProductImage> = [];
+  const s: Set<string> = new Set<string>();
+
+  if (!product) {
+    return images;
+  }
+
+  for (const i of product.images.edges) {
+    const img = i.node;
+    if (!s.has(img.transformedSrc)) {
+      images.push(img);
+      s.add(img.transformedSrc);
+    }
+  }
+
+  for (const v of product.variants.edges) {
+    const img = v.node.image;
+    if (img && !s.has(img.transformedSrc)) {
+      images.push(img);
+      s.add(img.transformedSrc);
+    }
+  }
+
+  return images;
 }
