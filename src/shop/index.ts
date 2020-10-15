@@ -28,9 +28,13 @@ export interface PaginatedGraphQLList<T> {
   pageInfo: PageInfo;
 }
 
-export interface ProductImage {
+export interface SlimProductImage {
   altText: string | null;
   transformedSrc: string;
+}
+
+export interface ProductImage extends SlimProductImage {
+  originalSrc: string;
 }
 
 export interface PriceV2 {
@@ -97,7 +101,7 @@ export interface SlimProduct {
   productType: string;
 
   /** Images. Actual number of images and size depends on context/listing */
-  images: GraphQLList<ProductImage>;
+  images: GraphQLList<SlimProductImage>;
 
   compareAtPriceRange: CompareAtPriceRange;
 }
@@ -128,6 +132,9 @@ export interface Product extends SlimProduct {
    * Variants of the product
    */
   variants: GraphQLList<ProductVariant>;
+
+  /** Images. Actual number of images and size depends on context/listing */
+  images: GraphQLList<ProductImage>;
 }
 
 /**
@@ -281,7 +288,7 @@ export function listProductsAndTypes(req: ListProductsRequest): Thunk<Promise<Li
  * Get the first image of a product
  * @param product
  */
-export function getFirstImage(product: SlimProduct | null): ProductImage | null {
+export function getFirstImage(product: SlimProduct | Product | null): ProductImage | SlimProductImage | null {
   if (!product) {
     return null;
   }
