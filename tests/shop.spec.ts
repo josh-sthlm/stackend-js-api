@@ -104,7 +104,6 @@ describe('Shop', () => {
 
       expect(p.id).toBe('Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzk4OTUyNzYwOTk=');
       expect(p.handle).toBe('snare-boot');
-      expect(p.description).toBeDefined();
       expect(p.descriptionHtml).toBeDefined();
       expect(p.availableForSale).toBeTruthy();
       expect(p.tags).toBeDefined();

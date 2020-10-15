@@ -7,7 +7,9 @@ import {
   ListProductsAndTypesResult,
   ListProductsRequest,
   ListProductTypesResult,
-  Product
+  Product,
+  ProductVariant,
+  SlimProduct
 } from './index';
 import get from 'lodash/get';
 import {
@@ -48,18 +50,11 @@ export interface AbstractProductListing {
   selection: ListProductsRequest;
 }
 
-export interface ProductHandleListing extends AbstractProductListing {
-  /**
-   * Product handles for this page in the listing
-   */
-  handles: Array<string>;
-}
-
-export interface ProductListing extends AbstractProductListing {
+export interface SlimProductListing extends AbstractProductListing {
   /**
    * Products for this page in the listing
    */
-  products: Array<Product>;
+  products: Array<SlimProduct>;
 }
 
 export interface ShopState {
@@ -84,7 +79,7 @@ export interface ShopState {
    * Product listing arranged by getProductListKey
    */
   productListings: {
-    [key: string]: ProductHandleListing;
+    [key: string]: SlimProductListing;
   };
 
   basketUpdated: number;
@@ -114,13 +109,15 @@ export type ShopActions =
   | {
       type: typeof ADD_TO_BASKET;
       product: Product;
-      variant?: string;
+      variantId: string;
+      variant: ProductVariant;
       quantity: number;
     }
   | {
       type: typeof REMOVE_FROM_BASKET;
       product: Product;
-      variant?: string;
+      variant: ProductVariant;
+      variantId: string;
       quantity: number;
     }
   | {
@@ -177,19 +174,17 @@ export default function shopReducer(
       const receivedProducts = action.json.products;
 
       const key = getProductListKey(action.request);
-      const listing: ProductHandleListing = {
-        handles: [],
+      const listing: SlimProductListing = {
         hasNextPage: receivedProducts.pageInfo.hasNextPage,
         hasPreviousPage: receivedProducts.pageInfo.hasPreviousPage,
         nextCursor: getNextCursor(receivedProducts),
         previousCursor: getPreviousCursor(receivedProducts),
-        selection: action.request
+        selection: action.request,
+        products: []
       };
-      const products = Object.assign({}, state.products, {});
 
       receivedProducts.edges.forEach(n => {
-        listing.handles.push(n.node.handle);
-        products[n.node.handle] = n.node;
+        listing.products.push(n.node);
       });
 
       const productListings = Object.assign({}, state.productListings, {
@@ -197,8 +192,7 @@ export default function shopReducer(
       });
 
       return Object.assign({}, state, {
-        productListings,
-        products
+        productListings
       });
     }
 

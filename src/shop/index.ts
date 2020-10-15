@@ -3,6 +3,8 @@
 import { getJson, post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
 import { ShopState } from './shopReducer';
 
+export const DEFAULT_IMAGE_MAX_WIDTH = 1024;
+
 export interface GraphQLListNode<T> {
   node: T;
 }
@@ -66,45 +68,60 @@ export interface ProductVariant {
 }
 
 /**
- * A product, including variants
+ * Highest and lowest variant prices
  */
-export interface Product {
+export interface CompareAtPriceRange {
+  minVariantPrice: PriceV2;
+  maxVariantPrice: PriceV2;
+}
+
+export interface SlimProduct {
   id: string;
+
   /** permalink */
   handle: string;
-  title: string;
-  /**
-   * Description as plain text
-   */
-  description: string;
 
-  /**
-   * Description as html
-   */
-  descriptionHtml: string;
+  title: string;
 
   /** Format: "2019-07-11T14:09:26Z" */
   updatedAt: string;
+
   /** Format: "2019-07-11T14:09:26Z" */
   createdAt: string;
-  availableForSale: boolean;
 
-  /** Vendor name */
-  vendor: string;
+  availableForSale: boolean;
 
   /**
    * Product type
    */
   productType: string;
 
+  /** Images. Actual number of images and size depends on context/listing */
+  images: GraphQLList<ProductImage>;
+
+  compareAtPriceRange: CompareAtPriceRange;
+}
+
+/**
+ * A product, including variants
+ */
+export interface Product extends SlimProduct {
+  /**
+   * Description as html
+   */
+  descriptionHtml: string;
+
+  /** Vendor name */
+  vendor: string;
+
   /**
    * Tags
    */
   tags: Array<string>;
 
-  /** Actual number of images and size depends on context/listing */
-  images: GraphQLList<ProductImage>;
-
+  /**
+   * Product options
+   */
   options: Array<ProductOption>;
 
   /**
@@ -181,10 +198,11 @@ export interface ListProductsRequest extends XcapOptionalParameters {
   first?: number;
   after?: string;
   sort?: ProductSortKeys;
+  imageMaxWidth?: number;
 }
 
 export interface ListProductsResult extends XcapJsonResult {
-  products: PaginatedGraphQLList<Product>;
+  products: PaginatedGraphQLList<SlimProduct>;
 }
 
 /**
@@ -201,6 +219,7 @@ export function listProducts(req: ListProductsRequest): Thunk<Promise<ListProduc
 
 export interface GetProductRequest extends XcapOptionalParameters {
   handle: string;
+  imageMaxWidth?: number;
 }
 
 export interface GetProductResult extends XcapJsonResult {
@@ -261,7 +280,7 @@ export function listProductsAndTypes(req: ListProductsRequest): Thunk<Promise<Li
  * Get the first image of a product
  * @param product
  */
-export function getFirstImage(product: Product | null): ProductImage | null {
+export function getFirstImage(product: SlimProduct | null): ProductImage | null {
   if (!product) {
     return null;
   }

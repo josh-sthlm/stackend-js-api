@@ -7,8 +7,10 @@ import {
   getApiUrl,
   GetInitialStoreValuesResult,
   resetConfiguration,
-  setConfiguration, STACKEND_DEFAULT_CONTEXT_PATH, STACKEND_DEFAULT_SERVER
-} from "../src/api";
+  setConfiguration,
+  STACKEND_DEFAULT_CONTEXT_PATH,
+  STACKEND_DEFAULT_SERVER
+} from '../src/api';
 import { initialize, loadInitialStoreValues } from '../src/api/actions';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import { PagesState } from '../src/cms/pageReducer';
@@ -96,34 +98,32 @@ describe('API actions', () => {
 
       u = _getApiUrl({ state: store.getState(), url: '/test3', parameters: { b: 3 } });
       expect(u).toBe('https://api.stackend.com/husdjur/api/test3?b=3');
-
     });
   });
 
   describe('set/resetConfiguration', () => {
     it('Changes configuration', async () => {
+      await store.dispatch(
+        setConfiguration({
+          server: 'https://localhost:8443',
+          contextPath: '/stackend'
+        })
+      );
 
-      await store.dispatch(setConfiguration({
-          server: "https://localhost:8443",
-          contextPath: "/stackend"
-      }));
-
-      let config: Config  = store.getState().config;
-      expect(config.server).toBe("https://localhost:8443");
-      expect(config.contextPath).toBe("/stackend");
-      expect(config.apiUrl).toBe("https://localhost:8443/stackend/api");
+      let config: Config = store.getState().config;
+      expect(config.server).toBe('https://localhost:8443');
+      expect(config.contextPath).toBe('/stackend');
+      expect(config.apiUrl).toBe('https://localhost:8443/stackend/api');
       let u = _getApiUrl({ state: store.getState(), url: '/test3', parameters: { b: 3 } });
       expect(u).toBe('https://localhost:8443/stackend/husdjur/api/test3?b=3');
-
 
       await store.dispatch(resetConfiguration());
       config = store.getState().config;
       expect(config.server).toBe(STACKEND_DEFAULT_SERVER);
       expect(config.contextPath).toBe(STACKEND_DEFAULT_CONTEXT_PATH);
-      expect(config.apiUrl).toBe(STACKEND_DEFAULT_SERVER + STACKEND_DEFAULT_CONTEXT_PATH + "/api");
+      expect(config.apiUrl).toBe(STACKEND_DEFAULT_SERVER + STACKEND_DEFAULT_CONTEXT_PATH + '/api');
       u = _getApiUrl({ state: store.getState(), url: '/test3', parameters: { b: 3 } });
       expect(u).toBe('https://api.stackend.com/husdjur/api/test3?b=3');
     });
   });
-
 });

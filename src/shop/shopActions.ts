@@ -2,11 +2,13 @@
 
 import {
   Basket,
+  DEFAULT_IMAGE_MAX_WIDTH,
   getProduct,
   GetProductRequest,
   GetProductResult,
   getProducts,
   GetProductsResult,
+  getProductVariant,
   listProducts,
   listProductsAndTypes,
   ListProductsAndTypesResult,
@@ -16,7 +18,8 @@ import {
   ListProductTypesRequest,
   ListProductTypesResult,
   Product,
-  ProductSortKeys
+  ProductSortKeys,
+  ProductVariant
 } from './index';
 import {
   CLEAR_CACHE,
@@ -28,7 +31,8 @@ import {
   RECEIVE_MULTIPLE_PRODUCTS,
   ADD_TO_BASKET,
   REMOVE_FROM_BASKET,
-  ProductListing
+  SlimProductListing,
+  ProductTypeTree
 } from './shopReducer';
 import { isRunningServerSide, logger, newXcapJsonResult, Thunk } from '../api';
 import get from 'lodash/get';
@@ -161,20 +165,22 @@ export const storeBasket = (basket: Basket): Thunk<void> => (dispatch: any, getS
  * @param variant
  * @param quantity
  */
-export const addToBasket = (basket: Basket, product: Product, variant?: string, quantity?: number): Thunk<void> => (
-  dispatch: any,
-  getState: any
-): void => {
+export const addToBasket = (
+  basket: Basket,
+  product: Product,
+  variant: ProductVariant,
+  quantity?: number
+): Thunk<void> => (dispatch: any, getState: any): void => {
   if (isRunningServerSide()) {
     return;
   }
 
   const q = quantity || 1;
-  basket.add(product.handle, variant, q);
+  basket.add(product.handle, variant.id, q);
 
   const key = getLocalStorageKey(getState());
   localStorage.setItem(key, basket.toString());
-  dispatch({ type: ADD_TO_BASKET, product, variant, quantity: q });
+  dispatch({ type: ADD_TO_BASKET, product, variant, variantId: variant.id, quantity: q });
 };
 
 /**
@@ -182,12 +188,14 @@ export const addToBasket = (basket: Basket, product: Product, variant?: string, 
  * @param basket
  * @param product
  * @param variant
+ * @param variantId
  * @param quantity
  */
 export const removeFromBasket = (
   basket: Basket,
   product: Product,
-  variant?: string,
+  variant?: ProductVariant | null,
+  variantId?: string,
   quantity?: number
 ): Thunk<void> => (dispatch: any, getState: any): void => {
   if (isRunningServerSide()) {
@@ -196,11 +204,27 @@ export const removeFromBasket = (
 
   const q = quantity || 1;
 
-  basket.remove(product.handle, variant, q);
+  const state = getState();
+  let vId = variantId;
+  if (!variantId && variant) {
+    vId = variant.id;
+  }
 
-  const key = getLocalStorageKey(getState());
+  if (!vId) {
+    return;
+  }
+
+  basket.remove(product.handle, vId, q);
+
+  const key = getLocalStorageKey(state);
+
+  let v = variant;
+  if (!variant && variantId) {
+    v = getProductVariant(product, variantId);
+  }
+
   localStorage.setItem(key, basket.toString());
-  dispatch({ type: REMOVE_FROM_BASKET, product, variant, quantity: q });
+  dispatch({ type: REMOVE_FROM_BASKET, product, variant: v, variantId, quantity: q });
 };
 
 /**
@@ -227,18 +251,8 @@ export function getProductListKey(req: ListProductsRequest): string {
   s += (req.sort || ProductSortKeys.RELEVANCE) + ';';
   s += (req.first || '') + ';';
   s += (req.after || '') + ';';
+  s += (req.imageMaxWidth || DEFAULT_IMAGE_MAX_WIDTH) + ';';
   return s;
-}
-
-/**
- * Get products from the store
- * @param shop
- * @param req
- */
-export function getProductHandles(shop: ShopState, req: ListProductsRequest): Array<string> | undefined {
-  const key = getProductListKey(req);
-  const listing = shop.productListings[key];
-  return listing ? listing.handles : undefined;
 }
 
 /**
@@ -253,32 +267,9 @@ export const clearCache = (): Thunk<Promise<void>> => async (dispatch: any): Pro
  * @param shop
  * @param key
  */
-export function getProductListingByKey(shop: ShopState, key: string): ProductListing | null {
+export function getProductListingByKey(shop: ShopState, key: string): SlimProductListing | null {
   const listing = shop.productListings[key];
-  if (!listing) {
-    return null;
-  }
-
-  const products: Array<Product> = [];
-
-  listing.handles.forEach(handle => {
-    const p = shop.products[handle];
-    if (p) {
-      products.push(p);
-    } else {
-      logger.warn('Product ' + handle + ' is missing for ' + key);
-    }
-  });
-
-  const { hasNextPage, hasPreviousPage, nextCursor, previousCursor, selection } = listing;
-  return {
-    selection,
-    products,
-    hasNextPage,
-    hasPreviousPage,
-    nextCursor,
-    previousCursor
-  };
+  return listing ? listing : null;
 }
 
 /**
@@ -286,7 +277,7 @@ export function getProductListingByKey(shop: ShopState, key: string): ProductLis
  * @param shop
  * @param req
  */
-export function getProductListing(shop: ShopState, req: ListProductsRequest): ProductListing | null {
+export function getProductListing(shop: ShopState, req: ListProductsRequest): SlimProductListing | null {
   const key = getProductListKey(req);
   return getProductListingByKey(shop, key);
 }
@@ -424,4 +415,42 @@ export function getProductTypeLabel(productType: string): string {
   }
 
   return productType.substring(i + 1);
+}
+
+/**
+ * Find a product type tree node given it's productType
+ * @param t
+ * @param productType
+ */
+export function findProductTypeTreeNode(
+  t: ProductTypeTree | ProductTypeTreeNode,
+  productType: string
+): ProductTypeTreeNode | null {
+  if (Array.isArray(t)) {
+    for (const n of t) {
+      const x = _findProductTypeTreeNode(n, productType);
+      if (x) {
+        return x;
+      }
+    }
+  } else {
+    return _findProductTypeTreeNode(t as ProductTypeTreeNode, productType);
+  }
+
+  return null;
+}
+
+function _findProductTypeTreeNode(n: ProductTypeTreeNode, productType: string): ProductTypeTreeNode | null {
+  if (n.productType == productType) {
+    return n;
+  } else if (productType.startsWith(n.productType)) {
+    for (const m of n.children) {
+      const x = _findProductTypeTreeNode(m, productType);
+      if (x) {
+        return x;
+      }
+    }
+  }
+
+  return null;
 }

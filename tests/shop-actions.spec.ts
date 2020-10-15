@@ -1,4 +1,5 @@
 import {
+  findProductTypeTreeNode,
   getAllProductTypes,
   getProductListing,
   getProductListKey,
@@ -10,7 +11,7 @@ import {
 } from '../src/shop/shopActions';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
-import { buildProductTypeTree, ShopState } from '../src/shop/shopReducer';
+import { buildProductTypeTree, ProductTypeTree, ShopState } from '../src/shop/shopReducer';
 import assert from 'assert';
 import { ProductSortKeys } from '../src/shop';
 
@@ -68,9 +69,41 @@ describe('Shop Actions/Reducers', () => {
     });
   });
 
+  describe('findProductTypeTreeNode', () => {
+    it('Finds a specific tree node', () => {
+      const t: ProductTypeTree = [
+        {
+          name: 'A',
+          productType: 'a',
+          children: [
+            {
+              name: 'A/B',
+              productType: 'a/b',
+              children: []
+            },
+            {
+              name: 'A/C',
+              productType: 'a/c',
+              children: []
+            }
+          ]
+        },
+        { name: 'B', productType: 'b', children: [] }
+      ];
+
+      const r = findProductTypeTreeNode(t, 'a/c');
+      assert(r);
+      expect(r.productType).toBe('a/c');
+      expect(findProductTypeTreeNode(t, 'c')).toBeNull();
+      expect(findProductTypeTreeNode(t, 'b')).toBeDefined();
+
+      expect(findProductTypeTreeNode(t[0], 'a/c')).toStrictEqual(t[0].children[1]);
+    });
+  });
+
   describe('getProductListKey', () => {
     it('Gets a unique key', () => {
-      expect(getProductListKey({})).toBe(';;;RELEVANCE;;;');
+      expect(getProductListKey({})).toBe(';;;RELEVANCE;;;1024;');
 
       expect(
         getProductListKey({
@@ -80,7 +113,7 @@ describe('Shop Actions/Reducers', () => {
           tags: ['tag1', 'tag2'],
           q: 'test search'
         })
-      ).toBe('test search;Boot,Blouse;tag1,tag2;RELEVANCE;10;after;');
+      ).toBe('test search;Boot,Blouse;tag1,tag2;RELEVANCE;10;after;1024;');
     });
   });
 
@@ -116,18 +149,15 @@ describe('Shop Actions/Reducers', () => {
       const key = getProductListKey(req);
       const list = shop.productListings[key];
       expect(list).toBeDefined();
-      expect(list.handles.length).toBeGreaterThanOrEqual(1);
+      expect(list.products).toBeDefined();
+      expect(list.products.length).toBeGreaterThanOrEqual(1);
       expect(list.hasPreviousPage).toBeFalsy();
       expect(list.hasNextPage).toBeTruthy();
       expect(list.nextCursor).toBeDefined();
       expect(list.previousCursor).toBeDefined();
 
       const EXPECTED_HANDLES = ['snare-boot', 'neptune-boot', 'arena-zip-boot'];
-      expect(list.handles).toStrictEqual(EXPECTED_HANDLES);
-
-      EXPECTED_HANDLES.forEach(h => {
-        expect(shop.products[h]).toBeDefined();
-      });
+      expect(list.products.map(p => p.handle)).toStrictEqual(EXPECTED_HANDLES);
 
       const listing = getProductListing(shop, req);
       assert(listing);
