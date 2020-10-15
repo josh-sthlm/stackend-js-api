@@ -5,10 +5,10 @@ import {
   getInitialStoreValues,
   GetInitialStoreValuesResult,
   newXcapJsonResult,
-  setConfigDefaults,
+  setConfigDefaults, setConfiguration,
   setLogger,
   Thunk
-} from './index';
+} from "./index";
 import { receiveLoginData } from '../login/loginAction';
 import { loadCommunity, receiveResourceUsage } from '../stackend/communityAction';
 import { XCAP_INITIAL_STORE_DATA_RECEIVED } from './configReducer';
@@ -51,6 +51,7 @@ export function initialize({
 
     if (config) {
       setConfigDefaults(config);
+      dispatch(setConfiguration(config));
     }
 
     return dispatch(loadInitialStoreValues({ communityId, permalink }));

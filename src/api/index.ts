@@ -484,6 +484,19 @@ export function setConfiguration(config: Partial<Config>): Thunk<any> {
 }
 
 /**
+ * Reset the API configuration to the defaults
+ */
+export function resetConfiguration(): Thunk<any> {
+  return setConfiguration({
+    server: STACKEND_DEFAULT_SERVER,
+    contextPath: STACKEND_DEFAULT_CONTEXT_PATH,
+    deployProfile: DeployProfile.STACKEND,
+    gaKey: null,
+    recaptchaSiteKey: null
+  });
+}
+
+/**
  * Server domain enabling CORS calls
  * @type {string}
  */
@@ -809,8 +822,11 @@ export function _getApiUrl({
 
   let path = '';
 
-  if (!notFromApi) {
-    /* Calls to /api/*  (just don't code like this ok) */
+  if (notFromApi) {
+    path = url;
+  } else {
+    /* Calls to /api/*  */
+
     const server = _getConfig({
       config: state.config || {},
       componentName,
@@ -851,8 +867,6 @@ export function _getApiUrl({
       pfx += '/' + community + '/api';
     }
     path = pfx + url;
-  } else {
-    path = url;
   }
 
   const args = urlEncodeParameters(params);

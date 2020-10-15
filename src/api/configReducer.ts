@@ -38,7 +38,10 @@ const configReducer = (
     case XCAP_SET_CONFIG: {
       const c = (action as SetConfigAction).config;
       if (c.server) {
-        let cp = c.contextPath || state.contextPath || '';
+        let cp = c.contextPath;
+        if (typeof cp !== 'string') {
+          cp = state.contextPath || '';
+        }
         if (c.server.endsWith('/')) {
           cp = cp.replace(/^\//, '');
         }
