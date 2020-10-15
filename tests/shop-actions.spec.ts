@@ -220,10 +220,12 @@ describe('Shop Actions/Reducers', () => {
   describe('requestMissingProducts', () => {
     it('Loads missing products into store', async () => {
       await store.dispatch(
-        requestMissingProducts([
-          'pin-boot', // already loaded
-          'hanra-shirt'
-        ])
+        requestMissingProducts({
+          handles: [
+            'pin-boot', // already loaded
+            'hanra-shirt'
+          ]
+        })
       );
       const s = store.getState();
       const shop: ShopState = s.shop;

@@ -7,6 +7,7 @@ import {
   GetProductRequest,
   GetProductResult,
   getProducts,
+  GetProductsRequest,
   GetProductsResult,
   getProductVariant,
   listProducts,
@@ -86,31 +87,37 @@ export const requestProduct = (req: GetProductRequest): Thunk<Promise<GetProduct
   return r;
 };
 
+export interface RequestMultipleProductsRequest {
+  handles: Array<string>;
+  imageMaxWidth?: number;
+}
+
 /**
  * Request multiple products
- * @param handles
+ * @param req
  */
-export const requestMultipleProducts = (handles: Array<string>): Thunk<Promise<GetProductsResult>> => async (
+export const requestMultipleProducts = (req: GetProductsRequest): Thunk<Promise<GetProductsResult>> => async (
   dispatch: any
 ): Promise<GetProductsResult> => {
-  const r = await dispatch(getProducts({ handles }));
+  const r = await dispatch(getProducts(req));
   await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
   return r;
 };
 
 /**
  * Request missing products
- * @param handles
+ * @param req
  */
-export const requestMissingProducts = (handles: Array<string>): Thunk<Promise<GetProductsResult>> => async (
+export const requestMissingProducts = (req: GetProductsRequest): Thunk<Promise<GetProductsResult>> => async (
   dispatch: any,
   getState: () => any
 ): Promise<GetProductsResult> => {
   const shop: ShopState = getState().shop;
 
   const fetchHandles: Array<string> = [];
-  for (const h of handles) {
-    if (!shop.products[h]) {
+  for (const h of req.handles) {
+    const p = shop.products[h];
+    if (!p) {
       fetchHandles.push(h);
     }
   }
@@ -119,7 +126,7 @@ export const requestMissingProducts = (handles: Array<string>): Thunk<Promise<Ge
     return newXcapJsonResult('success', { products: {} }) as GetProductsResult;
   }
 
-  const r = await dispatch(getProducts({ handles: fetchHandles }));
+  const r = await dispatch(getProducts({ handles: fetchHandles, imageMaxWidth: req.imageMaxWidth }));
   await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
   return r;
 };

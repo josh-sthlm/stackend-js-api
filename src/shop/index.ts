@@ -240,6 +240,7 @@ export function getProduct(req: GetProductRequest): Thunk<Promise<GetProductResu
 
 export interface GetProductsRequest extends XcapOptionalParameters {
   handles: Array<string>;
+  imageMaxWidth?: number;
 }
 
 export interface GetProductsResult extends XcapJsonResult {
