@@ -1,6 +1,13 @@
 //@flow
 
-import { getJson, post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
+import {
+  getJson,
+  post,
+  XcapJsonResult,
+  Thunk,
+  XcapOptionalParameters,
+  COMMUNITY_PARAMETER
+} from '../api';
 import { ShopState } from './shopReducer';
 
 export const DEFAULT_IMAGE_MAX_WIDTH = 1024;
@@ -669,4 +676,83 @@ export function getAllUniqueImages(product: Product): Array<ProductImage> {
   }
 
   return images;
+}
+
+export interface LineItem {
+  quantity: number;
+  variantId: string;
+}
+
+export interface ShippingAddress {
+  firstName: string;
+  lastName: string;
+  address1: string;
+  address2?: string;
+  zip: string;
+  city: string;
+  province?: string;
+  country: string;
+  company?: string;
+  phone?: string;
+}
+
+export interface CreateCheckoutInput {
+  email: string;
+  note?: string;
+  lineItems?: Array<LineItem>;
+  shippingAddress?: ShippingAddress;
+}
+
+export interface CreateCheckoutRequest extends XcapOptionalParameters {
+  input: CreateCheckoutInput;
+}
+
+export interface CheckoutUserError {
+  field: string;
+  code: string;
+  message: string;
+}
+
+export interface ShippingRate {
+  handle: string;
+  title: string;
+  priceV2: PriceV2;
+}
+
+export interface Checkout {
+  webUrl: string;
+  ready: boolean;
+  orderStatusUrl: string;
+  requiresShipping: boolean;
+  currencyCode: string;
+  note: string;
+  subtotalPriceV2: PriceV2;
+  totalPriceV2: PriceV2;
+  totalTaxV2: PriceV2;
+  taxesIncluded: boolean;
+  availableShippingRates: {
+    ready: boolean;
+    shippingRates: Array<ShippingRate>;
+  };
+  checkoutUserErrors: Array<CheckoutUserError>;
+}
+
+export interface CreateCheckoutResult extends XcapJsonResult {
+  checkout: Checkout;
+}
+
+/**
+ * Create a checkout
+ * @param req
+ */
+export function createCheckout(req: CreateCheckoutRequest): Thunk<Promise<CreateCheckoutResult>> {
+  const p = {
+    input: JSON.stringify(req.input),
+    [COMMUNITY_PARAMETER]: req[COMMUNITY_PARAMETER]
+  };
+
+  return post({
+    url: '/shop/create-checkout',
+    parameters: p
+  });
 }

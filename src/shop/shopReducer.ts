@@ -18,6 +18,7 @@ import {
   getProductListKey,
   isRoot,
   newProductTypeTreeNode,
+  ProductTypeTree,
   ProductTypeTreeNode
 } from './shopActions';
 
@@ -31,8 +32,6 @@ export const ADD_TO_BASKET = 'ADD_TO_BASKET';
 export const REMOVE_FROM_BASKET = 'REMOVE_FROM_BASKET';
 
 export const DEFAULT_PRODUCT_TYPE = '';
-
-export type ProductTypeTree = Array<ProductTypeTreeNode>;
 
 export interface AbstractProductListing {
   hasNextPage: boolean;

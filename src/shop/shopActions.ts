@@ -333,6 +333,8 @@ export interface ProductTypeTreeNode {
   children: Array<ProductTypeTreeNode>;
 }
 
+export type ProductTypeTree = Array<ProductTypeTreeNode>;
+
 /**
  * Construct a new product type tree node
  * @param productType
