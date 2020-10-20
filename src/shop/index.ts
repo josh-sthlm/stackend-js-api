@@ -1,13 +1,6 @@
 //@flow
 
-import {
-  getJson,
-  post,
-  XcapJsonResult,
-  Thunk,
-  XcapOptionalParameters,
-  COMMUNITY_PARAMETER
-} from '../api';
+import { getJson, post, XcapJsonResult, Thunk, XcapOptionalParameters, COMMUNITY_PARAMETER } from '../api';
 import { ShopState } from './shopReducer';
 
 export const DEFAULT_IMAGE_MAX_WIDTH = 1024;
@@ -720,11 +713,12 @@ export interface ShippingRate {
 }
 
 export interface Checkout {
-  webUrl: string;
+  id: string;
   ready: boolean;
-  orderStatusUrl: string;
+  webUrl: string;
   requiresShipping: boolean;
   currencyCode: string;
+  email: string;
   note: string;
   subtotalPriceV2: PriceV2;
   totalPriceV2: PriceV2;
@@ -734,10 +728,12 @@ export interface Checkout {
     ready: boolean;
     shippingRates: Array<ShippingRate>;
   };
-  checkoutUserErrors: Array<CheckoutUserError>;
+  shippingAddress: ShippingAddress;
+  shippingLine: ShippingRate | null;
 }
 
-export interface CreateCheckoutResult extends XcapJsonResult {
+export interface CheckoutResult extends XcapJsonResult {
+  checkoutUserErrors: Array<CheckoutUserError>;
   checkout: Checkout;
 }
 
@@ -745,14 +741,67 @@ export interface CreateCheckoutResult extends XcapJsonResult {
  * Create a checkout
  * @param req
  */
-export function createCheckout(req: CreateCheckoutRequest): Thunk<Promise<CreateCheckoutResult>> {
+export function createCheckout(req: CreateCheckoutRequest): Thunk<Promise<CheckoutResult>> {
   const p = {
     input: JSON.stringify(req.input),
     [COMMUNITY_PARAMETER]: req[COMMUNITY_PARAMETER]
   };
 
   return post({
-    url: '/shop/create-checkout',
+    url: '/shop/checkout/create',
+    parameters: p
+  });
+}
+
+export interface SelectShippingRequest extends XcapOptionalParameters {
+  checkoutId: string;
+  shippingRateHandle: string;
+}
+
+/**
+ * Select shipping
+ * @param req
+ */
+export function selectShipping(req: SelectShippingRequest): Thunk<Promise<CheckoutResult>> {
+  return post({
+    url: '/shop/checkout/set-shipping',
+    parameters: arguments
+  });
+}
+
+export interface SetCheckoutEmailRequest extends XcapOptionalParameters {
+  checkoutId: string;
+  email: string;
+}
+
+/**
+ * Set email
+ * @param req
+ */
+export function setCheckoutEmail(req: SetCheckoutEmailRequest): Thunk<Promise<CheckoutResult>> {
+  return post({
+    url: '/shop/checkout/set-email',
+    parameters: arguments
+  });
+}
+
+export interface SetShippingAddressRequest extends XcapOptionalParameters {
+  checkoutId: string;
+  address: string;
+}
+
+/**
+ * Set shipping address
+ * @param req
+ */
+export function setShippingAddress(req: SetShippingAddressRequest): Thunk<Promise<CheckoutResult>> {
+  const p = {
+    checkoutId: req.checkoutId,
+    addressJson: JSON.stringify(req.address),
+    [COMMUNITY_PARAMETER]: req[COMMUNITY_PARAMETER]
+  };
+  return post({
+    url: '/shop/checkout/set-shipping-address',
     parameters: p
   });
 }

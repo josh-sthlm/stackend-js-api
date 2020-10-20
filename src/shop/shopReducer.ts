@@ -1,4 +1,7 @@
 import {
+  Checkout,
+  CheckoutResult,
+  CheckoutUserError,
   getNextCursor,
   getPreviousCursor,
   GetProductResult,
@@ -30,6 +33,8 @@ export const CLEAR_CACHE = 'CLEAR_CACHE';
 export const BASKET_UPDATED = 'BASKET_UPDATED';
 export const ADD_TO_BASKET = 'ADD_TO_BASKET';
 export const REMOVE_FROM_BASKET = 'REMOVE_FROM_BASKET';
+export const RECEIVE_CHECKOUT = 'RECEIVE_CHECKOUT';
+export const CLEAR_CHECKOUT = 'CLEAR_CHECKOUT';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -82,6 +87,16 @@ export interface ShopState {
   };
 
   basketUpdated: number;
+
+  /**
+   * Current checkout, if any
+   */
+  checkout: Checkout | null;
+
+  /**
+   * Last checkout errors, if any
+   */
+  checkoutUserErrors: Array<CheckoutUserError> | null;
 }
 
 export type ShopActions =
@@ -121,6 +136,13 @@ export type ShopActions =
     }
   | {
       type: typeof BASKET_UPDATED;
+    }
+  | {
+      type: typeof RECEIVE_CHECKOUT;
+      json: CheckoutResult;
+    }
+  | {
+      type: typeof CLEAR_CHECKOUT;
     };
 
 export default function shopReducer(
@@ -129,7 +151,9 @@ export default function shopReducer(
     productTypeTree: [],
     products: {},
     productListings: {},
-    basketUpdated: 0
+    basketUpdated: 0,
+    checkout: null,
+    checkoutUserErrors: null
   },
   action: ShopActions
 ): ShopState {
@@ -206,6 +230,17 @@ export default function shopReducer(
     case REMOVE_FROM_BASKET:
       return Object.assign({}, state, {
         basketUpdated: Date.now()
+      });
+
+    case RECEIVE_CHECKOUT:
+      return Object.assign({}, state, {
+        checkout: action.json.checkout,
+        checkoutUserErrors: action.json.checkoutUserErrors
+      });
+
+    case CLEAR_CHECKOUT:
+      return Object.assign({}, state, {
+        checkout: null
       });
   }
 

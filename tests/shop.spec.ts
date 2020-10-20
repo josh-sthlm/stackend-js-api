@@ -1,6 +1,7 @@
 import assert from 'assert';
 import {
-  Basket, createCheckout,
+  Basket,
+  createCheckout,
   findAllProductVariants,
   findExactProductVariant,
   forEachProductVariant,
@@ -18,12 +19,12 @@ import {
   mapProductVariants,
   ProductSelection,
   ProductSortKeys
-} from "../src/shop";
+} from '../src/shop';
 import createTestStore from './setup';
 import { getBasket, storeBasket } from '../src/shop/shopActions';
 import { ShopState } from '../src/shop/shopReducer';
 import { loadInitialStoreValues } from '../src/api/actions';
-import { setConfiguration } from "../src/api";
+import { setConfiguration } from '../src/api';
 
 describe('Shop', () => {
   const store = createTestStore();
@@ -220,12 +221,15 @@ describe('Shop', () => {
     });
   });
 
+  /*
   describe('createCheckout', () => {
     it('Creates a checkout', async () => {
-      await store.dispatch(setConfiguration({
-        server: "https://localhost:8443",
-        contextPath: "/stackend"
-      }));
+      await store.dispatch(
+        setConfiguration({
+          server: 'https://localhost:8443',
+          contextPath: '/stackend'
+        })
+      );
 
       await store.dispatch(
         loadInitialStoreValues({
@@ -233,23 +237,26 @@ describe('Shop', () => {
         })
       );
 
-      const r = await store.dispatch(createCheckout({
-        input: {
-          email: "jens+test@josh.se",
-          note: 'test',
-          lineItems: [{ quantity: 1, variantId: ''}],
-          shippingAddress: {
-            firstName: 'Test',
-            lastName: 'Testsson',
-            address1: 'Street',
-            zip: '123',
-            city: 'Stockholm',
-            country: 'Sweden'
+      const r = await store.dispatch(
+        createCheckout({
+          input: {
+            email: 'jens+test@josh.se',
+            note: 'test',
+            lineItems: [{ quantity: 1, variantId: '' }],
+            shippingAddress: {
+              firstName: 'Test',
+              lastName: 'Testsson',
+              address1: 'Street',
+              zip: '123',
+              city: 'Stockholm',
+              country: 'Sweden'
+            }
           }
-        }
-      }));
+        })
+      );
       assert(r);
       console.log(r);
     });
   });
+   */
 });

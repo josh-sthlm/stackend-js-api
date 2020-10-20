@@ -2,6 +2,7 @@
 
 import {
   Basket,
+  CheckoutResult,
   DEFAULT_IMAGE_MAX_WIDTH,
   getProduct,
   GetProductRequest,
@@ -20,7 +21,11 @@ import {
   ListProductTypesResult,
   Product,
   ProductSortKeys,
-  ProductVariant
+  ProductVariant,
+  createCheckout as doCreateCheckout,
+  CreateCheckoutRequest,
+  selectShipping as doSelectShipping,
+  SelectShippingRequest
 } from './index';
 import {
   CLEAR_CACHE,
@@ -33,7 +38,7 @@ import {
   ADD_TO_BASKET,
   REMOVE_FROM_BASKET,
   SlimProductListing,
-  ProductTypeTree
+  RECEIVE_CHECKOUT
 } from './shopReducer';
 import { isRunningServerSide, logger, newXcapJsonResult, Thunk } from '../api';
 import get from 'lodash/get';
@@ -288,6 +293,35 @@ export function getProductListing(shop: ShopState, req: ListProductsRequest): Sl
   const key = getProductListKey(req);
   return getProductListingByKey(shop, key);
 }
+
+/**
+ * Create a checkout
+ */
+export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<CheckoutResult>> => async (
+  dispatch: any
+): Promise<CheckoutResult> => {
+  const r = await dispatch(doCreateCheckout(req));
+  await dispatch({
+    type: RECEIVE_CHECKOUT,
+    json: r
+  });
+  return r;
+};
+
+/**
+ * Select shipping
+ * @param req
+ */
+export const selectShipping = (req: SelectShippingRequest): Thunk<Promise<CheckoutResult>> => async (
+  dispatch: any
+): Promise<CheckoutResult> => {
+  const r = await dispatch(doSelectShipping(req));
+  await dispatch({
+    type: RECEIVE_CHECKOUT,
+    json: r
+  });
+  return r;
+};
 
 /**
  * List the products in the basket
