@@ -35,27 +35,22 @@ describe('Shop', () => {
 
       expect(b.toString()).toBe('{"items":[]}');
 
-      b.add('test');
-      expect(b.toString()).toBe('{"items":[{"handle":"test","quantity":1}]}');
-
-      b.add('test', undefined, 2);
-      expect(b.toString()).toBe('{"items":[{"handle":"test","quantity":3}]}');
-
+      b.add('test', 'apa', 3);
       b.add('test', 'korv');
       expect(b.toString()).toBe(
-        '{"items":[{"handle":"test","quantity":3},{"handle":"test","variant":"korv","quantity":1}]}'
+        '{"items":[{"handle":"test","variant":"apa","quantity":3},{"handle":"test","variant":"korv","quantity":1}]}'
       );
 
       expect(b.find('apa')).toBeNull();
       expect(b.find('test')).toBeDefined();
-      expect(b.find('test', 'apa')).toBeNull();
+      expect(b.find('test', 'koko')).toBeNull();
       expect(b.find('test', 'korv')).toBeDefined();
 
       b.remove('test', 'korv');
-      expect(b.toString()).toBe('{"items":[{"handle":"test","quantity":3}]}');
+      expect(b.toString()).toBe('{"items":[{"handle":"test","variant":"apa","quantity":3}]}');
 
-      b.remove('test');
-      expect(b.toString()).toBe('{"items":[{"handle":"test","quantity":2}]}');
+      b.remove('test', 'apa');
+      expect(b.toString()).toBe('{"items":[{"handle":"test","variant":"apa","quantity":2}]}');
 
       b.remove('test', undefined, 5);
       expect(b.toString()).toBe('{"items":[]}');
@@ -75,10 +70,25 @@ describe('Shop', () => {
       expect(b.items[1].quantity).toBe(1);
     });
 
+    it('toLineItems', () => {
+      const b: Basket = store.dispatch(getBasket());
+      let l = b.toLineItems();
+      assert(l);
+      expect(l.length).toBe(0);
+
+      b.add('test', 'korv');
+      b.add('apa', 'ola');
+      l = b.toLineItems();
+      assert(l);
+      expect(l.length).toBe(2);
+      expect(l[0].variantId).toBeDefined();
+      expect(l[0].quantity).toBeGreaterThan(0);
+    });
+
     it('get/store', () => {
       const basket: Basket = store.dispatch(getBasket());
       assert(basket);
-      basket.add('test');
+      basket.add('test', 'korv');
 
       let shop: ShopState = store.getState().shop;
       const basketUpdated = shop.basketUpdated;

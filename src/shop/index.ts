@@ -365,17 +365,17 @@ export function getLowestVariantPrice(product: Product): PriceV2 | null {
 
 export class BasketItem {
   public readonly handle: string;
-  public readonly variant: string | undefined;
+  public readonly variant: string;
   public quantity: number;
 
-  constructor(handle: string, variant?: string, quantity?: number) {
+  constructor(handle: string, variant: string, quantity?: number) {
     this.handle = handle;
     this.quantity = quantity || 1;
     this.variant = variant;
   }
 
   matches(handle: string, variant?: string): boolean {
-    return handle === this.handle && variant === this.variant;
+    return handle === this.handle && (!variant || variant === this.variant);
   }
 
   static COMPARATOR = (a: BasketItem, b: BasketItem): number => {
@@ -422,7 +422,7 @@ export class Basket {
    * @param variant
    * @param quantity
    */
-  add(handle: string, variant?: string, quantity?: number): number {
+  add(handle: string, variant: string, quantity?: number): number {
     const q = quantity || 1;
     let i = this.find(handle, variant);
     if (i) {
@@ -457,6 +457,21 @@ export class Basket {
     }
 
     return 0;
+  }
+
+  /**
+   * Construct to lineItems for checkout
+   */
+  toLineItems(): Array<LineItem> {
+    const lineItems: Array<LineItem> = [];
+    this.items.forEach(i =>
+      lineItems.push({
+        variantId: i.variant as string,
+        quantity: i.quantity
+      })
+    );
+
+    return lineItems;
   }
 
   toString(): string {
