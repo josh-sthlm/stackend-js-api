@@ -47,6 +47,7 @@ import get from 'lodash/get';
 import AddressFormatter, { Country } from '@shopify/address';
 import { FieldName } from '@shopify/address-consts';
 import { getStackendLocale } from '../util';
+import { setLoadingThrobberVisible } from '../throbber/throbberActions';
 
 /**
  * Load product types into store
@@ -361,15 +362,20 @@ export function requestCountries({ locale }: { locale?: string }): Thunk<Promise
       return a;
     }
 
-    const l = await dispatch(getLocale(locale));
-    const addressFormatter = new AddressFormatter(l);
-    const countries = await addressFormatter.getCountries();
-    await dispatch({
-      type: RECEIVE_COUNTRIES,
-      countries
-    });
+    try {
+      await dispatch(setLoadingThrobberVisible(true));
+      const l = await dispatch(getLocale(locale));
+      const addressFormatter = new AddressFormatter(l);
+      const countries = await addressFormatter.getCountries();
+      await dispatch({
+        type: RECEIVE_COUNTRIES,
+        countries
+      });
 
-    return countries;
+      return countries;
+    } finally {
+      await dispatch(setLoadingThrobberVisible(false));
+    }
   };
 }
 
@@ -394,15 +400,20 @@ export function requestAddressFields({
       return a;
     }
 
-    const l = await dispatch(getLocale(locale));
-    const addressFormatter = new AddressFormatter(l);
-    const addressFields = await addressFormatter.getOrderedFields(countryCode);
-    await dispatch({
-      type: RECEIVE_ADDRESS_FIELDS,
-      countryCode,
-      addressFields
-    });
-    return addressFields;
+    try {
+      await dispatch(setLoadingThrobberVisible(true));
+      const l = await dispatch(getLocale(locale));
+      const addressFormatter = new AddressFormatter(l);
+      const addressFields = await addressFormatter.getOrderedFields(countryCode);
+      await dispatch({
+        type: RECEIVE_ADDRESS_FIELDS,
+        countryCode,
+        addressFields
+      });
+      return addressFields;
+    } finally {
+      await dispatch(setLoadingThrobberVisible(false));
+    }
   };
 }
 
