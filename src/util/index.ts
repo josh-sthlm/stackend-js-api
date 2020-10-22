@@ -43,3 +43,28 @@ export function hash(s: string | null | undefined): number {
 
   return hash;
 }
+
+const STACKEND_LOCALES_BY_LANGUAGE: { [language: string]: string } = {
+  sv: 'sv_SE',
+  fi: 'fi_FI',
+  de: 'de_DE',
+  en: 'en_US'
+};
+
+/**
+ * Get a stackend supported locale given the corresponding language code
+ * @param language
+ */
+export function getStackendLocale(language?: string | null): string {
+  if (!language) {
+    return 'en_US';
+  }
+
+  let l = language.replace('-', '_');
+  if (l.indexOf('_')) {
+    l = l.split('_')[0];
+  }
+
+  l = STACKEND_LOCALES_BY_LANGUAGE[l.toLowerCase()];
+  return l || 'en_US';
+}

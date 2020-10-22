@@ -1,4 +1,4 @@
-import { generateClassName, hash } from '../src/util';
+import { generateClassName, getStackendLocale, hash } from '../src/util';
 
 describe('Util', () => {
   describe('hash', () => {
@@ -19,6 +19,20 @@ describe('Util', () => {
       expect(generateClassName('räksmörgås')).toBe('raksmorgas');
       expect(generateClassName('a b & c')).toBe('a-b-c');
       expect(generateClassName('Apan Ola')).toBe('apan-ola');
+    });
+  });
+
+  describe('getStackendLocale', () => {
+    it('Gets a stackend supported locale', () => {
+      expect(getStackendLocale()).toBe('en_US');
+      expect(getStackendLocale(null)).toBe('en_US');
+      expect(getStackendLocale('')).toBe('en_US');
+      expect(getStackendLocale('sv')).toBe('sv_SE');
+      expect(getStackendLocale('de')).toBe('de_DE');
+      expect(getStackendLocale('fi')).toBe('fi_FI');
+
+      expect(getStackendLocale('dk')).toBe('en_US');
+      expect(getStackendLocale('sv_FI')).toBe('sv_SE');
     });
   });
 });

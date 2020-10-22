@@ -4,6 +4,9 @@ import {
   getProductListing,
   getProductListKey,
   getProductTypeLabel,
+  ProductTypeTree,
+  requestAddressFields,
+  requestCountries,
   requestMissingProducts,
   requestProduct,
   requestProducts,
@@ -11,9 +14,10 @@ import {
 } from '../src/shop/shopActions';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
-import { buildProductTypeTree, ProductTypeTree, ShopState } from '../src/shop/shopReducer';
+import { buildProductTypeTree, ShopState } from '../src/shop/shopReducer';
 import assert from 'assert';
 import { ProductSortKeys } from '../src/shop';
+import { Country, FieldName } from '@shopify/address';
 
 describe('Shop Actions/Reducers', () => {
   const store = createTestStore();
@@ -232,6 +236,32 @@ describe('Shop Actions/Reducers', () => {
       assert(shop);
       expect(shop.products['pin-boot']).toBeDefined();
       expect(shop.products['hanra-shirt']).toBeDefined();
+    });
+  });
+
+  describe('requestCountries', () => {
+    it('Loads countries into store', async () => {
+      const c: Array<Country> = await store.dispatch(requestCountries({ locale: 'en_US' }));
+      assert(c);
+      expect(c.length).toBeGreaterThan(10);
+      const shop: ShopState = store.getState().shop;
+      assert(shop.countryCodes);
+      expect(shop.countryCodes.length).toBeGreaterThan(10);
+      expect(shop.countriesByCode).toBeDefined();
+      expect(shop.countryCodes.indexOf('SV') !== -1).toBeTruthy();
+      expect(shop.countriesByCode['SV']).toBeDefined();
+    });
+  });
+
+  describe('requestAddressFields', () => {
+    it('Loads address fields into store', async () => {
+      const c: FieldName[][] = await store.dispatch(requestAddressFields({ locale: 'en_US', countryCode: 'sv' }));
+      assert(c);
+      expect(c.length).toBeGreaterThan(1);
+      const shop: ShopState = store.getState().shop;
+      const f = shop.addressFieldsByCountryCode['SV'];
+      expect(f).toBeDefined();
+      expect(f.length).toBeGreaterThan(3);
     });
   });
 });

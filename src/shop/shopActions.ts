@@ -38,10 +38,15 @@ import {
   ADD_TO_BASKET,
   REMOVE_FROM_BASKET,
   SlimProductListing,
-  RECEIVE_CHECKOUT
+  RECEIVE_CHECKOUT,
+  RECEIVE_COUNTRIES,
+  RECEIVE_ADDRESS_FIELDS
 } from './shopReducer';
 import { isRunningServerSide, logger, newXcapJsonResult, Thunk } from '../api';
 import get from 'lodash/get';
+import AddressFormatter, { Country } from '@shopify/address';
+import { FieldName } from '@shopify/address-consts';
+import { getStackendLocale } from '../util';
 
 /**
  * Load product types into store
@@ -322,6 +327,84 @@ export const selectShipping = (req: SelectShippingRequest): Thunk<Promise<Checko
   });
   return r;
 };
+
+/**
+ * Get the locale, falling back to the community locale if not supplied
+ * @param locale
+ */
+function getLocale(locale?: string | null): Thunk<Promise<string>> {
+  return async (dispatch, getState): Promise<string> => {
+    let l = locale;
+    if (!l) {
+      const state = getState();
+      l = getStackendLocale(state?.communities?.community?.locale);
+    }
+
+    if (!l) {
+      throw Error('No locale supplied');
+    }
+    return l;
+  };
+}
+
+/**
+ * Request the list of countries
+ * @param locale
+ */
+export function requestCountries({ locale }: { locale?: string }): Thunk<Promise<Array<Country>>> {
+  return async (dispatch: any, getState: any): Promise<Array<Country>> => {
+    const state = getState();
+    const shop: ShopState = state.shop;
+    if (shop.countryCodes) {
+      const a: Array<Country> = [];
+      shop.countryCodes.forEach(c => a.push(shop.countriesByCode[c]));
+      return a;
+    }
+
+    const l = await dispatch(getLocale(locale));
+    const addressFormatter = new AddressFormatter(l);
+    const countries = await addressFormatter.getCountries();
+    await dispatch({
+      type: RECEIVE_COUNTRIES,
+      countries
+    });
+
+    return countries;
+  };
+}
+
+/**
+ * Request the required address fields for the country using the specified locale
+ * @param locale
+ * @param countryCode
+ */
+export function requestAddressFields({
+  locale,
+  countryCode
+}: {
+  locale?: string | null;
+  countryCode: string;
+}): Thunk<Promise<FieldName[][]>> {
+  return async (dispatch: any, getState: any): Promise<FieldName[][]> => {
+    countryCode = countryCode.toUpperCase();
+    const state = getState();
+    const shop: ShopState = state.shop;
+    const a = shop.addressFieldsByCountryCode[countryCode];
+    if (a) {
+      return a;
+    }
+
+    const l = await dispatch(getLocale(locale));
+    const addressFormatter = new AddressFormatter(l);
+    const addressFields = await addressFormatter.getOrderedFields(countryCode);
+    await dispatch({
+      type: RECEIVE_ADDRESS_FIELDS,
+      countryCode,
+      addressFields
+    });
+    return addressFields;
+  };
+}
 
 /**
  * List the products in the basket

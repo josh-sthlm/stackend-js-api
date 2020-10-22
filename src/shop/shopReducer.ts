@@ -24,6 +24,7 @@ import {
   ProductTypeTree,
   ProductTypeTreeNode
 } from './shopActions';
+import { Country, FieldName } from '@shopify/address-consts';
 
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
@@ -35,6 +36,8 @@ export const ADD_TO_BASKET = 'ADD_TO_BASKET';
 export const REMOVE_FROM_BASKET = 'REMOVE_FROM_BASKET';
 export const RECEIVE_CHECKOUT = 'RECEIVE_CHECKOUT';
 export const CLEAR_CHECKOUT = 'CLEAR_CHECKOUT';
+export const RECEIVE_COUNTRIES = 'RECEIVE_COUNTRIES';
+export const RECEIVE_ADDRESS_FIELDS = 'RECEIVE_ADDRESS_FIELDS';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -97,6 +100,21 @@ export interface ShopState {
    * Last checkout errors, if any
    */
   checkoutUserErrors: Array<CheckoutUserError> | null;
+
+  /**
+   * Country codes, or null if not loaded
+   */
+  countryCodes: Array<string> | null;
+
+  /**
+   * Countries by code
+   */
+  countriesByCode: { [code: string]: Country };
+
+  /**
+   * Required Address fields by country code
+   */
+  addressFieldsByCountryCode: { [code: string]: FieldName[][] };
 }
 
 export type ShopActions =
@@ -143,6 +161,15 @@ export type ShopActions =
     }
   | {
       type: typeof CLEAR_CHECKOUT;
+    }
+  | {
+      type: typeof RECEIVE_COUNTRIES;
+      countries: Array<Country>;
+    }
+  | {
+      type: typeof RECEIVE_ADDRESS_FIELDS;
+      countryCode: string;
+      addressFields: FieldName[][];
     };
 
 export default function shopReducer(
@@ -153,7 +180,10 @@ export default function shopReducer(
     productListings: {},
     basketUpdated: 0,
     checkout: null,
-    checkoutUserErrors: null
+    checkoutUserErrors: null,
+    countryCodes: null,
+    countriesByCode: {},
+    addressFieldsByCountryCode: {}
   },
   action: ShopActions
 ): ShopState {
@@ -242,6 +272,29 @@ export default function shopReducer(
       return Object.assign({}, state, {
         checkout: null
       });
+
+    case RECEIVE_COUNTRIES: {
+      const countryCodes: Array<string> = [];
+      const countriesByCode: { [code: string]: Country } = {};
+      action.countries.forEach(c => {
+        countryCodes.push(c.code);
+        countriesByCode[c.code] = c;
+      });
+      return Object.assign({}, state, {
+        countryCodes,
+        countriesByCode
+      });
+    }
+
+    case RECEIVE_ADDRESS_FIELDS: {
+      const addressFieldsByCountryCode = Object.assign({}, state.addressFieldsByCountryCode, {
+        [action.countryCode]: action.addressFields
+      });
+
+      return Object.assign({}, state, {
+        addressFieldsByCountryCode
+      });
+    }
   }
 
   return state;
