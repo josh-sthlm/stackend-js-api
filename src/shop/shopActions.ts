@@ -47,7 +47,7 @@ import get from 'lodash/get';
 import AddressFormatter, { Country } from '@shopify/address';
 import { FieldName } from '@shopify/address-consts';
 import { getStackendLocale } from '../util';
-import { setLoadingThrobberVisible } from '../throbber/throbberActions';
+import { setLoadingThrobberVisible, setModalThrobberVisible } from '../throbber/throbberActions';
 
 /**
  * Load product types into store
@@ -150,7 +150,7 @@ export const getBasket = (): Thunk<Basket> => (dispatch: any, getState: any): Ba
     return new Basket();
   }
 
-  const key = getLocalStorageKey(getState());
+  const key = getLocalStorageKey(getState(), BASKET_LOCAL_STORAGE_NAME);
   const json = localStorage.getItem(key);
   if (!json) {
     return new Basket();
@@ -159,8 +159,11 @@ export const getBasket = (): Thunk<Basket> => (dispatch: any, getState: any): Ba
   return Basket.fromString(json);
 };
 
-function getLocalStorageKey(state: any): string {
-  return get(state, 'communities.community.permalink', 'stackend') + '-basket';
+export const BASKET_LOCAL_STORAGE_NAME = 'basket';
+export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
+
+export function getLocalStorageKey(state: any, name: string): string {
+  return get(state, 'communities.community.permalink', 'stackend') + '-' + name;
 }
 /**
  * Persist the basket in local storage
@@ -171,7 +174,7 @@ export const storeBasket = (basket: Basket): Thunk<void> => (dispatch: any, getS
     return;
   }
 
-  const key = getLocalStorageKey(getState());
+  const key = getLocalStorageKey(getState(), BASKET_LOCAL_STORAGE_NAME);
   localStorage.setItem(key, basket.toString());
   dispatch({ type: BASKET_UPDATED });
 };
@@ -196,7 +199,7 @@ export const addToBasket = (
   const q = quantity || 1;
   basket.add(product.handle, variant.id, q);
 
-  const key = getLocalStorageKey(getState());
+  const key = getLocalStorageKey(getState(), BASKET_LOCAL_STORAGE_NAME);
   localStorage.setItem(key, basket.toString());
   dispatch({ type: ADD_TO_BASKET, product, variant, variantId: variant.id, quantity: q });
 };
@@ -234,7 +237,7 @@ export const removeFromBasket = (
 
   basket.remove(product.handle, vId, q);
 
-  const key = getLocalStorageKey(state);
+  const key = getLocalStorageKey(state, BASKET_LOCAL_STORAGE_NAME);
 
   let v = variant;
   if (!variant && variantId) {
@@ -252,7 +255,7 @@ export const clearBasket = (): Thunk<void> => (dispatch: any, getState: any): vo
   if (isRunningServerSide()) {
     return;
   }
-  const key = getLocalStorageKey(getState());
+  const key = getLocalStorageKey(getState(), BASKET_LOCAL_STORAGE_NAME);
   localStorage.removeItem(key);
   dispatch({ type: BASKET_UPDATED });
 };
@@ -301,17 +304,35 @@ export function getProductListing(shop: ShopState, req: ListProductsRequest): Sl
 }
 
 /**
+ * Check if there are any kind of errors in the checkout
+ * @param result
+ */
+export function hasCheckoutErrors(result: CheckoutResult): boolean {
+  return (
+    result &&
+    (typeof result.error !== 'undefined' || (result.checkoutUserErrors && result.checkoutUserErrors.length !== 0))
+  );
+}
+
+/**
  * Create a checkout
  */
 export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<CheckoutResult>> => async (
   dispatch: any
 ): Promise<CheckoutResult> => {
-  const r = await dispatch(doCreateCheckout(req));
-  await dispatch({
-    type: RECEIVE_CHECKOUT,
-    json: r
-  });
-  return r;
+  try {
+    await dispatch(setModalThrobberVisible(true));
+    const r: CheckoutResult = await dispatch(doCreateCheckout(req));
+    if (!hasCheckoutErrors(r)) {
+      await dispatch({
+        type: RECEIVE_CHECKOUT,
+        json: r
+      });
+    }
+    return r;
+  } finally {
+    await dispatch(setModalThrobberVisible(false));
+  }
 };
 
 /**
@@ -321,12 +342,19 @@ export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<Checko
 export const selectShipping = (req: SelectShippingRequest): Thunk<Promise<CheckoutResult>> => async (
   dispatch: any
 ): Promise<CheckoutResult> => {
-  const r = await dispatch(doSelectShipping(req));
-  await dispatch({
-    type: RECEIVE_CHECKOUT,
-    json: r
-  });
-  return r;
+  try {
+    await dispatch(setModalThrobberVisible(true));
+    const r: CheckoutResult = await dispatch(doSelectShipping(req));
+    if (!hasCheckoutErrors(r)) {
+      await dispatch({
+        type: RECEIVE_CHECKOUT,
+        json: r
+      });
+    }
+    return r;
+  } finally {
+    await dispatch(setModalThrobberVisible(false));
+  }
 };
 
 /**

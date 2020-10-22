@@ -17,6 +17,8 @@ import {
 import get from 'lodash/get';
 import {
   addNode,
+  CHECKOUT_ID_LOCAL_STORAGE_NAME,
+  getLocalStorageKey,
   getParentProductType,
   getProductListKey,
   isRoot,
@@ -25,6 +27,7 @@ import {
   ProductTypeTreeNode
 } from './shopActions';
 import { Country, FieldName } from '@shopify/address-consts';
+import { isRunningInBrowser } from '../api';
 
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
@@ -263,12 +266,20 @@ export default function shopReducer(
       });
 
     case RECEIVE_CHECKOUT:
+      if (isRunningInBrowser()) {
+        localStorage.setItem(getLocalStorageKey(state, CHECKOUT_ID_LOCAL_STORAGE_NAME), action.json.checkout.id);
+      }
+
       return Object.assign({}, state, {
         checkout: action.json.checkout,
         checkoutUserErrors: action.json.checkoutUserErrors
       });
 
     case CLEAR_CHECKOUT:
+      if (isRunningInBrowser()) {
+        localStorage.removeItem(getLocalStorageKey(state, CHECKOUT_ID_LOCAL_STORAGE_NAME));
+      }
+
       return Object.assign({}, state, {
         checkout: null
       });
