@@ -42,9 +42,10 @@ import {
   SlimProductListing,
   RECEIVE_CHECKOUT,
   RECEIVE_COUNTRIES,
-  RECEIVE_ADDRESS_FIELDS
+  RECEIVE_ADDRESS_FIELDS,
+  CLEAR_CHECKOUT
 } from './shopReducer';
-import { isRunningServerSide, logger, newXcapJsonResult, State, Thunk } from '../api';
+import { isRunningInBrowser, isRunningServerSide, logger, newXcapJsonResult, State, Thunk } from '../api';
 import get from 'lodash/get';
 import { Country } from '@shopify/address';
 import { FieldName } from '@shopify/address-consts';
@@ -319,12 +320,17 @@ export function hasCheckoutErrors(result: CheckoutResult): boolean {
  * Create a checkout
  */
 export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<CheckoutResult>> => async (
-  dispatch: any
+  dispatch: any,
+  getState: any
 ): Promise<CheckoutResult> => {
   try {
     await dispatch(setModalThrobberVisible(true));
     const r: CheckoutResult = await dispatch(doCreateCheckout(req));
     if (!hasCheckoutErrors(r)) {
+      if (isRunningInBrowser() && r.response.checkout) {
+        localStorage.setItem(getLocalStorageKey(getState(), CHECKOUT_ID_LOCAL_STORAGE_NAME), r.response.checkout.id);
+      }
+
       await dispatch({
         type: RECEIVE_CHECKOUT,
         json: r
@@ -334,6 +340,20 @@ export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<Checko
   } finally {
     await dispatch(setModalThrobberVisible(false));
   }
+};
+
+/**
+ * Clear checkout data
+ */
+export const clearCheckout = (): Thunk<Promise<void>> => async (dispatch: any, getState: any): Promise<void> => {
+  if (isRunningInBrowser()) {
+    const state: State = dispatch(getState());
+    localStorage.removeItem(getLocalStorageKey(state, CHECKOUT_ID_LOCAL_STORAGE_NAME));
+  }
+
+  await dispatch({
+    type: CLEAR_CHECKOUT
+  });
 };
 
 /**
