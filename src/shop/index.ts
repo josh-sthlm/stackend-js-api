@@ -1,7 +1,11 @@
 //@flow
 
-import { getJson, post, XcapJsonResult, Thunk, XcapOptionalParameters, COMMUNITY_PARAMETER } from '../api';
+import { COMMUNITY_PARAMETER, getJson, post, Thunk, XcapJsonResult, XcapOptionalParameters } from '../api';
 import { ShopState } from './shopReducer';
+import AddressFormatter, { Country } from '@shopify/address';
+import { FieldName } from '@shopify/address-consts';
+import { getStackendLocale } from '../util';
+import { setLoadingThrobberVisible } from '../throbber/throbberActions';
 
 export const DEFAULT_IMAGE_MAX_WIDTH = 1024;
 
@@ -819,4 +823,82 @@ export function setShippingAddress(req: SetShippingAddressRequest): Thunk<Promis
     url: '/shop/checkout/set-shipping-address',
     parameters: p
   });
+}
+
+/**
+ * Get the locale, falling back to the community locale if not supplied
+ * @param locale
+ */
+export function getLocale(locale?: string | null): Thunk<Promise<string>> {
+  return async (dispatch, getState): Promise<string> => {
+    let l = locale;
+    if (!l) {
+      const state = getState();
+      l = getStackendLocale(state?.communities?.community?.locale);
+    }
+
+    if (!l) {
+      throw Error('No locale supplied');
+    }
+    return l;
+  };
+}
+
+/**
+ * Get the required address fields for the country using the specified locale.
+ * @param locale (Optional. falls back to community locale)
+ * @param countryCode
+ */
+export function getAddressFields({
+  locale,
+  countryCode
+}: {
+  locale?: string | null;
+  countryCode: string;
+}): Thunk<Promise<FieldName[][]>> {
+  return async (dispatch: any): Promise<FieldName[][]> => {
+    try {
+      await dispatch(setLoadingThrobberVisible(true));
+      const l = await dispatch(getLocale(locale));
+      const addressFormatter = new AddressFormatter(l);
+      return await addressFormatter.getOrderedFields(countryCode);
+    } finally {
+      await dispatch(setLoadingThrobberVisible(false));
+    }
+  };
+}
+
+/**
+ * Get the list of countries
+ * @param locale
+ */
+export function getCountries({ locale }: { locale?: string }): Thunk<Promise<Array<Country>>> {
+  return async (dispatch: any): Promise<Array<Country>> => {
+    try {
+      await dispatch(setLoadingThrobberVisible(true));
+      const l = await dispatch(getLocale(locale));
+      const addressFormatter = new AddressFormatter(l);
+      return await addressFormatter.getCountries();
+    } finally {
+      await dispatch(setLoadingThrobberVisible(false));
+    }
+  };
+}
+
+/**
+ * Get a country
+ * @param locale
+ * @param countryCode
+ */
+export function getCountry({ locale, countryCode }: { locale?: string; countryCode: string }): Thunk<Promise<Country>> {
+  return async (dispatch: any): Promise<Country> => {
+    try {
+      await dispatch(setLoadingThrobberVisible(true));
+      const l = await dispatch(getLocale(locale));
+      const addressFormatter = new AddressFormatter(l);
+      return await addressFormatter.getCountry(countryCode);
+    } finally {
+      await dispatch(setLoadingThrobberVisible(false));
+    }
+  };
 }

@@ -25,7 +25,9 @@ import {
   createCheckout as doCreateCheckout,
   CreateCheckoutRequest,
   selectShipping as doSelectShipping,
-  SelectShippingRequest
+  SelectShippingRequest,
+  getAddressFields,
+  getCountries
 } from './index';
 import {
   CLEAR_CACHE,
@@ -42,12 +44,11 @@ import {
   RECEIVE_COUNTRIES,
   RECEIVE_ADDRESS_FIELDS
 } from './shopReducer';
-import { isRunningServerSide, logger, newXcapJsonResult, Thunk } from '../api';
+import { isRunningServerSide, logger, newXcapJsonResult, State, Thunk } from '../api';
 import get from 'lodash/get';
-import AddressFormatter, { Country } from '@shopify/address';
+import { Country } from '@shopify/address';
 import { FieldName } from '@shopify/address-consts';
-import { getStackendLocale } from '../util';
-import { setLoadingThrobberVisible, setModalThrobberVisible } from '../throbber/throbberActions';
+import { setModalThrobberVisible } from '../throbber/throbberActions';
 
 /**
  * Load product types into store
@@ -162,7 +163,7 @@ export const getBasket = (): Thunk<Basket> => (dispatch: any, getState: any): Ba
 export const BASKET_LOCAL_STORAGE_NAME = 'basket';
 export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
 
-export function getLocalStorageKey(state: any, name: string): string {
+export function getLocalStorageKey(state: State, name: string): string {
   return get(state, 'communities.community.permalink', 'stackend') + '-' + name;
 }
 /**
@@ -358,25 +359,6 @@ export const selectShipping = (req: SelectShippingRequest): Thunk<Promise<Checko
 };
 
 /**
- * Get the locale, falling back to the community locale if not supplied
- * @param locale
- */
-function getLocale(locale?: string | null): Thunk<Promise<string>> {
-  return async (dispatch, getState): Promise<string> => {
-    let l = locale;
-    if (!l) {
-      const state = getState();
-      l = getStackendLocale(state?.communities?.community?.locale);
-    }
-
-    if (!l) {
-      throw Error('No locale supplied');
-    }
-    return l;
-  };
-}
-
-/**
  * Request the list of countries
  * @param locale
  */
@@ -390,20 +372,13 @@ export function requestCountries({ locale }: { locale?: string }): Thunk<Promise
       return a;
     }
 
-    try {
-      await dispatch(setLoadingThrobberVisible(true));
-      const l = await dispatch(getLocale(locale));
-      const addressFormatter = new AddressFormatter(l);
-      const countries = await addressFormatter.getCountries();
-      await dispatch({
-        type: RECEIVE_COUNTRIES,
-        countries
-      });
+    const countries: Array<Country> = await dispatch(getCountries({ locale }));
+    await dispatch({
+      type: RECEIVE_COUNTRIES,
+      countries
+    });
 
-      return countries;
-    } finally {
-      await dispatch(setLoadingThrobberVisible(false));
-    }
+    return countries;
   };
 }
 
@@ -428,26 +403,22 @@ export function requestAddressFields({
       return a;
     }
 
-    try {
-      await dispatch(setLoadingThrobberVisible(true));
-      const l = await dispatch(getLocale(locale));
-      const addressFormatter = new AddressFormatter(l);
-      const addressFields = await addressFormatter.getOrderedFields(countryCode);
-      await dispatch({
-        type: RECEIVE_ADDRESS_FIELDS,
-        countryCode,
-        addressFields
-      });
-      return addressFields;
-    } finally {
-      await dispatch(setLoadingThrobberVisible(false));
-    }
+    const addressFields = await dispatch(getAddressFields({ locale, countryCode }));
+
+    await dispatch({
+      type: RECEIVE_ADDRESS_FIELDS,
+      countryCode,
+      addressFields
+    });
+
+    return addressFields;
   };
 }
 
 /**
  * List the products in the basket
  * @param shop
+ * @param basket
  */
 export function getBasketListing(shop: ShopState, basket: Basket): Array<Product> {
   const products: Array<Product> = [];

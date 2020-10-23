@@ -1,10 +1,12 @@
 import assert from 'assert';
 import {
   Basket,
-  createCheckout,
   findAllProductVariants,
   findExactProductVariant,
   forEachProductVariant,
+  getAddressFields,
+  getCountries,
+  getCountry,
   getLowestVariantPrice,
   getNextCursor,
   getPreviousCursor,
@@ -24,7 +26,7 @@ import createTestStore from './setup';
 import { getBasket, storeBasket } from '../src/shop/shopActions';
 import { ShopState } from '../src/shop/shopReducer';
 import { loadInitialStoreValues } from '../src/api/actions';
-import { setConfiguration } from '../src/api';
+import { Country, FieldName } from '@shopify/address-consts';
 
 describe('Shop', () => {
   const store = createTestStore();
@@ -228,6 +230,31 @@ describe('Shop', () => {
       const x = getProductSelection(p, p.variants.edges[0].node);
       assert(x);
       expect(x).toStrictEqual({ Color: 'Black', Size: '7' });
+    });
+  });
+
+  describe('getCountries', () => {
+    it('Get a list of countries', async () => {
+      const r: Array<Country> = await store.dispatch(getCountries({ locale: 'en_US' }));
+      assert(r);
+      expect(r.length).toBeGreaterThan(10);
+    });
+  });
+
+  describe('getCountry', () => {
+    it('Get a country', async () => {
+      const r: Country = await store.dispatch(getCountry({ locale: 'sv_SE', countryCode: 'US' }));
+      assert(r);
+      expect(r.code).toBe('US');
+      expect(r.name).toBe('USA');
+    });
+  });
+
+  describe('getAddressFields', () => {
+    it('Get address fields for a country', async () => {
+      const r: FieldName[][] = await store.dispatch(getAddressFields({ locale: 'sv_SE', countryCode: 'US' }));
+      assert(r);
+      expect(r.length).toBeGreaterThan(2);
     });
   });
 
