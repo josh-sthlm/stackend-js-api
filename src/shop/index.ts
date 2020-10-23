@@ -774,6 +774,25 @@ export function createCheckout(req: CreateCheckoutRequest): Thunk<Promise<Checko
   });
 }
 
+export interface GetCheckoutRequest extends XcapOptionalParameters {
+  checkoutId: string;
+}
+
+export interface GetCheckoutResult extends XcapJsonResult {
+  checkout: Checkout;
+}
+
+/**
+ * Get a checkout given an id
+ * @param req
+ */
+export function getCheckout(req: GetCheckoutRequest): Thunk<Promise<GetCheckoutResult>> {
+  return getJson({
+    url: '/shop/checkout/get',
+    parameters: arguments
+  });
+}
+
 export interface SelectShippingRequest extends XcapOptionalParameters {
   checkoutId: string;
   shippingRateHandle: string;

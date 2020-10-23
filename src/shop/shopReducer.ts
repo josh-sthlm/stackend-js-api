@@ -1,6 +1,5 @@
 import {
   Checkout,
-  CheckoutResult,
   CheckoutUserError,
   getNextCursor,
   getPreviousCursor,
@@ -160,7 +159,8 @@ export type ShopActions =
     }
   | {
       type: typeof RECEIVE_CHECKOUT;
-      json: CheckoutResult;
+      checkoutUserErrors: Array<CheckoutUserError> | null;
+      checkout: Checkout;
     }
   | {
       type: typeof CLEAR_CHECKOUT;
@@ -267,8 +267,8 @@ export default function shopReducer(
 
     case RECEIVE_CHECKOUT:
       return Object.assign({}, state, {
-        checkout: action.json.response.checkout,
-        checkoutUserErrors: action.json.response.checkoutUserErrors
+        checkout: action.checkout,
+        checkoutUserErrors: action.checkoutUserErrors
       });
 
     case CLEAR_CHECKOUT:

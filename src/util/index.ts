@@ -1,5 +1,8 @@
 //@flow
 import deburr from 'lodash/deburr';
+import { isRunningInBrowser, State, Thunk } from '../api';
+import get from 'lodash/get';
+import { STACKEND_COMMUNITY } from '../stackend';
 
 /**
  * Generate a class name
@@ -67,4 +70,64 @@ export function getStackendLocale(language?: string | null): string {
 
   l = STACKEND_LOCALES_BY_LANGUAGE[l.toLowerCase()];
   return l || 'en_US';
+}
+
+/**
+ * Get a local storage key name prefixed with the current community permalink
+ * @param name
+ */
+export function getLocalStorageKey(name: string): Thunk<string> {
+  return (dispatch, getState): string => {
+    return _getLocalStorageKey(getState(), name);
+  };
+}
+
+/**
+ * Get a local storage key name prefixed with the current community permalink
+ * @param state
+ * @param name
+ */
+export function _getLocalStorageKey(state: State, name: string): string {
+  return get(state, 'communities.community.permalink', STACKEND_COMMUNITY) + '-' + name;
+}
+
+/**
+ * Store any object in local storage under a community unique key
+ * @param name
+ * @param value
+ */
+export function setLocalStorageItem(name: string, value: string): Thunk<void> {
+  return (dispatch: any): void => {
+    if (isRunningInBrowser()) {
+      const key = dispatch(getLocalStorageKey(name));
+      localStorage.setItem(key, value);
+    }
+  };
+}
+
+/**
+ * Get any object from local storage using a community unique key
+ * @param name
+ */
+export function getLocalStorageItem(name: string): Thunk<string | null> {
+  return (dispatch: any): string | null => {
+    if (isRunningInBrowser()) {
+      const key = dispatch(getLocalStorageKey(name));
+      return localStorage.getItem(key);
+    }
+    return null;
+  };
+}
+
+/**
+ * Remove an object from local storage using a community unique key
+ * @param name
+ */
+export function removeLocalStorageItem(name: string): Thunk<void> {
+  return (dispatch: any): void => {
+    if (isRunningInBrowser()) {
+      const key = dispatch(getLocalStorageKey(name));
+      localStorage.removeItem(key);
+    }
+  };
 }

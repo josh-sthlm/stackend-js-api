@@ -27,7 +27,10 @@ import {
   selectShipping as doSelectShipping,
   SelectShippingRequest,
   getAddressFields,
-  getCountries
+  getCountries,
+  GetCheckoutRequest,
+  GetCheckoutResult,
+  getCheckout
 } from './index';
 import {
   CLEAR_CACHE,
@@ -45,11 +48,11 @@ import {
   RECEIVE_ADDRESS_FIELDS,
   CLEAR_CHECKOUT
 } from './shopReducer';
-import { isRunningInBrowser, isRunningServerSide, logger, newXcapJsonResult, State, Thunk } from '../api';
-import get from 'lodash/get';
+import { isRunningServerSide, logger, newXcapJsonResult, Thunk } from '../api';
 import { Country } from '@shopify/address';
 import { FieldName } from '@shopify/address-consts';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
+import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../util';
 
 /**
  * Load product types into store
@@ -147,13 +150,12 @@ export const requestMissingProducts = (req: GetProductsRequest): Thunk<Promise<G
 /**
  * Get the basket from local storage
  */
-export const getBasket = (): Thunk<Basket> => (dispatch: any, getState: any): Basket => {
+export const getBasket = (): Thunk<Basket> => (dispatch: any): Basket => {
   if (isRunningServerSide()) {
     return new Basket();
   }
 
-  const key = getLocalStorageKey(getState(), BASKET_LOCAL_STORAGE_NAME);
-  const json = localStorage.getItem(key);
+  const json = dispatch(getLocalStorageItem(BASKET_LOCAL_STORAGE_NAME));
   if (!json) {
     return new Basket();
   }
@@ -164,20 +166,17 @@ export const getBasket = (): Thunk<Basket> => (dispatch: any, getState: any): Ba
 export const BASKET_LOCAL_STORAGE_NAME = 'basket';
 export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
 
-export function getLocalStorageKey(state: State, name: string): string {
-  return get(state, 'communities.community.permalink', 'stackend') + '-' + name;
-}
 /**
  * Persist the basket in local storage
  * @param basket
  */
-export const storeBasket = (basket: Basket): Thunk<void> => (dispatch: any, getState: any): void => {
+export const storeBasket = (basket: Basket): Thunk<void> => (dispatch: any): void => {
   if (isRunningServerSide()) {
     return;
   }
 
-  const key = getLocalStorageKey(getState(), BASKET_LOCAL_STORAGE_NAME);
-  localStorage.setItem(key, basket.toString());
+  dispatch(setLocalStorageItem(BASKET_LOCAL_STORAGE_NAME, basket.toString()));
+
   dispatch({ type: BASKET_UPDATED });
 };
 
@@ -193,16 +192,14 @@ export const addToBasket = (
   product: Product,
   variant: ProductVariant,
   quantity?: number
-): Thunk<void> => (dispatch: any, getState: any): void => {
+): Thunk<void> => (dispatch: any): void => {
   if (isRunningServerSide()) {
     return;
   }
 
   const q = quantity || 1;
   basket.add(product.handle, variant.id, q);
-
-  const key = getLocalStorageKey(getState(), BASKET_LOCAL_STORAGE_NAME);
-  localStorage.setItem(key, basket.toString());
+  dispatch(setLocalStorageItem(BASKET_LOCAL_STORAGE_NAME, basket.toString()));
   dispatch({ type: ADD_TO_BASKET, product, variant, variantId: variant.id, quantity: q });
 };
 
@@ -227,7 +224,6 @@ export const removeFromBasket = (
 
   const q = quantity || 1;
 
-  const state = getState();
   let vId = variantId;
   if (!variantId && variant) {
     vId = variant.id;
@@ -239,14 +235,12 @@ export const removeFromBasket = (
 
   basket.remove(product.handle, vId, q);
 
-  const key = getLocalStorageKey(state, BASKET_LOCAL_STORAGE_NAME);
-
   let v = variant;
   if (!variant && variantId) {
     v = getProductVariant(product, variantId);
   }
 
-  localStorage.setItem(key, basket.toString());
+  dispatch(setLocalStorageItem(BASKET_LOCAL_STORAGE_NAME, basket.toString()));
   dispatch({ type: REMOVE_FROM_BASKET, product, variant: v, variantId, quantity: q });
 };
 
@@ -254,11 +248,7 @@ export const removeFromBasket = (
  * Clear the basket from local storage
  */
 export const clearBasket = (): Thunk<void> => (dispatch: any, getState: any): void => {
-  if (isRunningServerSide()) {
-    return;
-  }
-  const key = getLocalStorageKey(getState(), BASKET_LOCAL_STORAGE_NAME);
-  localStorage.removeItem(key);
+  dispatch(removeLocalStorageItem(BASKET_LOCAL_STORAGE_NAME));
   dispatch({ type: BASKET_UPDATED });
 };
 
@@ -320,20 +310,20 @@ export function hasCheckoutErrors(result: CheckoutResult): boolean {
  * Create a checkout
  */
 export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<CheckoutResult>> => async (
-  dispatch: any,
-  getState: any
+  dispatch: any
 ): Promise<CheckoutResult> => {
   try {
     await dispatch(setModalThrobberVisible(true));
     const r: CheckoutResult = await dispatch(doCreateCheckout(req));
     if (!hasCheckoutErrors(r)) {
-      if (isRunningInBrowser() && r.response.checkout) {
-        localStorage.setItem(getLocalStorageKey(getState(), CHECKOUT_ID_LOCAL_STORAGE_NAME), r.response.checkout.id);
+      if (r.response.checkout) {
+        dispatch(setLocalStorageItem(CHECKOUT_ID_LOCAL_STORAGE_NAME, r.response.checkout.id));
       }
 
       await dispatch({
         type: RECEIVE_CHECKOUT,
-        json: r
+        checkoutUserErrors: r.response.checkoutUserErrors,
+        checkout: r.response.checkout
       });
     }
     return r;
@@ -343,13 +333,29 @@ export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<Checko
 };
 
 /**
+ * Request a checkout using id
+ * @param req
+ */
+export const requestCheckout = (req: GetCheckoutRequest): Thunk<Promise<GetCheckoutResult>> => async (
+  dispatch: any
+): Promise<GetCheckoutResult> => {
+  const r: GetCheckoutResult = await dispatch(getCheckout(req));
+
+  if (!r.error && r.checkout) {
+    await dispatch({
+      type: RECEIVE_CHECKOUT,
+      checkoutUserErrors: null,
+      checkout: r.checkout
+    });
+  }
+  return r;
+};
+
+/**
  * Clear checkout data
  */
-export const clearCheckout = (): Thunk<Promise<void>> => async (dispatch: any, getState: any): Promise<void> => {
-  if (isRunningInBrowser()) {
-    const state: State = dispatch(getState());
-    localStorage.removeItem(getLocalStorageKey(state, CHECKOUT_ID_LOCAL_STORAGE_NAME));
-  }
+export const clearCheckout = (): Thunk<Promise<void>> => async (dispatch: any): Promise<void> => {
+  dispatch(removeLocalStorageItem(CHECKOUT_ID_LOCAL_STORAGE_NAME));
 
   await dispatch({
     type: CLEAR_CHECKOUT
