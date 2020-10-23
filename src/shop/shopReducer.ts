@@ -266,13 +266,16 @@ export default function shopReducer(
       });
 
     case RECEIVE_CHECKOUT:
-      if (isRunningInBrowser()) {
-        localStorage.setItem(getLocalStorageKey(state, CHECKOUT_ID_LOCAL_STORAGE_NAME), action.json.checkout.id);
+      if (isRunningInBrowser() && action.json.response.checkout) {
+        localStorage.setItem(
+          getLocalStorageKey(state, CHECKOUT_ID_LOCAL_STORAGE_NAME),
+          action.json.response.checkout.id
+        );
       }
 
       return Object.assign({}, state, {
-        checkout: action.json.checkout,
-        checkoutUserErrors: action.json.checkoutUserErrors
+        checkout: action.json.response.checkout,
+        checkoutUserErrors: action.json.response.checkoutUserErrors
       });
 
     case CLEAR_CHECKOUT:

@@ -752,8 +752,10 @@ export interface Checkout {
 }
 
 export interface CheckoutResult extends XcapJsonResult {
-  checkoutUserErrors: Array<CheckoutUserError>;
-  checkout: Checkout;
+  response: {
+    checkoutUserErrors: Array<CheckoutUserError>;
+    checkout: Checkout;
+  };
 }
 
 /**
