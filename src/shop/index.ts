@@ -78,7 +78,7 @@ export interface ProductVariant {
 /**
  * Highest and lowest variant prices
  */
-export interface CompareAtPriceRange {
+export interface PriceRange {
   minVariantPrice: PriceV2;
   maxVariantPrice: PriceV2;
 }
@@ -107,7 +107,7 @@ export interface SlimProduct {
   /** Images. Actual number of images and size depends on context/listing */
   images: GraphQLList<SlimProductImage>;
 
-  compareAtPriceRange: CompareAtPriceRange;
+  priceRange: PriceRange;
 }
 
 /**
