@@ -704,6 +704,7 @@ export interface ShippingAddress {
   city: string;
   province?: string;
   country: string;
+  countryCodeV2: string;
   company?: string;
   phone?: string;
 }
@@ -737,17 +738,17 @@ export interface Checkout {
   webUrl: string;
   requiresShipping: boolean;
   currencyCode: string;
-  email: string;
-  note: string;
+  email: string | null;
+  note: string | null;
   subtotalPriceV2: PriceV2;
   totalPriceV2: PriceV2;
   totalTaxV2: PriceV2;
   taxesIncluded: boolean;
-  availableShippingRates: {
+  availableShippingRates?: {
     ready: boolean;
     shippingRates: Array<ShippingRate>;
   };
-  shippingAddress: ShippingAddress;
+  shippingAddress: ShippingAddress | null;
   shippingLine: ShippingRate | null;
 }
 
