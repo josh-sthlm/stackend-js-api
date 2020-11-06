@@ -344,7 +344,7 @@ export const updateShippingAddress = (req: SetShippingAddressRequest): Thunk<Pro
   try {
     await dispatch(setModalThrobberVisible(true));
 
-    const r: CheckoutResult = dispatch(setShippingAddress(req));
+    const r: CheckoutResult = await dispatch(setShippingAddress(req));
     if (!hasCheckoutErrors(r)) {
       await dispatch({
         type: RECEIVE_CHECKOUT,
