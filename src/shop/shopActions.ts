@@ -30,7 +30,9 @@ import {
   getCountries,
   GetCheckoutRequest,
   GetCheckoutResult,
-  getCheckout
+  getCheckout,
+  setShippingAddress,
+  SetShippingAddressRequest
 } from './index';
 import {
   CLEAR_CACHE,
@@ -326,6 +328,31 @@ export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<Checko
         checkout: r.response.checkout
       });
     }
+    return r;
+  } finally {
+    await dispatch(setModalThrobberVisible(false));
+  }
+};
+
+/**
+ * Update the shipping address
+ * @param req
+ */
+export const updateShippingAddress = (req: SetShippingAddressRequest): Thunk<Promise<CheckoutResult>> => async (
+  dispatch: any
+): Promise<CheckoutResult> => {
+  try {
+    await dispatch(setModalThrobberVisible(true));
+
+    const r: CheckoutResult = dispatch(setShippingAddress(req));
+    if (!hasCheckoutErrors(r)) {
+      await dispatch({
+        type: RECEIVE_CHECKOUT,
+        checkoutUserErrors: r.response.checkoutUserErrors,
+        checkout: r.response.checkout
+      });
+    }
+
     return r;
   } finally {
     await dispatch(setModalThrobberVisible(false));

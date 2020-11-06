@@ -828,7 +828,7 @@ export function setCheckoutEmail(req: SetCheckoutEmailRequest): Thunk<Promise<Ch
 
 export interface SetShippingAddressRequest extends XcapOptionalParameters {
   checkoutId: string;
-  address: string;
+  address: ShippingAddress;
 }
 
 /**
