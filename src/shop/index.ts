@@ -141,11 +141,17 @@ export interface Product extends SlimProduct {
   images: GraphQLList<ProductImage>;
 }
 
+export interface GetShopConfigurationResult extends XcapJsonResult {
+  shop: string | null;
+  storeFrontAccessToken: string | null;
+  webhookKey: string | null;
+}
+
 /**
  * Get the shop configuration. Requires admin privs
  * @returns {Thunk<XcapJsonResult>}
  */
-export function getShopConfiguration(): Thunk<Promise<XcapJsonResult>> {
+export function getShopConfiguration(): Thunk<Promise<GetShopConfigurationResult>> {
   return getJson({
     url: '/shop/admin/get-config'
   });
@@ -155,14 +161,17 @@ export function getShopConfiguration(): Thunk<Promise<XcapJsonResult>> {
  * Store the shop configuration. Requires admin privs
  * @param shop
  * @param storeFrontAccessToken
+ * @param webhookKey
  * @returns {Thunk<XcapJsonResult>}
  */
 export function storeShopConfiguration({
   shop,
-  storeFrontAccessToken
+  storeFrontAccessToken,
+  webhookKey
 }: {
   shop: string | null;
   storeFrontAccessToken: string | null;
+  webhookKey: string | null;
 } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: '/shop/admin/store-config',
