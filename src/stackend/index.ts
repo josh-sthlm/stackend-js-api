@@ -57,7 +57,9 @@ export interface Community extends XcapObject {
   logotype: Image | null;
   domains: Array<string>;
   adminUserIds: Array<number>;
+  adminsUserRef: Array<User>;
   moderatorUserIds: Array<number>;
+  moderatorUserRef: Array<User>;
   locale: string;
   xcapCommunityName: string;
   creatorUserId: number;
@@ -1144,6 +1146,11 @@ export function setAdminStatus({
   });
 }
 
+export interface SetCommunityAccessResult extends XcapJsonResult {
+  stackendCommunity: Community;
+  communityPrivilegeType: number;
+  communityId: number;
+}
 /**
  * Make a user moderator or admin status from a community. Or remove that status
  * @param communityId
@@ -1158,7 +1165,7 @@ export function setCommunityAccess({
   communityId: number;
   userId: number;
   privilegeType: number;
-}): Thunk<Promise<XcapJsonResult>> {
+}): Thunk<Promise<SetCommunityAccessResult>> {
   return post({
     url: '/stackend/user/set-community-access',
     parameters: arguments,

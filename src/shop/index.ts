@@ -759,12 +759,16 @@ export interface Checkout {
   };
   shippingAddress: ShippingAddress | null;
   shippingLine: ShippingRate | null;
+  /** The date and time when the checkout was completed. */
+  completedAt: string | null;
+  /** The Order Status Page for this Checkout, null when checkout is not completed. */
+  orderStatusUrl: string | null;
 }
 
 export interface CheckoutResult extends XcapJsonResult {
   response: {
     checkoutUserErrors: Array<CheckoutUserError>;
-    checkout: Checkout;
+    checkout: Checkout | null;
   };
 }
 
@@ -789,7 +793,7 @@ export interface GetCheckoutRequest extends XcapOptionalParameters {
 }
 
 export interface GetCheckoutResult extends XcapJsonResult {
-  checkout: Checkout;
+  checkout: Checkout | null;
 }
 
 /**
@@ -800,6 +804,29 @@ export function getCheckout(req: GetCheckoutRequest): Thunk<Promise<GetCheckoutR
   return getJson({
     url: '/shop/checkout/get',
     parameters: arguments
+  });
+}
+
+export interface CheckoutReplaceItemsRequest extends XcapOptionalParameters {
+  checkoutId: string;
+  lineItems: Array<{
+    variantId: string;
+    quantity: number;
+  }>;
+}
+
+/**
+ * Replace the items in the checkout
+ * @param req
+ */
+export function checkoutReplaceItems(req: CheckoutReplaceItemsRequest): Thunk<Promise<CheckoutResult>> {
+  return post({
+    url: '/shop/checkout/replace-items',
+    parameters: {
+      checkoutId: req.checkoutId,
+      lineItems: JSON.stringify(req.lineItems),
+      [COMMUNITY_PARAMETER]: req[COMMUNITY_PARAMETER]
+    }
   });
 }
 

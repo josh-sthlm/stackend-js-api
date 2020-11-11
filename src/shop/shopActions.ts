@@ -25,6 +25,7 @@ import {
   createCheckout as doCreateCheckout,
   CreateCheckoutRequest,
   selectShipping as doSelectShipping,
+  checkoutReplaceItems as doCheckoutReplaceItems,
   SelectShippingRequest,
   getAddressFields,
   getCountries,
@@ -32,7 +33,8 @@ import {
   GetCheckoutResult,
   getCheckout,
   setShippingAddress,
-  SetShippingAddressRequest
+  SetShippingAddressRequest,
+  CheckoutReplaceItemsRequest
 } from './index';
 import {
   CLEAR_CACHE,
@@ -332,6 +334,56 @@ export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<Checko
   } finally {
     await dispatch(setModalThrobberVisible(false));
   }
+};
+
+/**
+ * If the user has a active checkout set in the local storage, request that checkout to be loaded.
+ * If the checkout is turned into an order, the checkout is reset in local storage.
+ */
+export const requestOrResetActiveCheckout = (): Thunk<Promise<GetCheckoutResult>> => async (
+  dispatch: any
+): Promise<GetCheckoutResult> => {
+  const checkoutId = dispatch(getLocalStorageItem(CHECKOUT_ID_LOCAL_STORAGE_NAME));
+
+  if (checkoutId) {
+    const r: GetCheckoutResult = await dispatch(getCheckout({ checkoutId }));
+    if (!r.error && r.checkout) {
+      if (r.checkout.completedAt) {
+        // Checkout is turned into an order. Remove
+        dispatch(clearCheckout());
+      } else {
+        await dispatch({
+          type: RECEIVE_CHECKOUT,
+          checkoutUserErrors: null,
+          checkout: r.checkout
+        });
+      }
+
+      return r;
+    }
+  }
+
+  return newXcapJsonResult<GetCheckoutResult>('success', {
+    checkout: null
+  });
+};
+
+/**
+ * Replace the items in the checkout
+ * @param req
+ */
+export const checkoutReplaceItems = (req: CheckoutReplaceItemsRequest): Thunk<Promise<CheckoutResult>> => async (
+  dispatch: any
+): Promise<CheckoutResult> => {
+  const r: CheckoutResult = await dispatch(doCheckoutReplaceItems(req));
+  if (!hasCheckoutErrors(r)) {
+    await dispatch({
+      type: RECEIVE_CHECKOUT,
+      checkoutUserErrors: r.response.checkoutUserErrors,
+      checkout: r.response.checkout
+    });
+  }
+  return r;
 };
 
 /**
