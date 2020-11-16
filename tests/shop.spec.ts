@@ -1,6 +1,5 @@
 import assert from 'assert';
 import {
-  Basket,
   findAllProductVariants,
   findExactProductVariant,
   forEachProductVariant,
@@ -23,83 +22,11 @@ import {
   ProductSortKeys
 } from '../src/shop';
 import createTestStore from './setup';
-import { getBasket, storeBasket } from '../src/shop/shopActions';
-import { ShopState } from '../src/shop/shopReducer';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { Country, FieldName } from '@shopify/address-consts';
 
 describe('Shop', () => {
   const store = createTestStore();
-
-  describe('Basket', () => {
-    it('Add/remove/find/toString', () => {
-      const b = new Basket();
-
-      expect(b.toString()).toBe('{"items":[]}');
-
-      b.add('test', 'apa', 3);
-      b.add('test', 'korv');
-      expect(b.toString()).toBe(
-        '{"items":[{"handle":"test","variant":"apa","quantity":3},{"handle":"test","variant":"korv","quantity":1}]}'
-      );
-
-      expect(b.find('apa')).toBeNull();
-      expect(b.find('test')).toBeDefined();
-      expect(b.find('test', 'koko')).toBeNull();
-      expect(b.find('test', 'korv')).toBeDefined();
-
-      b.remove('test', 'korv');
-      expect(b.toString()).toBe('{"items":[{"handle":"test","variant":"apa","quantity":3}]}');
-
-      b.remove('test', 'apa');
-      expect(b.toString()).toBe('{"items":[{"handle":"test","variant":"apa","quantity":2}]}');
-
-      b.remove('test', undefined, 5);
-      expect(b.toString()).toBe('{"items":[]}');
-    });
-
-    it('fromString', () => {
-      const b = Basket.fromString(
-        '{"items":[{"handle":"test","quantity":3},{"handle":"test","variant":"korv","quantity":1}]}'
-      );
-      assert(b);
-      expect(b.items.length).toBe(2);
-      expect(b.items[0].handle).toBe('test');
-      expect(b.items[0].variant).toBeUndefined();
-      expect(b.items[0].quantity).toBe(3);
-      expect(b.items[1].handle).toBe('test');
-      expect(b.items[1].variant).toBe('korv');
-      expect(b.items[1].quantity).toBe(1);
-    });
-
-    it('toLineItems', () => {
-      const b: Basket = store.dispatch(getBasket());
-      let l = b.toLineItems();
-      assert(l);
-      expect(l.length).toBe(0);
-
-      b.add('test', 'korv');
-      b.add('apa', 'ola');
-      l = b.toLineItems();
-      assert(l);
-      expect(l.length).toBe(2);
-      expect(l[0].variantId).toBeDefined();
-      expect(l[0].quantity).toBeGreaterThan(0);
-    });
-
-    it('get/store', () => {
-      const basket: Basket = store.dispatch(getBasket());
-      assert(basket);
-      basket.add('test', 'korv');
-
-      let shop: ShopState = store.getState().shop;
-      const basketUpdated = shop.basketUpdated;
-
-      store.dispatch(storeBasket(basket));
-      shop = store.getState().shop;
-      expect(shop.basketUpdated).toBeGreaterThan(basketUpdated);
-    });
-  });
 
   describe('Product', () => {
     it('get/functions', async () => {

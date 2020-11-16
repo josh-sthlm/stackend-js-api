@@ -264,4 +264,24 @@ describe('Shop Actions/Reducers', () => {
       expect(f.length).toBeGreaterThan(3);
     });
   });
+
+  /*
+  describe('checkout', () => {
+    it('add/remove from checkout', async () => {
+      const shop: ShopState = store.getState().shop;
+      const p: Product = shop.products['pin-boot']; // Should be loaded by earlier test
+      console.log(shop.products);
+      expect(p).toBeDefined();
+      let r: CheckoutResult = await store.dispatch(checkoutAdd(p, p.variants.edges[0].node, 2));
+      assert(r);
+      expect(r.error).toBeUndefined();
+      console.log(r.response.checkout.lineItems);
+
+      r = await store.dispatch(checkoutRemove(p, p.variants.edges[0].node, 1));
+      assert(r);
+      expect(r.error).toBeUndefined();
+      console.log(r.response.checkout.lineItems);
+    });
+  });
+   */
 });

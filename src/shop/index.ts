@@ -1,7 +1,6 @@
 //@flow
 
 import { COMMUNITY_PARAMETER, getJson, post, Thunk, XcapJsonResult, XcapOptionalParameters } from '../api';
-import { ShopState } from './shopReducer';
 import AddressFormatter, { Country } from '@shopify/address';
 import { FieldName } from '@shopify/address-consts';
 import { getStackendLocale } from '../util';
@@ -402,170 +401,6 @@ export function getLowestVariantPrice(product: Product): PriceV2 | null {
   return p;
 }
 
-export class BasketItem {
-  public readonly handle: string;
-  public readonly variant: string;
-  public quantity: number;
-
-  constructor(handle: string, variant: string, quantity?: number) {
-    this.handle = handle;
-    this.quantity = quantity || 1;
-    this.variant = variant;
-  }
-
-  matches(handle: string, variant?: string): boolean {
-    return handle === this.handle && (!variant || variant === this.variant);
-  }
-
-  static COMPARATOR = (a: BasketItem, b: BasketItem): number => {
-    const i = a.handle.localeCompare(b.handle);
-    if (i !== 0) {
-      return i;
-    }
-
-    if (a.variant) {
-      if (b.variant) return a.variant.localeCompare(b.variant);
-      return 1;
-    } else {
-      if (b.variant) return -1;
-    }
-
-    return 0;
-  };
-}
-
-export class Basket {
-  public readonly items: Array<BasketItem>;
-
-  constructor() {
-    this.items = [];
-  }
-
-  /**
-   * Find a basket item
-   * @param handle
-   * @param variant
-   */
-  find(handle: string, variant?: string): BasketItem | null {
-    for (const i of this.items) {
-      if (i.matches(handle, variant)) {
-        return i;
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Add an item
-   * @param handle
-   * @param variant
-   * @param quantity
-   */
-  add(handle: string, variant: string, quantity?: number): number {
-    const q = quantity || 1;
-    let i = this.find(handle, variant);
-    if (i) {
-      i.quantity += q;
-      return i.quantity;
-    }
-
-    i = new BasketItem(handle, variant, q);
-    this.items.push(i);
-    this.items.sort(BasketItem.COMPARATOR);
-    return q;
-  }
-
-  /**
-   * Remove an item
-   * @param handle
-   * @param variant
-   * @param quantity
-   */
-  remove(handle: string, variant?: string, quantity?: number): number {
-    const q = quantity || 1;
-
-    for (let i = 0; i < this.items.length; i++) {
-      const x = this.items[i];
-      if (x.matches(handle, variant)) {
-        x.quantity -= q;
-        if (x.quantity > 0) {
-          return x.quantity;
-        }
-        this.items.splice(i, 1);
-      }
-    }
-
-    return 0;
-  }
-
-  /**
-   * Construct to lineItems for checkout
-   */
-  toLineItems(): Array<LineItem> {
-    const lineItems: Array<LineItem> = [];
-    this.items.forEach(i =>
-      lineItems.push({
-        variantId: i.variant as string,
-        quantity: i.quantity
-      })
-    );
-
-    return lineItems;
-  }
-
-  toString(): string {
-    return JSON.stringify(this);
-  }
-
-  static fromString(s: string): Basket {
-    if (!s) {
-      return new Basket();
-    }
-
-    const json: any = JSON.parse(s);
-    const b = new Basket();
-    if (json.items) {
-      for (const i of json.items) {
-        if (i.handle) {
-          const bi = new BasketItem(i.handle, i.variant, i.quantity);
-          b.items.push(bi);
-        }
-      }
-
-      b.items.sort(BasketItem.COMPARATOR);
-    }
-
-    return b;
-  }
-}
-
-/**
- * Get the total price of all items
- */
-export function getBasketTotalPrice(shop: ShopState, basket: Basket): PriceV2 {
-  const total: PriceV2 = {
-    amount: 0,
-    currencyCode: ''
-  };
-
-  basket.items.forEach(i => {
-    if (i.variant) {
-      const p = shop.products[i.handle];
-      if (p) {
-        const v = getProductVariant(p, i.variant);
-        if (v) {
-          total.amount += v.priceV2.amount * i.quantity;
-          if (!total.currencyCode) {
-            total.currencyCode = v.priceV2.currencyCode;
-          }
-        }
-      }
-    }
-  });
-
-  return total;
-}
-
 /**
  * Get the next cursor for a list, or null, if not available
  * @param list
@@ -730,6 +565,8 @@ export interface LineItem {
   variantId: string;
 }
 
+export type LineItemArray = Array<LineItem>;
+
 export interface ShippingAddress {
   firstName: string;
   lastName: string;
@@ -745,9 +582,9 @@ export interface ShippingAddress {
 }
 
 export interface CreateCheckoutInput {
-  email: string;
+  email?: string;
   note?: string;
-  lineItems?: Array<LineItem>;
+  lineItems?: LineItemArray;
   shippingAddress?: ShippingAddress;
 }
 
@@ -850,10 +687,7 @@ export function getCheckout(req: GetCheckoutRequest): Thunk<Promise<GetCheckoutR
 
 export interface CheckoutReplaceItemsRequest extends XcapOptionalParameters {
   checkoutId: string;
-  lineItems: Array<{
-    variantId: string;
-    quantity: number;
-  }>;
+  lineItems: LineItemArray;
 }
 
 /**

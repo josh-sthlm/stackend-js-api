@@ -1,7 +1,6 @@
 //@flow
 
 import {
-  Basket,
   CheckoutResult,
   DEFAULT_IMAGE_MAX_WIDTH,
   getProduct,
@@ -10,7 +9,6 @@ import {
   getProducts,
   GetProductsRequest,
   GetProductsResult,
-  getProductVariant,
   listProducts,
   listProductsAndTypes,
   ListProductsAndTypesResult,
@@ -34,14 +32,17 @@ import {
   getCheckout,
   setShippingAddress,
   SetShippingAddressRequest,
-  CheckoutReplaceItemsRequest
+  CheckoutReplaceItemsRequest,
+  mapGraphQLList,
+  Checkout,
+  LineItemArray,
+  LineItem
 } from './index';
 import {
   CLEAR_CACHE,
   RECEIVE_PRODUCT,
   RECEIVE_PRODUCT_TYPES,
   RECEIVE_LISTING,
-  BASKET_UPDATED,
   ShopState,
   RECEIVE_MULTIPLE_PRODUCTS,
   ADD_TO_BASKET,
@@ -50,9 +51,10 @@ import {
   RECEIVE_CHECKOUT,
   RECEIVE_COUNTRIES,
   RECEIVE_ADDRESS_FIELDS,
-  CLEAR_CHECKOUT
+  CLEAR_CHECKOUT,
+  BASKET_UPDATED
 } from './shopReducer';
-import { isRunningServerSide, logger, newXcapJsonResult, Thunk } from '../api';
+import { newXcapJsonResult, Thunk } from '../api';
 import { Country } from '@shopify/address';
 import { FieldName } from '@shopify/address-consts';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
@@ -151,110 +153,7 @@ export const requestMissingProducts = (req: GetProductsRequest): Thunk<Promise<G
   return r;
 };
 
-/**
- * Get the basket from local storage
- */
-export const getBasket = (): Thunk<Basket> => (dispatch: any): Basket => {
-  if (isRunningServerSide()) {
-    return new Basket();
-  }
-
-  const json = dispatch(getLocalStorageItem(BASKET_LOCAL_STORAGE_NAME));
-  if (!json) {
-    return new Basket();
-  }
-
-  return Basket.fromString(json);
-};
-
-export const BASKET_LOCAL_STORAGE_NAME = 'basket';
 export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
-
-/**
- * Persist the basket in local storage
- * @param basket
- */
-export const storeBasket = (basket: Basket): Thunk<void> => (dispatch: any): void => {
-  if (isRunningServerSide()) {
-    return;
-  }
-
-  dispatch(setLocalStorageItem(BASKET_LOCAL_STORAGE_NAME, basket.toString()));
-
-  dispatch({ type: BASKET_UPDATED });
-};
-
-/**
- * Add item(s) to the basket and persist it in local storage
- * @param basket
- * @param product
- * @param variant
- * @param quantity
- */
-export const addToBasket = (
-  basket: Basket,
-  product: Product,
-  variant: ProductVariant,
-  quantity?: number
-): Thunk<void> => (dispatch: any): void => {
-  if (isRunningServerSide()) {
-    return;
-  }
-
-  const q = quantity || 1;
-  basket.add(product.handle, variant.id, q);
-  dispatch(setLocalStorageItem(BASKET_LOCAL_STORAGE_NAME, basket.toString()));
-  dispatch({ type: ADD_TO_BASKET, product, variant, variantId: variant.id, quantity: q });
-};
-
-/**
- * Remove items from the basket and persist it in local storage
- * @param basket
- * @param product
- * @param variant
- * @param variantId
- * @param quantity
- */
-export const removeFromBasket = (
-  basket: Basket,
-  product: Product,
-  variant?: ProductVariant | null,
-  variantId?: string,
-  quantity?: number
-): Thunk<void> => (dispatch: any, getState: any): void => {
-  if (isRunningServerSide()) {
-    return;
-  }
-
-  const q = quantity || 1;
-
-  let vId = variantId;
-  if (!variantId && variant) {
-    vId = variant.id;
-  }
-
-  if (!vId) {
-    return;
-  }
-
-  basket.remove(product.handle, vId, q);
-
-  let v = variant;
-  if (!variant && variantId) {
-    v = getProductVariant(product, variantId);
-  }
-
-  dispatch(setLocalStorageItem(BASKET_LOCAL_STORAGE_NAME, basket.toString()));
-  dispatch({ type: REMOVE_FROM_BASKET, product, variant: v, variantId, quantity: q });
-};
-
-/**
- * Clear the basket from local storage
- */
-export const clearBasket = (): Thunk<void> => (dispatch: any, getState: any): void => {
-  dispatch(removeLocalStorageItem(BASKET_LOCAL_STORAGE_NAME));
-  dispatch({ type: BASKET_UPDATED });
-};
 
 /**
  * Get the key used to index the product listings in ShopState
@@ -341,7 +240,8 @@ export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<Checko
  * If the checkout is turned into an order, the checkout is reset in local storage.
  */
 export const requestOrResetActiveCheckout = (): Thunk<Promise<GetCheckoutResult>> => async (
-  dispatch: any
+  dispatch: any,
+  getState: any
 ): Promise<GetCheckoutResult> => {
   const checkoutId = dispatch(getLocalStorageItem(CHECKOUT_ID_LOCAL_STORAGE_NAME));
 
@@ -369,21 +269,201 @@ export const requestOrResetActiveCheckout = (): Thunk<Promise<GetCheckoutResult>
 };
 
 /**
+ * Add an item to the checkout. Possibly creating a new checkout.
+ * @param product
+ * @param variant
+ * @param quantity
+ */
+export const checkoutAdd = (
+  product: Product,
+  variant: ProductVariant,
+  quantity?: number
+): Thunk<Promise<CheckoutResult>> => async (dispatch: any, getState: any): Promise<CheckoutResult> => {
+  if (!product || !variant) {
+    throw new Error('product and variant required');
+  }
+
+  const q = quantity || 1;
+  const shop: ShopState = getState().shop;
+  const lineItems = addItem(toLineItemArray(shop.checkout), variant.id, q);
+  const r: CheckoutResult = await dispatch(checkoutUpdateOrCreateNew(shop, lineItems));
+  if (!r.error) {
+    dispatch({ type: ADD_TO_BASKET, product, variant, variantId: variant.id, quantity: q });
+  }
+
+  return r;
+};
+
+/**
+ * Remove a item from the checkout, possibly creating a new checkout
+ * @param product
+ * @param variant
+ * @param quantity
+ */
+export const checkoutRemove = (
+  product: Product,
+  variant: ProductVariant,
+  quantity?: number
+): Thunk<Promise<CheckoutResult>> => async (dispatch: any, getState: any): Promise<CheckoutResult> => {
+  if (!product || !variant) {
+    throw new Error('product and variant required');
+  }
+
+  const shop: ShopState = getState().shop;
+  const q = quantity || 1;
+  const lineItems = removeItem(toLineItemArray(shop.checkout), variant.id, q);
+  const r: CheckoutResult = await dispatch(checkoutUpdateOrCreateNew(shop, lineItems));
+  if (!r.error) {
+    dispatch({ type: REMOVE_FROM_BASKET, product, variant, variantId: variant.id, quantity: q });
+  }
+
+  return r;
+};
+
+/**
+ * Set quantity of an item.
+ * @param variantId
+ * @param quantity
+ */
+export const checkoutSetQuantity = (variantId: string, quantity: number): Thunk<Promise<CheckoutResult>> => async (
+  dispatch: any,
+  getState: any
+): Promise<CheckoutResult> => {
+  const shop: ShopState = getState().shop;
+  const lineItems = setItemQuantity(toLineItemArray(shop.checkout), variantId, quantity);
+  return dispatch(checkoutUpdateOrCreateNew(shop, lineItems));
+};
+
+/**
+ * Update the items in the checkout. Create a new checkout if needed.
+ * @param shop
+ * @param lineItems
+ */
+export const checkoutUpdateOrCreateNew = (
+  shop: ShopState,
+  lineItems: LineItemArray
+): Thunk<Promise<CheckoutResult>> => async (dispatch: any): Promise<CheckoutResult> => {
+  let r: CheckoutResult;
+  if (shop.checkout === null || shop.checkout.completedAt !== null) {
+    r = await dispatch(
+      createCheckout({
+        input: {
+          lineItems
+        }
+      })
+    );
+  } else {
+    r = await dispatch(
+      checkoutReplaceItems({
+        checkoutId: shop.checkout.id,
+        lineItems
+      })
+    );
+  }
+
+  if (!r.error) {
+    dispatch({ type: BASKET_UPDATED });
+  }
+
+  return r;
+};
+
+/**
+ * Convert the line items of the checkout to an array suitable
+ * for calling the various functions
+ * @param checkout
+ */
+export function toLineItemArray(checkout: Checkout | null): LineItemArray {
+  if (!checkout || !checkout.lineItems) {
+    return [];
+  }
+
+  const lineItems: LineItemArray = mapGraphQLList(checkout.lineItems, i => {
+    return {
+      variantId: i.variant.id,
+      quantity: i.quantity
+    };
+  });
+
+  return lineItems;
+}
+
+/**
+ * Add line items
+ * @param items
+ * @param variantId
+ * @param quantity
+ */
+export function addItem(items: LineItemArray, variantId: string, quantity?: number): LineItemArray {
+  const item: LineItem | undefined = items.find(i => i.variantId == variantId);
+  if (item) {
+    item.quantity += quantity || 1;
+  } else {
+    items.push({
+      variantId,
+      quantity: quantity || 1
+    });
+  }
+
+  return items.filter(i => i.quantity > 0);
+}
+
+/**
+ * Remove line items
+ * @param items
+ * @param variantId
+ * @param quantity
+ */
+export function removeItem(items: LineItemArray, variantId: string, quantity?: number): LineItemArray {
+  const item: LineItem | undefined = items.find(i => i.variantId == variantId);
+  if (item) {
+    item.quantity -= quantity || 1;
+  }
+
+  return items.filter(i => i.quantity > 0);
+}
+
+/**
+ * Set item quantity
+ * @param items
+ * @param variantId
+ * @param quantity
+ */
+export function setItemQuantity(items: LineItemArray, variantId: string, quantity: number): LineItemArray {
+  const item: LineItem | undefined = items.find(i => i.variantId == variantId);
+  if (item) {
+    item.quantity = quantity;
+  } else {
+    items.push({
+      variantId,
+      quantity
+    });
+  }
+
+  return items.filter(i => i.quantity > 0);
+}
+
+/**
  * Replace the items in the checkout
  * @param req
  */
 export const checkoutReplaceItems = (req: CheckoutReplaceItemsRequest): Thunk<Promise<CheckoutResult>> => async (
   dispatch: any
 ): Promise<CheckoutResult> => {
-  const r: CheckoutResult = await dispatch(doCheckoutReplaceItems(req));
-  if (!hasCheckoutErrors(r)) {
-    await dispatch({
-      type: RECEIVE_CHECKOUT,
-      checkoutUserErrors: r.response.checkoutUserErrors,
-      checkout: r.response.checkout
-    });
+  try {
+    await dispatch(setModalThrobberVisible(true));
+    const r: CheckoutResult = await dispatch(doCheckoutReplaceItems(req));
+    if (!hasCheckoutErrors(r)) {
+      await dispatch({
+        type: RECEIVE_CHECKOUT,
+        checkoutUserErrors: r.response.checkoutUserErrors,
+        checkout: r.response.checkout
+      });
+    }
+    return r;
+  } finally {
+    await dispatch(setModalThrobberVisible(false));
   }
-  return r;
 };
 
 /**
@@ -518,34 +598,6 @@ export function requestAddressFields({
 
     return addressFields;
   };
-}
-
-/**
- * List the products in the basket
- * @param shop
- * @param basket
- */
-export function getBasketListing(shop: ShopState, basket: Basket): Array<Product> {
-  const products: Array<Product> = [];
-
-  basket.items.forEach(i => {
-    const p = shop.products[i.handle];
-    if (p) {
-      products.push(p);
-    } else {
-      logger.warn('Product ' + i.handle + ' in basket is missing');
-    }
-  });
-
-  products.sort((a, b) => {
-    const i = a.title.localeCompare(b.title);
-    if (i != 0) {
-      return i;
-    }
-    return a.id.localeCompare(b.id);
-  });
-
-  return products;
 }
 
 export interface ProductTypeTreeNode {
