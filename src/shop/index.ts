@@ -353,6 +353,32 @@ export function mapProductVariants<T>(
 }
 
 /**
+ * Iterate all list nodes
+ * @param list
+ * @param apply
+ */
+export function forEachListNode<T>(list: GraphQLList<T>, apply: (item: T) => void): void {
+  if (!list || !list.edges) {
+    return;
+  }
+
+  list.edges.forEach(n => apply(n.node));
+}
+
+/**
+ * Map each node of a graph ql list
+ * @param list
+ * @param apply
+ */
+export function mapGraphQLList<U, T>(list: GraphQLList<T>, apply: (item: T, index: number) => U): U[] {
+  if (!list || !list.edges) {
+    return [];
+  }
+
+  return list.edges.map((value, index) => apply(value.node, index));
+}
+
+/**
  * Get the variant image
  */
 export function getVariantImage(product: Product, variant: string): ProductImage | null {
@@ -741,6 +767,19 @@ export interface ShippingRate {
   priceV2: PriceV2;
 }
 
+export interface CheckoutLineItem {
+  id: string;
+  title: string;
+  quantity: number;
+  variant: {
+    id: string;
+    product: {
+      id: string;
+      handle: string;
+    };
+  };
+}
+
 export interface Checkout {
   id: string;
   ready: boolean;
@@ -763,6 +802,8 @@ export interface Checkout {
   completedAt: string | null;
   /** The Order Status Page for this Checkout, null when checkout is not completed. */
   orderStatusUrl: string | null;
+  /** Items in basket */
+  lineItems: GraphQLList<CheckoutLineItem>;
 }
 
 export interface CheckoutResult extends XcapJsonResult {
