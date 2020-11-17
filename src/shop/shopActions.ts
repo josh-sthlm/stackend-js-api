@@ -40,7 +40,9 @@ import {
   forEachListNode,
   GraphQLListNode,
   CheckoutLineItem,
-  GraphQLList
+  GraphQLList,
+  SetCheckoutEmailRequest,
+  setCheckoutEmail
 } from './index';
 import {
   CLEAR_CACHE,
@@ -542,6 +544,31 @@ export const updateShippingAddress = (req: SetShippingAddressRequest): Thunk<Pro
     await dispatch(setModalThrobberVisible(true));
 
     const r: CheckoutResult = await dispatch(setShippingAddress(req));
+    if (!hasCheckoutErrors(r)) {
+      await dispatch({
+        type: RECEIVE_CHECKOUT,
+        checkoutUserErrors: r.response.checkoutUserErrors,
+        checkout: r.response.checkout
+      });
+    }
+
+    return r;
+  } finally {
+    await dispatch(setModalThrobberVisible(false));
+  }
+};
+
+/**
+ * Set the email
+ * @param req
+ */
+export const checkoutSetEmail = (req: SetCheckoutEmailRequest): Thunk<Promise<CheckoutResult>> => async (
+  dispatch: any
+): Promise<CheckoutResult> => {
+  try {
+    await dispatch(setModalThrobberVisible(true));
+
+    const r: CheckoutResult = await dispatch(setCheckoutEmail(req));
     if (!hasCheckoutErrors(r)) {
       await dispatch({
         type: RECEIVE_CHECKOUT,
