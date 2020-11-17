@@ -36,7 +36,11 @@ import {
   mapGraphQLList,
   Checkout,
   LineItemArray,
-  LineItem
+  LineItem,
+  forEachListNode,
+  GraphQLListNode,
+  CheckoutLineItem,
+  GraphQLList
 } from './index';
 import {
   CLEAR_CACHE,
@@ -223,6 +227,8 @@ export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<Checko
         dispatch(setLocalStorageItem(CHECKOUT_ID_LOCAL_STORAGE_NAME, r.response.checkout.id));
       }
 
+      handleCheckoutProductData(dispatch, r.checkout);
+
       await dispatch({
         type: RECEIVE_CHECKOUT,
         checkoutUserErrors: r.response.checkoutUserErrors,
@@ -238,35 +244,94 @@ export const createCheckout = (req: CreateCheckoutRequest): Thunk<Promise<Checko
 /**
  * If the user has a active checkout set in the local storage, request that checkout to be loaded.
  * If the checkout is turned into an order, the checkout is reset in local storage.
+ * @param imageMaxWidth
  */
-export const requestOrResetActiveCheckout = (): Thunk<Promise<GetCheckoutResult>> => async (
-  dispatch: any,
-  getState: any
-): Promise<GetCheckoutResult> => {
+export const requestOrResetActiveCheckout = ({
+  imageMaxWidth
+}: {
+  imageMaxWidth?: number;
+}): Thunk<Promise<GetCheckoutResult>> => async (dispatch: any, getState: any): Promise<GetCheckoutResult> => {
   const checkoutId = dispatch(getLocalStorageItem(CHECKOUT_ID_LOCAL_STORAGE_NAME));
+  if (!checkoutId) {
+    return newXcapJsonResult<GetCheckoutResult>('success', {
+      checkout: null
+    });
+  }
 
-  if (checkoutId) {
-    const r: GetCheckoutResult = await dispatch(getCheckout({ checkoutId }));
-    if (!r.error && r.checkout) {
-      if (r.checkout.completedAt) {
-        // Checkout is turned into an order. Remove
-        dispatch(clearCheckout());
-      } else {
-        await dispatch({
-          type: RECEIVE_CHECKOUT,
-          checkoutUserErrors: null,
-          checkout: r.checkout
-        });
-      }
+  const r: GetCheckoutResult = await dispatch(getCheckout({ checkoutId, imageMaxWidth }));
+  if (!r.error && r.checkout) {
+    if (r.checkout.completedAt) {
+      // Checkout is turned into an order. Remove
+      dispatch(clearCheckout());
+    } else {
+      handleCheckoutProductData(dispatch, r.checkout);
 
-      return r;
+      await dispatch({
+        type: RECEIVE_CHECKOUT,
+        checkoutUserErrors: null,
+        checkout: r.checkout
+      });
     }
   }
 
-  return newXcapJsonResult<GetCheckoutResult>('success', {
-    checkout: null
-  });
+  return r;
 };
+
+/**
+ * Handle product data received via checkout
+ * @param dispatch
+ * @param checkout
+ */
+function handleCheckoutProductData(dispatch: any, checkout: Checkout | null | undefined): boolean {
+  if (!checkout || checkout.lineItems.edges.length === 0) {
+    return false;
+  }
+
+  const products: { [handle: string]: Product } = {};
+  const lineItems: GraphQLList<CheckoutLineItem> = { edges: [] };
+  forEachListNode(checkout.lineItems, i => {
+    const p: any = i.variant.product;
+
+    // Contains extra product data
+    if (typeof p['productType'] !== 'undefined') {
+      const product = p as Product;
+      products[product.handle] = product;
+
+      // Remove the extra data
+      const li: GraphQLListNode<CheckoutLineItem> = {
+        node: {
+          id: i.id,
+          quantity: i.quantity,
+          title: i.title,
+          variant: {
+            id: i.variant.id,
+            product: {
+              id: i.variant.product.id,
+              handle: i.variant.product.handle
+            }
+          }
+        }
+      };
+      lineItems.edges.push(li);
+    } else {
+      lineItems.edges.push({ node: i });
+    }
+  });
+
+  checkout.lineItems = lineItems;
+
+  if (Object.keys(products).length === 0) {
+    return false;
+  }
+
+  const json = newXcapJsonResult<GetProductsResult>('success', {
+    products
+  });
+
+  dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json });
+
+  return true;
+}
 
 /**
  * Add an item to the checkout. Possibly creating a new checkout.
@@ -501,6 +566,8 @@ export const requestCheckout = (req: GetCheckoutRequest): Thunk<Promise<GetCheck
   const r: GetCheckoutResult = await dispatch(getCheckout(req));
 
   if (!r.error && r.checkout) {
+    handleCheckoutProductData(dispatch, r.checkout);
+
     await dispatch({
       type: RECEIVE_CHECKOUT,
       checkoutUserErrors: null,

@@ -668,6 +668,7 @@ export function createCheckout(req: CreateCheckoutRequest): Thunk<Promise<Checko
 
 export interface GetCheckoutRequest extends XcapOptionalParameters {
   checkoutId: string;
+  imageMaxWidth?: number;
 }
 
 export interface GetCheckoutResult extends XcapJsonResult {

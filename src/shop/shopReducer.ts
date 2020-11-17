@@ -4,7 +4,7 @@ import {
   getNextCursor,
   getPreviousCursor,
   GetProductResult,
-  GetProductsRequest,
+  GetProductsResult,
   GraphQLListNode,
   ListProductsAndTypesResult,
   ListProductsRequest,
@@ -127,7 +127,7 @@ export type ShopActions =
     }
   | {
       type: typeof RECEIVE_MULTIPLE_PRODUCTS;
-      json: GetProductsRequest;
+      json: GetProductsResult;
     }
   | {
       type: typeof RECEIVE_LISTING;
@@ -262,11 +262,12 @@ export default function shopReducer(
         basketUpdated: Date.now()
       });
 
-    case RECEIVE_CHECKOUT:
+    case RECEIVE_CHECKOUT: {
       return Object.assign({}, state, {
         checkout: action.checkout,
         checkoutUserErrors: action.checkoutUserErrors
       });
+    }
 
     case CLEAR_CHECKOUT:
       return Object.assign({}, state, {
