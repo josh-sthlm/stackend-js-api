@@ -131,3 +131,9 @@ export function removeLocalStorageItem(name: string): Thunk<void> {
     }
   };
 }
+
+/**
+ * An email validation regular expression that covers most cases without
+ * being to costly to evaluate. Not 100% correct, but covers most use cases.
+ */
+export const EMAIL_VALIDATION_REGEXP_RELAXED = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
