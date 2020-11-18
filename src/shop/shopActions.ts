@@ -436,6 +436,32 @@ export const checkoutUpdateOrCreateNew = (
 };
 
 /**
+ * Given a CheckoutLineItem, find the corresponding product variant
+ * @param shop
+ * @param item
+ */
+export const getProductAndVariant = (shop: ShopState, item: CheckoutLineItem): {
+  product: Product,
+  variant: ProductVariant
+} | null => {
+  const products = shop.products;
+  const product = products[item.variant.product.handle];
+  if (!product) {
+    return null;
+  }
+
+  const n = product.variants.edges.find(n => n.node.id === item.variant.id);
+  if (!n) {
+    return null;
+  }
+
+  return {
+    product,
+    variant: n.node
+  }
+};
+
+/**
  * Convert the line items of the checkout to an array suitable
  * for calling the various functions
  * @param checkout
