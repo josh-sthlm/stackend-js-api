@@ -440,9 +440,12 @@ export const checkoutUpdateOrCreateNew = (
  * @param shop
  * @param item
  */
-export const getProductAndVariant = (shop: ShopState, item: CheckoutLineItem): {
-  product: Product,
-  variant: ProductVariant
+export const getProductAndVariant = (
+  shop: ShopState,
+  item: CheckoutLineItem
+): {
+  product: Product;
+  variant: ProductVariant;
 } | null => {
   const products = shop.products;
   const product = products[item.variant.product.handle];
@@ -458,7 +461,7 @@ export const getProductAndVariant = (shop: ShopState, item: CheckoutLineItem): {
   return {
     product,
     variant: n.node
-  }
+  };
 };
 
 /**
