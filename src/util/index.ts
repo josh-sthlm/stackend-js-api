@@ -63,6 +63,7 @@ export function getStackendLocale(language?: string | null): string {
     return 'en_US';
   }
 
+  // To unix / java locale
   let l = language.replace('-', '_');
   if (l.indexOf('_')) {
     l = l.split('_')[0];
@@ -143,27 +144,21 @@ const CURRENCY_FORMATTERS: { [key: string]: Intl.NumberFormat } = {};
 /**
  * Get a (cached) currency formatter.
  * @param currencyCode
- * @param locale Optional locale. Falls back to current community locale or "en-US" if no community is loaded.
+ * @param locale
  */
-export function getCurrencyFormatter(currencyCode: string, locale?: string): Thunk<Intl.NumberFormat> {
-  return (dispatch, getState: any): Intl.NumberFormat => {
-    if (!locale) {
-      const community = getState()?.communities?.community;
-      locale = getStackendLocale(community?.locale);
-    }
+export function getCurrencyFormatter(currencyCode: string, locale: string): Intl.NumberFormat {
+  // js does not accept java / unix format locale
+  locale = locale.replace('_', '-');
 
-    locale = locale.replace('_', '-');
+  const key = currencyCode.toUpperCase() + ';' + locale.toUpperCase();
+  let formatter = CURRENCY_FORMATTERS[key];
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: currencyCode
+    });
+    CURRENCY_FORMATTERS[key] = formatter;
+  }
 
-    const key = currencyCode.toUpperCase() + ';' + locale.toUpperCase();
-    let formatter = CURRENCY_FORMATTERS[key];
-    if (!formatter) {
-      formatter = new Intl.NumberFormat(locale, {
-        style: 'currency',
-        currency: currencyCode
-      });
-      CURRENCY_FORMATTERS[key] = formatter;
-    }
-
-    return formatter;
-  };
+  return formatter;
 }
