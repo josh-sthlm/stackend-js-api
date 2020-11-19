@@ -295,7 +295,7 @@ function handleCheckoutProductData(dispatch: any, checkout: Checkout | null | un
     const p: any = i.variant.product;
 
     // Contains extra product data
-    if (typeof p['productType'] !== 'undefined') {
+    if (typeof p['availableForSale'] === 'boolean') {
       const product = p as Product;
       products[product.handle] = product;
 

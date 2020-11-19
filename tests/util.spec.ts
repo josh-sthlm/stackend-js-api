@@ -1,6 +1,11 @@
-import { generateClassName, getStackendLocale, hash } from '../src/util';
+import { generateClassName, getCurrencyFormatter, getStackendLocale, hash } from '../src/util';
+import createTestStore from './setup';
+import assert from 'assert';
+import { initialize } from '../src/api/actions';
 
 describe('Util', () => {
+  const store = createTestStore();
+
   describe('hash', () => {
     it('Calculate a hash', () => {
       expect(hash(null)).toBe(0);
@@ -33,6 +38,28 @@ describe('Util', () => {
 
       expect(getStackendLocale('dk')).toBe('en_US');
       expect(getStackendLocale('sv_FI')).toBe('sv_SE');
+    });
+  });
+
+  describe('getCurrencyFormatter', () => {
+    it('Get a currency formatter', async () => {
+      const f: Intl.NumberFormat = store.dispatch(getCurrencyFormatter('SEK'));
+      assert(f);
+      expect(f.format(1.6666)).toBe('SEK 1.67');
+
+      expect(f === store.dispatch(getCurrencyFormatter('SEK'))).toBeTruthy(); // Should be cached
+      expect(f === store.dispatch(getCurrencyFormatter('SEK', 'en-US'))).toBeTruthy(); // Should be cached
+
+      const f2: Intl.NumberFormat = store.dispatch(getCurrencyFormatter('SEK', 'sv_SE'));
+      assert(f2);
+      expect(f2.format(1.6666)).toBe('SEK 1.67');
+      expect(f !== f2).toBeTruthy(); // Should not be cached
+
+      // FIXME: Apparently, node does not have fi_FI and fall back to system locale. Why?
+      await store.dispatch(initialize({ permalink: 'husdjur' }));
+      const f3: Intl.NumberFormat = store.dispatch(getCurrencyFormatter('SEK'));
+      expect(f !== f3).toBeTruthy(); // Should use fi_FI
+      console.log(f3.resolvedOptions());
     });
   });
 });

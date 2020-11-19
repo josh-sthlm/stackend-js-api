@@ -137,3 +137,33 @@ export function removeLocalStorageItem(name: string): Thunk<void> {
  * being to costly to evaluate. Not 100% correct, but covers most use cases.
  */
 export const EMAIL_VALIDATION_REGEXP_RELAXED = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const CURRENCY_FORMATTERS: { [key: string]: Intl.NumberFormat } = {};
+
+/**
+ * Get a (cached) currency formatter.
+ * @param currencyCode
+ * @param locale Optional locale. Falls back to current community locale or "en-US" if no community is loaded.
+ */
+export function getCurrencyFormatter(currencyCode: string, locale?: string): Thunk<Intl.NumberFormat> {
+  return (dispatch, getState: any): Intl.NumberFormat => {
+    if (!locale) {
+      const community = getState()?.communities?.community;
+      locale = getStackendLocale(community?.locale);
+    }
+
+    locale = locale.replace('_', '-');
+
+    const key = currencyCode.toUpperCase() + ';' + locale.toUpperCase();
+    let formatter = CURRENCY_FORMATTERS[key];
+    if (!formatter) {
+      formatter = new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: currencyCode
+      });
+      CURRENCY_FORMATTERS[key] = formatter;
+    }
+
+    return formatter;
+  };
+}

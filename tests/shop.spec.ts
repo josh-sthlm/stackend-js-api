@@ -19,7 +19,8 @@ import {
   ListProductsResult,
   mapProductVariants,
   ProductSelection,
-  ProductSortKeys
+  ProductSortKeys,
+  toMoneyV2
 } from '../src/shop';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
@@ -182,6 +183,20 @@ describe('Shop', () => {
       const r: FieldName[][] = await store.dispatch(getAddressFields({ locale: 'sv_SE', countryCode: 'US' }));
       assert(r);
       expect(r.length).toBeGreaterThan(2);
+    });
+  });
+
+  describe('MoneyV2', () => {
+    it('toMoneyV2 ', async () => {
+      let r = toMoneyV2(1.666666, 'SEK');
+      expect(r).toBeDefined();
+      expect(r.currencyCode).toBe('SEK');
+      expect(r.amount).toBe('1.67');
+
+      r = toMoneyV2(1.666666, 'JPY');
+      expect(r).toBeDefined();
+      expect(r.currencyCode).toBe('JPY');
+      expect(r.amount).toBe('2');
     });
   });
 

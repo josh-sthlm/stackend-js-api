@@ -40,8 +40,8 @@ export interface ProductImage extends SlimProductImage {
   originalSrc: string;
 }
 
-export interface PriceV2 {
-  amount: number;
+export interface MoneyV2 {
+  amount: string;
   currencyCode: string;
 }
 
@@ -70,7 +70,7 @@ export interface ProductVariant {
   availableForSale: boolean;
   sku: string;
   image: ProductImage | null;
-  priceV2: PriceV2;
+  priceV2: MoneyV2;
   selectedOptions: SelectedProductOptions;
 }
 
@@ -78,8 +78,8 @@ export interface ProductVariant {
  * Highest and lowest variant prices
  */
 export interface PriceRange {
-  minVariantPrice: PriceV2;
-  maxVariantPrice: PriceV2;
+  minVariantPrice: MoneyV2;
+  maxVariantPrice: MoneyV2;
 }
 
 export interface SlimProduct {
@@ -389,8 +389,8 @@ export function getVariantImage(product: Product, variant: string): ProductImage
  * Get the lowest variant price available
  * @param product
  */
-export function getLowestVariantPrice(product: Product): PriceV2 | null {
-  let p: PriceV2 | null = null;
+export function getLowestVariantPrice(product: Product): MoneyV2 | null {
+  let p: MoneyV2 | null = null;
 
   forEachProductVariant(product, variant => {
     if (p === null || variant.priceV2.amount < p.amount) {
@@ -601,7 +601,7 @@ export interface CheckoutUserError {
 export interface ShippingRate {
   handle: string;
   title: string;
-  priceV2: PriceV2;
+  priceV2: MoneyV2;
 }
 
 export interface CheckoutLineItem {
@@ -625,9 +625,9 @@ export interface Checkout {
   currencyCode: string;
   email: string | null;
   note: string | null;
-  subtotalPriceV2: PriceV2;
-  totalPriceV2: PriceV2;
-  totalTaxV2: PriceV2;
+  subtotalPriceV2: MoneyV2;
+  totalPriceV2: MoneyV2;
+  totalTaxV2: MoneyV2;
   taxesIncluded: boolean;
   availableShippingRates?: {
     ready: boolean;
@@ -834,5 +834,26 @@ export function getCountry({ locale, countryCode }: { locale?: string; countryCo
     } finally {
       await dispatch(setLoadingThrobberVisible(false));
     }
+  };
+}
+
+/**
+ * Convert the amount to MoneyV2, adjusting to the currency correct number of decimals
+ * @param amount
+ * @param currencyCode
+ */
+export function toMoneyV2(amount: number, currencyCode: string): MoneyV2 {
+  let a = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: currencyCode,
+    useGrouping: false
+  }).format(amount);
+
+  // Remove currency code
+  a = a.replace(/[^0-9.\\-]/g, '');
+
+  return {
+    amount: a,
+    currencyCode: currencyCode
   };
 }
