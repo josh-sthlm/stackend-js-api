@@ -837,17 +837,25 @@ export function getCountry({ locale, countryCode }: { locale?: string; countryCo
   };
 }
 
+const CURRENCY_FORMATS: { [key: string]: Intl.NumberFormat } = {};
+
 /**
  * Convert the amount to MoneyV2, adjusting to the currency correct number of decimals
  * @param amount
  * @param currencyCode
  */
 export function toMoneyV2(amount: number, currencyCode: string): MoneyV2 {
-  let a = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currencyCode,
-    useGrouping: false
-  }).format(amount);
+  let fmt = CURRENCY_FORMATS[currencyCode];
+  if (!fmt) {
+    fmt = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currencyCode,
+      useGrouping: false
+    });
+    CURRENCY_FORMATS[currencyCode] = fmt;
+  }
+
+  let a = fmt.format(amount);
 
   // Remove currency code
   a = a.replace(/[^0-9.\\-]/g, '');
