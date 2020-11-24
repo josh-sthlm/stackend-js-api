@@ -1,10 +1,18 @@
 //@flow
-import { forEachGraphQLList, GraphQLList, mapGraphQLList, nextPage, previousPage } from '../src/util/graphql';
+import {
+  forEachGraphQLList,
+  getNextCursor,
+  getPreviousCursor,
+  GraphQLList,
+  mapGraphQLList,
+  nextPage,
+  previousPage
+} from '../src/util/graphql';
 import { ListProductsRequest } from '../src/shop';
 
 describe('GraphQL', () => {
   describe('next/previousPage', () => {
-    it('nextPage ', async () => {
+    it('nextPage ', () => {
       expect(
         nextPage(
           {
@@ -45,7 +53,7 @@ describe('GraphQL', () => {
       });
     });
 
-    it('previousPage ', async () => {
+    it('previousPage ', () => {
       expect(
         previousPage(
           {
@@ -88,7 +96,7 @@ describe('GraphQL', () => {
   });
 
   describe('forEachGraphQLList', () => {
-    it('Iterates a GraphQLList ', async () => {
+    it('Iterates a GraphQLList ', () => {
       let i = 0;
       forEachGraphQLList({ edges: [] }, item => {
         i++;
@@ -96,18 +104,7 @@ describe('GraphQL', () => {
       expect(i).toBe(0);
 
       const list: GraphQLList<{ name: string }> = {
-        edges: [
-          {
-            node: {
-              name: 'a'
-            }
-          },
-          {
-            node: {
-              name: 'b'
-            }
-          }
-        ]
+        edges: [{ node: { name: 'a' } }, { node: { name: 'b' } }]
       };
 
       const x: Array<string> = [];
@@ -120,26 +117,76 @@ describe('GraphQL', () => {
   });
 
   describe('mapGraphQLList', () => {
-    it('maps a GraphQLList ', async () => {
+    it('maps a GraphQLList ', () => {
       expect(mapGraphQLList({ edges: [] }, item => item)).toStrictEqual([]);
 
       const list: GraphQLList<{ name: string }> = {
-        edges: [
-          {
-            node: {
-              name: 'a'
-            }
-          },
-          {
-            node: {
-              name: 'b'
-            }
-          }
-        ]
+        edges: [{ node: { name: 'a' } }, { node: { name: 'b' } }]
       };
 
       const x: Array<string> = mapGraphQLList(list, item => item.name);
       expect(x).toStrictEqual(['a', 'b']);
+    });
+  });
+
+  describe('next/previousCursor', () => {
+    it('getNextCursor', () => {
+      expect(getNextCursor({ pageInfo: { hasNextPage: false, hasPreviousPage: false }, edges: [] })).toBeNull();
+
+      expect(
+        getNextCursor({
+          pageInfo: { hasNextPage: true, hasPreviousPage: false },
+          edges: [{ node: {}, cursor: 'c-1' }]
+        })
+      ).toBe('c-1');
+
+      expect(
+        getNextCursor({
+          pageInfo: { hasNextPage: false, hasPreviousPage: false },
+          edges: [
+            { node: {}, cursor: 'c-1' },
+            { node: {}, cursor: 'c-2' }
+          ]
+        })
+      ).toBeNull();
+
+      expect(
+        getNextCursor({
+          pageInfo: { hasNextPage: true, hasPreviousPage: false },
+          edges: [
+            { node: {}, cursor: 'c-1' },
+            { node: {}, cursor: 'c-2' }
+          ]
+        })
+      ).toBe('c-2');
+    });
+
+    it('getPreviousCursor', () => {
+      expect(getPreviousCursor({ pageInfo: { hasNextPage: false, hasPreviousPage: false }, edges: [] })).toBeNull();
+
+      expect(
+        getPreviousCursor({
+          pageInfo: { hasNextPage: false, hasPreviousPage: false },
+          edges: [{ node: {}, cursor: 'c-1' }]
+        })
+      ).toBeNull();
+
+      expect(
+        getPreviousCursor({
+          pageInfo: { hasNextPage: false, hasPreviousPage: true },
+          edges: [{ node: {}, cursor: 'c-1' }]
+        })
+      ).toBe('c-1');
+
+      expect(
+        getPreviousCursor({
+          pageInfo: { hasNextPage: false, hasPreviousPage: true },
+          edges: [
+            { node: {}, cursor: 'c-1' },
+            { node: {}, cursor: 'c-2' }
+          ]
+        })
+      ).toBe('c-1');
     });
   });
 });

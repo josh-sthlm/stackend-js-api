@@ -7,8 +7,6 @@ import {
   getCountries,
   getCountry,
   getLowestVariantPrice,
-  getNextCursor,
-  getPreviousCursor,
   getProduct,
   GetProductResult,
   getProductSelection,
@@ -18,6 +16,9 @@ import {
   ListProductsRequest,
   ListProductsResult,
   mapProductVariants,
+  newGetProductRequest,
+  newGetProductsRequest,
+  newListProductsRequest,
   ProductSelection,
   ProductSortKeys,
   toMoneyV2
@@ -25,11 +26,46 @@ import {
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { Country, FieldName } from '@shopify/address-consts';
+import { getNextCursor, getPreviousCursor } from '../src/util/graphql';
 
 describe('Shop', () => {
   const store = createTestStore();
 
   describe('Product', () => {
+    it('newGetProductRequest', () => {
+      expect(store.dispatch(newGetProductRequest('apa'))).toStrictEqual({
+        handle: 'apa',
+        imageMaxWidth: 1024
+      });
+
+      expect(store.dispatch(newGetProductRequest({ handle: 'apa' }))).toStrictEqual({
+        handle: 'apa',
+        imageMaxWidth: 1024
+      });
+
+      expect(store.dispatch(newGetProductRequest({ handle: 'apa', imageMaxWidth: 333 }))).toStrictEqual({
+        handle: 'apa',
+        imageMaxWidth: 333
+      });
+    });
+
+    it('newGetProductsRequest', () => {
+      expect(store.dispatch(newGetProductsRequest(['skirt', 'shirt']))).toStrictEqual({
+        handles: ['skirt', 'shirt'],
+        imageMaxWidth: 1024
+      });
+
+      expect(store.dispatch(newGetProductsRequest({ handles: ['skirt', 'shirt'] }))).toStrictEqual({
+        handles: ['skirt', 'shirt'],
+        imageMaxWidth: 1024
+      });
+
+      expect(store.dispatch(newGetProductsRequest({ handles: ['skirt', 'shirt'], imageMaxWidth: 333 }))).toStrictEqual({
+        handles: ['skirt', 'shirt'],
+        imageMaxWidth: 333
+      });
+    });
+
     it('get/functions', async () => {
       await store.dispatch(
         loadInitialStoreValues({
@@ -88,6 +124,28 @@ describe('Shop', () => {
       assert(vp);
       expect(vp.currencyCode).toBeDefined();
       expect(vp.amount).toBeDefined();
+    });
+
+    it('newListProductsRequest', () => {
+      let r = store.dispatch(newListProductsRequest());
+      expect(r).toStrictEqual({
+        imageMaxWidth: 256,
+        first: 20
+      });
+
+      r = store.dispatch(newListProductsRequest({ q: 'shirt' }));
+      expect(r).toStrictEqual({
+        imageMaxWidth: 256,
+        first: 20,
+        q: 'shirt'
+      });
+
+      r = store.dispatch(newListProductsRequest({ q: 'shirt', imageMaxWidth: 333, first: 10 }));
+      expect(r).toStrictEqual({
+        imageMaxWidth: 333,
+        first: 10,
+        q: 'shirt'
+      });
     });
 
     it('listProducts', async () => {

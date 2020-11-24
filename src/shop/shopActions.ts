@@ -2,7 +2,6 @@
 
 import {
   CheckoutResult,
-  DEFAULT_IMAGE_MAX_WIDTH,
   getProduct,
   GetProductRequest,
   GetProductResult,
@@ -38,7 +37,8 @@ import {
   LineItem,
   CheckoutLineItem,
   SetCheckoutEmailRequest,
-  setCheckoutEmail
+  setCheckoutEmail,
+  applyDefaults
 } from './index';
 import {
   CLEAR_CACHE,
@@ -54,7 +54,9 @@ import {
   RECEIVE_COUNTRIES,
   RECEIVE_ADDRESS_FIELDS,
   CLEAR_CHECKOUT,
-  BASKET_UPDATED
+  BASKET_UPDATED,
+  ShopDefaults,
+  SET_SHOP_DEFAULTS
 } from './shopReducer';
 import { newXcapJsonResult, Thunk } from '../api';
 import { Country } from '@shopify/address';
@@ -64,12 +66,34 @@ import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
 
 /**
+ * Set shop default configuration
+ * @param defaults
+ */
+export const setShopDefaults = (defaults: ShopDefaults): Thunk<void> => (dispatch: any): void => {
+  dispatch({
+    type: SET_SHOP_DEFAULTS,
+    defaults
+  });
+};
+
+/**
+ * Get the shop default configuration
+ */
+export const getShopDefaults = (): Thunk<ShopDefaults> => (dispatch: any, getState: any): ShopDefaults => {
+  return getState().shop.defaults;
+};
+
+/**
  * Load product types into store
  * @param req
  */
 export const requestProductTypes = (req: ListProductTypesRequest): Thunk<Promise<ListProductTypesResult>> => async (
-  dispatch: any
+  dispatch: any,
+  getState: any
 ): Promise<ListProductTypesResult> => {
+  if (!req.first) {
+    req.first = getState().shop.defaults.pageSize;
+  }
   const r = await dispatch(listProductTypes(req));
   await dispatch({ type: RECEIVE_PRODUCT_TYPES, json: r });
   return r;
@@ -80,8 +104,10 @@ export const requestProductTypes = (req: ListProductTypesRequest): Thunk<Promise
  * @param req
  */
 export const requestProducts = (req: ListProductsRequest): Thunk<Promise<ListProductsResult>> => async (
-  dispatch: any
+  dispatch: any,
+  getState: any
 ): Promise<ListProductsResult> => {
+  applyDefaults(req, getState().shop.defaults);
   const r = await dispatch(listProducts(req));
   await dispatch({ type: RECEIVE_LISTING, json: r, request: req });
   return r;
@@ -93,7 +119,11 @@ export const requestProducts = (req: ListProductsRequest): Thunk<Promise<ListPro
  */
 export const requestProductsAndProductTypes = (
   req: ListProductsRequest
-): Thunk<Promise<ListProductsAndTypesResult>> => async (dispatch: any): Promise<ListProductsAndTypesResult> => {
+): Thunk<Promise<ListProductsAndTypesResult>> => async (
+  dispatch: any,
+  getState: any
+): Promise<ListProductsAndTypesResult> => {
+  applyDefaults(req, getState().shop.defaults);
   const r = await dispatch(listProductsAndTypes(req));
   await dispatch({ type: RECEIVE_LISTING, json: r, request: req });
   await dispatch({ type: RECEIVE_PRODUCT_TYPES, json: r });
@@ -105,8 +135,12 @@ export const requestProductsAndProductTypes = (
  * @param req
  */
 export const requestProduct = (req: GetProductRequest): Thunk<Promise<GetProductResult>> => async (
-  dispatch: any
+  dispatch: any,
+  getState: any
 ): Promise<GetProductResult> => {
+  if (!req.imageMaxWidth) {
+    req.imageMaxWidth = getState().shop.defaults.imageMaxWidth;
+  }
   const r = await dispatch(getProduct(req));
   await dispatch({ type: RECEIVE_PRODUCT, json: r });
   return r;
@@ -122,8 +156,12 @@ export interface RequestMultipleProductsRequest {
  * @param req
  */
 export const requestMultipleProducts = (req: GetProductsRequest): Thunk<Promise<GetProductsResult>> => async (
-  dispatch: any
+  dispatch: any,
+  getState: any
 ): Promise<GetProductsResult> => {
+  if (!req.imageMaxWidth) {
+    req.imageMaxWidth = getState().shop.defaults.imageMaxWidth;
+  }
   const r = await dispatch(getProducts(req));
   await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
   return r;
@@ -139,6 +177,10 @@ export const requestMissingProducts = (req: GetProductsRequest): Thunk<Promise<G
 ): Promise<GetProductsResult> => {
   const shop: ShopState = getState().shop;
 
+  if (!req.imageMaxWidth) {
+    req.imageMaxWidth = shop.defaults.imageMaxWidth;
+  }
+
   const fetchHandles: Array<string> = [];
   for (const h of req.handles) {
     const p = shop.products[h];
@@ -148,7 +190,7 @@ export const requestMissingProducts = (req: GetProductsRequest): Thunk<Promise<G
   }
 
   if (fetchHandles.length == 0) {
-    return newXcapJsonResult('success', { products: {} }) as GetProductsResult;
+    return newXcapJsonResult<GetProductsResult>('success', { products: {} });
   }
 
   const r = await dispatch(getProducts({ handles: fetchHandles, imageMaxWidth: req.imageMaxWidth }));
@@ -168,9 +210,11 @@ export function getProductListKey(req: ListProductsRequest): string {
   s += (req.productTypes ? req.productTypes.join(',') : '') + ';';
   s += (req.tags ? req.tags?.join(',') : '') + ';';
   s += (req.sort || ProductSortKeys.RELEVANCE) + ';';
+  s += (req.imageMaxWidth || '*') + ';';
   s += (req.first || '') + ';';
   s += (req.after || '') + ';';
-  s += (req.imageMaxWidth || DEFAULT_IMAGE_MAX_WIDTH) + ';';
+  s += (req.last || '') + ';';
+  s += (req.before || '') + ';';
   return s;
 }
 
@@ -255,6 +299,10 @@ export const requestOrResetActiveCheckout = ({
     return newXcapJsonResult<GetCheckoutResult>('success', {
       checkout: null
     });
+  }
+
+  if (!imageMaxWidth) {
+    imageMaxWidth = getState().defaults.imageMaxWidth;
   }
 
   const r: GetCheckoutResult = await dispatch(getCheckout({ checkoutId, imageMaxWidth }));
@@ -614,8 +662,12 @@ export const checkoutSetEmail = (req: SetCheckoutEmailRequest): Thunk<Promise<Ch
  * @param req
  */
 export const requestCheckout = (req: GetCheckoutRequest): Thunk<Promise<GetCheckoutResult>> => async (
-  dispatch: any
+  dispatch: any,
+  getState: any
 ): Promise<GetCheckoutResult> => {
+  if (!req.imageMaxWidth) {
+    req.imageMaxWidth = getState().shop.defaults.imageMaxWidth;
+  }
   const r: GetCheckoutResult = await dispatch(getCheckout(req));
 
   if (!r.error && r.checkout) {

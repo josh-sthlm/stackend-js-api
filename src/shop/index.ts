@@ -6,8 +6,7 @@ import { FieldName } from '@shopify/address-consts';
 import { getLocale } from '../util';
 import { setLoadingThrobberVisible } from '../throbber/throbberActions';
 import { forEachGraphQLList, GraphQLList, PaginatedGraphQLList, PaginatedGraphQLRequest } from '../util/graphql';
-
-export const DEFAULT_IMAGE_MAX_WIDTH = 1024;
+import { ShopDefaults } from './shopReducer';
 
 export interface SlimProductImage {
   altText: string | null;
@@ -200,6 +199,43 @@ export interface ListProductsResult extends XcapJsonResult {
   products: PaginatedGraphQLList<SlimProduct>;
 }
 
+export function applyDefaults(req: ListProductsRequest, defaults: ShopDefaults): void {
+  if (!req.imageMaxWidth) {
+    req.imageMaxWidth = defaults.listingImageMaxWidth;
+  }
+
+  if (req.after) {
+    if (!req.first) {
+      req.first = defaults.pageSize;
+    }
+  } else if (req.before) {
+    if (!req.last) {
+      req.last = defaults.pageSize;
+    }
+  } else {
+    if (!req.first && !req.after) {
+      req.first = defaults.pageSize;
+    }
+  }
+}
+
+/**
+ * Create a new ListProductsRequest with default options
+ * @param req
+ */
+export const newListProductsRequest = (req?: Partial<ListProductsRequest>): Thunk<ListProductsRequest> => (
+  dispatch: any,
+  getState: any
+): ListProductsRequest => {
+  if (!req) {
+    req = {};
+  }
+
+  applyDefaults(req, getState().shop.defaults);
+
+  return req;
+};
+
 /**
  * List products
  * @param req
@@ -220,6 +256,28 @@ export interface GetProductRequest extends XcapOptionalParameters {
 export interface GetProductResult extends XcapJsonResult {
   product: Product | null;
 }
+
+/**
+ * Create a new GetProductRequest with default image sizes
+ * @param req GetProductRequest or handle
+ */
+export const newGetProductRequest = (req: GetProductRequest | string): Thunk<GetProductRequest> => (
+  dispatch: any,
+  getState: any
+): GetProductRequest => {
+  if (typeof req === 'string') {
+    req = {
+      handle: req
+    };
+  }
+
+  const defaults: ShopDefaults = getState().shop.defaults;
+  if (!req.imageMaxWidth) {
+    req.imageMaxWidth = defaults.imageMaxWidth;
+  }
+
+  return req;
+};
 
 /**
  * Get a single product
@@ -243,6 +301,28 @@ export interface GetProductsResult extends XcapJsonResult {
     [handle: string]: Product;
   };
 }
+
+/**
+ * Create a new GetProductsRequest with default image sizes
+ * @param req GetProductsRequest or handles
+ */
+export const newGetProductsRequest = (req: GetProductsRequest | Array<string>): Thunk<GetProductsRequest> => (
+  dispatch: any,
+  getState: any
+): GetProductsRequest => {
+  if (Array.isArray(req)) {
+    req = {
+      handles: req
+    };
+  }
+
+  if (!req.imageMaxWidth) {
+    const defaults: ShopDefaults = getState().shop.defaults;
+    req.imageMaxWidth = defaults.imageMaxWidth;
+  }
+
+  return req;
+};
 
 /**
  * Get multiple products
@@ -349,32 +429,6 @@ export function getLowestVariantPrice(product: Product): MoneyV2 | null {
   });
 
   return p;
-}
-
-/**
- * Get the next cursor for a list, or null, if not available
- * @param list
- */
-export function getNextCursor(list: PaginatedGraphQLList<any>): string | null {
-  if (list.pageInfo.hasNextPage && list.edges.length !== 0) {
-    const x = list.edges[list.edges.length - 1];
-    return x.cursor;
-  }
-
-  return null;
-}
-
-/**
- * Get the previous cursor for a list, or null, if not available
- * @param list
- */
-export function getPreviousCursor(list: PaginatedGraphQLList<any>): string | null {
-  if (list.pageInfo.hasPreviousPage && list.edges.length !== 0) {
-    const x = list.edges[0];
-    return x.cursor;
-  }
-
-  return null;
 }
 
 /**

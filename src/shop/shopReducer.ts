@@ -1,8 +1,6 @@
 import {
   Checkout,
   CheckoutUserError,
-  getNextCursor,
-  getPreviousCursor,
   GetProductResult,
   GetProductsResult,
   ListProductsAndTypesResult,
@@ -23,8 +21,9 @@ import {
   ProductTypeTreeNode
 } from './shopActions';
 import { Country, FieldName } from '@shopify/address-consts';
-import { GraphQLListNode } from '../util/graphql';
+import { GraphQLListNode, getNextCursor, getPreviousCursor } from '../util/graphql';
 
+export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
 export const RECEIVE_MULTIPLE_PRODUCTS = 'RECEIVE_MULTIPLE_PRODUCTS';
@@ -63,7 +62,29 @@ export interface SlimProductListing extends AbstractProductListing {
   products: Array<SlimProduct>;
 }
 
+export interface ShopDefaults {
+  /**
+   * Default image size for products (1024)
+   */
+  imageMaxWidth: number;
+
+  /**
+   * Default image size for product listings (256)
+   */
+  listingImageMaxWidth: number;
+
+  /**
+   * Default page size (20)
+   */
+  pageSize: number;
+}
+
 export interface ShopState {
+  /**
+   * Default settings for the shop
+   */
+  defaults: ShopDefaults;
+
   /**
    * Product types
    */
@@ -117,6 +138,10 @@ export interface ShopState {
 }
 
 export type ShopActions =
+  | {
+      type: typeof SET_SHOP_DEFAULTS;
+      defaults: ShopDefaults;
+    }
   | {
       type: typeof RECEIVE_PRODUCT_TYPES;
       json: ListProductTypesResult;
@@ -174,6 +199,11 @@ export type ShopActions =
 
 export default function shopReducer(
   state: ShopState = {
+    defaults: {
+      imageMaxWidth: 1024,
+      listingImageMaxWidth: 256,
+      pageSize: 20
+    },
     productTypes: [],
     productTypeTree: [],
     products: {},
@@ -188,6 +218,11 @@ export default function shopReducer(
   action: ShopActions
 ): ShopState {
   switch (action.type) {
+    case SET_SHOP_DEFAULTS:
+      return Object.assign({}, state, {
+        defaults: action.defaults
+      });
+
     case RECEIVE_PRODUCT_TYPES: {
       const edges: Array<GraphQLListNode<string>> = get(action, 'json.productTypes.edges', []);
       const productTypes = edges.map(e => e.node);

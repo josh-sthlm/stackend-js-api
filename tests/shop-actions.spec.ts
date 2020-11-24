@@ -4,13 +4,15 @@ import {
   getProductListing,
   getProductListKey,
   getProductTypeLabel,
+  getShopDefaults,
   ProductTypeTree,
   requestAddressFields,
   requestCountries,
   requestMissingProducts,
   requestProduct,
   requestProducts,
-  requestProductTypes
+  requestProductTypes,
+  setShopDefaults
 } from '../src/shop/shopActions';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
@@ -21,6 +23,29 @@ import { Country, FieldName } from '@shopify/address';
 
 describe('Shop Actions/Reducers', () => {
   const store = createTestStore();
+
+  describe('get/setShopDefaults', () => {
+    it('Manage defaults for the shop', () => {
+      const d = store.dispatch(getShopDefaults());
+      expect(d).toStrictEqual({
+        imageMaxWidth: 1024,
+        listingImageMaxWidth: 256,
+        pageSize: 20
+      });
+
+      const n = {
+        pageSize: 10,
+        imageMaxWidth: 512,
+        listingImageMaxWidth: 100
+      };
+      store.dispatch(setShopDefaults(n));
+
+      const d2 = store.dispatch(getShopDefaults());
+      expect(d2).toStrictEqual(n);
+
+      store.dispatch(setShopDefaults(d)); // Restore
+    });
+  });
 
   describe('buildProductTypeTree', () => {
     it('Creates a product tree', () => {
