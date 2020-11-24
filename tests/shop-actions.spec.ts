@@ -132,7 +132,7 @@ describe('Shop Actions/Reducers', () => {
 
   describe('getProductListKey', () => {
     it('Gets a unique key', () => {
-      expect(getProductListKey({})).toBe(';;;RELEVANCE;;;1024;');
+      expect(getProductListKey({})).toBe(';;;RELEVANCE;*;;;;;');
 
       expect(
         getProductListKey({
@@ -142,7 +142,7 @@ describe('Shop Actions/Reducers', () => {
           tags: ['tag1', 'tag2'],
           q: 'test search'
         })
-      ).toBe('test search;Boot,Blouse;tag1,tag2;RELEVANCE;10;after;1024;');
+      ).toBe('test search;Boot,Blouse;tag1,tag2;RELEVANCE;*;10;after;;;');
     });
   });
 
