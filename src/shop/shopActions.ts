@@ -33,14 +33,10 @@ import {
   setShippingAddress,
   SetShippingAddressRequest,
   CheckoutReplaceItemsRequest,
-  mapGraphQLList,
   Checkout,
   LineItemArray,
   LineItem,
-  forEachListNode,
-  GraphQLListNode,
   CheckoutLineItem,
-  GraphQLList,
   SetCheckoutEmailRequest,
   setCheckoutEmail
 } from './index';
@@ -65,6 +61,7 @@ import { Country } from '@shopify/address';
 import { FieldName } from '@shopify/address-consts';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../util';
+import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
 
 /**
  * Load product types into store
@@ -291,7 +288,7 @@ function handleCheckoutProductData(dispatch: any, checkout: Checkout | null | un
 
   const products: { [handle: string]: Product } = {};
   const lineItems: GraphQLList<CheckoutLineItem> = { edges: [] };
-  forEachListNode(checkout.lineItems, i => {
+  forEachGraphQLList(checkout.lineItems, i => {
     const p: any = i.variant.product;
 
     // Contains extra product data

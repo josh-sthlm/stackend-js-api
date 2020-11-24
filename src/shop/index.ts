@@ -3,33 +3,11 @@
 import { COMMUNITY_PARAMETER, getJson, post, Thunk, XcapJsonResult, XcapOptionalParameters } from '../api';
 import AddressFormatter, { Country } from '@shopify/address';
 import { FieldName } from '@shopify/address-consts';
-import { getStackendLocale } from '../util';
+import { getLocale } from '../util';
 import { setLoadingThrobberVisible } from '../throbber/throbberActions';
+import { forEachGraphQLList, GraphQLList, PaginatedGraphQLList, PaginatedGraphQLRequest } from '../util/graphql';
 
 export const DEFAULT_IMAGE_MAX_WIDTH = 1024;
-
-export interface GraphQLListNode<T> {
-  node: T;
-}
-
-export interface GraphQLList<T> {
-  edges: Array<GraphQLListNode<T>>;
-}
-
-export interface PaginatedGraphQLListNode<T> {
-  node: T;
-  cursor: string;
-}
-
-export interface PageInfo {
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-}
-
-export interface PaginatedGraphQLList<T> {
-  edges: Array<PaginatedGraphQLListNode<T>>;
-  pageInfo: PageInfo;
-}
 
 export interface SlimProductImage {
   altText: string | null;
@@ -210,12 +188,10 @@ export enum ProductSortKeys {
   BEST_SELLING = 'BEST_SELLING'
 }
 
-export interface ListProductsRequest extends XcapOptionalParameters {
+export interface ListProductsRequest extends XcapOptionalParameters, PaginatedGraphQLRequest {
   q?: string;
   productTypes?: Array<string>;
   tags?: Array<string>;
-  first?: number;
-  after?: string;
   sort?: ProductSortKeys;
   imageMaxWidth?: number;
 }
@@ -349,32 +325,6 @@ export function mapProductVariants<T>(
   apply: (variant: ProductVariant, product: Product) => T
 ): Array<T> {
   return product.variants.edges.map(x => apply(x.node, product));
-}
-
-/**
- * Iterate all list nodes
- * @param list
- * @param apply
- */
-export function forEachListNode<T>(list: GraphQLList<T>, apply: (item: T) => void): void {
-  if (!list || !list.edges) {
-    return;
-  }
-
-  list.edges.forEach(n => apply(n.node));
-}
-
-/**
- * Map each node of a graph ql list
- * @param list
- * @param apply
- */
-export function mapGraphQLList<U, T>(list: GraphQLList<T>, apply: (item: T, index: number) => U): U[] {
-  if (!list || !list.edges) {
-    return [];
-  }
-
-  return list.edges.map((value, index) => apply(value.node, index));
 }
 
 /**
@@ -541,21 +491,20 @@ export function getAllUniqueImages(product: Product): Array<ProductImage> {
     return images;
   }
 
-  for (const i of product.images.edges) {
-    const img = i.node;
+  forEachGraphQLList(product.images, img => {
     if (!s.has(img.transformedSrc)) {
       images.push(img);
       s.add(img.transformedSrc);
     }
-  }
+  });
 
-  for (const v of product.variants.edges) {
-    const img = v.node.image;
+  forEachGraphQLList(product.variants, v => {
+    const img = v.image;
     if (img && !s.has(img.transformedSrc)) {
       images.push(img);
       s.add(img.transformedSrc);
     }
-  }
+  });
 
   return images;
 }
@@ -757,25 +706,6 @@ export function setShippingAddress(req: SetShippingAddressRequest): Thunk<Promis
     url: '/shop/checkout/set-shipping-address',
     parameters: p
   });
-}
-
-/**
- * Get the locale, falling back to the community locale if not supplied
- * @param locale
- */
-export function getLocale(locale?: string | null): Thunk<Promise<string>> {
-  return async (dispatch, getState): Promise<string> => {
-    let l = locale;
-    if (!l) {
-      const state = getState();
-      l = getStackendLocale(state?.communities?.community?.locale);
-    }
-
-    if (!l) {
-      throw Error('No locale supplied');
-    }
-    return l;
-  };
 }
 
 /**

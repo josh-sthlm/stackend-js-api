@@ -74,6 +74,25 @@ export function getStackendLocale(language?: string | null): string {
 }
 
 /**
+ * Get the locale, falling back to the community locale if not supplied
+ * @param locale
+ */
+export function getLocale(locale?: string | null): Thunk<Promise<string>> {
+  return async (dispatch, getState): Promise<string> => {
+    let l = locale;
+    if (!l) {
+      const state = getState();
+      l = getStackendLocale(state?.communities?.community?.locale);
+    }
+
+    if (!l) {
+      throw Error('No locale supplied');
+    }
+    return l;
+  };
+}
+
+/**
  * Get a local storage key name prefixed with the current community permalink
  * @param name
  */

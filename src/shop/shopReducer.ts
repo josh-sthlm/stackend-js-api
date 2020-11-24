@@ -5,7 +5,6 @@ import {
   getPreviousCursor,
   GetProductResult,
   GetProductsResult,
-  GraphQLListNode,
   ListProductsAndTypesResult,
   ListProductsRequest,
   ListProductTypesResult,
@@ -24,6 +23,7 @@ import {
   ProductTypeTreeNode
 } from './shopActions';
 import { Country, FieldName } from '@shopify/address-consts';
+import { GraphQLListNode } from '../util/graphql';
 
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
