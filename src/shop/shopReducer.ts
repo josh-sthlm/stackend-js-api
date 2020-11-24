@@ -14,7 +14,6 @@ import get from 'lodash/get';
 import {
   addNode,
   getParentProductType,
-  getProductListKey,
   isRoot,
   newProductTypeTreeNode,
   ProductTypeTree,
@@ -157,6 +156,7 @@ export type ShopActions =
   | {
       type: typeof RECEIVE_LISTING;
       json: ListProductsAndTypesResult;
+      key: string;
       request: ListProductsRequest;
     }
   | {
@@ -261,7 +261,6 @@ export default function shopReducer(
     case RECEIVE_LISTING: {
       const receivedProducts = action.json.products;
 
-      const key = getProductListKey(action.request);
       const listing: SlimProductListing = {
         hasNextPage: receivedProducts.pageInfo.hasNextPage,
         hasPreviousPage: receivedProducts.pageInfo.hasPreviousPage,
@@ -276,7 +275,7 @@ export default function shopReducer(
       });
 
       const productListings = Object.assign({}, state.productListings, {
-        [key]: listing
+        [action.key]: listing
       });
 
       return Object.assign({}, state, {

@@ -132,17 +132,20 @@ describe('Shop Actions/Reducers', () => {
 
   describe('getProductListKey', () => {
     it('Gets a unique key', () => {
-      expect(getProductListKey({})).toBe(';;;RELEVANCE;*;;;;;');
+      expect(store.dispatch(getProductListKey({}))).toBe(';;;RELEVANCE;256;20;;;;');
 
       expect(
-        getProductListKey({
-          first: 10,
-          after: 'after',
-          productTypes: ['Boot', 'Blouse'],
-          tags: ['tag1', 'tag2'],
-          q: 'test search'
-        })
-      ).toBe('test search;Boot,Blouse;tag1,tag2;RELEVANCE;*;10;after;;;');
+        store.dispatch(
+          getProductListKey({
+            first: 10,
+            after: 'after',
+            productTypes: ['Boot', 'Blouse'],
+            tags: ['tag1', 'tag2'],
+            q: 'test search',
+            imageMaxWidth: 333
+          })
+        )
+      ).toBe('test search;Boot,Blouse;tag1,tag2;RELEVANCE;333;10;after;;;');
     });
   });
 
@@ -175,7 +178,7 @@ describe('Shop Actions/Reducers', () => {
       assert(shop);
 
       expect(shop.productListings).toBeDefined();
-      const key = getProductListKey(req);
+      const key = store.dispatch(getProductListKey(req));
       const list = shop.productListings[key];
       expect(list).toBeDefined();
       expect(list.products).toBeDefined();
@@ -188,7 +191,7 @@ describe('Shop Actions/Reducers', () => {
       const EXPECTED_HANDLES = ['snare-boot', 'neptune-boot', 'arena-zip-boot'];
       expect(list.products.map(p => p.handle)).toStrictEqual(EXPECTED_HANDLES);
 
-      const listing = getProductListing(shop, req);
+      const listing = store.dispatch(getProductListing(req));
       assert(listing);
       expect(listing.products).toBeDefined();
       expect(listing.products.length).toBe(3);
@@ -200,6 +203,22 @@ describe('Shop Actions/Reducers', () => {
       expect(listing.selection).toBeDefined();
       expect(listing.selection.first).toBe(req.first);
       expect(listing.selection.productTypes).toStrictEqual(['Boots']);
+    });
+
+    it('Sort and pagination', async () => {
+      const req = {
+        sort: ProductSortKeys.BEST_SELLING,
+        first: 1
+      };
+      await store.dispatch(requestProducts(req));
+      const listing = store.dispatch(getProductListing(req));
+      assert(listing);
+      expect(listing.products).toBeDefined();
+      expect(listing.products.length).toBe(1);
+      expect(listing.products[0].handle).toBeDefined();
+      expect(listing.selection).toBeDefined();
+      expect(listing.selection.sort).toBe(req.sort);
+      expect(listing.selection.first).toBe(req.first);
     });
   });
 
@@ -222,27 +241,6 @@ describe('Shop Actions/Reducers', () => {
       const shop: ShopState = s.shop;
       assert(shop);
       expect(shop.products['pin-boot']).toBeDefined();
-    });
-  });
-
-  describe('requestProducts', () => {
-    it('List products', async () => {
-      const req = {
-        sort: ProductSortKeys.BEST_SELLING,
-        first: 1
-      };
-      await store.dispatch(requestProducts(req));
-      const s = store.getState();
-      const shop: ShopState = s.shop;
-      assert(shop);
-      const listing = getProductListing(shop, req);
-      assert(listing);
-      expect(listing.products).toBeDefined();
-      expect(listing.products.length).toBe(1);
-      expect(listing.products[0].handle).toBeDefined();
-      expect(listing.selection).toBeDefined();
-      expect(listing.selection.sort).toBe(req.sort);
-      expect(listing.selection.first).toBe(req.first);
     });
   });
 

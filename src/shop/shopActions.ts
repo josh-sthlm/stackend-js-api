@@ -109,7 +109,8 @@ export const requestProducts = (req: ListProductsRequest): Thunk<Promise<ListPro
 ): Promise<ListProductsResult> => {
   applyDefaults(req, getState().shop.defaults);
   const r = await dispatch(listProducts(req));
-  await dispatch({ type: RECEIVE_LISTING, json: r, request: req });
+  const key = dispatch(getProductListKey(req));
+  await dispatch({ type: RECEIVE_LISTING, json: r, request: req, key });
   return r;
 };
 
@@ -125,7 +126,8 @@ export const requestProductsAndProductTypes = (
 ): Promise<ListProductsAndTypesResult> => {
   applyDefaults(req, getState().shop.defaults);
   const r = await dispatch(listProductsAndTypes(req));
-  await dispatch({ type: RECEIVE_LISTING, json: r, request: req });
+  const key = dispatch(getProductListKey(req));
+  await dispatch({ type: RECEIVE_LISTING, json: r, request: req, key });
   await dispatch({ type: RECEIVE_PRODUCT_TYPES, json: r });
   return r;
 };
@@ -204,19 +206,26 @@ export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
  * Get the key used to index the product listings in ShopState
  * @param req
  */
-export function getProductListKey(req: ListProductsRequest): string {
+export const getProductListKey = (req: ListProductsRequest): Thunk<string> => (
+  dispatch: any,
+  getState: any
+): string => {
+  const defaults: ShopDefaults = getState().shop.defaults;
+  applyDefaults(req, defaults);
+
   let s = '';
   s += (req.q || '') + ';';
   s += (req.productTypes ? req.productTypes.join(',') : '') + ';';
   s += (req.tags ? req.tags?.join(',') : '') + ';';
   s += (req.sort || ProductSortKeys.RELEVANCE) + ';';
-  s += (req.imageMaxWidth || '*') + ';';
+  s += req.imageMaxWidth + ';';
   s += (req.first || '') + ';';
   s += (req.after || '') + ';';
   s += (req.last || '') + ';';
   s += (req.before || '') + ';';
+
   return s;
-}
+};
 
 /**
  * Clear store cache. Does not empty basket or product types
@@ -230,20 +239,25 @@ export const clearCache = (): Thunk<Promise<void>> => async (dispatch: any): Pro
  * @param shop
  * @param key
  */
-export function getProductListingByKey(shop: ShopState, key: string): SlimProductListing | null {
+export const getProductListingByKey = (key: string): Thunk<SlimProductListing | null> => (
+  dispatch: any,
+  getState: any
+): SlimProductListing | null => {
+  const shop: ShopState = getState().shop;
   const listing = shop.productListings[key];
   return listing ? listing : null;
-}
+};
 
 /**
  * Get products from a listing
- * @param shop
  * @param req
  */
-export function getProductListing(shop: ShopState, req: ListProductsRequest): SlimProductListing | null {
-  const key = getProductListKey(req);
-  return getProductListingByKey(shop, key);
-}
+export const getProductListing = (req: ListProductsRequest): Thunk<SlimProductListing | null> => (
+  dispatch: any
+): SlimProductListing | null => {
+  const key = dispatch(getProductListKey(req));
+  return dispatch(getProductListingByKey(key));
+};
 
 /**
  * Check if there are any kind of errors in the checkout
