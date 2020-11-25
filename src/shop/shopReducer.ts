@@ -11,16 +11,9 @@ import {
   SlimProduct
 } from './index';
 import get from 'lodash/get';
-import {
-  addNode,
-  getParentProductType,
-  isRoot,
-  newProductTypeTreeNode,
-  ProductTypeTree,
-  ProductTypeTreeNode
-} from './shopActions';
+import { ProductTypeTree, buildProductTypeTree } from './ProductTypeTree';
 import { Country, FieldName } from '@shopify/address-consts';
-import { GraphQLListNode, getNextCursor, getPreviousCursor } from '../util/graphql';
+import { GraphQLListNode, getNextCursor, getPreviousCursor, PageInfo } from '../util/graphql';
 
 export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
@@ -38,10 +31,7 @@ export const RECEIVE_ADDRESS_FIELDS = 'RECEIVE_ADDRESS_FIELDS';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
-export interface AbstractProductListing {
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-
+export interface AbstractProductListing extends PageInfo {
   /** Cursor not next page */
   nextCursor: string | null;
 
@@ -333,38 +323,4 @@ export default function shopReducer(
   }
 
   return state;
-}
-
-export function buildProductTypeTree(productTypes: Array<GraphQLListNode<string>>): ProductTypeTree {
-  const pt: Array<string> = productTypes.map(n => n.node);
-  const i = pt.indexOf('');
-  if (i !== -1) {
-    pt.splice(i, 1);
-  }
-  pt.sort((a, b) => a.localeCompare(b));
-
-  const t: ProductTypeTree = [];
-  const treeHash: { [productType: string]: ProductTypeTreeNode } = {};
-
-  pt.forEach(x => {
-    const n = newProductTypeTreeNode(x);
-    treeHash[x] = n;
-
-    const parent = getParentProductType(n);
-    if (parent) {
-      let pn = treeHash[parent];
-      if (!pn) {
-        pn = newProductTypeTreeNode(parent);
-        treeHash[parent] = pn;
-        if (isRoot(pn)) {
-          t.push(pn);
-        }
-      }
-      addNode(pn, n);
-    } else {
-      t.push(n);
-    }
-  });
-
-  return t;
 }
