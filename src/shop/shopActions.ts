@@ -316,7 +316,7 @@ export const requestOrResetActiveCheckout = ({
   }
 
   if (!imageMaxWidth) {
-    imageMaxWidth = getState().defaults.imageMaxWidth;
+    imageMaxWidth = getState().shop.defaults.imageMaxWidth;
   }
 
   const r: GetCheckoutResult = await dispatch(getCheckout({ checkoutId, imageMaxWidth }));
