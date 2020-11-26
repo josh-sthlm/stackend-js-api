@@ -95,7 +95,9 @@ export const requestProductTypes = (req: ListProductTypesRequest): Thunk<Promise
     req.first = getState().shop.defaults.pageSize;
   }
   const r = await dispatch(listProductTypes(req));
-  await dispatch({ type: RECEIVE_PRODUCT_TYPES, json: r });
+  if (!r.error) {
+    await dispatch({ type: RECEIVE_PRODUCT_TYPES, json: r });
+  }
   return r;
 };
 
@@ -109,8 +111,10 @@ export const requestProducts = (req: ListProductsRequest): Thunk<Promise<ListPro
 ): Promise<ListProductsResult> => {
   applyDefaults(req, getState().shop.defaults);
   const r = await dispatch(listProducts(req));
-  const key = dispatch(getProductListKey(req));
-  await dispatch({ type: RECEIVE_LISTING, json: r, request: req, key });
+  if (!r.error) {
+    const key = dispatch(getProductListKey(req));
+    await dispatch({ type: RECEIVE_LISTING, json: r, request: req, key });
+  }
   return r;
 };
 
@@ -126,9 +130,11 @@ export const requestProductsAndProductTypes = (
 ): Promise<ListProductsAndTypesResult> => {
   applyDefaults(req, getState().shop.defaults);
   const r = await dispatch(listProductsAndTypes(req));
-  const key = dispatch(getProductListKey(req));
-  await dispatch({ type: RECEIVE_LISTING, json: r, request: req, key });
-  await dispatch({ type: RECEIVE_PRODUCT_TYPES, json: r });
+  if (!r.error) {
+    const key = dispatch(getProductListKey(req));
+    await dispatch({ type: RECEIVE_LISTING, json: r, request: req, key });
+    await dispatch({ type: RECEIVE_PRODUCT_TYPES, json: r });
+  }
   return r;
 };
 
@@ -144,7 +150,9 @@ export const requestProduct = (req: GetProductRequest): Thunk<Promise<GetProduct
     req.imageMaxWidth = getState().shop.defaults.imageMaxWidth;
   }
   const r = await dispatch(getProduct(req));
-  await dispatch({ type: RECEIVE_PRODUCT, json: r });
+  if (!r.error) {
+    await dispatch({ type: RECEIVE_PRODUCT, json: r });
+  }
   return r;
 };
 
@@ -165,7 +173,9 @@ export const requestMultipleProducts = (req: GetProductsRequest): Thunk<Promise<
     req.imageMaxWidth = getState().shop.defaults.imageMaxWidth;
   }
   const r = await dispatch(getProducts(req));
-  await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
+  if (!r.error) {
+    await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
+  }
   return r;
 };
 
@@ -196,7 +206,9 @@ export const requestMissingProducts = (req: GetProductsRequest): Thunk<Promise<G
   }
 
   const r = await dispatch(getProducts({ handles: fetchHandles, imageMaxWidth: req.imageMaxWidth }));
-  await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
+  if (!r.error) {
+    await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
+  }
   return r;
 };
 
@@ -236,7 +248,6 @@ export const clearCache = (): Thunk<Promise<void>> => async (dispatch: any): Pro
 
 /**
  * Get products from a listing
- * @param shop
  * @param key
  */
 export const getProductListingByKey = (key: string): Thunk<SlimProductListing | null> => (
@@ -533,14 +544,12 @@ export function toLineItemArray(checkout: Checkout | null): LineItemArray {
     return [];
   }
 
-  const lineItems: LineItemArray = mapGraphQLList(checkout.lineItems, i => {
+  return mapGraphQLList(checkout.lineItems, i => {
     return {
       variantId: i.variant.id,
       quantity: i.quantity
     };
   });
-
-  return lineItems;
 }
 
 /**
