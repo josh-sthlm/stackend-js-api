@@ -4,6 +4,7 @@ import {
   getProductTypeLabel,
   getShopDefaults,
   requestAddressFields,
+  requestCollection,
   requestCountries,
   requestMissingProducts,
   requestProduct,
@@ -182,6 +183,16 @@ describe('Shop Actions/Reducers', () => {
       assert(shop);
       expect(shop.products['pin-boot']).toBeDefined();
       expect(shop.products['hanra-shirt']).toBeDefined();
+    });
+  });
+
+  describe('requestCollection', () => {
+    it('Loads a collection into store', async () => {
+      await store.dispatch(requestCollection({ handle: 'latest-stuff' }));
+      const s = store.getState();
+      const shop: ShopState = s.shop;
+      assert(shop);
+      expect(shop.collections['latest-stuff']).toBeDefined();
     });
   });
 

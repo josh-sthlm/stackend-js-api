@@ -38,7 +38,10 @@ import {
   CheckoutLineItem,
   SetCheckoutEmailRequest,
   setCheckoutEmail,
-  applyDefaults
+  applyDefaults,
+  GetCollectionRequest,
+  GetCollectionResult,
+  getCollection
 } from './index';
 import {
   CLEAR_CACHE,
@@ -56,7 +59,8 @@ import {
   CLEAR_CHECKOUT,
   BASKET_UPDATED,
   ShopDefaults,
-  SET_SHOP_DEFAULTS
+  SET_SHOP_DEFAULTS,
+  RECEIVE_COLLECTION
 } from './shopReducer';
 import { newXcapJsonResult, Thunk } from '../api';
 import { Country } from '@shopify/address';
@@ -208,6 +212,35 @@ export const requestMissingProducts = (req: GetProductsRequest): Thunk<Promise<G
   const r = await dispatch(getProducts({ handles: fetchHandles, imageMaxWidth: req.imageMaxWidth }));
   if (!r.error) {
     await dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json: r });
+  }
+  return r;
+};
+
+/**
+ * Request a collection, if missing
+ * @param req
+ */
+export const requestCollection = (req: GetCollectionRequest): Thunk<Promise<GetCollectionResult>> => async (
+  dispatch: any,
+  getState: () => any
+): Promise<GetCollectionResult> => {
+  const shop: ShopState = getState().shop;
+  const collection = shop.collections[req.handle];
+  if (collection) {
+    return newXcapJsonResult<GetCollectionResult>('success', { collection });
+  }
+
+  if (!req.imageMaxWidth) {
+    req.imageMaxWidth = shop.defaults.listingImageMaxWidth;
+  }
+
+  const r = await dispatch(getCollection(req));
+  if (!r.error) {
+    dispatch({
+      type: RECEIVE_COLLECTION,
+      request: req,
+      json: r
+    });
   }
   return r;
 };

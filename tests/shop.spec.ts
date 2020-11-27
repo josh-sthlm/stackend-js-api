@@ -4,6 +4,9 @@ import {
   findExactProductVariant,
   forEachProductVariant,
   getAddressFields,
+  getCollection,
+  GetCollectionRequest,
+  GetCollectionResult,
   getCountries,
   getCountry,
   getLowestVariantPrice,
@@ -217,6 +220,21 @@ describe('Shop', () => {
       assert(x);
       expect(x).toStrictEqual({ Color: 'Black', Size: '7' });
     });
+  });
+
+  it('getCollection', async () => {
+    const req: GetCollectionRequest = {
+      handle: 'latest-stuff'
+    };
+    const r: GetCollectionResult = await store.dispatch(getCollection(req));
+    assert(r);
+    expect(r.error).toBeUndefined();
+    assert(r.collection);
+    expect(r.collection.title).toBeDefined();
+    expect(r.collection.description).toBeDefined();
+    expect(r.collection.descriptionHtml).toBeDefined();
+    expect(r.collection.products).toBeDefined();
+    expect(r.collection.products.edges.length).toBeGreaterThan(0);
   });
 
   describe('getCountries', () => {

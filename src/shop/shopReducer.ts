@@ -1,6 +1,9 @@
 import {
   Checkout,
   CheckoutUserError,
+  Collection,
+  GetCollectionRequest,
+  GetCollectionResult,
   GetProductResult,
   GetProductsResult,
   ListProductsAndTypesResult,
@@ -20,6 +23,7 @@ export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
 export const RECEIVE_MULTIPLE_PRODUCTS = 'RECEIVE_MULTIPLE_PRODUCTS';
 export const RECEIVE_LISTING = 'RECEIVE_LISTING';
+export const RECEIVE_COLLECTION = 'RECEIVE_COLLECTION';
 export const CLEAR_CACHE = 'CLEAR_CACHE';
 export const BASKET_UPDATED = 'BASKET_UPDATED';
 export const ADD_TO_BASKET = 'ADD_TO_BASKET';
@@ -98,6 +102,13 @@ export interface ShopState {
     [key: string]: SlimProductListing;
   };
 
+  /**
+   * Collections of products
+   */
+  collections: {
+    [handle: string]: Collection;
+  };
+
   basketUpdated: number;
 
   /**
@@ -150,6 +161,11 @@ export type ShopActions =
       request: ListProductsRequest;
     }
   | {
+      type: typeof RECEIVE_COLLECTION;
+      json: GetCollectionResult;
+      request: GetCollectionRequest;
+    }
+  | {
       type: typeof CLEAR_CACHE;
     }
   | {
@@ -198,6 +214,7 @@ export default function shopReducer(
     productTypeTree: [],
     products: {},
     productListings: {},
+    collections: {},
     basketUpdated: 0,
     checkout: null,
     checkoutUserErrors: null,
@@ -210,7 +227,11 @@ export default function shopReducer(
   switch (action.type) {
     case SET_SHOP_DEFAULTS:
       return Object.assign({}, state, {
-        defaults: action.defaults
+        defaults: action.defaults,
+        // Clear the cache as well
+        productListings: {},
+        products: {},
+        collections: {}
       });
 
     case RECEIVE_PRODUCT_TYPES: {
@@ -273,10 +294,21 @@ export default function shopReducer(
       });
     }
 
+    case RECEIVE_COLLECTION: {
+      const collection = action.json.collection;
+      const handle = action.request.handle;
+      return Object.assign({}, state, {
+        collections: Object.assign({}, state.collections, {
+          [handle]: collection
+        })
+      });
+    }
+
     case CLEAR_CACHE:
       return Object.assign({}, state, {
         productListings: {},
-        products: {}
+        products: {},
+        collections: {}
       });
 
     case BASKET_UPDATED:

@@ -563,6 +563,38 @@ export function getAllUniqueImages(product: Product): Array<ProductImage> {
   return images;
 }
 
+/**
+ * A named collection of products
+ */
+export interface Collection {
+  id: string;
+  description: string;
+  descriptionHtml: string;
+  title: string;
+  products: GraphQLList<SlimProduct>;
+}
+
+export interface GetCollectionRequest extends XcapOptionalParameters {
+  handle: string;
+  imageMaxWidth?: number;
+}
+
+export interface GetCollectionResult extends XcapJsonResult {
+  collection: Collection | null;
+}
+
+/**
+ * Get a collection of products
+ * @param req
+ * @returns {Thunk<XcapJsonResult>}
+ */
+export function getCollection(req: GetCollectionRequest): Thunk<Promise<GetCollectionResult>> {
+  return getJson({
+    url: '/shop/get-collection',
+    parameters: arguments
+  });
+}
+
 export interface LineItem {
   quantity: number;
   variantId: string;
