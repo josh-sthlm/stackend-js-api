@@ -283,10 +283,13 @@ export const clearCache = (): Thunk<Promise<void>> => async (dispatch: any): Pro
  * Get products from a listing
  * @param key
  */
-export const getProductListingByKey = (key: string): Thunk<SlimProductListing | null> => (
+export const getProductListingByKey = (key: string | null | undefined): Thunk<SlimProductListing | null> => (
   dispatch: any,
   getState: any
 ): SlimProductListing | null => {
+  if (key === null || typeof key === 'undefined') {
+    return null;
+  }
   const shop: ShopState = getState().shop;
   const listing = shop.productListings[key];
   return listing ? listing : null;

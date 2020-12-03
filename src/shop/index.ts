@@ -187,6 +187,20 @@ export enum ProductSortKeys {
   BEST_SELLING = 'BEST_SELLING'
 }
 
+/**
+ * Parse a product sort key
+ * @param sort
+ * @param defaultValue
+ */
+export function parseProductSortKey(sort: string | null | undefined, defaultValue?: ProductSortKeys): ProductSortKeys {
+  if (!sort) {
+    return defaultValue || ProductSortKeys.RELEVANCE;
+  }
+
+  const v = (ProductSortKeys as any)[sort];
+  return v || defaultValue || ProductSortKeys.RELEVANCE;
+}
+
 export interface ListProductsRequest extends XcapOptionalParameters, PaginatedGraphQLRequest {
   q?: string;
   productTypes?: Array<string>;
@@ -520,7 +534,7 @@ export function matchSelection(
  * @param variant
  * @returns {Selection}
  */
-export function getProductSelection(product: Product, variant: ProductVariant): ProductSelection {
+export function getProductSelection(product: Product | null, variant: ProductVariant | null): ProductSelection {
   const s: ProductSelection = {};
   if (!product || !variant) {
     return s;
@@ -880,4 +894,45 @@ export function toMoneyV2(amount: number, currencyCode: string): MoneyV2 {
     amount: a,
     currencyCode: currencyCode
   };
+}
+
+/**
+ * Get the root nodes from a flat array of product types
+ * @param productTypes
+ */
+export function getProductTypeRoots(productTypes: Array<string> | null | undefined): Array<string> {
+  if (!productTypes) {
+    return [];
+  }
+  const x: Set<string> = new Set();
+  productTypes.forEach(p => {
+    if (p === '') {
+      return;
+    }
+    const v: string = p;
+    const i = v.indexOf('/');
+    if (i === -1) {
+      x.add(v);
+    } else {
+      x.add(v.substring(0, i));
+    }
+  });
+
+  return Array.from(x);
+}
+
+/**
+ * Get the parent product type
+ * @param productType
+ */
+export function getParentProductType(productType: string | null | undefined): string | null {
+  if (!productType) {
+    return null;
+  }
+  const i = productType.lastIndexOf('/');
+  if (i === -1) {
+    return null;
+  }
+
+  return productType.substring(0, i);
 }

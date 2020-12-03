@@ -10,9 +10,11 @@ import {
   getCountries,
   getCountry,
   getLowestVariantPrice,
+  getParentProductType,
   getProduct,
   GetProductResult,
   getProductSelection,
+  getProductTypeRoots,
   getProductVariant,
   getVariantImage,
   listProducts,
@@ -263,7 +265,7 @@ describe('Shop', () => {
   });
 
   describe('MoneyV2', () => {
-    it('toMoneyV2 ', async () => {
+    it('toMoneyV2 ', () => {
       let r = toMoneyV2(1.666666, 'SEK');
       expect(r).toBeDefined();
       expect(r.currencyCode).toBe('SEK');
@@ -273,6 +275,25 @@ describe('Shop', () => {
       expect(r).toBeDefined();
       expect(r.currencyCode).toBe('JPY');
       expect(r.amount).toBe('2');
+    });
+  });
+
+  describe('Product types', () => {
+    it('getProductTypeRoots ', () => {
+      expect(getProductTypeRoots(undefined)).toStrictEqual([]);
+      expect(getProductTypeRoots(null)).toStrictEqual([]);
+      expect(getProductTypeRoots([])).toStrictEqual([]);
+      expect(getProductTypeRoots(['a', 'b'])).toStrictEqual(['a', 'b']);
+      expect(getProductTypeRoots(['a', 'a/a1', 'b', 'b/b2'])).toStrictEqual(['a', 'b']);
+      expect(getProductTypeRoots(['a', 'a/b/c'])).toStrictEqual(['a']);
+    });
+
+    it('getParentProductType ', () => {
+      expect(getParentProductType(undefined)).toBeNull();
+      expect(getParentProductType(null)).toBeNull();
+      expect(getParentProductType('a')).toBeNull();
+      expect(getParentProductType('a/b')).toBe('a');
+      expect(getParentProductType('a/b/c')).toBe('a/b');
     });
   });
 
