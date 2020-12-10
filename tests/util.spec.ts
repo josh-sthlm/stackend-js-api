@@ -48,7 +48,7 @@ describe('Util', () => {
 
       const f2: Intl.NumberFormat = getCurrencyFormatter('SEK', 'sv-SE');
       assert(f2);
-      expect(f2.format(1.6666)).toBe('SEK 1.67');
+      expect(f2.format(1.6666)).toBe('1,67 kr'); // May be "SEK 1.67" in node < 14
       expect(f !== f2).toBeTruthy(); // Should not be cached
     });
   });
