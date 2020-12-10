@@ -34,7 +34,19 @@ export enum ModuleType {
   PAGE = 'stackend-page',
 
   /** A container that allows the user to navigate pages, much like an iframe  */
-  SUBSITE = 'stackend-site'
+  SUBSITE = 'stackend-site',
+
+  /** A single product from the shop */
+  SHOP_PRODUCT = 'stackend-shop-product',
+
+  /** List products from the shop */
+  SHOP_PRODUCT_LISTING = 'stackend-shop-listing',
+
+  /** A collection of products from the shop */
+  SHOP_COLLECTION = 'stackend-shop-collection',
+
+  /** The shopping basket and checkout user interface */
+  SHOP_BASKET = 'stackend-shop-basket'
 }
 
 export interface ModuleInfo {
@@ -201,6 +213,54 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     complex: false,
     xcapModuleType: null,
     defaultContext: null
+  },
+  [ModuleType.SHOP_PRODUCT]: {
+    name: 'Product',
+    type: ModuleType.SHOP_PRODUCT,
+    singleton: false,
+    addAutomatically: false,
+    parameters: ['id', 'handle', 'layout'],
+    simpleId: true,
+    fetchData: true,
+    complex: false,
+    xcapModuleType: 'shop',
+    defaultContext: 'shop'
+  },
+  [ModuleType.SHOP_PRODUCT_LISTING]: {
+    name: 'Product listing',
+    type: ModuleType.SHOP_PRODUCT_LISTING,
+    singleton: false,
+    addAutomatically: false,
+    parameters: ['id', 'filter', 'sort', 'layout'],
+    simpleId: true,
+    fetchData: true,
+    complex: false,
+    xcapModuleType: 'shop',
+    defaultContext: 'shop'
+  },
+  [ModuleType.SHOP_COLLECTION]: {
+    name: 'Product collection',
+    type: ModuleType.SHOP_COLLECTION,
+    singleton: false,
+    addAutomatically: false,
+    parameters: ['id', 'handle', 'layout'],
+    simpleId: true,
+    fetchData: true,
+    complex: false,
+    xcapModuleType: 'shop',
+    defaultContext: 'shop'
+  },
+  [ModuleType.SHOP_BASKET]: {
+    name: 'Shopping basket',
+    type: ModuleType.SHOP_BASKET,
+    singleton: false,
+    addAutomatically: false,
+    parameters: ['id', 'layout'],
+    simpleId: true,
+    fetchData: true,
+    complex: false,
+    xcapModuleType: 'shop',
+    defaultContext: 'shop'
   }
 };
 
@@ -260,4 +320,32 @@ export function getDefaultComponentContext(moduleType: ModuleType): string {
  */
 export function getModuleLabel(moduleType: ModuleType): string {
   return MODULE_INFO[moduleType].name;
+}
+
+/**
+ * Add module info
+ * @param moduleInfo
+ */
+export function addModuleInfo(moduleInfo: ModuleInfo): void {
+  MODULE_INFO[moduleInfo.type] = moduleInfo;
+  if (moduleInfo.addAutomatically) {
+    AUTOMATIC_MODULE_TYPES.push(moduleInfo.type);
+  }
+}
+
+/**
+ * Remove module info
+ * @param moduleType
+ */
+export function removeModuleInfo(moduleType: ModuleType): void {
+  const m = getModuleInfo(moduleType);
+  if (m) {
+    delete MODULE_INFO[moduleType];
+    if (m.addAutomatically) {
+      const i = AUTOMATIC_MODULE_TYPES.indexOf(moduleType);
+      if (i !== -1) {
+        AUTOMATIC_MODULE_TYPES.splice(i, 1);
+      }
+    }
+  }
 }
