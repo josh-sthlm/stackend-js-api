@@ -56,6 +56,7 @@ describe('Shop Actions/Reducers', () => {
 
   describe('getProductListKey', () => {
     it('Gets a unique key', () => {
+      // Must match ProductListingRequestTest.java
       expect(store.dispatch(getProductListKey({}))).toBe(';;;RELEVANCE;256;20;;;;');
 
       expect(
@@ -64,12 +65,12 @@ describe('Shop Actions/Reducers', () => {
             first: 10,
             after: 'after',
             productTypes: ['Boot', 'Blouse'],
-            tags: ['tag1', 'tag2'],
+            tags: ['tag2', 'TAG1'],
             q: 'test search',
             imageMaxWidth: 333
           })
         )
-      ).toBe('test search;Boot,Blouse;tag1,tag2;RELEVANCE;333;10;after;;;');
+      ).toBe('test search;blouse,boot;tag1,tag2;RELEVANCE;333;10;after;;;');
     });
   });
 

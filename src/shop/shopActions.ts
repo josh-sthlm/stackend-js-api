@@ -258,10 +258,28 @@ export const getProductListKey = (req: ListProductsRequest): Thunk<string> => (
   const defaults: ShopDefaults = getState().shop.defaults;
   applyDefaults(req, defaults);
 
+  // NOTE: This must match the server side implementation
+
+  function append(s: string, values: Array<string> | null | undefined): string
+  {
+    if (values && values.length !== 0) {
+      const x: Array<string> = [];
+      for (const v of values) {
+        x.push(v.toLowerCase());
+      }
+      x.sort((a, b) => a.localeCompare(b));
+      s += x.join(',');
+    }
+
+    s += ';';
+
+    return s;
+  }
+
   let s = '';
   s += (req.q || '') + ';';
-  s += (req.productTypes ? req.productTypes.join(',') : '') + ';';
-  s += (req.tags ? req.tags?.join(',') : '') + ';';
+  s = append(s, req.productTypes);
+  s = append(s, req.tags);
   s += (req.sort || ProductSortKeys.RELEVANCE) + ';';
   s += req.imageMaxWidth + ';';
   s += (req.first || '') + ';';
@@ -271,6 +289,7 @@ export const getProductListKey = (req: ListProductsRequest): Thunk<string> => (
 
   return s;
 };
+
 
 /**
  * Clear store cache. Does not empty basket or product types
