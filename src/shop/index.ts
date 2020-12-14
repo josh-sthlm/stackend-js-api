@@ -117,6 +117,22 @@ export interface Product extends SlimProduct {
   images: GraphQLList<ProductImage>;
 }
 
+export interface MultipleProductListingsResult {
+  [key: string]: {
+    request: ListProductsQuery;
+    listing: PaginatedGraphQLList<SlimProduct>;
+  };
+}
+
+/**
+ * Result when requesting multiple shop related items using init/data
+ */
+export interface ShopDataResult {
+  products: { [handle: string]: Product };
+  collections: { [handle: string]: Collection };
+  listings: MultipleProductListingsResult;
+}
+
 export interface GetShopConfigurationResult extends XcapJsonResult {
   shop: string | null;
   storeFrontAccessToken: string | null;
@@ -201,7 +217,7 @@ export function parseProductSortKey(sort: string | null | undefined, defaultValu
   return v || defaultValue || ProductSortKeys.RELEVANCE;
 }
 
-export interface ListProductsRequest extends XcapOptionalParameters, PaginatedGraphQLRequest {
+export interface ListProductsQuery extends PaginatedGraphQLRequest {
   q?: string;
   productTypes?: Array<string>;
   tags?: Array<string>;
@@ -209,11 +225,13 @@ export interface ListProductsRequest extends XcapOptionalParameters, PaginatedGr
   imageMaxWidth?: number;
 }
 
+export interface ListProductsRequest extends ListProductsQuery, XcapOptionalParameters {}
+
 export interface ListProductsResult extends XcapJsonResult {
   products: PaginatedGraphQLList<SlimProduct>;
 }
 
-export function applyDefaults(req: ListProductsRequest, defaults: ShopDefaults): void {
+export function applyDefaults(req: ListProductsQuery, defaults: ShopDefaults): void {
   if (!req.imageMaxWidth) {
     req.imageMaxWidth = defaults.listingImageMaxWidth;
   }

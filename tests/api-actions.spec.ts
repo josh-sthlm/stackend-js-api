@@ -16,6 +16,8 @@ import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import { PagesState } from '../src/cms/pageReducer';
 import { CmsState } from '../src/cms/cmsReducer';
 import assert from 'assert';
+import { ShopState } from '../src/shop/shopReducer';
+import { getProductListKey } from '../src/shop/shopActions';
 
 describe('API actions', () => {
   const store = createTestStore();
@@ -57,6 +59,29 @@ describe('API actions', () => {
       console.log('Keys in cmsContent', Object.keys(cmsContent));
       // @ts-ignore
       expect(cmsContent['39']).toBeDefined(); // Content for start page
+    });
+
+    it('Shop data', async () => {
+      const listing = {
+        first: 1,
+        productTypes: ['Boots']
+      };
+      const key = store.dispatch(getProductListKey(listing));
+
+      const r: GetInitialStoreValuesResult = await store.dispatch(
+        loadInitialStoreValues({
+          permalink: 'husdjur',
+          productHandles: ['snare-boot'],
+          productCollectionHandles: ['latest-stuff'],
+          productListings: [listing]
+        })
+      );
+      expect(r.error).toBeUndefined();
+      const state = store.getState();
+      const shop: ShopState = state.shop;
+      expect(shop.products['snare-boot']).toBeDefined();
+      expect(shop.collections['latest-stuff']).toBeDefined();
+      expect(shop.productListings[key]).toBeDefined();
     });
   });
 

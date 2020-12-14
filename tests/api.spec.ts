@@ -27,6 +27,7 @@ import {
 import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import assert from 'assert';
 import { listMy, ListResult } from '../src/media';
+import { getProductListKey } from '../src/shop/shopActions';
 
 describe('API', () => {
   const store = createTestStore();
@@ -99,6 +100,35 @@ describe('API', () => {
       expect(c.xcapCommunityName).toBe('c55');
       expect(c.settings).toBeDefined();
       expect(c.style).toBeDefined();
+      expect(r.shopData).toBeNull();
+    });
+
+    it('Shop values', async () => {
+      const listing = {
+        first: 1,
+        productTypes: ['Boots']
+      };
+      const key = store.dispatch(getProductListKey(listing));
+
+      const r: GetInitialStoreValuesResult = await store.dispatch(
+        getInitialStoreValues({
+          permalink: 'husdjur',
+          productHandles: ['snare-boot'],
+          productCollectionHandles: ['latest-stuff'],
+          productListings: [listing]
+        })
+      );
+      expect(r.__resultCode).toBe('success');
+      assert(r.shopData);
+
+      expect(r.shopData.products).toBeDefined();
+      expect(r.shopData.products['snare-boot']).toBeDefined();
+      expect(r.shopData.collections).toBeDefined();
+      expect(r.shopData.collections['latest-stuff']).toBeDefined();
+      expect(r.shopData.listings).toBeDefined();
+      expect(r.shopData.listings[key]).toBeDefined();
+      expect(r.shopData.listings[key].listing).toBeDefined();
+      expect(r.shopData.listings[key].request).toBeDefined();
     });
   });
 

@@ -3,6 +3,7 @@
 import {
   Config,
   getInitialStoreValues,
+  GetInitialStoreValuesRequest,
   GetInitialStoreValuesResult,
   newXcapJsonResult,
   setConfigDefaults,
@@ -11,7 +12,7 @@ import {
   Thunk
 } from './index';
 import { receiveLoginData } from '../login/loginAction';
-import { loadCommunity, receiveResourceUsage } from '../stackend/communityAction';
+import { loadCommunity, receiveResourceUsage, ResourceUsage } from '../stackend/communityAction';
 import { XCAP_INITIAL_STORE_DATA_RECEIVED } from './configReducer';
 import { setRequestInfo } from '../request/requestActions';
 import { receiveModules } from '../stackend/moduleAction';
@@ -21,9 +22,10 @@ import { AnyAction } from 'redux';
 import { Logger } from 'winston';
 import { Page, Content, PageContent } from '../cms';
 import { ModuleType } from '../stackend/modules';
-//import { receiveNotificationCounts } from './notifications/notificationActions';
+import { Community, Module } from '../stackend';
+import { RECEIVE_COLLECTIONS, RECEIVE_LISTINGS, RECEIVE_MULTIPLE_PRODUCTS } from '../shop/shopReducer';
 
-export interface InitializeRequest extends LoadInitialStoreValuesRequest {
+export interface InitializeRequest extends GetInitialStoreValuesRequest {
   config?: Partial<Config>;
   winstonLogger?: Logger;
 }
@@ -66,18 +68,7 @@ function receiveInitialStoreValues(json: any): AnyAction {
   };
 }
 
-export interface LoadInitialStoreValuesRequest {
-  permalink?: string;
-  domain?: string;
-  cookie?: string;
-  communityId?: number;
-  moduleIds?: Array<number>;
-  contentIds?: Array<number>;
-  pageIds?: Array<number>;
-  subSiteIds?: Array<number>;
-  referenceUrl?: string;
-  stackendMode?: boolean;
-}
+export type LoadInitialStoreValuesRequest = GetInitialStoreValuesRequest;
 
 /*
  * Populate the initial redux store.
@@ -92,10 +83,15 @@ export function loadInitialStoreValues({
   pageIds,
   subSiteIds,
   referenceUrl,
-  stackendMode = false
-}: LoadInitialStoreValuesRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
+  stackendMode = false,
+  productHandles,
+  productCollectionHandles,
+  productListings,
+  shopImageMaxWidth,
+  shopListingImageMaxWidth
+}: GetInitialStoreValuesRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
   return async (dispatch: any): Promise<GetInitialStoreValuesResult> => {
-    const r = await dispatch(
+    const r: GetInitialStoreValuesResult = await dispatch(
       getInitialStoreValues({
         permalink,
         domain,
@@ -106,7 +102,12 @@ export function loadInitialStoreValues({
         pageIds,
         subSiteIds,
         referenceUrl,
-        stackendMode
+        stackendMode,
+        productHandles,
+        productCollectionHandles,
+        productListings,
+        shopImageMaxWidth,
+        shopListingImageMaxWidth
       })
     );
 
@@ -115,7 +116,13 @@ export function loadInitialStoreValues({
     }
 
     if (Object.keys(r.modules).length !== 0) {
-      dispatch(receiveModules({ modules: r.modules }));
+      const modules: Array<Module> = [];
+      for (const key of Object.keys(r.modules)) {
+        modules.push(r.modules[key]);
+      }
+      dispatch(receiveModules({ modules }));
+      // Used to be. Correct?
+      //dispatch(receiveModules({ modules: r.modules }));
     }
 
     const allCmsContents: { [id: string]: Content } = {};
@@ -152,23 +159,35 @@ export function loadInitialStoreValues({
     dispatch(receiveInitialStoreValues(r));
     dispatch(setRequestInfo({ referenceUrlId: r.referenceUrlId }));
     dispatch(receiveLoginData({ user: r.user }));
-    dispatch(loadCommunity(r.stackendCommunity));
+    dispatch(loadCommunity(r.stackendCommunity as Community));
     //dispatch(receiveNotificationCounts({ numberOfUnseen: r.numberOfUnseen }));
 
-    dispatch(receiveResourceUsage(r));
+    dispatch(receiveResourceUsage((r as any) as ResourceUsage)); // fields not documented
+
+    if (r.shopData) {
+      const { products, collections, listings } = r.shopData;
+      if (Object.keys(products).length !== 0) {
+        dispatch({
+          type: RECEIVE_MULTIPLE_PRODUCTS,
+          json: {
+            products
+          }
+        });
+      }
+
+      if (Object.keys(collections).length !== 0) {
+        dispatch({ type: RECEIVE_COLLECTIONS, collections });
+      }
+
+      if (Object.keys(listings).length !== 0) {
+        dispatch({ type: RECEIVE_LISTINGS, listings });
+      }
+    }
 
     /* TODO: Handle this
 		if (r.data)
 		{
-			if (r.data.comments)
-			{
-				console.log("Recieved comments", r.data.comments);
-			}
 
-			if (r.data.group)
-			{
-				console.log("Recieved feeds", r.data.group);
-			}
 		}
 		*/
 

@@ -14,6 +14,7 @@ import { createLogger, format, Logger, transports } from 'winston';
 
 import { XCAP_SET_CONFIG } from './configReducer';
 import { Dispatch } from 'redux';
+import { ListProductsQuery, ShopDataResult } from '../shop';
 
 function createDefaultLogger(): Logger {
   return createLogger({
@@ -1626,6 +1627,27 @@ export interface GetInitialStoreValuesResult extends XcapJsonResult {
 
   /** Maps the referenceUrl parameter to an id */
   referenceUrlId: number;
+
+  /** Shop data, if requested */
+  shopData: ShopDataResult | null;
+}
+
+export interface GetInitialStoreValuesRequest {
+  permalink?: string;
+  domain?: string;
+  communityId?: number;
+  moduleIds?: Array<number>;
+  contentIds?: Array<number>;
+  pageIds?: Array<number>;
+  subSiteIds?: Array<number>;
+  cookie?: string;
+  referenceUrl?: string;
+  stackendMode?: boolean;
+  productHandles?: Array<string>;
+  productCollectionHandles?: Array<string>;
+  productListings?: Array<ListProductsQuery>;
+  shopImageMaxWidth?: number;
+  shopListingImageMaxWidth?: number;
 }
 
 /**
@@ -1641,19 +1663,18 @@ export function getInitialStoreValues({
   subSiteIds,
   cookie,
   referenceUrl,
-  stackendMode
-}: {
-  permalink?: string;
-  domain?: string;
-  communityId?: number;
-  moduleIds?: Array<number>;
-  contentIds?: Array<number>;
-  pageIds?: Array<number>;
-  subSiteIds?: Array<number>;
-  cookie?: string;
-  referenceUrl?: string;
-  stackendMode?: boolean;
-}): Thunk<Promise<GetInitialStoreValuesResult>> {
+  stackendMode,
+  productHandles,
+  productCollectionHandles,
+  productListings,
+  shopImageMaxWidth,
+  shopListingImageMaxWidth
+}: GetInitialStoreValuesRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
+  let pl: Array<string> | undefined = undefined;
+  if (productListings && productListings.length !== 0) {
+    pl = productListings.map(q => JSON.stringify(q));
+  }
+
   return getJson({
     url: '/init',
     parameters: {
@@ -1665,7 +1686,12 @@ export function getInitialStoreValues({
       pageIds,
       subSiteIds,
       referenceUrl,
-      stackendMode
+      stackendMode,
+      productHandles,
+      productCollectionHandles,
+      productListings: pl,
+      shopImageMaxWidth,
+      shopListingImageMaxWidth
     },
     community: DEFAULT_COMMUNITY,
     cookie

@@ -175,11 +175,11 @@ export function rateForumThreadEntry({
 			dispatch(sendEventToGA(forumApi.gaDislikeEventObject({ forumThreadEntry })));
 		}
 		 */
-    return dispatch(recieveVoteForumThread({ voteJson, forumPermalink: currentForum.permalink }));
+    return dispatch(receiveVoteForumThread({ voteJson, forumPermalink: currentForum.permalink }));
   };
 }
 
-export function recieveVoteForumThread({
+export function receiveVoteForumThread({
   voteJson,
   forumPermalink
 }: {

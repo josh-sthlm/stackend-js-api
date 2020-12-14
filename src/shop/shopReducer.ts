@@ -9,6 +9,7 @@ import {
   ListProductsAndTypesResult,
   ListProductsRequest,
   ListProductTypesResult,
+  MultipleProductListingsResult,
   Product,
   ProductVariant,
   SlimProduct
@@ -23,7 +24,9 @@ export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
 export const RECEIVE_PRODUCT = 'RECEIVE_PRODUCT';
 export const RECEIVE_MULTIPLE_PRODUCTS = 'RECEIVE_MULTIPLE_PRODUCTS';
 export const RECEIVE_LISTING = 'RECEIVE_LISTING';
+export const RECEIVE_LISTINGS = 'RECEIVE_LISTINGS';
 export const RECEIVE_COLLECTION = 'RECEIVE_COLLECTION';
+export const RECEIVE_COLLECTIONS = 'RECEIVE_COLLECTIONS';
 export const CLEAR_CACHE = 'CLEAR_CACHE';
 export const BASKET_UPDATED = 'BASKET_UPDATED';
 export const ADD_TO_BASKET = 'ADD_TO_BASKET';
@@ -137,71 +140,111 @@ export interface ShopState {
   addressFieldsByCountryCode: { [code: string]: FieldName[][] };
 }
 
+export type SetShopDefaultsAction = {
+  type: typeof SET_SHOP_DEFAULTS;
+  defaults: ShopDefaults;
+};
+
+export type ReceiveProductTypesAction = {
+  type: typeof RECEIVE_PRODUCT_TYPES;
+  json: ListProductTypesResult;
+};
+
+export type ReceiveProductAction = {
+  type: typeof RECEIVE_PRODUCT;
+  json: GetProductResult;
+};
+
+export type ReceiveMultipleProductsAction = {
+  type: typeof RECEIVE_MULTIPLE_PRODUCTS;
+  json: GetProductsResult;
+};
+
+export type ReceiveListingAction = {
+  type: typeof RECEIVE_LISTING;
+  json: ListProductsAndTypesResult;
+  key: string;
+  request: ListProductsRequest;
+};
+
+export type ReceiveListingsAction = {
+  type: typeof RECEIVE_LISTINGS;
+  listings: MultipleProductListingsResult;
+};
+
+export type ReceiveCollectionAction = {
+  type: typeof RECEIVE_COLLECTION;
+  json: GetCollectionResult;
+  request: GetCollectionRequest;
+};
+
+export type ReceiveCollectionsAction = {
+  type: typeof RECEIVE_COLLECTIONS;
+  collections: { [handle: string]: Collection };
+};
+
+export type ClearCacheAction = {
+  type: typeof CLEAR_CACHE;
+};
+
+export type AddToBasketAction = {
+  type: typeof ADD_TO_BASKET;
+  product: Product;
+  variantId: string;
+  variant: ProductVariant;
+  quantity: number;
+};
+
+export type RemoveBromBasketAction = {
+  type: typeof REMOVE_FROM_BASKET;
+  product: Product;
+  variant: ProductVariant;
+  variantId: string;
+  quantity: number;
+};
+
+export type BasketUpdatedAction = {
+  type: typeof BASKET_UPDATED;
+};
+
+export type ReceiveCheckoutAction = {
+  type: typeof RECEIVE_CHECKOUT;
+  checkoutUserErrors: Array<CheckoutUserError> | null;
+  checkout: Checkout;
+};
+
+export type ClearCheckoutAction = {
+  type: typeof CLEAR_CHECKOUT;
+};
+
+export type ReceiveCountriesAction = {
+  type: typeof RECEIVE_COUNTRIES;
+  countries: Array<Country>;
+};
+
+export type ReceiveAddressFieldsAction = {
+  type: typeof RECEIVE_ADDRESS_FIELDS;
+  countryCode: string;
+  addressFields: FieldName[][];
+};
+
 export type ShopActions =
-  | {
-      type: typeof SET_SHOP_DEFAULTS;
-      defaults: ShopDefaults;
-    }
-  | {
-      type: typeof RECEIVE_PRODUCT_TYPES;
-      json: ListProductTypesResult;
-    }
-  | {
-      type: typeof RECEIVE_PRODUCT;
-      json: GetProductResult;
-    }
-  | {
-      type: typeof RECEIVE_MULTIPLE_PRODUCTS;
-      json: GetProductsResult;
-    }
-  | {
-      type: typeof RECEIVE_LISTING;
-      json: ListProductsAndTypesResult;
-      key: string;
-      request: ListProductsRequest;
-    }
-  | {
-      type: typeof RECEIVE_COLLECTION;
-      json: GetCollectionResult;
-      request: GetCollectionRequest;
-    }
-  | {
-      type: typeof CLEAR_CACHE;
-    }
-  | {
-      type: typeof ADD_TO_BASKET;
-      product: Product;
-      variantId: string;
-      variant: ProductVariant;
-      quantity: number;
-    }
-  | {
-      type: typeof REMOVE_FROM_BASKET;
-      product: Product;
-      variant: ProductVariant;
-      variantId: string;
-      quantity: number;
-    }
-  | {
-      type: typeof BASKET_UPDATED;
-    }
-  | {
-      type: typeof RECEIVE_CHECKOUT;
-      checkoutUserErrors: Array<CheckoutUserError> | null;
-      checkout: Checkout;
-    }
-  | {
-      type: typeof CLEAR_CHECKOUT;
-    }
-  | {
-      type: typeof RECEIVE_COUNTRIES;
-      countries: Array<Country>;
-    }
-  | {
-      type: typeof RECEIVE_ADDRESS_FIELDS;
-      countryCode: string;
-      addressFields: FieldName[][];
-    };
+  | SetShopDefaultsAction
+  | ReceiveProductTypesAction
+  | ReceiveProductAction
+  | ReceiveMultipleProductsAction
+  | ReceiveListingAction
+  | ReceiveListingsAction
+  | ReceiveCollectionAction
+  | ReceiveCollectionsAction
+  | ClearCacheAction
+  | AddToBasketAction
+  | RemoveBromBasketAction
+  | BasketUpdatedAction
+  | ReceiveCheckoutAction
+  | ClearCheckoutAction
+  | ReceiveCountriesAction
+  | ReceiveAddressFieldsAction;
 
 export default function shopReducer(
   state: ShopState = {
@@ -294,6 +337,27 @@ export default function shopReducer(
       });
     }
 
+    case RECEIVE_LISTINGS: {
+      const listings: { [key: string]: SlimProductListing } = {};
+
+      for (const key of Object.keys(action.listings)) {
+        const { listing, request } = action.listings[key];
+        const l: SlimProductListing = {
+          hasNextPage: listing.pageInfo.hasNextPage,
+          hasPreviousPage: listing.pageInfo.hasPreviousPage,
+          nextCursor: getNextCursor(listing),
+          previousCursor: getPreviousCursor(listing),
+          selection: request,
+          products: []
+        };
+        listings[key] = l;
+      }
+
+      return Object.assign({}, state, {
+        productListings: Object.assign({}, state.productListings, listings)
+      });
+    }
+
     case RECEIVE_COLLECTION: {
       const collection = action.json.collection;
       const handle = action.request.handle;
@@ -301,6 +365,12 @@ export default function shopReducer(
         collections: Object.assign({}, state.collections, {
           [handle]: collection
         })
+      });
+    }
+
+    case RECEIVE_COLLECTIONS: {
+      return Object.assign({}, state, {
+        collections: Object.assign({}, state.collections, action.collections)
       });
     }
 

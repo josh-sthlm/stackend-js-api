@@ -41,7 +41,8 @@ import {
   applyDefaults,
   GetCollectionRequest,
   GetCollectionResult,
-  getCollection
+  getCollection,
+  ListProductsQuery
 } from './index';
 import {
   CLEAR_CACHE,
@@ -251,17 +252,13 @@ export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
  * Get the key used to index the product listings in ShopState
  * @param req
  */
-export const getProductListKey = (req: ListProductsRequest): Thunk<string> => (
-  dispatch: any,
-  getState: any
-): string => {
+export const getProductListKey = (req: ListProductsQuery): Thunk<string> => (dispatch: any, getState: any): string => {
   const defaults: ShopDefaults = getState().shop.defaults;
   applyDefaults(req, defaults);
 
   // NOTE: This must match the server side implementation
 
-  function append(s: string, values: Array<string> | null | undefined): string
-  {
+  function append(s: string, values: Array<string> | null | undefined): string {
     if (values && values.length !== 0) {
       const x: Array<string> = [];
       for (const v of values) {
@@ -289,7 +286,6 @@ export const getProductListKey = (req: ListProductsRequest): Thunk<string> => (
 
   return s;
 };
-
 
 /**
  * Clear store cache. Does not empty basket or product types
