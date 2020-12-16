@@ -1,6 +1,6 @@
 {
   "name": "@stackend/api",
-  "version": "1.0.68",
+  "version": "1.0.69",
   "description": "JS bindings to api.stackend.com",
   "keywords": [
     "comments",
@@ -49,6 +49,11 @@
     "preversion": "npm run lint"
   },
   "types": "./",
+  "peerDependencies": {
+    "redux": "4.x",
+    "redux-thunk": "2.x",
+    "winston": "3.x"
+  },
   "dependencies": {
     "@babel/runtime": "^7.11.2",
     "es6-promise": "^3.3.1",
@@ -56,13 +61,13 @@
     "immutable": "^3.8.2",
     "isomorphic-fetch": "^3.0.0",
     "lodash": "^4.17.20",
-    "winston": "^3.3.3",
-    "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0",
     "@shopify/address": "^2.9.2",
     "@shopify/address-consts": "^2.1.1"
   },
   "devDependencies": {
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0",
+    "winston": "^3.3.3",
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.12.9",
     "@babel/node": "^7.12.6",
