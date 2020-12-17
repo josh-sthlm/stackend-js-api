@@ -752,15 +752,15 @@ export function hasStackendCreateAccess(currentUser: CurrentUserType): boolean {
   return hasElevatedPrivilege(currentUser, COMMUNITY_MANAGER_CONTEXT, COMPONENT_CLASS, PrivilegeTypeId.TRUSTED);
 }
 
+export type SupportedModuleContext = {
+  context: string;
+  componentClass: string;
+  supportsMultipleModules: boolean;
+};
+
 export interface GetModulesResult extends XcapJsonResult {
   modules: Array<Module>;
-
-  supportedModuleContexts: Array<{
-    context: string;
-    componentClass: string;
-    supportsMultipleModules: boolean;
-  }>;
-
+  supportedModuleContexts: Array<SupportedModuleContext>;
   stats: { [id: string]: ModuleStats };
 }
 

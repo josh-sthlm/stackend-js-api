@@ -8,8 +8,15 @@ import {
   removeModuleInfo
 } from '../src/stackend/modules';
 import assert from 'assert';
+import createTestStore from './setup';
+import { initialize } from '../src/api/actions';
+import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
+import { GetInitialStoreValuesResult } from '../src/api';
+import { ModuleState } from '../src/stackend/moduleReducer';
 
 describe('Stackend modules', () => {
+  const store = createTestStore();
+
   describe('getModuleInfo', () => {
     it('Get info about a module', async () => {
       const i = getModuleInfo(ModuleType.FEED);
@@ -50,6 +57,28 @@ describe('Stackend modules', () => {
       const n = getModuleInfo(mt);
       expect(n).toBeNull();
       expect(AUTOMATIC_MODULE_TYPES.indexOf(mt)).toBe(-1);
+    });
+  });
+
+  describe('Modules store', () => {
+    it('Request modules', async () => {
+      // Can't run fetchModules, since it requires auth
+
+      const r: GetInitialStoreValuesResult = await store.dispatch(
+        initialize({
+          permalink: STACKEND_COM_COMMUNITY_PERMALINK,
+          moduleIds: [190]
+        })
+      );
+
+      expect(r.modules).toBeDefined();
+      expect(r.modules[190]).toBeDefined();
+
+      const modules: ModuleState = store.getState().modules;
+      expect(modules.moduleIds).toBeDefined();
+      expect(modules.modulesById).toBeDefined();
+      expect(modules.modulesById['190']).toBeDefined();
+      expect(modules.moduleIds.indexOf(190) !== 0).toBeTruthy();
     });
   });
 });

@@ -22,7 +22,7 @@ import { AnyAction } from 'redux';
 import { Logger } from 'winston';
 import { Page, Content, PageContent } from '../cms';
 import { ModuleType } from '../stackend/modules';
-import { Community, Module } from '../stackend';
+import { Community } from '../stackend';
 import { RECEIVE_COLLECTIONS, RECEIVE_LISTINGS, RECEIVE_MULTIPLE_PRODUCTS } from '../shop/shopReducer';
 
 export interface InitializeRequest extends GetInitialStoreValuesRequest {
@@ -35,29 +35,24 @@ export interface InitializeRequest extends GetInitialStoreValuesRequest {
  * Supply either communityId or permalink
  * @param communityId Community id
  * @param permalink Community permalink
- * @param winstonLoggingConfiguration Optional logging configuration for winston
+ * @param winstonLogger Optional logging configuration for winston
  */
-export function initialize({
-  communityId,
-  permalink,
-  config,
-  winstonLogger
-}: InitializeRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
+export function initialize(props: InitializeRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
   return async (dispatch: any): Promise<GetInitialStoreValuesResult> => {
-    if (!communityId && !permalink) {
+    if (!props.communityId && !props.permalink) {
       throw Error('Supply communityId or permalink');
     }
 
-    if (winstonLogger) {
-      setLogger(winstonLogger);
+    if (props.winstonLogger) {
+      setLogger(props.winstonLogger);
     }
 
-    if (config) {
-      setConfigDefaults(config);
-      dispatch(setConfiguration(config));
+    if (props.config) {
+      setConfigDefaults(props.config);
+      dispatch(setConfiguration(props.config));
     }
 
-    return dispatch(loadInitialStoreValues({ communityId, permalink }));
+    return dispatch(loadInitialStoreValues(props));
   };
 }
 
@@ -68,6 +63,9 @@ function receiveInitialStoreValues(json: any): AnyAction {
   };
 }
 
+/**
+ * @deprecated Use GetInitialStoreValuesRequest instead
+ */
 export type LoadInitialStoreValuesRequest = GetInitialStoreValuesRequest;
 
 /*
@@ -114,15 +112,8 @@ export function loadInitialStoreValues({
     if (typeof r === 'undefined' || r === null || r.error) {
       return r;
     }
-
     if (Object.keys(r.modules).length !== 0) {
-      const modules: Array<Module> = [];
-      for (const key of Object.keys(r.modules)) {
-        modules.push(r.modules[key]);
-      }
-      dispatch(receiveModules({ modules }));
-      // Used to be. Correct?
-      //dispatch(receiveModules({ modules: r.modules }));
+      dispatch(receiveModules({ modules: r.modules }));
     }
 
     const allCmsContents: { [id: string]: Content } = {};
