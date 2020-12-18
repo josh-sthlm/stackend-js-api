@@ -126,7 +126,11 @@ export function loadInitialStoreValues({
         const page: Page = p as Page;
         page.content.forEach((pc: PageContent) => {
           if (pc.type === ModuleType.CMS) {
-            allCmsContents[pc.referenceRef.id] = pc.referenceRef;
+            if (pc.referenceRef) {
+              allCmsContents[pc.referenceRef.id] = pc.referenceRef;
+            } else {
+              console.warn('Stackend: cms content ' + pc.name + ' of page ' + page.id + ' is missing');
+            }
           }
         });
       });
