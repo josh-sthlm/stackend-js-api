@@ -193,6 +193,9 @@ export interface PageContent {
 
   /** Referenced object */
   referenceRef: any;
+
+  /** Extra data. Type specific */
+  data: string | null;
 }
 
 export enum MenuVisibility {
@@ -416,7 +419,7 @@ export interface SearchPagesResult extends XcapJsonResult {
   result: PaginatedCollection<Page>;
 }
 
-/*
+/**
  * Search for cms pages
  * @param q
  * @param orderBy "name" or "createdDate"
@@ -528,6 +531,10 @@ export interface GetSubSiteResult extends XcapJsonResult {
   referencedObjects: { [ref: string]: any };
 }
 
+/**
+ * Get a subsite by id
+ * @param id
+ */
 export function getSubSite({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
   return getJson({
     url: '/cms/subsite/get',
@@ -535,6 +542,10 @@ export function getSubSite({ id }: { id: number } & XcapOptionalParameters): Thu
   });
 }
 
+/**
+ * Store a subsite
+ * @param subSite
+ */
 export function storeSubSite({
   subSite
 }: { subSite: SubSite } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {

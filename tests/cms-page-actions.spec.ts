@@ -12,7 +12,7 @@ describe('CMS Page Actions', () => {
   const store = createTestStore();
 
   describe('requestMissingPages', () => {
-    it('Fetch cms content', async () => {
+    it('Fetch cms pages', async () => {
       await store.dispatch(initialize({ permalink: STACKEND_COM_COMMUNITY_PERMALINK }));
 
       let r = await store.dispatch(
