@@ -1,10 +1,7 @@
 //@flow
 
 import { COMMUNITY_PARAMETER, getJson, post, Thunk, XcapJsonResult, XcapOptionalParameters } from '../api';
-import AddressFormatter, { Country } from '@shopify/address';
-import { FieldName } from '@shopify/address-consts';
 import { getLocale } from '../util';
-import { setLoadingThrobberVisible } from '../throbber/throbberActions';
 import { forEachGraphQLList, GraphQLList, PaginatedGraphQLList, PaginatedGraphQLRequest } from '../util/graphql';
 import { ShopDefaults } from './shopReducer';
 
@@ -115,6 +112,55 @@ export interface Product extends SlimProduct {
 
   /** Images. Actual number of images and size depends on context/listing */
   images: GraphQLList<ProductImage>;
+}
+
+export interface Country {
+  name: string;
+  code: string;
+  continent: string;
+  phoneNumberPrefix: number;
+  autocompletionField: string;
+  provinceKey:
+    | 'COUNTY'
+    | 'EMIRATE'
+    | 'GOVERNORATE'
+    | 'PREFECTURE'
+    | 'PROVINCE'
+    | 'REGION'
+    | 'STATE_AND_TERRITORY'
+    | 'STATE';
+  labels: {
+    address1: string;
+    address2: string;
+    city: string;
+    company: string;
+    country: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    postalCode: string;
+    zone: string;
+  };
+  optionalLabels: {
+    address2: string;
+  };
+  formatting: {
+    edit: string;
+    show: string;
+  };
+}
+
+export declare enum AddressFieldName {
+  FirstName = 'firstName',
+  LastName = 'lastName',
+  Country = 'country',
+  City = 'city',
+  PostalCode = 'zip',
+  Zone = 'province',
+  Address1 = 'address1',
+  Address2 = 'address2',
+  Phone = 'phone',
+  Company = 'company'
 }
 
 export interface MultipleProductListingsResult {
@@ -837,16 +883,16 @@ export function getAddressFields({
 }: {
   locale?: string | null;
   countryCode: string;
-}): Thunk<Promise<FieldName[][]>> {
-  return async (dispatch: any): Promise<FieldName[][]> => {
-    try {
-      await dispatch(setLoadingThrobberVisible(true));
-      const l = await dispatch(getLocale(locale));
-      const addressFormatter = new AddressFormatter(l);
-      return await addressFormatter.getOrderedFields(countryCode);
-    } finally {
-      await dispatch(setLoadingThrobberVisible(false));
-    }
+}): Thunk<Promise<AddressFieldName[][]>> {
+  return async (dispatch: any): Promise<AddressFieldName[][]> => {
+    const l = await dispatch(getLocale(locale));
+    const r = await dispatch(
+      getJson({
+        url: '/shop/countries/get-address-fields',
+        parameters: { locale: l, countryCode }
+      })
+    );
+    return r.error ? [] : r.addressFields;
   };
 }
 
@@ -856,14 +902,14 @@ export function getAddressFields({
  */
 export function getCountries({ locale }: { locale?: string }): Thunk<Promise<Array<Country>>> {
   return async (dispatch: any): Promise<Array<Country>> => {
-    try {
-      await dispatch(setLoadingThrobberVisible(true));
-      const l = await dispatch(getLocale(locale));
-      const addressFormatter = new AddressFormatter(l);
-      return await addressFormatter.getCountries();
-    } finally {
-      await dispatch(setLoadingThrobberVisible(false));
-    }
+    const l = await dispatch(getLocale(locale));
+    const r = await dispatch(
+      getJson({
+        url: '/shop/countries/get-all',
+        parameters: { locale: l }
+      })
+    );
+    return r.error ? [] : r.countries;
   };
 }
 
@@ -872,16 +918,22 @@ export function getCountries({ locale }: { locale?: string }): Thunk<Promise<Arr
  * @param locale
  * @param countryCode
  */
-export function getCountry({ locale, countryCode }: { locale?: string; countryCode: string }): Thunk<Promise<Country>> {
-  return async (dispatch: any): Promise<Country> => {
-    try {
-      await dispatch(setLoadingThrobberVisible(true));
-      const l = await dispatch(getLocale(locale));
-      const addressFormatter = new AddressFormatter(l);
-      return await addressFormatter.getCountry(countryCode);
-    } finally {
-      await dispatch(setLoadingThrobberVisible(false));
-    }
+export function getCountry({
+  locale,
+  countryCode
+}: {
+  locale?: string;
+  countryCode: string;
+}): Thunk<Promise<Country | null>> {
+  return async (dispatch: any): Promise<Country | null> => {
+    const l = await dispatch(getLocale(locale));
+    const r = await dispatch(
+      getJson({
+        url: '/shop/countries/get',
+        parameters: { locale: l, countryCode }
+      })
+    );
+    return r.error ? null : r.country;
   };
 }
 

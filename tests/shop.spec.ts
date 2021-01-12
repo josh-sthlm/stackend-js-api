@@ -26,11 +26,12 @@ import {
   newListProductsRequest,
   ProductSelection,
   ProductSortKeys,
-  toMoneyV2
+  toMoneyV2,
+  Country,
+  AddressFieldName
 } from '../src/shop';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
-import { Country, FieldName } from '@shopify/address-consts';
 import { getNextCursor, getPreviousCursor } from '../src/util/graphql';
 
 describe('Shop', () => {
@@ -244,6 +245,7 @@ describe('Shop', () => {
       const r: Array<Country> = await store.dispatch(getCountries({ locale: 'en_US' }));
       assert(r);
       expect(r.length).toBeGreaterThan(10);
+      console.log(r);
     });
   });
 
@@ -258,9 +260,10 @@ describe('Shop', () => {
 
   describe('getAddressFields', () => {
     it('Get address fields for a country', async () => {
-      const r: FieldName[][] = await store.dispatch(getAddressFields({ locale: 'sv_SE', countryCode: 'US' }));
+      const r: AddressFieldName[][] = await store.dispatch(getAddressFields({ locale: 'sv_SE', countryCode: 'US' }));
       assert(r);
       expect(r.length).toBeGreaterThan(2);
+      console.log(r);
     });
   });
 

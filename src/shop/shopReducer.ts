@@ -12,11 +12,12 @@ import {
   MultipleProductListingsResult,
   Product,
   ProductVariant,
-  SlimProduct
+  SlimProduct,
+  Country,
+  AddressFieldName
 } from './index';
 import get from 'lodash/get';
 import { ProductTypeTree, buildProductTypeTree } from './ProductTypeTree';
-import { Country, FieldName } from '@shopify/address-consts';
 import { GraphQLListNode, getNextCursor, getPreviousCursor, PageInfo } from '../util/graphql';
 
 export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
@@ -137,7 +138,7 @@ export interface ShopState {
   /**
    * Required Address fields by country code
    */
-  addressFieldsByCountryCode: { [code: string]: FieldName[][] };
+  addressFieldsByCountryCode: { [code: string]: AddressFieldName[][] };
 }
 
 export type SetShopDefaultsAction = {
@@ -225,7 +226,7 @@ export type ReceiveCountriesAction = {
 export type ReceiveAddressFieldsAction = {
   type: typeof RECEIVE_ADDRESS_FIELDS;
   countryCode: string;
-  addressFields: FieldName[][];
+  addressFields: AddressFieldName[][];
 };
 
 export type ShopActions =

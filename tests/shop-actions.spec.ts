@@ -16,8 +16,7 @@ import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { ShopState } from '../src/shop/shopReducer';
 import assert from 'assert';
-import { ProductSortKeys } from '../src/shop';
-import { Country, FieldName } from '@shopify/address';
+import { ProductSortKeys, Country, AddressFieldName } from '../src/shop';
 
 describe('Shop Actions/Reducers', () => {
   const store = createTestStore();
@@ -213,7 +212,9 @@ describe('Shop Actions/Reducers', () => {
 
   describe('requestAddressFields', () => {
     it('Loads address fields into store', async () => {
-      const c: FieldName[][] = await store.dispatch(requestAddressFields({ locale: 'en_US', countryCode: 'sv' }));
+      const c: AddressFieldName[][] = await store.dispatch(
+        requestAddressFields({ locale: 'en_US', countryCode: 'sv' })
+      );
       assert(c);
       expect(c.length).toBeGreaterThan(1);
       const shop: ShopState = store.getState().shop;

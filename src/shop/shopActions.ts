@@ -42,7 +42,9 @@ import {
   GetCollectionRequest,
   GetCollectionResult,
   getCollection,
-  ListProductsQuery
+  ListProductsQuery,
+  Country,
+  AddressFieldName
 } from './index';
 import {
   CLEAR_CACHE,
@@ -64,8 +66,6 @@ import {
   RECEIVE_COLLECTION
 } from './shopReducer';
 import { newXcapJsonResult, Thunk } from '../api';
-import { Country } from '@shopify/address';
-import { FieldName } from '@shopify/address-consts';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../util';
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
@@ -824,8 +824,8 @@ export function requestAddressFields({
 }: {
   locale?: string | null;
   countryCode: string;
-}): Thunk<Promise<FieldName[][]>> {
-  return async (dispatch: any, getState: any): Promise<FieldName[][]> => {
+}): Thunk<Promise<AddressFieldName[][]>> {
+  return async (dispatch: any, getState: any): Promise<AddressFieldName[][]> => {
     countryCode = countryCode.toUpperCase();
     const state = getState();
     const shop: ShopState = state.shop;
