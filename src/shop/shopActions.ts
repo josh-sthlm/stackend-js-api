@@ -42,9 +42,11 @@ import {
   GetCollectionRequest,
   GetCollectionResult,
   getCollection,
+  getCollections,
   ListProductsQuery,
   Country,
-  AddressFieldName
+  AddressFieldName,
+  GetCollectionsResult
 } from './index';
 import {
   CLEAR_CACHE,
@@ -63,7 +65,8 @@ import {
   BASKET_UPDATED,
   ShopDefaults,
   SET_SHOP_DEFAULTS,
-  RECEIVE_COLLECTION
+  RECEIVE_COLLECTION,
+  RECEIVE_COLLECTION_LIST
 } from './shopReducer';
 import { newXcapJsonResult, Thunk } from '../api';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
@@ -243,6 +246,32 @@ export const requestCollection = (req: GetCollectionRequest): Thunk<Promise<GetC
       json: r
     });
   }
+  return r;
+};
+
+/**
+ * Request a list of all collections, if missing
+ */
+export const requestCollections = (): Thunk<Promise<GetCollectionsResult>> => async (
+  dispatch: any,
+  getState: () => any
+): Promise<GetCollectionsResult> => {
+  const shop: ShopState = getState().shop;
+  if (shop.allCollections) {
+    return newXcapJsonResult<GetCollectionsResult>('success', {
+      collections: shop.allCollections
+    });
+  }
+
+  const r = await dispatch(getCollections({}));
+
+  if (!r.error) {
+    dispatch({
+      type: RECEIVE_COLLECTION_LIST,
+      collections: r.collections
+    });
+  }
+
   return r;
 };
 

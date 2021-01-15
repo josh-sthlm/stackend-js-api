@@ -642,13 +642,20 @@ export function getAllUniqueImages(product: Product): Array<ProductImage> {
 }
 
 /**
- * A named collection of products
+ * A named collection. Slim version used in listings
  */
-export interface Collection {
+export interface SlimCollection {
   id: string;
   description: string;
-  descriptionHtml: string;
   title: string;
+  handle: string;
+}
+
+/**
+ * A named collection of products
+ */
+export interface Collection extends SlimCollection {
+  descriptionHtml: string;
   products: GraphQLList<SlimProduct>;
 }
 
@@ -669,6 +676,24 @@ export interface GetCollectionResult extends XcapJsonResult {
 export function getCollection(req: GetCollectionRequest): Thunk<Promise<GetCollectionResult>> {
   return getJson({
     url: '/shop/get-collection',
+    parameters: arguments
+  });
+}
+
+export interface GetCollectionsResult extends XcapJsonResult {
+  collections: GraphQLList<SlimCollection>;
+}
+
+export type GetCollectionsRequest = XcapOptionalParameters;
+
+/**
+ * Get all collections. Requires community admin privileges.
+ * @param req
+ * @returns {Thunk<XcapJsonResult>}
+ */
+export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCollectionsResult>> {
+  return getJson({
+    url: '/shop/get-collections',
     parameters: arguments
   });
 }

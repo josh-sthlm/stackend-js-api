@@ -14,11 +14,19 @@ import {
   ProductVariant,
   SlimProduct,
   Country,
-  AddressFieldName
+  AddressFieldName,
+  SlimCollection
 } from './index';
 import get from 'lodash/get';
 import { ProductTypeTree, buildProductTypeTree } from './ProductTypeTree';
-import { GraphQLListNode, getNextCursor, getPreviousCursor, PageInfo } from '../util/graphql';
+import {
+  GraphQLListNode,
+  getNextCursor,
+  getPreviousCursor,
+  PageInfo,
+  GraphQLList,
+  forEachGraphQLList
+} from '../util/graphql';
 
 export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
@@ -28,6 +36,7 @@ export const RECEIVE_LISTING = 'RECEIVE_LISTING';
 export const RECEIVE_LISTINGS = 'RECEIVE_LISTINGS';
 export const RECEIVE_COLLECTION = 'RECEIVE_COLLECTION';
 export const RECEIVE_COLLECTIONS = 'RECEIVE_COLLECTIONS';
+export const RECEIVE_COLLECTION_LIST = 'RECEIVE_COLLECTION_LIST';
 export const CLEAR_CACHE = 'CLEAR_CACHE';
 export const BASKET_UPDATED = 'BASKET_UPDATED';
 export const ADD_TO_BASKET = 'ADD_TO_BASKET';
@@ -107,11 +116,16 @@ export interface ShopState {
   };
 
   /**
-   * Collections of products
+   * Collections of products arranged by handle
    */
   collections: {
     [handle: string]: Collection;
   };
+
+  /**
+   * All collections as a list
+   */
+  allCollections: Array<SlimCollection> | null;
 
   basketUpdated: number;
 
@@ -184,6 +198,11 @@ export type ReceiveCollectionsAction = {
   collections: { [handle: string]: Collection };
 };
 
+export type ReceiveCollectionListAction = {
+  type: typeof RECEIVE_COLLECTION_LIST;
+  collections: GraphQLList<SlimCollection>;
+};
+
 export type ClearCacheAction = {
   type: typeof CLEAR_CACHE;
 };
@@ -238,6 +257,7 @@ export type ShopActions =
   | ReceiveListingsAction
   | ReceiveCollectionAction
   | ReceiveCollectionsAction
+  | ReceiveCollectionListAction
   | ClearCacheAction
   | AddToBasketAction
   | RemoveBromBasketAction
@@ -259,6 +279,7 @@ export default function shopReducer(
     products: {},
     productListings: {},
     collections: {},
+    allCollections: null,
     basketUpdated: 0,
     checkout: null,
     checkoutUserErrors: null,
@@ -372,6 +393,16 @@ export default function shopReducer(
     case RECEIVE_COLLECTIONS: {
       return Object.assign({}, state, {
         collections: Object.assign({}, state.collections, action.collections)
+      });
+    }
+
+    case RECEIVE_COLLECTION_LIST: {
+      const allCollections: Array<SlimCollection> = [];
+      forEachGraphQLList<SlimCollection>(action.collections, item => {
+        allCollections.push(item);
+      });
+      return Object.assign({}, state, {
+        allCollections
       });
     }
 

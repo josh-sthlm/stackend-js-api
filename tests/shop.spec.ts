@@ -28,7 +28,9 @@ import {
   ProductSortKeys,
   toMoneyV2,
   Country,
-  AddressFieldName
+  AddressFieldName,
+  getCollections,
+  GetCollectionsResult
 } from '../src/shop';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
@@ -238,6 +240,12 @@ describe('Shop', () => {
     expect(r.collection.descriptionHtml).toBeDefined();
     expect(r.collection.products).toBeDefined();
     expect(r.collection.products.edges.length).toBeGreaterThan(0);
+  });
+
+  it('getCollections', async () => {
+    const r: GetCollectionsResult = await store.dispatch(getCollections({}));
+    assert(r);
+    expect(r.error).toBeDefined(); // Requires admin
   });
 
   describe('getCountries', () => {
