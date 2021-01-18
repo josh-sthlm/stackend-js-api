@@ -49,7 +49,7 @@ import {
   GetCollectionsResult
 } from './index';
 import {
-  CLEAR_CACHE,
+  SHOP_CLEAR_CACHE,
   RECEIVE_PRODUCT,
   RECEIVE_PRODUCT_TYPES,
   RECEIVE_LISTING,
@@ -320,7 +320,7 @@ export const getProductListKey = (req: ListProductsQuery): Thunk<string> => (dis
  * Clear store cache. Does not empty basket or product types
  */
 export const clearCache = (): Thunk<Promise<void>> => async (dispatch: any): Promise<void> => {
-  await dispatch({ type: CLEAR_CACHE });
+  await dispatch({ type: SHOP_CLEAR_CACHE });
 };
 
 /**

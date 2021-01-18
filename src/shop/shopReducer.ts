@@ -37,7 +37,7 @@ export const RECEIVE_LISTINGS = 'RECEIVE_LISTINGS';
 export const RECEIVE_COLLECTION = 'RECEIVE_COLLECTION';
 export const RECEIVE_COLLECTIONS = 'RECEIVE_COLLECTIONS';
 export const RECEIVE_COLLECTION_LIST = 'RECEIVE_COLLECTION_LIST';
-export const CLEAR_CACHE = 'CLEAR_CACHE';
+export const SHOP_CLEAR_CACHE = 'SHOP_CLEAR_CACHE';
 export const BASKET_UPDATED = 'BASKET_UPDATED';
 export const ADD_TO_BASKET = 'ADD_TO_BASKET';
 export const REMOVE_FROM_BASKET = 'REMOVE_FROM_BASKET';
@@ -204,7 +204,7 @@ export type ReceiveCollectionListAction = {
 };
 
 export type ClearCacheAction = {
-  type: typeof CLEAR_CACHE;
+  type: typeof SHOP_CLEAR_CACHE;
 };
 
 export type AddToBasketAction = {
@@ -296,7 +296,13 @@ export default function shopReducer(
         // Clear the cache as well
         productListings: {},
         products: {},
-        collections: {}
+        productTypes: [],
+        productTypeTree: [],
+        collections: {},
+        allCollections: null,
+        countryCodes: null,
+        countriesByCode: {},
+        addressFieldsByCountryCode: {}
       });
 
     case RECEIVE_PRODUCT_TYPES: {
@@ -406,11 +412,17 @@ export default function shopReducer(
       });
     }
 
-    case CLEAR_CACHE:
+    case SHOP_CLEAR_CACHE:
       return Object.assign({}, state, {
         productListings: {},
         products: {},
-        collections: {}
+        productTypes: [],
+        productTypeTree: [],
+        collections: {},
+        allCollections: null,
+        countryCodes: null,
+        countriesByCode: {},
+        addressFieldsByCountryCode: {}
       });
 
     case BASKET_UPDATED:
