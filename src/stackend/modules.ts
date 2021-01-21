@@ -231,7 +231,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     type: ModuleType.SHOP_PRODUCT_LISTING,
     singleton: false,
     addAutomatically: false,
-    parameters: ['id', 'filter', 'sort', 'layout'],
+    parameters: ['id', 'q', 'tags', 'productTypes', 'sort', 'layout'],
     simpleId: true,
     fetchData: true,
     complex: false,
