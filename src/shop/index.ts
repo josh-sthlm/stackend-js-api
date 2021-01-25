@@ -150,7 +150,7 @@ export interface Country {
   };
 }
 
-export declare enum AddressFieldName {
+export enum AddressFieldName {
   FirstName = 'firstName',
   LastName = 'lastName',
   Country = 'country',
