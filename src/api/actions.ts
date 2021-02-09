@@ -19,23 +19,21 @@ import { receiveModules } from '../stackend/moduleAction';
 import { receiveContents } from '../cms/cmsActions';
 import { receivePages, receiveSubSites } from '../cms/pageActions';
 import { AnyAction } from 'redux';
-import { Logger } from 'winston';
 import { Page, Content, PageContent } from '../cms';
 import { ModuleType } from '../stackend/modules';
 import { Community } from '../stackend';
 import { RECEIVE_COLLECTIONS, RECEIVE_LISTINGS, RECEIVE_MULTIPLE_PRODUCTS } from '../shop/shopReducer';
+import Logger from '../util/Logger';
 
 export interface InitializeRequest extends GetInitialStoreValuesRequest {
   config?: Partial<Config>;
-  winstonLogger?: Logger;
+  logger?: Logger;
 }
 
 /**
  * Initialize the stackend API.
  * Supply either communityId or permalink
- * @param communityId Community id
- * @param permalink Community permalink
- * @param winstonLogger Optional logging configuration for winston
+ * @param props
  */
 export function initialize(props: InitializeRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
   return async (dispatch: any): Promise<GetInitialStoreValuesResult> => {
@@ -43,8 +41,8 @@ export function initialize(props: InitializeRequest): Thunk<Promise<GetInitialSt
       throw Error('Supply communityId or permalink');
     }
 
-    if (props.winstonLogger) {
-      setLogger(props.winstonLogger);
+    if (props.logger) {
+      setLogger(props.logger);
     }
 
     if (props.config) {

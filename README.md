@@ -86,29 +86,22 @@ console.log('Community', community);
 
 ## Custom logging
 
-Stackend [winston](https://github.com/winstonjs/winston#readme) for logging.
-
 If you don't set up logging, a default console logger will be used.
 
 To start stackend with a custom logging setup, supply it to the initialize function like this:
 
 ```javascript
 import { initialize } from '@stackend/api/api/actions';
-import winston from 'winston';
+import Logger from 'stackend/api/util/Logger';
+
+const logger: Logger = {
+  /* Your implementation goes here */
+}
 
 await store.dispatch(
   initialize({
     permalink: 'stackend-com' /* Replace with your community permalink */,
-    winstonLogger: winston.createLogger({
-      level: 'info',
-      format: winston.format.json(),
-      defaultMeta: { service: 'Stackend' },
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.simple()
-        })
-      ]
-    })
+    logger
   })
 );
 ```
@@ -119,7 +112,6 @@ Configuration options can also be passed to the initialize function. For details
 
 ```javascript
 import { initialize } from '@stackend/api/api/actions';
-import winston from 'winston';
 
 await store.dispatch(initialize({
   permalink: 'stackend-com', /* Replace with your community permalink */

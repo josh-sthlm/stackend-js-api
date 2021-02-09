@@ -1,6 +1,6 @@
 {
   "name": "@stackend/api",
-  "version": "1.0.78",
+  "version": "1.0.79",
   "description": "JS bindings to api.stackend.com",
   "keywords": [
     "comments",
@@ -51,8 +51,7 @@
   "types": "./",
   "peerDependencies": {
     "redux": "4.x",
-    "redux-thunk": "2.x",
-    "winston": "3.x"
+    "redux-thunk": "2.x"
   },
   "dependencies": {
     "@babel/runtime": "^7.12.5",
@@ -65,7 +64,6 @@
   "devDependencies": {
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "winston": "^3.3.3",
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
     "@babel/node": "^7.12.10",

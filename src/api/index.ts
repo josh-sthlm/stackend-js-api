@@ -10,29 +10,20 @@ import { User } from '../user';
 import { setLoadingThrobberVisible } from '../throbber/throbberActions';
 import { Content, Page, SubSite } from '../cms';
 import { Privilege } from '../user/privileges';
-import { createLogger, format, Logger, transports } from 'winston';
 
 import { XCAP_SET_CONFIG } from './configReducer';
 import { Dispatch } from 'redux';
 import { ListProductsQuery, ShopDataResult } from '../shop';
+import Logger, { ConsoleLogger } from '../util/Logger';
 
 function createDefaultLogger(): Logger {
-  return createLogger({
-    level: 'info',
-    format: format.json(),
-    defaultMeta: { service: 'Stackend' },
-    transports: [
-      new transports.Console({
-        format: format.simple()
-      })
-    ]
-  });
+  return new ConsoleLogger('stackend');
 }
 
 /**
  * Stackend logger
  */
-export let logger = createDefaultLogger();
+export let logger: Logger = createDefaultLogger();
 
 /**
  * Get the stackend logger
@@ -41,7 +32,7 @@ export function getLogger(): Logger {
   if (!logger) {
     logger = createDefaultLogger();
   }
-  return logger as Logger;
+  return logger;
 }
 
 /**

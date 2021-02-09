@@ -4,7 +4,7 @@ import { createStore, compose, applyMiddleware, combineReducers, Reducer } from 
 import thunk from 'redux-thunk';
 import { STANDARD_REDUCERS } from '../src/api/reducers';
 import { setLogger } from '../src/api';
-import winston from 'winston';
+import { ConsoleLogger } from '../src/util/Logger';
 
 const appReducer = combineReducers(STANDARD_REDUCERS);
 export type AppState = ReturnType<typeof appReducer>;
@@ -30,16 +30,5 @@ export function createCustomTestStore(reducers: { [name: string]: Reducer<any, a
  * Enable debug log
  */
 export function enableDebug(): void {
-  setLogger(
-    winston.createLogger({
-      level: 'debug',
-      format: winston.format.json(),
-      defaultMeta: { service: 'Stackend' },
-      transports: [
-        new winston.transports.Console({
-          format: winston.format.simple()
-        })
-      ]
-    })
-  );
+  setLogger(new ConsoleLogger('stackend'));
 }
