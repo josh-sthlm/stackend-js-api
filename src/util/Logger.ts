@@ -2,10 +2,11 @@
  * Interface for logging. A subset of the Console object.
  */
 export default interface Logger {
-  debug(...data: any[]): void;
-  error(...data: any[]): void;
-  info(...data: any[]): void;
-  warn(...data: any[]): void;
+  log(message?: any, ...optionalParams: any[]): void;
+  debug(message?: any, ...optionalParams: any[]): void;
+  info(message?: any, ...optionalParams: any[]): void;
+  warn(message?: any, ...optionalParams: any[]): void;
+  error(message?: any, ...optionalParams: any[]): void;
 }
 
 /**
@@ -18,23 +19,27 @@ export class ConsoleLogger implements Logger {
     this.name = name;
   }
 
-  debug(...data: any[]): void {
-    console.debug(this.fmt(data));
+  log(message?: any, ...optionalParams: any[]): void {
+    console.log(this.getMessage(message), ...optionalParams);
   }
 
-  info(...data: any[]): void {
-    console.info(this.fmt(data));
+  debug(message?: any, ...optionalParams: any[]): void {
+    console.debug(this.getMessage(message), ...optionalParams);
   }
 
-  warn(...data: any[]): void {
-    console.warn(this.fmt(data));
+  info(message?: any, ...optionalParams: any[]): void {
+    console.info(this.getMessage(message), ...optionalParams);
   }
 
-  error(...data: any[]): void {
-    console.error(this.fmt(data));
+  warn(message?: any, ...optionalParams: any[]): void {
+    console.warn(this.getMessage(message), ...optionalParams);
   }
 
-  fmt(...data: any[]): any[] {
-    return [this.name, ...data];
+  error(message?: any, ...optionalParams: any[]): void {
+    console.error(this.getMessage(message), ...optionalParams);
+  }
+
+  getMessage(message?: any): string {
+    return this.name ? this.name + ': ' + message : message;
   }
 }
