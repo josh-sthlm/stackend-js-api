@@ -96,7 +96,7 @@ import Logger from 'stackend/api/util/Logger';
 
 const logger: Logger = {
   /* Your implementation goes here */
-}
+};
 
 await store.dispatch(
   initialize({
