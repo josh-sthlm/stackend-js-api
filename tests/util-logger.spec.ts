@@ -1,4 +1,4 @@
-import { ConsoleLogger } from '../src/util/Logger';
+import { ConsoleLogger, Level } from '../src/util/Logger';
 
 const OBJ = {
   a: 1,
@@ -8,6 +8,9 @@ describe('Util', () => {
   describe('ConsoleLogger', () => {
     it('message', () => {
       const l = new ConsoleLogger('test');
+      expect(l.level).toEqual(Level.WARN);
+      l.setLevel(Level.DEBUG);
+      expect(l.level).toEqual(Level.DEBUG);
       l.log('log');
       l.debug('debug');
       l.info('info', undefined);

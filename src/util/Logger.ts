@@ -10,33 +10,61 @@ export default interface Logger {
 }
 
 /**
- * Simple logger that uses the console
+ * Log levels for the ConsoleLogger
+ */
+export enum Level {
+  DEBUG,
+  INFO,
+  WARN,
+  ERROR
+}
+
+/**
+ * Simple logger that uses the console object.
  */
 export class ConsoleLogger implements Logger {
   name: string;
+  level: Level = Level.WARN;
 
-  constructor(name: string) {
+  constructor(name: string, level?: Level) {
     this.name = name;
+    if (typeof level !== 'undefined') {
+      this.level = level;
+    }
   }
 
-  log(message?: any, ...optionalParams: any[]): void {
-    console.log(this.getMessage(message), ...optionalParams);
+  setLevel(level: Level) {
+    this.level = level;
   }
 
   debug(message?: any, ...optionalParams: any[]): void {
-    console.debug(this.getMessage(message), ...optionalParams);
+    if (this.level <= Level.DEBUG) {
+      console.debug(this.getMessage(message), ...optionalParams);
+    }
+  }
+
+  log(message?: any, ...optionalParams: any[]): void {
+    if (this.level <= Level.INFO) {
+      console.log(this.getMessage(message), ...optionalParams);
+    }
   }
 
   info(message?: any, ...optionalParams: any[]): void {
-    console.info(this.getMessage(message), ...optionalParams);
+    if (this.level <= Level.INFO) {
+      console.info(this.getMessage(message), ...optionalParams);
+    }
   }
 
   warn(message?: any, ...optionalParams: any[]): void {
-    console.warn(this.getMessage(message), ...optionalParams);
+    if (this.level <= Level.WARN) {
+      console.warn(this.getMessage(message), ...optionalParams);
+    }
   }
 
   error(message?: any, ...optionalParams: any[]): void {
-    console.error(this.getMessage(message), ...optionalParams);
+    if (this.level <= Level.ERROR) {
+      console.error(this.getMessage(message), ...optionalParams);
+    }
   }
 
   getMessage(message?: any): string {
