@@ -1,0 +1,504 @@
+import SockJS from 'sockjs-client';
+import { Config, Thunk } from '../api';
+
+export interface Message {
+  communityContext: string;
+  componentName: string;
+  messageType: string;
+  payload?: any; // Any type specific data
+}
+
+export type Listener = (type: StackendWebSocketEvent, event?: Event, message?: Message) => void;
+
+/**
+ * Events
+ */
+export enum StackendWebSocketEvent {
+  SOCKET_OPENING = 'socketOpening.ws',
+  SOCKET_OPENED = 'socketOpened.ws',
+  MESSAGE_RECEIVED = 'messageReceived.ws',
+  SOCKET_CLOSED = 'socketClosed.ws',
+  SOCKET_ERROR = 'socketError.ws'
+}
+
+/**
+ * Functions that supports real time subscriptions
+ */
+export enum RealTimeFunctionName {
+  COMMENT = 'comment',
+  BLOG = 'blog'
+}
+
+export abstract class Subscription {
+  component: RealTimeFunctionName;
+  xcapCommunityName: string;
+  context: string;
+  referenceId: number;
+
+  protected constructor(
+    component: RealTimeFunctionName,
+    xcapCommunityName: string,
+    context: string,
+    referenceId: number
+  ) {
+    if (!component) {
+      throw 'Component is required';
+    }
+    if (!xcapCommunityName) {
+      throw 'xcapCommunityName is required';
+    }
+    if (!context) {
+      throw 'context is required';
+    }
+    if (!referenceId) {
+      throw 'referenceId is required';
+    }
+    this.component = component;
+    this.xcapCommunityName = xcapCommunityName;
+    this.context = context;
+    this.referenceId = referenceId;
+  }
+}
+
+export class CommentsSubscription extends Subscription {
+  constructor(xcapCommunityName: string, context: string, referenceId: number) {
+    super(RealTimeFunctionName.COMMENT, xcapCommunityName, context, referenceId);
+  }
+}
+
+export class BlogSubscription extends Subscription {
+  constructor(xcapCommunityName: string, context: string, blogId: number) {
+    super(RealTimeFunctionName.BLOG, xcapCommunityName, context, blogId);
+  }
+}
+
+/**
+ * Component used for real time notifications about xcap object creation/editing/deletion
+ * (a comment has been made in this collection of comments)
+ */
+export const REALTIME_COMPONENT = 'realtime';
+
+/**
+ * Context used for real time info
+ */
+export const REALTIME_CONTEXT = REALTIME_COMPONENT;
+
+/**
+ * Component used for FB style notifications (X has liked my post, Y has replied to my post ...)
+ */
+export const USER_NOTIFICATION_COMPONENT = 'usernotification';
+
+/**
+ * Context used for FB style notifications
+ */
+export const USER_NOTIFICATION_CONTEXT = 'notifications_site';
+
+/**
+ * A web socket that is used to send and receive events from the stackend server.
+ *
+ * // Register your notification handler
+ * addInitializer((sws: StackendWebSocket) => {
+ *  sws.addListener((type, event, message) => {
+ * 	  console.log("Got notification: ", type, event, data);
+ *  }, StackendWebSocketEvent.MESSAGE_RECEIVED, communityContext, USER_NOTIFICATION_COMPONENT);
+ * });
+ *
+ * // Get the global instance
+ * const sws: StackendWebSocket = dispatch(getInstance());
+ *
+ * // Request data from the server
+ * sws.send({
+ *  communityContext: "stackend:notifications_site",
+ *  componentName: USER_NOTIFICATION_COMPONENT,
+ *  messageType: "GET_NUMBER_OF_UNSEEN",
+ *  });
+ *
+ * // Subscribe to real time object notifications
+ * sws.addRealTimeListener((type, event, message) => {
+ *   console.log("Real time event", message);
+ * }, "c32");
+ * sws.subscribe(new CommentsSubscription("c32", "comments", 123));
+ */
+export default class StackendWebSocket {
+  static DEFAULT_URL = '/spring/ws';
+
+  url: string;
+  debug = false;
+  hasConnected = false;
+  socket: WebSocket | null = null;
+  isOpen = false;
+  sendQueue: Array<Message> = [];
+
+  /* maps from broadcast id to array of listeners */
+  listeners: { [broadcastId: string]: Array<Listener> } = {};
+
+  /**
+   * Construct a new web socket
+   */
+  constructor(url: string | null | undefined) {
+    this.url = url || StackendWebSocket.DEFAULT_URL;
+  }
+
+  /**
+   * Enable / disable debugging
+   * @param debug
+   */
+  setDebug(debug: boolean): void {
+    this.debug = debug;
+  }
+
+  /**
+   * Connect
+   */
+  connect(): void {
+    if (this.socket !== null) {
+      return;
+    }
+
+    this.broadcast(StackendWebSocketEvent.SOCKET_OPENING);
+    this.socket = new SockJS(this.url);
+
+    this.socket.onopen = (): void => {
+      this.broadcast(StackendWebSocketEvent.SOCKET_OPENED);
+      this.isOpen = true;
+    };
+
+    this.socket.onmessage = (m: MessageEvent): void => {
+      const message: Message = JSON.parse(m.data);
+      this.broadcast(StackendWebSocketEvent.MESSAGE_RECEIVED, m, message);
+    };
+
+    this.socket.onclose = (e: CloseEvent): void => {
+      this.broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
+      this.isOpen = false;
+    };
+
+    this.socket.onerror = (e: Event): void => {
+      console.error('WebSocket error: ', e);
+      this.broadcast(StackendWebSocketEvent.SOCKET_ERROR, e);
+      this.broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
+      this.isOpen = false;
+    };
+
+    this.hasConnected = true;
+  }
+
+  close(): void {
+    this.socket?.close();
+    this.isOpen = false;
+    if (this === instance) {
+      instance = null;
+    }
+  }
+
+  validateMessage(message: Message): void {
+    if (!message) {
+      throw 'No message';
+    }
+
+    if (!message.messageType) {
+      throw 'messageType required: ' + JSON.stringify(message);
+    }
+
+    if (!message.componentName) {
+      throw 'componentName required: ' + +JSON.stringify(message);
+    }
+
+    if (
+      !message.communityContext ||
+      message.communityContext.startsWith('undefined:') ||
+      message.communityContext.endsWith(':undefined')
+    ) {
+      throw 'communityContext required: ' + +JSON.stringify(message);
+    }
+  }
+
+  /**
+   * Send a message
+   * @param message
+   */
+  send(message: Message): void {
+    this.validateMessage(message);
+
+    if (this.debug) {
+      console.log('send, hasConnected: ' + this.hasConnected);
+    }
+
+    // FIXME: Queue or fail
+    if (!this.hasConnected) {
+      return;
+    }
+
+    this.sendQueue.push(message);
+    this._sendInternal();
+  }
+
+  /**
+   * Send a ping
+   */
+  ping(xcapCommunityName: string): void {
+    if (!xcapCommunityName) throw 'xcapCommunityName must be supplied';
+    this.send({
+      communityContext: xcapCommunityName + ':' + REALTIME_COMPONENT,
+      componentName: REALTIME_COMPONENT,
+      messageType: 'PING'
+    });
+  }
+
+  /**
+   * Subscribe to object creation/modification/deletion notifications
+   * @param subscription
+   */
+  subscribe(subscription: Subscription): void {
+    this.send({
+      communityContext: subscription.xcapCommunityName + ':' + REALTIME_COMPONENT,
+      componentName: REALTIME_COMPONENT,
+      messageType: 'SUBSCRIBE',
+      payload: {
+        function: subscription.component,
+        context: subscription.context,
+        referenceId: subscription.referenceId
+      }
+    });
+  }
+
+  /**
+   * Unsubscribe from object creation/modification/deletion notifications
+   * @param subscription
+   */
+  unsubscribe(subscription: Subscription): void {
+    this.send({
+      communityContext: subscription.xcapCommunityName + ':' + REALTIME_COMPONENT,
+      componentName: REALTIME_COMPONENT,
+      messageType: 'UNSUBSCRIBE',
+      payload: {
+        function: subscription.component,
+        context: subscription.context,
+        referenceId: subscription.referenceId
+      }
+    });
+  }
+
+  /**
+   * Unsubscribe from all notifications
+   * @param xcapCommunityName
+   * @param context
+   */
+  unsubscribeAll(xcapCommunityName: string, context: string): void {
+    if (!xcapCommunityName) throw 'xcapCommunityName must be supplied';
+    this.send({
+      communityContext: xcapCommunityName + ':' + REALTIME_COMPONENT,
+      componentName: REALTIME_COMPONENT,
+      messageType: 'UNSUBSCRIBE_ALL',
+      payload: {
+        context
+      }
+    });
+  }
+
+  /**
+   * Get a broadcast identifier.
+   * @param type
+   * @param communityContext
+   * @param componentName
+   * @returns {string}
+   */
+  _getBroadcastIdentifier(
+    type?: StackendWebSocketEvent | null | undefined,
+    communityContext?: string | null | undefined,
+    componentName?: string | null | undefined
+  ): string {
+    let key = '';
+
+    if (type) {
+      key += type;
+    } else {
+      key = '*';
+    }
+
+    if (communityContext) {
+      if (componentName) {
+        key += '-' + communityContext + '-' + componentName;
+      } else {
+        throw 'Both communityContext and componentName must be specified';
+      }
+    }
+
+    return key;
+  }
+
+  _sendInternal(): void {
+    if (this.socket && this.isOpen && this.sendQueue.length > 0) {
+      while (this.sendQueue.length > 0) {
+        const message = this.sendQueue.shift();
+
+        const x = { ...message };
+        if (x) {
+          if (x.payload) {
+            // FIXME: This double encoding is stupid
+            x.payload = JSON.stringify(x.payload);
+          }
+          if (this.debug) {
+            console.log('Sending message:', x);
+          }
+          this.socket.send(JSON.stringify(x));
+        }
+      }
+    } else {
+      setTimeout(() => {
+        this._sendInternal();
+      }, 1000);
+    }
+  }
+
+  /**
+   * Call all listeners that matches
+   * @param type
+   * @param message
+   * @param event
+   */
+  broadcast(type: StackendWebSocketEvent, event?: Event, message?: Message): void {
+    const identifier = this._getBroadcastIdentifier(type, message?.communityContext, message?.componentName);
+
+    if (this.debug) {
+      console.log('Broadcasting', type, identifier, message);
+    }
+
+    const a = this.listeners[identifier];
+    let n = 0;
+    if (a) {
+      a.forEach(f => {
+        n++;
+        f(type, event, message);
+      });
+    }
+
+    // Catch all listener
+    const b = this.listeners['*'];
+    if (b) {
+      b.forEach(f => {
+        n++;
+        f(type, event, message);
+      });
+    }
+
+    if (this.debug) {
+      console.log(type, identifier + ' delivered to ' + n + ' listeners');
+    }
+  }
+
+  /**
+   * Add a listener that receives broadcasts.
+   * For a catch all listener: sws.addListener(listener);
+   * To a catch a specific event in all contexts: sws.addListener(listener, StackendWebSocketEvent.SOCKET_CLOSED);
+   * To catch events for specific components ws.addListener(listener, StackendWebSocketEvent.MESSAGE_RECEIVED, 'stackend:notifications_site', 'usernotification');
+   *
+   * @param listener: Listener
+   * @param type
+   * @param communityContext as returned by getBroadcastIdentifier
+   * @param componentName
+   */
+  addListener(
+    listener: Listener,
+    type?: StackendWebSocketEvent,
+    communityContext?: string,
+    componentName?: string
+  ): void {
+    if (typeof listener !== 'function') {
+      throw 'Listener must be a function';
+    }
+    const broadcastIdentifier = this._getBroadcastIdentifier(type, communityContext, componentName);
+
+    let a = this.listeners[broadcastIdentifier];
+    if (!a) {
+      a = [];
+      this.listeners[broadcastIdentifier] = a;
+    }
+
+    a.push(listener);
+  }
+
+  /**
+   * Short hand for adding a listener for StackendWebSocketEvent.MESSAGE_RECEIVED
+   * @param listener
+   * @param communityContext
+   * @param componentName
+   */
+  addMessageListener(listener: Listener, communityContext?: string, componentName?: string): void {
+    this.addListener(listener, StackendWebSocketEvent.MESSAGE_RECEIVED, communityContext, componentName);
+  }
+
+  /**
+   * Add a listener for real time events. Short hand syntax
+   * @param listener
+   * @param xcapCommunityName
+   */
+  addRealTimeListener(listener: Listener, xcapCommunityName: string): void {
+    if (!xcapCommunityName) throw 'xcapCommunityName must be supplied';
+    this.addListener(
+      listener,
+      StackendWebSocketEvent.MESSAGE_RECEIVED,
+      xcapCommunityName + ':' + REALTIME_COMPONENT,
+      REALTIME_COMPONENT
+    );
+  }
+}
+
+let instance: StackendWebSocket | null = null;
+const initializers: Array<any> = [];
+
+export type Initializer = (stackendWebSocket: StackendWebSocket) => void;
+
+/**
+ * Add a global initializer used when getInstance() creates a StackendWebSocket
+ * @param initializer
+ */
+export function addInitializer(initializer: Initializer): void {
+  initializers.push(initializer);
+}
+
+/**
+ * Remove an initializer
+ * @param initializer
+ */
+export function removeInitializer(initializer: Initializer): boolean {
+  for (let i = 0; i < initializers.length; i++) {
+    const init = initializers[i];
+    if (init === initializer) {
+      initializers.splice(i, 1);
+      return true;
+    }
+    initializers.push(initializer);
+  }
+  return false;
+}
+
+/**
+ * Get the global instance. All registered initializers are run
+ */
+export function getInstance(): Thunk<StackendWebSocket> {
+  return (dispatch, getState): StackendWebSocket => {
+    if (!instance) {
+      const config: Config = getState().config;
+      const url = config.server + config.contextPath + StackendWebSocket.DEFAULT_URL;
+      const sws = new StackendWebSocket(url);
+      for (const init of initializers) {
+        init(sws);
+      }
+      sws.connect();
+      instance = sws;
+    }
+
+    return instance;
+  };
+}
+
+/**
+ * Reset the global instance
+ */
+export function resetInstance(): void {
+  if (instance) {
+    instance.close();
+  }
+  instance = null;
+}
