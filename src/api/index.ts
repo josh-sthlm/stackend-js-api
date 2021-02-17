@@ -322,12 +322,12 @@ export enum ModerationVisibility {
   DISAPPROVED = 'DISAPPROVED',
 
   /**
-   * All objects that are pending premoderation or expired postmoderation - i.e. items that are not included in {@link #VISIBLE}.
+   * All objects that are pending pre moderation or expired post moderation - i.e. items that are not included in {@link #VISIBLE}.
    */
   MODERATION_REQUIRED = 'MODERATION_REQUIRED',
 
   /**
-   * All objects pending moderation, all premoderated and postmoderated items regardless of expiration.
+   * All objects pending moderation, all pre moderated and post moderated items regardless of expiration.
    */
   MODERATION_PENDING = 'MODERATION_PENDING'
 }
@@ -1018,7 +1018,7 @@ export function getJson<T extends XcapJsonResult>({
         const r = postProcessApiResult(result.json);
         addRelatedObjectsToStore(dispatch, r);
         dispatch(setLoadingThrobberVisible(false));
-        return r;
+        return r as T;
       }
 
       logger.error('No result received: ' + p);
@@ -1065,7 +1065,7 @@ export function getJsonOutsideApi({
 
         const r = postProcessApiResult(result.json);
         addRelatedObjectsToStore(dispatch, r);
-        return r;
+        return r as XcapJsonResult;
       }
     }
 
@@ -1134,7 +1134,7 @@ export function post<T extends XcapJsonResult>({
         }
         const r = postProcessApiResult(result.json);
         addRelatedObjectsToStore(dispatch, r);
-        return r;
+        return r as T;
       }
     }
 
@@ -1375,7 +1375,7 @@ export function argsToObject(args: Parameters | IArguments | undefined | null): 
  * @param result
  * @return {Object}
  */
-export function postProcessApiResult(result: XcapJsonResult): any {
+export function postProcessApiResult(result: XcapJsonResult): XcapJsonResult | null {
   const likes = result[LIKES] ? result[LIKES] : undefined;
   const votes = result[VOTES] ? result[VOTES] : undefined;
   return _postProcessApiResult(result, result[RELATED_OBJECTS] || {}, likes, votes);
@@ -1392,7 +1392,7 @@ function _postProcessApiResult(
   }
 
   if (!relatedObjects) {
-    logger.error('So related objects in result: ' + JSON.stringify(result));
+    logger.error('No related objects in result: ' + JSON.stringify(result));
   }
 
   const d = result;

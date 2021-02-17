@@ -115,8 +115,8 @@ function _changeFilter({ filter, contentType }: ChangeFilter): AnyAction {
   };
 }
 
-export function getAvailableFilters() {
-  return async (dispatch: any, getState: any): Promise<XcapJsonResult> => {
+export function getAvailableFilters(): Thunk<Promise<XcapJsonResult>> {
+  return async (dispatch: any): Promise<XcapJsonResult> => {
     const categoryInfo = await dispatch(getCategories({}));
 
     if (typeof categoryInfo.error !== 'undefined') {
@@ -171,7 +171,7 @@ function receiveSearchResult(result: {
   };
 }
 
-export function searchQna({ searchString, selectedFilters, game }: any) {
+export function searchQna({ searchString, selectedFilters, game }: any): Thunk<Promise<any>> {
   //Load questions using search and filters from King Care
   return async (dispatch: any, getState: any): Promise<any> => {
     const qo = generateQueryObject(searchString, selectedFilters, getState().qnaAvailableFilters);

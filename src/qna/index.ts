@@ -89,9 +89,7 @@ export function getQnaUrl({
     return searchApi.getSearchUrl({
       request,
       type: SearchAbleType.QUESTION,
-      // FIXME: What is this
-      // @ts-ignore
-      searchType: 'search',
+      searchType: QnaSearchType.Search,
       filter: section
     });
   }

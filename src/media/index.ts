@@ -485,6 +485,7 @@ export async function uploadMediaFile({
   XcapOptionalParameters): Promise<UploadMediaFileResult> {
   // Allows the use of COMMUNITY_PARAMETER as well
   if (typeof communityPermalink === 'undefined') {
+    // FIXME: This needs to be fixed
     // @ts-ignore
     communityPermalink = arguments[COMMUNITY_PARAMETER];
   }
