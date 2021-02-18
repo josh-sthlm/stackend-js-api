@@ -2,6 +2,10 @@ import StackendWebSocket, {
   addInitializer,
   CommentsSubscription,
   getInstance,
+  REALTIME_COMPONENT,
+  REALTIME_CONTEXT,
+  RealTimeListener,
+  RealTimePayload,
   StackendWebSocketEvent
 } from '../src/util/StackendWebSocket';
 import createTestStore from './setup';
@@ -35,30 +39,35 @@ describe('Util', () => {
           console.log('Got notification: ', type, event, message);
         });
 
-        sws.addRealTimeListener((type, event, message) => {
-          console.log('Got real time notification: ', type, event, message);
-          if (message && message.messageType === 'PONG') {
-            pongs++;
-          }
-        }, community.xcapCommunityName);
+        sws.addMessageListener(
+          (type, event, message) => {
+            console.log('Got real time notification: ', type, event, message);
+            if (message && message.messageType === 'PONG') {
+              pongs++;
+            }
+          },
+          REALTIME_COMPONENT,
+          REALTIME_COMPONENT
+        );
 
         myInitializerRun++;
       });
 
-      const sws: StackendWebSocket = store.dispatch(getInstance());
+      const sws: StackendWebSocket = store.dispatch(getInstance(community));
       expect(sws).toBeDefined();
       expect(myInitializerRun).toBe(1);
       await sleep(1000); // Allow connection to establish
 
       console.log(sws);
 
-      const sws2 = store.dispatch(getInstance());
+      const sws2 = store.dispatch(getInstance(community));
       expect(sws === sws2).toBeTruthy(); // Same instance
       expect(myInitializerRun).toBe(1);
     });
 
     it('getBroadcastIdentifier', async () => {
-      const sws: StackendWebSocket = store.dispatch(getInstance());
+      const community: Community = store.getState().communities.community;
+      const sws: StackendWebSocket = store.dispatch(getInstance(community));
       expect(sws._getBroadcastIdentifier()).toBe('*');
       expect(sws._getBroadcastIdentifier(StackendWebSocketEvent.MESSAGE_RECEIVED)).toBe(
         StackendWebSocketEvent.MESSAGE_RECEIVED
@@ -69,25 +78,54 @@ describe('Util', () => {
     });
 
     it('ping', async () => {
-      const sws: StackendWebSocket = store.dispatch(getInstance());
       const community: Community = store.getState().communities.community;
-      sws.ping(community.xcapCommunityName);
+      const sws: StackendWebSocket = store.dispatch(getInstance(community));
+      sws.ping();
       await sleep(1000);
       expect(pongs).toBe(1);
     });
 
     it('subscribe/unsubscribe', async () => {
-      const sws: StackendWebSocket = store.dispatch(getInstance());
       const community: Community = store.getState().communities.community;
-      const sub = new CommentsSubscription(community.xcapCommunityName, 'comments', 123);
-      sws.subscribe(sub);
-      await sleep(500);
-      sws.unsubscribe(sub);
-      await sleep(500);
+      const sws: StackendWebSocket = store.dispatch(getInstance(community));
+      const sub = new CommentsSubscription('comments', 123);
+
+      let n = 0;
+      const listener: RealTimeListener = (message, payload) => {
+        console.log('Real time message', message, payload);
+        n++;
+      };
+      sws.subscribe(sub, listener);
+
+      expect(Object.keys(sws.realTimeListeners).length).toBe(1);
+      expect(sws.realTimeListeners[sub.getKey()]).toBeDefined();
+
+      // Fake a message
+      const payload: RealTimePayload = {
+        component: sub.component,
+        communityContext: sws.getXcapCommunityName() + ':' + sub.context,
+        id: 456,
+        referenceId: sub.referenceId,
+        type: 'Test',
+        userId: 0
+      };
+
+      sws._broadcast(StackendWebSocketEvent.MESSAGE_RECEIVED, {} as Event, {
+        messageType: 'OBJECT_MODIFIED',
+        componentName: REALTIME_COMPONENT,
+        communityContext: sws.getXcapCommunityName() + ':' + REALTIME_CONTEXT,
+        payload: JSON.stringify(payload)
+      });
+
+      expect(n).toBe(1);
+      sws.unsubscribe(sub, listener);
+      expect(Object.keys(sws.realTimeListeners).length).toBe(0);
+      expect(sws.realTimeListeners[sub.getKey()]).toBeUndefined();
     });
 
     it('close', async () => {
-      const sws: StackendWebSocket = store.dispatch(getInstance());
+      const community: Community = store.getState().communities.community;
+      const sws: StackendWebSocket = store.dispatch(getInstance(community));
       sws.close();
     });
   });

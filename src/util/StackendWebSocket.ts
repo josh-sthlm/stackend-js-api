@@ -1,5 +1,6 @@
 import SockJS from 'sockjs-client';
-import { Config, Thunk } from '../api';
+import { Config, parseCommunityContext, Thunk } from '../api';
+import { Community } from '../stackend';
 
 export interface Message {
   communityContext: string;
@@ -9,6 +10,8 @@ export interface Message {
 }
 
 export type Listener = (type: StackendWebSocketEvent, event?: Event, message?: Message) => void;
+
+export type RealTimeListener = (message: Message, payload: RealTimePayload) => void;
 
 /**
  * Events
@@ -31,21 +34,13 @@ export enum RealTimeFunctionName {
 
 export abstract class Subscription {
   component: RealTimeFunctionName;
-  xcapCommunityName: string;
   context: string;
   referenceId: number;
+  key: string;
 
-  protected constructor(
-    component: RealTimeFunctionName,
-    xcapCommunityName: string,
-    context: string,
-    referenceId: number
-  ) {
+  protected constructor(component: RealTimeFunctionName, context: string, referenceId: number) {
     if (!component) {
       throw 'Component is required';
-    }
-    if (!xcapCommunityName) {
-      throw 'xcapCommunityName is required';
     }
     if (!context) {
       throw 'context is required';
@@ -54,22 +49,53 @@ export abstract class Subscription {
       throw 'referenceId is required';
     }
     this.component = component;
-    this.xcapCommunityName = xcapCommunityName;
     this.context = context;
     this.referenceId = referenceId;
+
+    this.key = context + ':' + component + ':' + referenceId;
+  }
+
+  getKey(): string {
+    return this.key;
   }
 }
 
 export class CommentsSubscription extends Subscription {
-  constructor(xcapCommunityName: string, context: string, referenceId: number) {
-    super(RealTimeFunctionName.COMMENT, xcapCommunityName, context, referenceId);
+  constructor(context: string, referenceId: number) {
+    super(RealTimeFunctionName.COMMENT, context, referenceId);
   }
 }
 
 export class BlogSubscription extends Subscription {
-  constructor(xcapCommunityName: string, context: string, blogId: number) {
-    super(RealTimeFunctionName.BLOG, xcapCommunityName, context, blogId);
+  constructor(context: string, blogId: number) {
+    super(RealTimeFunctionName.BLOG, context, blogId);
   }
+}
+
+/**
+ * The payload you can expect from a real time subscription
+ */
+export interface RealTimePayload {
+  /** Community context */
+  communityContext: string;
+
+  /** Function name */
+  component: RealTimeFunctionName;
+
+  /** Object type */
+  type: string;
+
+  /** Object id */
+  id: number;
+
+  /** Reference id of subscription (implementation dependant) */
+  referenceId: number;
+
+  /** Id of the user that modified the object*/
+  userId: number;
+
+  /** Reference group id, if any */
+  referenceGroupId?: number;
 }
 
 /**
@@ -104,7 +130,8 @@ export const USER_NOTIFICATION_CONTEXT = 'notifications_site';
  * });
  *
  * // Get the global instance
- * const sws: StackendWebSocket = dispatch(getInstance());
+ * const community: Community = ...;
+ * const sws: StackendWebSocket = dispatch(getInstance(community.xcapCommunityName));
  *
  * // Request data from the server
  * sws.send({
@@ -114,14 +141,14 @@ export const USER_NOTIFICATION_CONTEXT = 'notifications_site';
  *  });
  *
  * // Subscribe to real time object notifications
- * sws.addRealTimeListener((type, event, message) => {
- *   console.log("Real time event", message);
- * }, "c32");
- * sws.subscribe(new CommentsSubscription("c32", "comments", 123));
+ * sws.subscribe(new CommentsSubscription("comments", 123), (message: Message, payload: RealTimePayload) => {
+ *   console.log("Real time notification", message, payload);
+ * });
  */
 export default class StackendWebSocket {
   static DEFAULT_URL = '/spring/ws';
 
+  xcapCommunityName: string;
   url: string;
   debug = false;
   hasConnected = false;
@@ -129,14 +156,21 @@ export default class StackendWebSocket {
   isOpen = false;
   sendQueue: Array<Message> = [];
 
-  /* maps from broadcast id to array of listeners */
+  /* Low level listeners. maps from broadcast id to array of listeners */
   listeners: { [broadcastId: string]: Array<Listener> } = {};
+
+  realTimeListeners: { [key: string]: Array<RealTimeListener> } = {};
 
   /**
    * Construct a new web socket
    */
-  constructor(url: string | null | undefined) {
-    this.url = url || StackendWebSocket.DEFAULT_URL;
+  constructor(community: Community, url: string | null | undefined) {
+    this.xcapCommunityName = community.xcapCommunityName;
+    this.url = url || '/' + community.permalink + StackendWebSocket.DEFAULT_URL;
+  }
+
+  getXcapCommunityName(): string {
+    return this.xcapCommunityName;
   }
 
   /**
@@ -155,28 +189,28 @@ export default class StackendWebSocket {
       return;
     }
 
-    this.broadcast(StackendWebSocketEvent.SOCKET_OPENING);
+    this._broadcast(StackendWebSocketEvent.SOCKET_OPENING);
     this.socket = new SockJS(this.url);
 
     this.socket.onopen = (): void => {
-      this.broadcast(StackendWebSocketEvent.SOCKET_OPENED);
+      this._broadcast(StackendWebSocketEvent.SOCKET_OPENED);
       this.isOpen = true;
     };
 
     this.socket.onmessage = (m: MessageEvent): void => {
       const message: Message = JSON.parse(m.data);
-      this.broadcast(StackendWebSocketEvent.MESSAGE_RECEIVED, m, message);
+      this._broadcast(StackendWebSocketEvent.MESSAGE_RECEIVED, m, message);
     };
 
     this.socket.onclose = (e: CloseEvent): void => {
-      this.broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
+      this._broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
       this.isOpen = false;
     };
 
     this.socket.onerror = (e: Event): void => {
       console.error('WebSocket error: ', e);
-      this.broadcast(StackendWebSocketEvent.SOCKET_ERROR, e);
-      this.broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
+      this._broadcast(StackendWebSocketEvent.SOCKET_ERROR, e);
+      this._broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
       this.isOpen = false;
     };
 
@@ -186,9 +220,7 @@ export default class StackendWebSocket {
   close(): void {
     this.socket?.close();
     this.isOpen = false;
-    if (this === instance) {
-      instance = null;
-    }
+    delete instances[this.xcapCommunityName];
   }
 
   validateMessage(message: Message): void {
@@ -236,22 +268,73 @@ export default class StackendWebSocket {
   /**
    * Send a ping
    */
-  ping(xcapCommunityName: string): void {
-    if (!xcapCommunityName) throw 'xcapCommunityName must be supplied';
+  ping(): void {
     this.send({
-      communityContext: xcapCommunityName + ':' + REALTIME_COMPONENT,
+      communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
       messageType: 'PING'
     });
   }
 
+  _addRealTimeListener(subscription: Subscription, listener: RealTimeListener): boolean {
+    const key = subscription.getKey();
+    let listeners = this.realTimeListeners[key];
+    if (!listeners) {
+      listeners = [];
+      this.realTimeListeners[key] = listeners;
+    }
+
+    if (listeners.indexOf(listener) == -1) {
+      listeners.push(listener);
+      return true;
+    }
+    return false;
+  }
+
+  _removeRealTimeListener(subscription: Subscription, listener: RealTimeListener): boolean {
+    const key = subscription.getKey();
+    const listeners = this.realTimeListeners[key];
+    if (listeners) {
+      for (let i = 0; i < listeners.length; i++) {
+        const l = listeners[i];
+        if (l === listener) {
+          listeners.splice(i, 1);
+          if (listeners.length === 0) {
+            delete this.realTimeListeners[key];
+          }
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  _removeAllRealTimeListeners(context?: string): number {
+    const re = context ? new RegExp('^' + context + ':.*') : null;
+
+    let n = 0;
+    for (const key of Object.keys(this.realTimeListeners)) {
+      const l = this.realTimeListeners[key];
+      if (re === null || re.test(key)) {
+        if (l) {
+          n += l.length;
+        }
+        delete this.realTimeListeners[key];
+      }
+    }
+
+    return n;
+  }
+
   /**
    * Subscribe to object creation/modification/deletion notifications
    * @param subscription
+   * @param listener
    */
-  subscribe(subscription: Subscription): void {
+  subscribe(subscription: Subscription, listener: RealTimeListener): void {
+    this._addRealTimeListener(subscription, listener);
     this.send({
-      communityContext: subscription.xcapCommunityName + ':' + REALTIME_COMPONENT,
+      communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
       messageType: 'SUBSCRIBE',
       payload: {
@@ -265,10 +348,12 @@ export default class StackendWebSocket {
   /**
    * Unsubscribe from object creation/modification/deletion notifications
    * @param subscription
+   * @param listener
    */
-  unsubscribe(subscription: Subscription): void {
+  unsubscribe(subscription: Subscription, listener: RealTimeListener): void {
+    this._removeRealTimeListener(subscription, listener);
     this.send({
-      communityContext: subscription.xcapCommunityName + ':' + REALTIME_COMPONENT,
+      communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
       messageType: 'UNSUBSCRIBE',
       payload: {
@@ -280,14 +365,14 @@ export default class StackendWebSocket {
   }
 
   /**
-   * Unsubscribe from all notifications
-   * @param xcapCommunityName
+   * Unsubscribe from all real time notifications
    * @param context
    */
-  unsubscribeAll(xcapCommunityName: string, context: string): void {
-    if (!xcapCommunityName) throw 'xcapCommunityName must be supplied';
+  unsubscribeAll(context?: string): void {
+    if (!context) throw 'context must be supplied';
+    this._removeAllRealTimeListeners(context);
     this.send({
-      communityContext: xcapCommunityName + ':' + REALTIME_COMPONENT,
+      communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
       messageType: 'UNSUBSCRIBE_ALL',
       payload: {
@@ -299,13 +384,13 @@ export default class StackendWebSocket {
   /**
    * Get a broadcast identifier.
    * @param type
-   * @param communityContext
+   * @param context
    * @param componentName
    * @returns {string}
    */
   _getBroadcastIdentifier(
     type?: StackendWebSocketEvent | null | undefined,
-    communityContext?: string | null | undefined,
+    context?: string | null | undefined,
     componentName?: string | null | undefined
   ): string {
     let key = '';
@@ -316,11 +401,11 @@ export default class StackendWebSocket {
       key = '*';
     }
 
-    if (communityContext) {
+    if (context) {
       if (componentName) {
-        key += '-' + communityContext + '-' + componentName;
+        key += '-' + context + '-' + componentName;
       } else {
-        throw 'Both communityContext and componentName must be specified';
+        throw 'Both context and componentName must be specified';
       }
     }
 
@@ -357,8 +442,14 @@ export default class StackendWebSocket {
    * @param message
    * @param event
    */
-  broadcast(type: StackendWebSocketEvent, event?: Event, message?: Message): void {
-    const identifier = this._getBroadcastIdentifier(type, message?.communityContext, message?.componentName);
+  _broadcast(type: StackendWebSocketEvent, event?: Event, message?: Message): void {
+    let identifier = null;
+    if (message) {
+      const cc = parseCommunityContext(message?.communityContext);
+      identifier = this._getBroadcastIdentifier(type, cc?.context, message.componentName);
+    } else {
+      identifier = this._getBroadcastIdentifier(type);
+    }
 
     if (this.debug) {
       console.log('Broadcasting', type, identifier, message);
@@ -382,9 +473,37 @@ export default class StackendWebSocket {
       });
     }
 
+    // Real time listeners
+    if (message != null && type === StackendWebSocketEvent.MESSAGE_RECEIVED) {
+      switch (message.messageType) {
+        case 'OBJECT_CREATED':
+        case 'OBJECT_MODIFIED':
+        case 'OBJECT_REMOVED': {
+          const payload: RealTimePayload = JSON.parse(message.payload);
+          const subKey = this._getSubscriptionKey(payload);
+          const listeners = this.realTimeListeners[subKey];
+          if (listeners) {
+            listeners.forEach(l => {
+              n++;
+              l(message, payload);
+            });
+          }
+          break;
+        }
+        default:
+          break;
+      }
+    }
+
     if (this.debug) {
       console.log(type, identifier + ' delivered to ' + n + ' listeners');
     }
+  }
+
+  _getSubscriptionKey(payload: RealTimePayload): string {
+    // Should be context + ':' + component + ':' + referenceId;
+    const cc = parseCommunityContext(payload.communityContext);
+    return cc?.context + ':' + payload.component + ':' + payload.referenceId;
   }
 
   /**
@@ -427,24 +546,9 @@ export default class StackendWebSocket {
   addMessageListener(listener: Listener, communityContext?: string, componentName?: string): void {
     this.addListener(listener, StackendWebSocketEvent.MESSAGE_RECEIVED, communityContext, componentName);
   }
-
-  /**
-   * Add a listener for real time events. Short hand syntax
-   * @param listener
-   * @param xcapCommunityName
-   */
-  addRealTimeListener(listener: Listener, xcapCommunityName: string): void {
-    if (!xcapCommunityName) throw 'xcapCommunityName must be supplied';
-    this.addListener(
-      listener,
-      StackendWebSocketEvent.MESSAGE_RECEIVED,
-      xcapCommunityName + ':' + REALTIME_COMPONENT,
-      REALTIME_COMPONENT
-    );
-  }
 }
 
-let instance: StackendWebSocket | null = null;
+const instances: { [xcapCommunityName: string]: StackendWebSocket } = {};
 const initializers: Array<any> = [];
 
 export type Initializer = (stackendWebSocket: StackendWebSocket) => void;
@@ -474,18 +578,24 @@ export function removeInitializer(initializer: Initializer): boolean {
 }
 
 /**
- * Get the global instance. All registered initializers are run
+ * Get the community instance. All registered initializers are run
  */
-export function getInstance(): Thunk<StackendWebSocket> {
+export function getInstance(community: Community): Thunk<StackendWebSocket> {
   return (dispatch, getState): StackendWebSocket => {
+    if (!community) throw 'community required';
+
+    let instance: StackendWebSocket = instances[community.xcapCommunityName];
+
     if (!instance) {
       const config: Config = getState().config;
-      const url = config.server + config.contextPath + StackendWebSocket.DEFAULT_URL;
-      const sws = new StackendWebSocket(url);
+      const url = config.server + config.contextPath + '/' + community.permalink + StackendWebSocket.DEFAULT_URL;
+      console.debug('Creating StackendWebSocket for ' + community.xcapCommunityName + ', ' + url);
+      const sws = new StackendWebSocket(community, url);
       for (const init of initializers) {
         init(sws);
       }
       sws.connect();
+      instances[community.xcapCommunityName] = sws;
       instance = sws;
     }
 
@@ -494,11 +604,28 @@ export function getInstance(): Thunk<StackendWebSocket> {
 }
 
 /**
- * Reset the global instance
+ * Shut down and remove the community instance
  */
-export function resetInstance(): void {
+export function removeInstance(xcapCommunityName: string): boolean {
+  const instance: StackendWebSocket = instances[xcapCommunityName];
   if (instance) {
     instance.close();
+    delete instances[xcapCommunityName];
+    return true;
   }
-  instance = null;
+
+  return false;
+}
+
+/**
+ * Remove all instances
+ */
+export function removeAll(): number {
+  let n = 0;
+  for (const xcapCommunityName of Object.keys(instances)) {
+    if (removeInstance(xcapCommunityName)) {
+      n++;
+    }
+  }
+  return n;
 }
