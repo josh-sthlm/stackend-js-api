@@ -32,6 +32,21 @@ export enum RealTimeFunctionName {
   BLOG = 'blog'
 }
 
+/**
+ * Real time message types
+ */
+export enum RealTimeMessageType {
+  PING = 'PING',
+  SUBSCRIBE = 'SUBSCRIBE',
+  UNSUBSCRIBE = 'UNSUBSCRIBE',
+  UNSUBSCRIBE_ALL = 'UNSUBSCRIBE_ALL',
+  PONG = 'PONG',
+  OBJECT_CREATED = 'OBJECT_CREATED',
+  OBJECT_MODIFIED = 'OBJECT_MODIFIED',
+  OBJECT_REMOVED = 'OBJECT_REMOVED',
+  ERROR = 'ERROR'
+}
+
 export abstract class Subscription {
   component: RealTimeFunctionName;
   context: string;
@@ -272,7 +287,7 @@ export default class StackendWebSocket {
     this.send({
       communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
-      messageType: 'PING'
+      messageType: RealTimeMessageType.PING
     });
   }
 
@@ -336,7 +351,7 @@ export default class StackendWebSocket {
     this.send({
       communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
-      messageType: 'SUBSCRIBE',
+      messageType: RealTimeMessageType.SUBSCRIBE,
       payload: {
         function: subscription.component,
         context: subscription.context,
@@ -355,7 +370,7 @@ export default class StackendWebSocket {
     this.send({
       communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
-      messageType: 'UNSUBSCRIBE',
+      messageType: RealTimeMessageType.UNSUBSCRIBE,
       payload: {
         function: subscription.component,
         context: subscription.context,
@@ -374,7 +389,7 @@ export default class StackendWebSocket {
     this.send({
       communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
-      messageType: 'UNSUBSCRIBE_ALL',
+      messageType: RealTimeMessageType.UNSUBSCRIBE_ALL,
       payload: {
         context
       }
@@ -476,9 +491,9 @@ export default class StackendWebSocket {
     // Real time listeners
     if (message != null && type === StackendWebSocketEvent.MESSAGE_RECEIVED) {
       switch (message.messageType) {
-        case 'OBJECT_CREATED':
-        case 'OBJECT_MODIFIED':
-        case 'OBJECT_REMOVED': {
+        case RealTimeMessageType.OBJECT_CREATED:
+        case RealTimeMessageType.OBJECT_MODIFIED:
+        case RealTimeMessageType.OBJECT_REMOVED: {
           const payload: RealTimePayload = JSON.parse(message.payload);
           const subKey = this._getSubscriptionKey(payload);
           const listeners = this.realTimeListeners[subKey];

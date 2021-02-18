@@ -1,6 +1,6 @@
 {
   "name": "@stackend/api",
-  "version": "1.0.83",
+  "version": "1.0.84",
   "description": "JS bindings to api.stackend.com",
   "keywords": [
     "comments",
