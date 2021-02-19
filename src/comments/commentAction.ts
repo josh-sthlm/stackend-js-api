@@ -1,4 +1,5 @@
 import {
+  COMMENT_REMOVED,
   CommentsActions,
   INVALIDATE_GROUP_COMMENTS,
   RECEIVE_COMMENTS,
@@ -8,7 +9,15 @@ import {
   UPDATE_COMMENT
 } from './commentReducer';
 
-import { Comment, getMultipleComments, getComments, GetMultipleCommentsResult, CommentModule } from './index';
+import {
+  Comment,
+  getMultipleComments,
+  getComments,
+  GetMultipleCommentsResult,
+  CommentModule,
+  getComment,
+  GetCommentResult
+} from './index';
 import { Thunk } from '../api';
 import { receiveVotes } from '../vote/voteActions';
 
@@ -75,7 +84,7 @@ export function fetchMultipleComments({
   p = 1,
   pageSize = DEFAULT_PAGE_SIZE
 }: {
-  module: string; // Module See Comments.CommentModule
+  module: CommentModule; // Module See Comments.CommentModule
   referenceIds: Array<number>; //Array of reference to fetch comments for
   referenceGroupId: number; // Reference group id, for example blog id (optional)
   p?: number; //page number in paginated collection
@@ -199,5 +208,72 @@ export function fetchComments({
     } catch (e) {
       console.error("Couldn't fetchComments: ", e);
     }
+  };
+}
+
+/**
+ * Fetch a single comment
+ * @param module
+ * @param id
+ * @param referenceId
+ * @param referenceGroupId
+ * @param useVotes
+ */
+export function fetchComment({
+  module,
+  id,
+  referenceId,
+  referenceGroupId = 0,
+  useVotes = false
+}: {
+  module: CommentModule;
+  id: number;
+  referenceId: number;
+  referenceGroupId: number;
+  useVotes?: boolean;
+}): Thunk<Promise<GetCommentResult>> {
+  return async (dispatch: any): Promise<GetCommentResult> => {
+    const r: GetCommentResult = await dispatch(getComment({ id, module, useVotes }));
+
+    dispatch(
+      receiveComments(module, referenceId, referenceGroupId, {
+        comments: {
+          entries: r.comment ? [r.comment] : []
+        },
+        likesByCurrentUser: {}, // FIXME: likes
+        error: r.error
+      })
+    );
+
+    return r;
+  };
+}
+
+/**
+ * Remove a comment from the store.
+ * @param module
+ * @param id
+ * @param referenceId
+ * @param referenceGroupId
+ */
+export function removeCommentFromStore({
+  module,
+  id,
+  referenceId,
+  referenceGroupId = 0
+}: {
+  module: CommentModule;
+  id: number;
+  referenceId: number;
+  referenceGroupId?: number;
+}): Thunk<void> {
+  return (dispatch: any): void => {
+    dispatch({
+      type: COMMENT_REMOVED,
+      id,
+      module,
+      referenceId,
+      referenceGroupId
+    });
   };
 }

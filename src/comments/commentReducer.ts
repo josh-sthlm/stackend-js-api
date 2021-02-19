@@ -15,6 +15,33 @@ export const REQUEST_COMMENTS = 'REQUEST_COMMENTS';
 export const RECEIVE_COMMENTS = 'RECEIVE_COMMENTS';
 export const UPDATE_COMMENT = 'UPDATE_COMMENT';
 export const INVALIDATE_GROUP_COMMENTS = 'INVALIDATE_GROUP_COMMENTS';
+export const COMMENT_REMOVED = 'COMMENT_REMOVED';
+
+export interface CommentsState {
+  [commentsStateKey: string]: {
+    isFetching: boolean;
+    didInvalidate: boolean;
+    lastUpdated: number;
+    json: {
+      likesByCurrentUser: any;
+      comments: {
+        [referenceId: number]: {
+          isFetching: boolean;
+          didInvalidate: boolean;
+          lastUpdated: number;
+          entries: Array<commentsApi.Comment>;
+        };
+      };
+      error?: string;
+    };
+  };
+}
+
+export interface CommonParameters {
+  module: string;
+  referenceId: number;
+  referenceGroupId: number;
+}
 
 export type CommentsActions =
   | {
@@ -37,49 +64,24 @@ export type CommentsActions =
       module: string;
       referenceGroupId: number;
     }
-  | {
+  | (CommonParameters & {
       type: typeof REQUEST_COMMENTS;
-      module: string;
-      referenceId: number;
-      referenceGroupId: number;
-    }
-  | {
+    })
+  | (CommonParameters & {
       type: typeof RECEIVE_COMMENTS;
-      module: string;
-      referenceId: number;
-      referenceGroupId: number;
       receivedAt: number;
       json: commentAction.ReceiveCommentsJson;
-    }
-  | {
+    })
+  | (CommonParameters & {
       type: typeof UPDATE_COMMENT;
       id: number;
-      module: string;
-      referenceId: number;
-      referenceGroupId: number;
       receivedAt: number;
       json: commentsApi.Comment;
-    };
-
-export interface CommentsState {
-  [blogKey: string]: {
-    isFetching: boolean;
-    didInvalidate: boolean;
-    lastUpdated: number;
-    json: {
-      likesByCurrentUser: any;
-      comments: {
-        [id: number]: {
-          isFetching: boolean;
-          didInvalidate: boolean;
-          lastUpdated: number;
-          entries: Array<commentsApi.Comment>;
-        };
-      };
-      error?: string;
-    };
-  };
-}
+    })
+  | (CommonParameters & {
+      type: typeof COMMENT_REMOVED;
+      id: number;
+    });
 
 //Reducer
 export function GroupComments(state: CommentsState = {}, action: CommentsActions): CommentsState {
@@ -206,7 +208,7 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         entries: { $set: referenceIdUniqueComments }
       });
 
-      // Work around for $merge not beeing able to $set
+      // Work around for $merge not being able to $set
       const first = typeof state[key] === 'undefined' || typeof state[key].json.comments[referenceId] === 'undefined';
       const op = first ? '$set' : '$merge';
 
@@ -247,6 +249,32 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
                 entries: {
                   [indexOfUpdatedComment]: { $set: action.json }
                 }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    case COMMENT_REMOVED: {
+      key = commentAction._getCommentsStateKey(action);
+
+      const entries = state[key]?.json?.comments[action.referenceId]?.entries;
+      if (!entries) {
+        return state;
+      }
+      const idx = entries.findIndex(c => c.id === action.id);
+      if (idx === -1) {
+        return state;
+      }
+
+      return update(state, {
+        [key]: {
+          lastUpdated: { $set: Date.now() },
+          json: {
+            comments: {
+              [action.referenceId]: {
+                entries: { $splice: [[idx, 1]] }
               }
             }
           }

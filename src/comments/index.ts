@@ -89,8 +89,52 @@ export enum CommentModule {
   BLOG = 'blog'
 }
 
-export interface GetCommentsResult extends XcapJsonResult {
+export interface BaseCommentRequest extends XcapOptionalParameters {
+  module: CommentModule;
+  useVotes: boolean;
+}
+
+export interface ListRequest extends BaseCommentRequest {
+  referenceId: number;
+  p?: number | null;
+  pageSize?: number | null;
+  sortCriteria?: CommentSortCriteria;
+  order?: SortOrder;
+}
+
+export interface BaseCommentsResult extends XcapJsonResult {
   likesByCurrentUser: LikesByCurrentUser;
+  //minutesToEdit: number;
+  //commentsAllowed: boolean;
+}
+
+export interface GetCommentResult extends BaseCommentsResult {
+  comment: Comment | null;
+}
+
+export interface GetRequest extends BaseCommentRequest {
+  id: number;
+}
+
+/**
+ * Get a single comment
+ * @param id
+ * @param module
+ * @param referenceId
+ * @param useVotes
+ */
+export function getComment({
+  id,
+  module = CommentModule.GENERIC,
+  useVotes = false
+}: GetRequest): Thunk<Promise<GetCommentResult>> {
+  return getJson({
+    url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/get',
+    parameters: arguments
+  });
+}
+
+export interface GetCommentsResult extends BaseCommentsResult {
   comments: PaginatedCollection<Comment>;
   minutesToEdit: number;
   commentsAllowed: boolean;
@@ -115,7 +159,7 @@ export function getComments({
   sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
   order = SortOrder.DESCENDING,
   useVotes = false
-}: any): Thunk<Promise<GetCommentsResult>> {
+}: ListRequest): Thunk<Promise<GetCommentsResult>> {
   if (isNaN(referenceId)) {
     throw Error('Parameter referenceId is required');
   }
@@ -149,19 +193,27 @@ export interface GetMultipleCommentsResult extends XcapJsonResult {
  * @param referenceIds {Array} of referenceIds
  * @param sortCriteria
  * @param order
+ * @param p
  * @param pageSize
  */
 export function getMultipleComments({
   module = CommentModule.GENERIC,
   referenceIds,
+  p = null,
   pageSize = null,
   sortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
   order = SortOrder.DESCENDING
-}: any): Thunk<Promise<GetMultipleCommentsResult>> {
+}: {
+  module: CommentModule;
+  referenceIds: Array<number>;
+  p: number | null | undefined;
+  pageSize: number | null | undefined;
+  sortCriteria?: CommentSortCriteria;
+  order?: SortOrder;
+}): Thunk<Promise<GetMultipleCommentsResult>> {
   if (!Array.isArray(referenceIds)) {
     throw Error('Parameter referenceIds is required');
   }
-
   return getJson({
     url: (module !== CommentModule.GENERIC ? '/' + module : '') + '/comments/list-multiple',
     parameters: arguments
@@ -183,8 +235,6 @@ export interface PostCommentResult extends XcapJsonResult {
  * @param body Body HTML. Up to 64KB.
  * @param extraInformation Application specific text.
  * @param referenceUrl Reference url
- * @param moduleId Stackend module id
- * @returns {Promise}
  */
 export function postComment({
   commentId,
