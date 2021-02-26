@@ -1,5 +1,18 @@
 //@flow
-import { getJson, post, XcapJsonResult, XcapObject, Thunk, XcapOptionalParameters } from '../api';
+import {
+  getJson,
+  post,
+  XcapJsonResult,
+  XcapObject,
+  Thunk,
+  XcapOptionalParameters,
+  DescriptionAware,
+  CreatedDateAware,
+  CreatorUserIdAware,
+  ModifiedDateAware,
+  ReferenceIdAware,
+  ReferenceAble
+} from '../api';
 import { VoteSummary } from '../vote';
 
 /**
@@ -17,18 +30,17 @@ export interface Answer {
   votesPercent: number;
 }
 
-export interface Poll extends XcapObject {
+export interface Poll
+  extends XcapObject,
+    DescriptionAware,
+    CreatedDateAware,
+    CreatorUserIdAware,
+    ModifiedDateAware,
+    ReferenceIdAware<XcapObject>,
+    ReferenceAble {
   __type: 'se.josh.xcap.poll.Poll';
-  description: string;
-  creatorUserId: number;
-  creatorUserRef: any;
-  createdDate: number;
-  modifiedDate: number;
   startDate: number;
   endDate: number;
-  referenceId: number;
-  referenceRef: number;
-  obfuscatedReference: string;
   view: string;
   open: boolean;
   visible: boolean;

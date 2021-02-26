@@ -1,10 +1,20 @@
 //@flow
 
-import { post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
+import {
+  post,
+  XcapJsonResult,
+  Thunk,
+  XcapOptionalParameters,
+  CreatedDateAware,
+  CreatorUserIdAware,
+  ReferenceGroupIdAware,
+  ReferenceIdAware,
+  XcapObject
+} from '../api';
 import { CommentModule } from '../comments';
 
 /** VoteSummary is used for like and dislike in forum*/
-export interface VoteSummary {
+export interface VoteSummary extends ReferenceIdAware<XcapObject>, ReferenceGroupIdAware {
   /** Average score */
   average: number;
 
@@ -13,25 +23,16 @@ export interface VoteSummary {
     [key: number]: number;
   };
 
-  /** typically forumId */
-  referenceGroupId: number;
-
-  /** typically forumThreadEntryId */
-  referenceId: number;
-
   totalNrOfVotes: number;
 
   totalScore: number;
 }
 
-export interface Vote {
+export interface Vote extends CreatedDateAware, CreatorUserIdAware, ReferenceGroupIdAware {
   id: number;
   score: number;
   refId: number;
-  referenceGroupId: number;
-  creatorUserId: number;
   creatorIp: string;
-  createdDate: number;
 }
 
 export interface VoteResult extends XcapJsonResult {

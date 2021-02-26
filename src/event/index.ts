@@ -1,5 +1,19 @@
 //@flow
-import { post, getJson, XcapObject, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
+import {
+  post,
+  getJson,
+  XcapObject,
+  XcapJsonResult,
+  Thunk,
+  XcapOptionalParameters,
+  CreatedDateAware,
+  ModifiedDateAware,
+  CreatorUserIdAware,
+  ReferenceAble,
+  ModerationAware,
+  NameAware,
+  ReferenceIdAware
+} from '../api';
 
 /**
  * Xcap Event api constants and methods.
@@ -10,37 +24,39 @@ import { post, getJson, XcapObject, XcapJsonResult, Thunk, XcapOptionalParameter
 /**
  * Event definition
  */
-export interface Event extends XcapObject {
+export interface Event
+  extends XcapObject,
+    CreatedDateAware,
+    ModifiedDateAware,
+    CreatorUserIdAware,
+    ReferenceAble,
+    ModerationAware {
   __type: 'net.josh.community.eventcalendar.Event';
   calendarId: number;
   calendarRef: EventCalendar;
-  createdDate: number;
-  modifiedDate: number;
   locationId: number;
-  creatorUserId: number;
-  creatorUserRef: any;
   categoryId: number;
   categoryRef: any;
   startDate: number;
   endDate: number;
-  obfuscatedReference: string;
   copyOf: number;
   eventDescriptionId: number;
   multipleDays: boolean;
-  modStatus: string;
-  ttl: number;
   data: any;
 }
 
-export interface EventCalendar extends XcapObject {
+/**
+ * An event calendar
+ */
+export interface EventCalendar
+  extends XcapObject,
+    NameAware,
+    ReferenceIdAware<XcapObject>,
+    ReferenceAble,
+    CreatedDateAware,
+    ModifiedDateAware,
+    ModerationAware {
   __type: 'net.josh.community.eventcalendar.EventCalendar';
-  name: string;
-  referenceId: number;
-  obfuscatedReference: string;
-  createdDate: number;
-  modifiedDate: number;
-  modStatus: string;
-  ttl: number;
 }
 
 export enum RSVPStatus {

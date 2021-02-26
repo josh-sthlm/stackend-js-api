@@ -7,7 +7,12 @@ import {
   Order,
   invertOrder,
   Thunk,
-  XcapOptionalParameters
+  XcapOptionalParameters,
+  XcapObject,
+  NameAware,
+  PermalinkAware,
+  CreatedDateAware,
+  ReferenceAble
 } from '../api';
 import { Request } from '../request';
 import { AuthenticationType } from '../login';
@@ -22,18 +27,8 @@ export const TYPE_USER = 'net.josh.community.user.backend.xcap.XcapUser';
 /**
  * Definition of a user
  */
-export interface User {
-  id: number;
+export interface User extends XcapObject, NameAware, PermalinkAware, CreatedDateAware, ReferenceAble {
   __type: 'net.josh.community.user.backend.xcap.XcapUser';
-  name: string;
-
-  /**
-   * Url safe version of name
-   */
-  permalink: string;
-  createdDate: number;
-  obfuscatedReference: string;
-
   alias: string;
   firstName: string;
   lastName: string;

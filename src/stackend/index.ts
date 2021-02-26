@@ -8,7 +8,14 @@ import {
   Order,
   XcapObject,
   ModerationStatus,
-  Thunk
+  Thunk,
+  NameAware,
+  DescriptionAware,
+  PermalinkAware,
+  CreatorUserIdAware,
+  CreatedDateAware,
+  ExpirationDateAware,
+  ModerationStatusAware
 } from '../api';
 import { fetchModules } from './moduleAction';
 import { hasElevatedPrivilege, User } from '../user';
@@ -48,11 +55,16 @@ export const STACKEND_DOT_COM_COMMUNITY = 'stackend-com';
 /**
  * Definition of a community
  */
-export interface Community extends XcapObject {
+export interface Community
+  extends XcapObject,
+    NameAware,
+    DescriptionAware,
+    PermalinkAware,
+    CreatorUserIdAware,
+    CreatedDateAware,
+    ModerationStatusAware,
+    ExpirationDateAware {
   __type: 'se.josh.xcap.community.Community';
-  permalink: string;
-  name: string;
-  description: string;
   status: string /** CommunityStatus */;
   logotype: Image | null;
   domains: Array<string>;
@@ -62,11 +74,6 @@ export interface Community extends XcapObject {
   moderatorUserRef: Array<User>;
   locale: string;
   xcapCommunityName: string;
-  creatorUserId: number;
-  creatorUserRef: User | null;
-  createdDate: number;
-  modStatus: string;
-  expiresDate: number;
   theme: string;
   settings: any;
   style: any;

@@ -8,10 +8,17 @@ import {
   XcapObject,
   Thunk,
   isRunningServerSide,
-  XcapOptionalParameters
+  XcapOptionalParameters,
+  PermalinkAware,
+  NameAware,
+  ModerationAware,
+  CreatorUserIdAware,
+  CreatedDateAware,
+  ModifiedDateAware,
+  ModifiedByUserIdAware,
+  PublishDateAware
 } from '../api';
 import { generatePermalink } from '../api/permalink';
-import { User } from '../user';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { Insertion, Category } from '../category';
 import { Order } from '../search';
@@ -33,20 +40,18 @@ export const RICH_CONTENT_CSS_CLASS = 'stackend-rich-content';
 /**
  * A content object
  */
-export interface Content extends XcapObject {
+export interface Content
+  extends XcapObject,
+    PermalinkAware,
+    NameAware,
+    ModerationAware,
+    CreatedDateAware,
+    CreatorUserIdAware,
+    ModifiedDateAware,
+    ModifiedByUserIdAware,
+    PublishDateAware {
   __type: 'se.josh.xcap.cms.Content';
-  permalink: string;
-  name: string;
   body: string;
-  publishDate?: any;
-  modStatus: number;
-  ttl: number;
-  creatorUserId: number;
-  creatorUserRef?: User;
-  createdDate: any;
-  modifiedDate?: any;
-  modifiedByUserId: number;
-  modifiedByUserRef?: User | null;
 }
 
 /**

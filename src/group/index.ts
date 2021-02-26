@@ -1,5 +1,20 @@
 //@flow
-import { getJson, post, createCommunityUrl, XcapJsonResult, XcapObject, Thunk, XcapOptionalParameters } from '../api';
+import {
+  getJson,
+  post,
+  createCommunityUrl,
+  XcapJsonResult,
+  XcapObject,
+  Thunk,
+  XcapOptionalParameters,
+  NameAware,
+  DescriptionAware,
+  PermalinkAware,
+  CreatorUserIdAware,
+  CreatedDateAware,
+  ModifiedDateAware,
+  ModerationAware
+} from '../api';
 import { User } from '../user';
 import { Request } from '../request';
 import { PaginatedCollection } from '../api/PaginatedCollection';
@@ -39,19 +54,18 @@ export const VisibilityId: { [vis: string]: number } = {
 /**
  * Group definition
  */
-export interface Group extends XcapObject {
+export interface Group
+  extends XcapObject,
+    NameAware,
+    DescriptionAware,
+    PermalinkAware,
+    CreatorUserIdAware,
+    CreatedDateAware,
+    ModifiedDateAware,
+    ModerationAware {
   __type: 'net.josh.community.group.Group';
-  name: string; // Name of group
-  description: string; //Description of group
-  permalink: string; //url-path to group
-  creatorUserId: number;
-  creatorUserRef: any;
-  createdDate: number;
-  modifiedDate: number;
   categoryId: number;
   categoryRef: any;
-  modStatus: string;
-  ttl: number;
   obfuscatedReference: string;
   contentVisibility: Visibility;
   nrOfMembers: number;
@@ -81,7 +95,7 @@ export interface Group extends XcapObject {
   adminsRef: Array<User>;
 }
 
-export interface GroupMember {
+export interface GroupMember extends CreatedDateAware {
   groupId: number;
   groupRef: Group;
   userId: number;
@@ -89,14 +103,12 @@ export interface GroupMember {
 
   /** Privilege. See privileges.ts */
   privilegeType: number;
-  createdDate: number;
 }
 
 /**
  * Membership request
  */
-export interface GroupMembershipRequest {
-  createdDate: number;
+export interface GroupMembershipRequest extends CreatedDateAware {
   groupId: number;
   userId: number;
   text: string;

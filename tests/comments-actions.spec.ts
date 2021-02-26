@@ -79,17 +79,16 @@ describe('Comment actions', () => {
 
       let x = get(s);
       expect(x).toBeDefined();
-      let idx = x.entries.findIndex((c: Comment) => c.id === 57);
-      expect(idx !== -1).toBeTruthy();
       expect(x.entries.length).toBe(4);
+      const id = x.entries[x.entries.length - 1].id;
 
       store.dispatch(
-        removeCommentFromStore({ module: CommentModule.GENERIC, id: 57, referenceId: 300007, referenceGroupId: 3 })
+        removeCommentFromStore({ module: CommentModule.GENERIC, id, referenceId: 300007, referenceGroupId: 3 })
       );
       s = store.getState().GroupComments;
       x = get(s);
       expect(x.entries.length).toBe(3);
-      idx = x.entries.findIndex((c: Comment) => c.id === 57);
+      const idx = x.entries.findIndex((c: Comment) => c.id === id);
       expect(idx === -1).toBeTruthy();
 
       await store.dispatch(
@@ -97,18 +96,18 @@ describe('Comment actions', () => {
           referenceId: 300007,
           referenceGroupId: 3,
           module: CommentModule.GENERIC,
-          id: 57
+          id
         })
       );
 
       s = store.getState().GroupComments;
       x = get(s);
       expect(x.entries.length).toBe(4);
-      const i = x.entries.findIndex((c: Comment) => c.id === 57);
+      const i = x.entries.findIndex((c: Comment) => c.id === id);
       expect(i !== -1).toBeTruthy();
       const y = x.entries[i];
       expect(y).toBeDefined();
-      expect(y.id).toBe(57);
+      expect(y.id).toBe(id);
     });
   });
 

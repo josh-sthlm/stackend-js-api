@@ -7,10 +7,20 @@ import {
   XcapObject,
   Thunk,
   isRunningInBrowser,
-  XcapOptionalParameters
+  XcapOptionalParameters,
+  CreatorUserIdAware,
+  CreatedDateAware,
+  ModifiedDateAware,
+  PermalinkAware,
+  ModerationAware,
+  ExpirationDateAware,
+  ModifiedByUserIdAware,
+  ReferenceIdAware,
+  UserApprovalAware,
+  ReferenceAble,
+  ReferenceGroupIdAware
 } from '../api';
 //import * as groupApi from './group';
-import * as user from '../user';
 //import * as gaFunctions from '../functions/gaFunctions';
 import { LikesByCurrentUser } from '../like';
 import { PaginatedCollection } from '../api/PaginatedCollection';
@@ -33,24 +43,21 @@ export const COMPONENT_NAME = 'comment';
 /**
  * Definition of a comment
  */
-export interface Comment extends XcapObject {
+export interface Comment
+  extends XcapObject,
+    CreatorUserIdAware,
+    CreatedDateAware,
+    ModifiedDateAware,
+    ModifiedByUserIdAware,
+    PermalinkAware,
+    ModerationAware,
+    ExpirationDateAware,
+    ReferenceIdAware<XcapObject>,
+    ReferenceGroupIdAware,
+    UserApprovalAware,
+    ReferenceAble {
   __type: 'se.josh.xcap.comment.impl.CommentImpl';
   parentId: number /** parent id if reply */;
-  permalink: string;
-  creatorUserId: number;
-  creatorUserRef: user.User;
-  createdDate: Date;
-  modifiedDate: number;
-  modifiedByUserId: number;
-  modifiedByUserRef?: user.User;
-  referenceGroupId: number;
-  referenceId: number /** For instance blogEntryId */;
-  referenceRef: any;
-  userApprovalStatus: string;
-  modStatus: string;
-  ttl: number;
-  expiresDate: number;
-  obfuscatedReference: string;
   subject: string;
   body: string;
   plainTextBody: string;

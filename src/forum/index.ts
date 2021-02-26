@@ -8,10 +8,17 @@ import {
   XcapObject,
   Thunk,
   XcapOptionalParameters,
-  ModerationStatus
+  CreatedDateAware,
+  PermalinkAware,
+  ReferenceAble,
+  CreatorUserIdAware,
+  ModerationAware,
+  ModifiedDateAware,
+  ModifiedByUserIdAware,
+  NameAware,
+  DescriptionAware
 } from '../api';
 import * as categoryApi from '../category';
-import * as userApi from '../user';
 //import * as gaFunctions from '../functions/gaFunctions';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { Request } from '../request';
@@ -24,52 +31,69 @@ import { LikeDataMap } from '../like';
  * @since 22 jun 2017
  */
 
-export interface Forum extends XcapObject {
+export enum AnonymityLevel {
+  /**
+   * No anonymity
+   */
+  NOT_ANONYMOUS = 'NOT_ANONYMOUS',
+
+  /**
+   * Anonymity from other users only.
+   * Admins may still reveal the user id
+   */
+  TRACEABLE_ANONYMITY = 'TRACEABLE_ANONYMITY',
+
+  /**
+   * Completely anonymous
+   */
+  ANONYMOUS = 'ANONYMOUS'
+}
+
+export interface Forum
+  extends XcapObject,
+    CreatedDateAware,
+    PermalinkAware,
+    ReferenceAble,
+    NameAware,
+    DescriptionAware {
   __type: 'net.josh.community.forum.impl.ForumImpl';
-  name: string; //"Questions",
-  description: string;
-  permalink: string;
-  createdDate: number; //Date
   ruleTypeId: number;
-  obfuscatedReference: string; //"124739006d3950b54b3f976ba55ec788ac4f44ea77620764f7ca36a5fcf7dd7d8751dc6a2bef39a257c524010518a81e",
-  anonymityLevel: string; //"NOT_ANONYMOUS",
+  anonymityLevel: AnonymityLevel;
   lastThreadEntryCreatedDate: any; //null,
   lastThreadEntryId: number;
   totalNrOfEntries: number;
   totalThreads: number;
 }
 
-export interface ForumThreadEntry extends XcapObject {
+export interface ForumThreadEntry
+  extends XcapObject,
+    CreatedDateAware,
+    CreatorUserIdAware,
+    ModerationAware,
+    ModifiedDateAware,
+    ModifiedByUserIdAware,
+    PermalinkAware,
+    ReferenceAble,
+    NameAware {
   __type: 'net.josh.community.forum.impl.ForumThreadImpl';
   categoriesRef: Array<categoryApi.Category>;
-  createdDate: Date;
   creatorName: string;
-  creatorUserId: number;
-  creatorUserRef: userApi.User;
   expiresDate: Date;
   forumId: number;
   forumRef: Forum;
   lastEntryDate: Date;
   lastEntryId: number;
-  modStatus: ModerationStatus;
-  modifiedByUserId: number;
-  modifiedByUserRef: userApi.User | null;
-  modifiedDate: Date;
-  name: string;
   nrOfEntries: number;
   nrOfNeedHelp: number;
   nrOfReplies: number;
   numberOfLikes: number;
-  obfuscatedReference: string;
   open: boolean;
-  permalink: string;
   plainText: string;
   ruleTypeId: number;
   solved: boolean;
   sticky: boolean;
   text: string;
   threadRef: ForumThreadEntry;
-  ttl: number;
   url: string;
   voteSummary: VoteSummary;
 }

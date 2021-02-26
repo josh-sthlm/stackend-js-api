@@ -212,6 +212,149 @@ export interface XcapObject {
   id: number;
 }
 
+export interface CreatedDateAware {
+  /**
+   * Date when the object was created.
+   * Can be passed directly to new Date(createdDate)
+   */
+  createdDate: number;
+}
+
+export interface CreatorUserIdAware {
+  /**
+   * Id of the user that created the object
+   */
+  creatorUserId: number;
+
+  /**
+   * User that created the object
+   */
+  creatorUserRef?: User | null;
+}
+
+export interface ModifiedDateAware {
+  /**
+   * Date when the object was modified. May be null.
+   */
+  modifiedDate: number | null;
+}
+
+export interface ModifiedByUserIdAware {
+  /**
+   * Id of the user that last modified the object. 0 if not modified
+   */
+  modifiedByUserId: number;
+
+  /**
+   * User that last modified the object.
+   */
+  modifiedByUserRef?: User | null;
+}
+
+export interface PermalinkAware {
+  /**
+   * The objects permalink, an unique id used to construct urls.
+   * The permalink consists of lower case letters, numbers and the character "-".
+   * The permalink is typically automatically derived from the name/title of an object when the object is created.
+   * It is never null for a saved object.
+   */
+  permalink: string;
+}
+
+export interface ModerationStatusAware {
+  /**
+   * Moderation status
+   */
+  modStatus: ModerationStatus;
+}
+
+export interface ModerationAware extends ModerationStatusAware {
+  /**
+   * Moderation Time To Live in minutes for post moderated objects.
+   * @see ModerationStatus.POST
+   */
+  ttl: number;
+}
+
+export interface ExpirationDateAware {
+  /**
+   * Expiration date for post moderated objects
+   * @see ModerationAware
+   * @see ModerationStatus.POST
+   */
+  expiresDate: number;
+}
+
+export interface ReferenceIdAware<T extends XcapObject> {
+  /**
+   * Id of a another referenced object.
+   * For example the blog entry id for a comment
+   */
+  referenceId: number;
+
+  /**
+   * A referenced object
+   * For example the blog entry for a comment.
+   */
+  referenceRef?: T | null;
+}
+
+export interface ReferenceGroupIdAware {
+  /**
+   * An id used to differentiate a set of objects from another set of objects in the same context.
+   */
+  referenceGroupId: number;
+}
+
+export interface NameAware {
+  /**
+   * Name of the object
+   */
+  name: string;
+}
+
+export interface DescriptionAware {
+  /**
+   * Description of the object
+   */
+  description: string;
+}
+
+export interface UserApprovalAware {
+  userApprovalStatus: UserApprovalStatus;
+}
+
+export interface ReferenceAble {
+  /**
+   * An opaque id that contains the objects community context, type and id
+   */
+  obfuscatedReference: string;
+}
+
+export interface PublishDateAware {
+  /**
+   * Date when the object will be published
+   */
+  publishDate: number | null;
+}
+
+export enum UserApprovalStatus {
+  /**
+   * The object has been approved by the user
+   */
+  USER_APPROVED = 'USER_APPROVED',
+
+  /**
+   * The object is waiting user approval
+   */
+  AWAITING_USER_APPROVAL = 'AWAITING_USER_APPROVAL',
+
+  /**
+   * The object has been disapproved by the user
+   */
+  USER_DISAPPROVED = 'USER_DISAPPROVED'
+}
+
 /**
  * Redux store state
  */

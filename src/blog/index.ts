@@ -7,7 +7,17 @@ import {
   XcapObject,
   Thunk,
   logger,
-  XcapOptionalParameters
+  XcapOptionalParameters,
+  NameAware,
+  DescriptionAware,
+  PermalinkAware,
+  CreatedDateAware,
+  ModifiedDateAware,
+  ModerationAware,
+  ReferenceIdAware,
+  ReferenceAble,
+  CreatorUserIdAware,
+  PublishDateAware
 } from '../api';
 import * as event from '../event';
 import { Poll } from '../poll';
@@ -95,19 +105,18 @@ export interface Slideshow {
   slides: Array<{ slide: Slide }>;
 }
 
-export interface BlogEntry extends XcapObject {
+export interface BlogEntry
+  extends XcapObject,
+    NameAware,
+    DescriptionAware,
+    PermalinkAware,
+    CreatorUserIdAware,
+    CreatedDateAware,
+    ModifiedDateAware,
+    ModerationAware,
+    ReferenceAble,
+    PublishDateAware {
   __type: 'net.josh.community.blog.BlogEntry';
-  name: string;
-  description: string;
-  permalink: string;
-  creatorUserId: number;
-  creatorUserRef: any;
-  createdDate: number;
-  publishDate: number | null;
-  modifiedDate: number;
-  modStatus: string;
-  ttl: number;
-  obfuscatedReference: string;
   blogId: number;
   blogRef: Blog;
   type: string;
@@ -124,21 +133,24 @@ export interface BlogEntry extends XcapObject {
 /**
  * Blog definition
  */
-export interface Blog extends XcapObject {
+export interface Blog
+  extends XcapObject,
+    NameAware,
+    DescriptionAware,
+    PermalinkAware,
+    CreatedDateAware,
+    ModifiedDateAware,
+    ModerationAware,
+    ReferenceIdAware<XcapObject>,
+    ReferenceAble {
   __type: 'net.josh.community.blog.Blog';
-  name: string;
-  permalink: string;
-  description: string;
   creatorUserRef: any;
-  createdDate: number;
-  modifiedDate: number;
   categoryRef: any;
-  referenceId: number;
-  modStatus: any;
-  ttl: number;
-  obfuscatedReference: string;
   css: number;
   cssName: string;
+  /**
+   * Number of entries
+   */
   entrySize: number;
   groupRef: group.Group /** Owning group */;
   publishedEntrySize: number;

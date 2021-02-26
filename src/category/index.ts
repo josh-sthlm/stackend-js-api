@@ -1,5 +1,16 @@
 //@flow
-import { getJson, post, XcapJsonResult, XcapObject, Thunk } from '../api';
+import {
+  getJson,
+  post,
+  XcapJsonResult,
+  XcapObject,
+  Thunk,
+  DescriptionAware,
+  PermalinkAware,
+  CreatedDateAware,
+  NameAware,
+  ReferenceAble
+} from '../api';
 
 /**
  * Xcap category api constants and methods.
@@ -17,17 +28,20 @@ export type Reference = 'BlogEditor' | string; // Name of the redux store for th
 /**
  * Definition of a category
  */
-export interface Category extends XcapObject {
+export interface Category
+  extends XcapObject,
+    NameAware,
+    DescriptionAware,
+    PermalinkAware,
+    CreatedDateAware,
+    ReferenceAble {
   __type: 'net.josh.community.category.Category';
-  id: number;
-  name: string;
-  description: string;
-  permalink: string;
-  createdDate: number;
   order: number /** Sort order, if different from natural ordering */;
-  obfuscatedReference: string;
+
+  /** Id of parent category */
   parentId: number;
   parentRef: Category;
+  /** Id of root category in this tree */
   rootId: number;
   rootRef: Category;
   referenceCount: number;

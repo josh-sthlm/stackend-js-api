@@ -14,9 +14,12 @@ import {
   _getContextPath,
   _getConfig,
   Thunk,
-  XcapOptionalParameters
+  XcapOptionalParameters,
+  DescriptionAware,
+  CreatorUserIdAware,
+  ModifiedDateAware,
+  ReferenceIdAware
 } from '../api';
-import { User } from '../user';
 import _get from 'lodash/get';
 
 /**
@@ -29,13 +32,16 @@ export enum MediaStatus {
   TEMPORARY = 'TEMPORARY'
 }
 
-export interface Media extends XcapObject {
+export interface Media
+  extends XcapObject,
+    DescriptionAware,
+    CreatorUserIdAware,
+    ModifiedDateAware,
+    ReferenceIdAware<XcapObject> {
   createdDate: number;
   originalName: string;
-  referenceId: number;
   status: MediaStatus;
   title: string;
-  description: string;
 
   mediaType: MediaTypeNames;
 
@@ -47,12 +53,6 @@ export interface Media extends XcapObject {
 
   /** File size as string 46.1KB */
   size: string;
-
-  creatorUserId: number;
-
-  creatorUserRef: User | null;
-
-  modifiedDate: Date;
 
   /** Url to original media file */
   url: string;
