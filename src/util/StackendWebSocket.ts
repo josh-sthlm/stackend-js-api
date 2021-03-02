@@ -314,7 +314,7 @@ export default class StackendWebSocket {
     return 'ref:' + component + ':' + obfuscatedReference;
   }
 
-  _addRealTimeListener(key: string, listener: RealTimeListener) {
+  _addRealTimeListener(key: string, listener: RealTimeListener): boolean {
     let listeners = this.realTimeListeners[key];
     if (!listeners) {
       listeners = [];
