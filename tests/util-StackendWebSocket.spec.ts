@@ -4,6 +4,7 @@ import StackendWebSocket, {
   getInstance,
   REALTIME_COMPONENT,
   REALTIME_CONTEXT,
+  RealTimeFunctionName,
   RealTimeListener,
   RealTimePayload,
   StackendWebSocketEvent
@@ -11,6 +12,7 @@ import StackendWebSocket, {
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { Community } from '../src/stackend';
+import { COMMENT_CLASS } from '../src/comments';
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -99,6 +101,7 @@ describe('Util', () => {
 
       expect(Object.keys(sws.realTimeListeners).length).toBe(1);
       expect(sws.realTimeListeners[sub.getKey()]).toBeDefined();
+      expect(sws.realTimeListeners[sub.getKey()][0]).toBe(listener);
 
       // Fake a message
       const payload: RealTimePayload = {
@@ -106,6 +109,7 @@ describe('Util', () => {
         communityContext: sws.getXcapCommunityName() + ':' + sub.context,
         id: 456,
         referenceId: sub.referenceId,
+        obfuscatedReference: null,
         type: 'Test',
         userId: 0
       };
@@ -121,6 +125,48 @@ describe('Util', () => {
       sws.unsubscribe(sub, listener);
       expect(Object.keys(sws.realTimeListeners).length).toBe(0);
       expect(sws.realTimeListeners[sub.getKey()]).toBeUndefined();
+    });
+
+    it('subscribeMultiple/unsubscribeMultiple', async () => {
+      const community: Community = store.getState().communities.community;
+      const sws: StackendWebSocket = store.dispatch(getInstance(community));
+
+      let n = 0;
+      const listener: RealTimeListener = (message, payload) => {
+        console.log('Real time message', message, payload);
+        n++;
+      };
+
+      const references: Array<string> = ['abc123', 'abc456'];
+      sws.subscribeMultiple(RealTimeFunctionName.LIKE, 'like', references, listener);
+
+      expect(Object.keys(sws.realTimeListeners).length).toBe(2);
+      const key = 'ref:' + RealTimeFunctionName.LIKE + ':abc123';
+      expect(sws.realTimeListeners[key]).toBeDefined();
+      expect(sws.realTimeListeners[key][0]).toBe(listener);
+
+      // Fake a message
+      const payload: RealTimePayload = {
+        component: RealTimeFunctionName.LIKE,
+        communityContext: sws.getXcapCommunityName() + ':like',
+        id: 123,
+        referenceId: 0,
+        obfuscatedReference: 'abc123',
+        type: COMMENT_CLASS,
+        userId: 0
+      };
+
+      sws._broadcast(StackendWebSocketEvent.MESSAGE_RECEIVED, {} as Event, {
+        messageType: 'OBJECT_MODIFIED',
+        componentName: REALTIME_COMPONENT,
+        communityContext: sws.getXcapCommunityName() + ':' + REALTIME_CONTEXT,
+        payload: JSON.stringify(payload)
+      });
+
+      expect(n).toBe(1);
+      sws.unsubscribeMultiple(RealTimeFunctionName.LIKE, 'like', references, listener);
+      expect(Object.keys(sws.realTimeListeners).length).toBe(0);
+      expect(sws.realTimeListeners[key]).toBeUndefined();
     });
 
     it('close', async () => {

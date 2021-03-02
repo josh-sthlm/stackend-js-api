@@ -29,7 +29,8 @@ export enum StackendWebSocketEvent {
  */
 export enum RealTimeFunctionName {
   COMMENT = 'comment',
-  BLOG = 'blog'
+  BLOG = 'blog',
+  LIKE = 'like'
 }
 
 /**
@@ -67,7 +68,7 @@ export abstract class Subscription {
     this.context = context;
     this.referenceId = referenceId;
 
-    this.key = context + ':' + component + ':' + referenceId;
+    this.key = 'sub:' + context + ':' + component + ':' + referenceId;
   }
 
   getKey(): string {
@@ -103,13 +104,16 @@ export interface RealTimePayload {
   /** Object id */
   id: number;
 
-  /** Reference id of subscription (implementation dependant) */
-  referenceId: number;
+  /** Obfuscated reference of object or null if not available */
+  obfuscatedReference: string | null;
 
   /** Id of the user that modified the object*/
   userId: number;
 
-  /** Reference group id, if any */
+  /** Reference id of (implementation dependant) */
+  referenceId: number;
+
+  /** Reference group id, if any (implementation dependant) */
   referenceGroupId?: number;
 }
 
@@ -174,7 +178,9 @@ export default class StackendWebSocket {
   /* Low level listeners. maps from broadcast id to array of listeners */
   listeners: { [broadcastId: string]: Array<Listener> } = {};
 
-  realTimeListeners: { [key: string]: Array<RealTimeListener> } = {};
+  realTimeListeners: {
+    [key: string]: Array<RealTimeListener>;
+  } = {};
 
   /**
    * Construct a new web socket
@@ -291,8 +297,24 @@ export default class StackendWebSocket {
     });
   }
 
-  _addRealTimeListener(subscription: Subscription, listener: RealTimeListener): boolean {
-    const key = subscription.getKey();
+  _addRealTimeListenerForSubscription(subscription: Subscription, listener: RealTimeListener): boolean {
+    return this._addRealTimeListener(subscription.getKey(), listener);
+  }
+
+  _addRealTimeListenerForReference(
+    component: RealTimeFunctionName,
+    obfuscatedReference: string,
+    listener: RealTimeListener
+  ): boolean {
+    const key = this._getReferenceKey(component, obfuscatedReference);
+    return this._addRealTimeListener(key, listener);
+  }
+
+  _getReferenceKey(component: RealTimeFunctionName, obfuscatedReference: string): string {
+    return 'ref:' + component + ':' + obfuscatedReference;
+  }
+
+  _addRealTimeListener(key: string, listener: RealTimeListener) {
     let listeners = this.realTimeListeners[key];
     if (!listeners) {
       listeners = [];
@@ -303,11 +325,11 @@ export default class StackendWebSocket {
       listeners.push(listener);
       return true;
     }
+
     return false;
   }
 
-  _removeRealTimeListener(subscription: Subscription, listener: RealTimeListener): boolean {
-    const key = subscription.getKey();
+  _removeRealTimeListener(key: string, listener: RealTimeListener): boolean {
     const listeners = this.realTimeListeners[key];
     if (listeners) {
       for (let i = 0; i < listeners.length; i++) {
@@ -324,13 +346,33 @@ export default class StackendWebSocket {
     return false;
   }
 
+  _removeRealTimeListenerForSubscription(subscription: Subscription, listener: RealTimeListener): boolean {
+    return this._removeRealTimeListener(subscription.getKey(), listener);
+  }
+
+  _removeRealTimeListenerForReference(
+    component: RealTimeFunctionName,
+    obfuscatedReference: string,
+    listener: RealTimeListener
+  ): boolean {
+    const key = this._getReferenceKey(component, obfuscatedReference);
+    return this._removeRealTimeListener(key, listener);
+  }
+
   _removeAllRealTimeListeners(context?: string): number {
-    const re = context ? new RegExp('^' + context + ':.*') : null;
+    if (!context) {
+      const n = Object.keys(this.realTimeListeners).length;
+      this.realTimeListeners = {};
+      return n;
+    }
+
+    const subRe = new RegExp('^sub:' + context + ':.*');
+    const refRe = new RegExp('^ref:[^:]+:' + context + ':.*');
 
     let n = 0;
     for (const key of Object.keys(this.realTimeListeners)) {
       const l = this.realTimeListeners[key];
-      if (re === null || re.test(key)) {
+      if (subRe.test(key) || refRe.test(key)) {
         if (l) {
           n += l.length;
         }
@@ -347,7 +389,7 @@ export default class StackendWebSocket {
    * @param listener
    */
   subscribe(subscription: Subscription, listener: RealTimeListener): void {
-    this._addRealTimeListener(subscription, listener);
+    this._addRealTimeListenerForSubscription(subscription, listener);
     this.send({
       communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
@@ -361,12 +403,41 @@ export default class StackendWebSocket {
   }
 
   /**
+   * Subscribe to a set of references
+   * @param component
+   * @param context
+   * @param obfuscatedReferences
+   * @param listener
+   */
+  subscribeMultiple(
+    component: RealTimeFunctionName,
+    context: string,
+    obfuscatedReferences: Array<string>,
+    listener: RealTimeListener
+  ): void {
+    obfuscatedReferences.forEach(r => {
+      this._addRealTimeListenerForReference(component, r, listener);
+    });
+
+    this.send({
+      communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
+      componentName: REALTIME_COMPONENT,
+      messageType: RealTimeMessageType.SUBSCRIBE,
+      payload: {
+        function: component,
+        context: context,
+        references: obfuscatedReferences
+      }
+    });
+  }
+
+  /**
    * Unsubscribe from object creation/modification/deletion notifications
    * @param subscription
    * @param listener
    */
   unsubscribe(subscription: Subscription, listener: RealTimeListener): void {
-    this._removeRealTimeListener(subscription, listener);
+    this._removeRealTimeListenerForSubscription(subscription, listener);
     this.send({
       communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
       componentName: REALTIME_COMPONENT,
@@ -375,6 +446,34 @@ export default class StackendWebSocket {
         function: subscription.component,
         context: subscription.context,
         referenceId: subscription.referenceId
+      }
+    });
+  }
+
+  /**
+   * Unsubscribe from a set of references
+   * @param component
+   * @param context
+   * @param obfuscatedReferences
+   * @param listener
+   */
+  unsubscribeMultiple(
+    component: RealTimeFunctionName,
+    context: string,
+    obfuscatedReferences: Array<string>,
+    listener: RealTimeListener
+  ): void {
+    obfuscatedReferences.forEach(r => {
+      this._removeRealTimeListenerForReference(component, r, listener);
+    });
+    this.send({
+      communityContext: this.xcapCommunityName + ':' + REALTIME_COMPONENT,
+      componentName: REALTIME_COMPONENT,
+      messageType: RealTimeMessageType.UNSUBSCRIBE,
+      payload: {
+        function: component,
+        context: context,
+        references: obfuscatedReferences
       }
     });
   }
@@ -503,6 +602,18 @@ export default class StackendWebSocket {
               l(message, payload);
             });
           }
+
+          if (payload.obfuscatedReference) {
+            const refKey = this._getReferenceKey(payload.component, payload.obfuscatedReference);
+            const listeners = this.realTimeListeners[refKey];
+            if (listeners) {
+              listeners.forEach(l => {
+                n++;
+                l(message, payload);
+              });
+            }
+          }
+
           break;
         }
         default:
@@ -518,7 +629,7 @@ export default class StackendWebSocket {
   _getSubscriptionKey(payload: RealTimePayload): string {
     // Should be context + ':' + component + ':' + referenceId;
     const cc = parseCommunityContext(payload.communityContext);
-    return cc?.context + ':' + payload.component + ':' + payload.referenceId;
+    return 'sub:' + cc?.context + ':' + payload.component + ':' + payload.referenceId;
   }
 
   /**
