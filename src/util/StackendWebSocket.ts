@@ -115,6 +115,9 @@ export interface RealTimePayload {
 
   /** Reference group id, if any (implementation dependant) */
   referenceGroupId?: number;
+
+  /** Number of likes, if supported */
+  likes: number | null;
 }
 
 /**
