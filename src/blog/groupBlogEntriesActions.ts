@@ -42,7 +42,11 @@ import {
  * @author pelle
  */
 
-//When loading comments receive is run when the server has responded
+/**
+ * When loading comments receive is run when the server has responded
+ * @param blogKey
+ * @param json
+ */
 function receiveBlogEntries(blogKey: string, json: GetEntriesResult): GroupBlogEntriesActions {
   return {
     type: RECEIVE_GROUP_BLOG_ENTRIES,
@@ -52,7 +56,10 @@ function receiveBlogEntries(blogKey: string, json: GetEntriesResult): GroupBlogE
   };
 }
 
-//When loading comments receive is run when the server has responded
+/**
+ * Discard cached blog entries
+ * @param blogKey
+ */
 export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): GroupBlogEntriesActions {
   return {
     type: INVALIDATE_GROUP_BLOG_ENTRIES,
@@ -60,7 +67,10 @@ export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): GroupBl
   };
 }
 
-//Request comments from the server
+/**
+ * Request comments from the server
+ * @param blogKey
+ */
 function requestBlogEntries(blogKey: string): GroupBlogEntriesActions {
   return {
     type: REQUEST_GROUP_BLOG_ENTRIES,
@@ -68,8 +78,11 @@ function requestBlogEntries(blogKey: string): GroupBlogEntriesActions {
   };
 }
 
-//Update already existing blog entry
-function updateBlogEntry(blogKey: string, json: UpdateBlogEntry): GroupBlogEntriesActions {
+/**
+ * Update already existing blog entry.
+ * Only the last BlogEntry of json.resultPaginated.entries will be updated.
+ */
+export function updateBlogEntry(blogKey: string, json: UpdateBlogEntry): GroupBlogEntriesActions {
   return {
     type: UPDATE_GROUP_BLOG_ENTRY,
     blogKey,
@@ -87,7 +100,7 @@ export interface FetchBlogEntries {
   goToBlogEntry?: string; // Start the pagination at the specified entry permalink
 }
 
-/*
+/**
  * Requests and receive blog entries and store them in redux-state
  */
 export function fetchBlogEntries({
@@ -178,6 +191,13 @@ interface FetchBlogEntriesWithComments {
   goToBlogEntry?: string;
 }
 
+/**
+ * Fetch blog entries and their comments
+ * @param blogKey
+ * @param page
+ * @param categories
+ * @param goToBlogEntry
+ */
 export function fetchBlogEntriesWithComments({
   blogKey,
   page = 1,
@@ -208,6 +228,12 @@ export function fetchBlogEntriesWithComments({
   };
 }
 
+/**
+ * Fetch a blog entry and its comments
+ * @param id
+ * @param permalink
+ * @param blogKey
+ */
 export function fetchBlogEntryWithComments({
   id,
   permalink,
@@ -325,6 +351,12 @@ export function postBlogEntry({
   };
 }
 
+/**
+ * Set the  {@link BlogEntryStatus} of an entry.
+ * @param blogKey
+ * @param id
+ * @param status
+ */
 export function changeBlogEntryStatus({ blogKey, id, status }: SetEntryStatus): Thunk<Promise<void>> {
   return async (dispatch: any): Promise<void> => {
     const response = await dispatch(setEntryStatus({ blogKey, id, status }));
@@ -332,7 +364,11 @@ export function changeBlogEntryStatus({ blogKey, id, status }: SetEntryStatus): 
   };
 }
 
-//Toggle Reply editor for selected parent comment id
+/**
+ * Toggle Reply editor for selected parent comment id
+ * @param blogEntryId
+ * @param editorType
+ */
 export function toggleWriteCommentOrEdit({
   blogEntryId,
   editorType
@@ -347,6 +383,9 @@ export function toggleWriteCommentOrEdit({
   };
 }
 
+/**
+ * Close comment editor
+ */
 export function closeWriteCommentOrEdit(): OpenBlogEntryWriteCommentSectionActions {
   return { type: CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY };
 }
