@@ -13,11 +13,13 @@ describe('Like', () => {
     it('Get a like toplist', async () => {
       const r: GetLikeToplistResult = await store.dispatch(
         getToplist({
-          interval: '1year',
+          interval: '5year',
           objectContext: 'comments',
           [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK
         })
       );
+
+      console.log(r);
 
       expect(r.__resultCode).toBe('success');
       expect(r.likes).toBeDefined();
