@@ -8,8 +8,18 @@ export const XCAP_VOTES_UPDATE = 'XCAP_VOTES_UPDATE';
 
 type VoteActionBase = {
   context: string;
+  /**
+   * Has the current user voted?
+   */
   hasVoted?: boolean;
+  /**
+   * My review comment, if any
+   */
   myReview?: Comment | null;
+
+  /**
+   * Summary of votes
+   */
   voteSummary: VoteSummary;
 };
 export type VoteActions =
@@ -23,19 +33,39 @@ export type VoteActions =
     });
 
 export interface VoteInfo {
+  /**
+   * Summary of votes
+   */
   voteSummary: VoteSummary;
+
   votes: { [referenceGroupId: number]: Vote };
+  /**
+   * Has the current user voted?
+   * */
   hasVoted: boolean;
+
+  /**
+   * My review comment, if any
+   */
   myReview?: Comment | null;
 }
 
 export interface VoteState {
-  [key: string]: {
-    // Context
+  [context: string]: {
     [referenceId: string]: VoteInfo;
   };
 }
 
+/**
+ * Update the votes
+ * @param state
+ * @param context
+ * @param voteSummary
+ * @param votes
+ * @param vote
+ * @param hasVoted
+ * @param myReview
+ */
 function updateVotes({
   state,
   context,

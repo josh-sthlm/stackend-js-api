@@ -18,6 +18,9 @@ export const INVALIDATE_GROUP_COMMENTS = 'INVALIDATE_GROUP_COMMENTS';
 export const COMMENT_REMOVED = 'COMMENT_REMOVED';
 
 export interface CommentsState {
+  /**
+   * Comments, arranged by getCommentsStateKey()
+   */
   [commentsStateKey: string]: {
     isFetching: boolean;
     didInvalidate: boolean;

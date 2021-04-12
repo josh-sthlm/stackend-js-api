@@ -21,6 +21,9 @@ import {
 import { Thunk } from '../api';
 import { receiveVotes } from '../vote/voteActions';
 
+/**
+ * The default page size: 3
+ */
 const DEFAULT_PAGE_SIZE = 3;
 
 /**
@@ -43,13 +46,11 @@ export function getCommentsStateKey(module: string, referenceGroupId: number): s
 }
 
 /**
- * Load comments in a group and for a specific blogEntry
- *
- * @since 15 fen 2017
- * @author pelle
+ * Add comments to the redux store (typically run by the fetch-methods)
+ * @param module
+ * @param referenceGroupId
+ * @param json
  */
-
-//When loading comments receive is run when the server has responded
 export function receiveGroupComments(
   module: string,
   referenceGroupId: number,
@@ -67,7 +68,11 @@ export function receiveGroupComments(
   };
 }
 
-//Request comments from the server
+/**
+ * Request comments from the server
+ * @param module
+ * @param referenceGroupId
+ */
 export function requestGroupComments(module: string, referenceGroupId: number): CommentsActions {
   return {
     type: REQUEST_GROUP_COMMENTS,
@@ -76,7 +81,14 @@ export function requestGroupComments(module: string, referenceGroupId: number): 
   };
 }
 
-//Requests and receive comments and store them in redux-state
+/**
+ * Requests and receive comments and store them in redux-state
+ * @param module
+ * @param referenceIds
+ * @param referenceGroupId
+ * @param p
+ * @param pageSize
+ */
 export function fetchMultipleComments({
   module,
   referenceIds,
@@ -106,7 +118,13 @@ export interface ReceiveCommentsJson {
   error?: any;
 }
 
-//When loading comments receive is run when the server has responded
+/**
+ * Add comments into the redux store (typically run by the fetch-methods)
+ * @param module
+ * @param referenceId
+ * @param referenceGroupId
+ * @param json
+ */
 export function receiveComments(
   module: string,
   referenceId: number,
@@ -123,7 +141,9 @@ export function receiveComments(
   };
 }
 
-//Request comments from the server
+/**
+ * Request comments from the server
+ */
 export function requestComments(module: string, referenceId: number, referenceGroupId: number): CommentsActions {
   return {
     type: REQUEST_COMMENTS,
@@ -133,7 +153,9 @@ export function requestComments(module: string, referenceId: number, referenceGr
   };
 }
 
-//Invalidate group-comments from the server
+/**
+ * Remove comments from the redux store (but not from the backend storage)
+ */
 export function invalidateComments({
   module,
   referenceGroupId
@@ -148,7 +170,14 @@ export function invalidateComments({
   };
 }
 
-//When loading comments receive is run when the server has responded
+/**
+ * When loading comments receive is run when the server has responded
+ * @param id
+ * @param module
+ * @param referenceId
+ * @param referenceGroupId
+ * @param json
+ */
 export function updateComment(
   id: number,
   module: string,
@@ -169,10 +198,26 @@ export function updateComment(
 
 export interface FetchComments {
   module: CommentModule;
-  referenceId: number; // Reference id to fetch comments for ex: blogEntryId
-  referenceGroupId?: number; // Reference group id, for example blog id (optional)
-  p?: number; //page number in paginated collection
+  /**
+   * Reference id to fetch comments for ex: blogEntryId
+   */
+  referenceId: number;
+  /**
+   * Reference group id, for example blog id (optional)
+   */
+  referenceGroupId?: number;
+  /**
+   * Page number in paginated collection
+   */
+  p?: number;
+  /**
+   * Number of entries per page
+   */
   pageSize?: number;
+
+  /**
+   * Fetch vote/rating data?
+   */
   useVotes?: boolean;
 }
 

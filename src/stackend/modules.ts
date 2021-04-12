@@ -135,7 +135,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     type: ModuleType.COMMENTS,
     singleton: false,
     addAutomatically: false,
-    parameters: ['id', 'reference-id', 'group-id'],
+    parameters: ['id', 'reference-id', 'group-id', 'layout'],
     simpleId: false,
     fetchData: true,
     complex: false,

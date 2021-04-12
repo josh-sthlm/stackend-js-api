@@ -20,7 +20,7 @@ export interface VoteSummary extends ReferenceIdAware<XcapObject>, ReferenceGrou
 
   /** Vote value and the number of votes on that value 2 for like, 1 for dislike */
   nrOfVotesByScore: {
-    [key: number]: number;
+    [value: number]: number;
   };
 
   totalNrOfVotes: number;
@@ -60,7 +60,7 @@ export function vote({
   referenceId: number;
   referenceGroupId: number;
   score: number;
-  module: string;
+  module?: string;
 } & XcapOptionalParameters): Thunk<Promise<VoteResult>> {
   return post({
     url: (module && module !== CommentModule.GENERIC ? module : '') + '/comments/vote/vote',

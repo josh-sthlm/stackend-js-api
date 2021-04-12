@@ -82,16 +82,16 @@ export enum CommentSortCriteria {
 }
 
 /**
- *
+ * Is this comments instance tied to another function, or free standing?
  */
 export enum CommentModule {
   /**
-   * Generic comment module
+   * Free standing comments
    */
   GENERIC = '',
 
   /**
-   * Blog comment module
+   * Comments on blog entries
    */
   BLOG = 'blog'
 }
