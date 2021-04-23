@@ -76,8 +76,7 @@ export interface Config {
  * Known deploy profiles
  */
 export enum DeployProfile {
-  STACKEND = 'stackend',
-  CASTLE = 'castle'
+  STACKEND = 'stackend'
 }
 
 export let configDefaults: Partial<Config> = {
@@ -163,7 +162,24 @@ export enum Order {
 }
 
 /**
- * Base type for api results
+ * API errors
+ */
+export interface XcapJsonErrors {
+  /**
+   * Error messages from the API
+   */
+  actionErrors: Array<string>;
+
+  /**
+   * Field errors. Maps from a field (parameter) name to validation error messages for that parameter.
+   */
+  fieldErrors: {
+    [fieldName: string]: Array<string>;
+  };
+}
+
+/**
+ * Base type for API results
  */
 export interface XcapJsonResult {
   /**
@@ -175,19 +191,7 @@ export interface XcapJsonResult {
   /**
    * Error messages. Not present if the API call was successful
    */
-  error?: {
-    /**
-     * Error messages from the API
-     */
-    actionErrors: Array<string>;
-
-    /**
-     * Field errors. Maps from a field (parameter) name to validation error messages for that parameter.
-     */
-    fieldErrors: {
-      [fieldName: string]: Array<string>;
-    };
-  };
+  error?: XcapJsonErrors;
 
   /**
    * Additional debug messages (non errors) from the API

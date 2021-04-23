@@ -5,8 +5,9 @@ import assign from 'lodash/assign';
 import update from 'immutability-helper';
 import * as commentAction from './commentAction';
 import * as commentsApi from './index';
-import { Comment } from './index';
+import { Comment, CommentModule, CommentSortCriteria } from './index';
 import { emptyPaginatedCollection, PaginatedCollection } from '../api/PaginatedCollection';
+import { SortOrder } from '../api';
 
 //Action Type
 export const REQUEST_GROUP_COMMENTS = 'REQUEST_GROUP_COMMENTS';
@@ -16,6 +17,13 @@ export const RECEIVE_COMMENTS = 'RECEIVE_COMMENTS';
 export const UPDATE_COMMENT = 'UPDATE_COMMENT';
 export const INVALIDATE_GROUP_COMMENTS = 'INVALIDATE_GROUP_COMMENTS';
 export const COMMENT_REMOVED = 'COMMENT_REMOVED';
+
+export interface CommentCollectionState {
+  isFetching: boolean;
+  didInvalidate: boolean;
+  lastUpdated: number;
+  entries: Array<commentsApi.Comment>;
+}
 
 export interface CommentsState {
   /**
@@ -28,12 +36,7 @@ export interface CommentsState {
     json: {
       likesByCurrentUser: any;
       comments: {
-        [referenceId: number]: {
-          isFetching: boolean;
-          didInvalidate: boolean;
-          lastUpdated: number;
-          entries: Array<commentsApi.Comment>;
-        };
+        [referenceId: number]: CommentCollectionState;
       };
       error?: string;
     };
@@ -41,31 +44,39 @@ export interface CommentsState {
 }
 
 export interface CommonParameters {
-  module: string;
+  module: CommentModule;
   referenceId: number;
   referenceGroupId: number;
+  commentSortCriteria: CommentSortCriteria;
+  order: SortOrder;
 }
 
 export type CommentsActions =
   | {
       type: typeof REQUEST_GROUP_COMMENTS;
-      module: string;
+      module: CommentModule;
       referenceGroupId: number;
+      commentSortCriteria: CommentSortCriteria;
+      order: SortOrder;
     }
   | {
       type: typeof RECEIVE_GROUP_COMMENTS;
-      module: string;
+      module: CommentModule;
       referenceGroupId: number;
       receivedAt: number;
       json: {
         comments: any;
         likesByCurrentUser: any;
       };
+      commentSortCriteria: CommentSortCriteria;
+      order: SortOrder;
     }
   | {
       type: typeof INVALIDATE_GROUP_COMMENTS;
-      module: string;
+      module: CommentModule;
       referenceGroupId: number;
+      commentSortCriteria: CommentSortCriteria;
+      order: SortOrder;
     }
   | (CommonParameters & {
       type: typeof REQUEST_COMMENTS;
@@ -163,21 +174,24 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
       key = commentAction._getCommentsStateKey(action);
 
       if (action.json.error) {
+        const s: CommentCollectionState = {
+          isFetching: false,
+          didInvalidate: false,
+          lastUpdated: action.receivedAt,
+          entries: []
+        };
+
         // @ts-ignore
         return update(state, {
           [key]: {
             isFetching: { $set: false },
             didInvalidate: { $set: false },
             lastUpdated: { $set: action.receivedAt },
+            error: { $set: action.json.error },
             json: {
               comments: {
                 [referenceId]: {
-                  $set: {
-                    isFetching: false,
-                    didInvalidate: false,
-                    lastUpdated: action.receivedAt,
-                    error: action.json.error
-                  }
+                  $set: s
                 }
               }
             }

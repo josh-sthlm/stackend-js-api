@@ -1,6 +1,8 @@
 import {
   COMMENT_REMOVED,
+  CommentCollectionState,
   CommentsActions,
+  CommentsState,
   INVALIDATE_GROUP_COMMENTS,
   RECEIVE_COMMENTS,
   RECEIVE_GROUP_COMMENTS,
@@ -16,10 +18,12 @@ import {
   GetMultipleCommentsResult,
   CommentModule,
   getComment,
-  GetCommentResult
+  GetCommentResult,
+  CommentSortCriteria
 } from './index';
-import { Thunk } from '../api';
+import { SortOrder, Thunk, XcapJsonErrors } from '../api';
 import { receiveVotes } from '../vote/voteActions';
+import { LikeDataMap } from '../like';
 
 /**
  * The default page size: 3
@@ -31,18 +35,32 @@ const DEFAULT_PAGE_SIZE = 3;
  * @param action
  * @returns {string}
  */
-export function _getCommentsStateKey<T extends { module: string; referenceGroupId: number }>(action: T): string {
-  return action.module + ':' + action.referenceGroupId;
+export function _getCommentsStateKey<
+  T extends {
+    module: CommentModule;
+    referenceGroupId: number;
+    commentSortCriteria: CommentSortCriteria;
+    order: SortOrder;
+  }
+>(action: T): string {
+  return getCommentsStateKey(action.module, action.referenceGroupId, action.commentSortCriteria, action.order);
 }
 
 /**
  * Get the key used to look up comments
  * @param module
  * @param referenceGroupId
+ * @param commentSortCriteria
+ * @param order
  * @returns {string}
  */
-export function getCommentsStateKey(module: string, referenceGroupId: number): string {
-  return module + ':' + referenceGroupId;
+export function getCommentsStateKey(
+  module: CommentModule,
+  referenceGroupId: number,
+  commentSortCriteria: CommentSortCriteria,
+  order: SortOrder
+): string {
+  return module + ':' + referenceGroupId + ':' + commentSortCriteria + ':' + order;
 }
 
 /**
@@ -50,19 +68,25 @@ export function getCommentsStateKey(module: string, referenceGroupId: number): s
  * @param module
  * @param referenceGroupId
  * @param json
+ * @param commentSortCriteria
+ * @param order
  */
 export function receiveGroupComments(
-  module: string,
+  module: CommentModule,
   referenceGroupId: number,
   json: {
     comments: any;
     likesByCurrentUser: any;
-  }
+  },
+  commentSortCriteria: CommentSortCriteria,
+  order: SortOrder
 ): CommentsActions {
   return {
     type: RECEIVE_GROUP_COMMENTS,
     module,
     referenceGroupId,
+    commentSortCriteria,
+    order,
     json,
     receivedAt: Date.now()
   };
@@ -72,12 +96,21 @@ export function receiveGroupComments(
  * Request comments from the server
  * @param module
  * @param referenceGroupId
+ * @param commentSortCriteria
+ * @param order
  */
-export function requestGroupComments(module: string, referenceGroupId: number): CommentsActions {
+export function requestGroupComments(
+  module: CommentModule,
+  referenceGroupId: number,
+  commentSortCriteria: CommentSortCriteria,
+  order: SortOrder
+): CommentsActions {
   return {
     type: REQUEST_GROUP_COMMENTS,
     module,
-    referenceGroupId
+    referenceGroupId,
+    commentSortCriteria,
+    order
   };
 }
 
@@ -88,24 +121,32 @@ export function requestGroupComments(module: string, referenceGroupId: number): 
  * @param referenceGroupId
  * @param p
  * @param pageSize
+ * @param commentSortCriteria
+ * @param order
  */
 export function fetchMultipleComments({
   module,
   referenceIds,
   referenceGroupId,
   p = 1,
-  pageSize = DEFAULT_PAGE_SIZE
+  pageSize = DEFAULT_PAGE_SIZE,
+  commentSortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
+  order = SortOrder.DESCENDING
 }: {
   module: CommentModule; // Module See Comments.CommentModule
   referenceIds: Array<number>; //Array of reference to fetch comments for
   referenceGroupId: number; // Reference group id, for example blog id (optional)
   p?: number; //page number in paginated collection
   pageSize?: number;
+  commentSortCriteria?: CommentSortCriteria;
+  order?: SortOrder;
 }): Thunk<Promise<GetMultipleCommentsResult>> {
   return async (dispatch: any): Promise<GetMultipleCommentsResult> => {
-    dispatch(requestGroupComments(module, referenceGroupId));
-    const json = await dispatch(getMultipleComments({ module, referenceIds, pageSize, p }));
-    dispatch(receiveGroupComments(module, referenceGroupId, json));
+    dispatch(requestGroupComments(module, referenceGroupId, commentSortCriteria, order));
+    const json = await dispatch(
+      getMultipleComments({ module, referenceIds, pageSize, p, sortCriteria: commentSortCriteria, order })
+    );
+    dispatch(receiveGroupComments(module, referenceGroupId, json, commentSortCriteria, order));
     return json;
   };
 }
@@ -114,8 +155,8 @@ export interface ReceiveCommentsJson {
   comments: {
     entries: Array<Comment>;
   };
-  likesByCurrentUser: any;
-  error?: any;
+  likesByCurrentUser: LikeDataMap;
+  error?: XcapJsonErrors;
 }
 
 /**
@@ -124,18 +165,24 @@ export interface ReceiveCommentsJson {
  * @param referenceId
  * @param referenceGroupId
  * @param json
+ * @param commentSortCriteria
+ * @param order
  */
 export function receiveComments(
-  module: string,
+  module: CommentModule,
   referenceId: number,
   referenceGroupId: number,
-  json: ReceiveCommentsJson
+  json: ReceiveCommentsJson,
+  commentSortCriteria: CommentSortCriteria,
+  order: SortOrder
 ): CommentsActions {
   return {
     type: RECEIVE_COMMENTS,
     module,
     referenceId,
     referenceGroupId,
+    commentSortCriteria,
+    order,
     receivedAt: Date.now(),
     json
   };
@@ -144,12 +191,20 @@ export function receiveComments(
 /**
  * Request comments from the server
  */
-export function requestComments(module: string, referenceId: number, referenceGroupId: number): CommentsActions {
+export function requestComments(
+  module: CommentModule,
+  referenceId: number,
+  referenceGroupId: number,
+  commentSortCriteria: CommentSortCriteria,
+  order: SortOrder
+): CommentsActions {
   return {
     type: REQUEST_COMMENTS,
     module,
     referenceId,
-    referenceGroupId
+    referenceGroupId,
+    commentSortCriteria,
+    order
   };
 }
 
@@ -158,15 +213,21 @@ export function requestComments(module: string, referenceId: number, referenceGr
  */
 export function invalidateComments({
   module,
-  referenceGroupId
+  referenceGroupId,
+  commentSortCriteria,
+  order
 }: {
-  module: string;
+  module: CommentModule;
   referenceGroupId: number;
+  commentSortCriteria: CommentSortCriteria;
+  order: SortOrder;
 }): CommentsActions {
   return {
     type: INVALIDATE_GROUP_COMMENTS,
     module,
-    referenceGroupId
+    referenceGroupId,
+    commentSortCriteria,
+    order
   };
 }
 
@@ -177,19 +238,25 @@ export function invalidateComments({
  * @param referenceId
  * @param referenceGroupId
  * @param json
+ * @param commentSortCriteria
+ * @param order
  */
 export function updateComment(
   id: number,
-  module: string,
+  module: CommentModule,
   referenceId: number,
   referenceGroupId: number,
-  json: Comment
+  json: Comment,
+  commentSortCriteria: CommentSortCriteria,
+  order: SortOrder
 ): CommentsActions {
   return {
     type: UPDATE_COMMENT,
     id,
     referenceId,
     referenceGroupId,
+    commentSortCriteria,
+    order,
     module,
     receivedAt: Date.now(),
     json
@@ -206,6 +273,17 @@ export interface FetchComments {
    * Reference group id, for example blog id (optional)
    */
   referenceGroupId?: number;
+
+  /**
+   * Sort
+   */
+  commentSortCriteria?: CommentSortCriteria;
+
+  /**
+   * Sort order
+   */
+  order?: SortOrder;
+
   /**
    * Page number in paginated collection
    */
@@ -228,15 +306,17 @@ export function fetchComments({
   module,
   referenceId,
   referenceGroupId = 0,
+  commentSortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
+  order = SortOrder.DESCENDING,
   p = 1,
   pageSize = DEFAULT_PAGE_SIZE,
   useVotes = false
 }: FetchComments): Thunk<any> {
   return async (dispatch: any): Promise<any> => {
-    dispatch(requestComments(module, referenceId, referenceGroupId));
+    dispatch(requestComments(module, referenceId, referenceGroupId, commentSortCriteria, order));
     try {
       const { comments, likesByCurrentUser, error, voteSummary, votes, hasVoted, myReview } = await dispatch(
-        getComments({ module, referenceId, pageSize, p, useVotes })
+        getComments({ module, referenceId, pageSize, p, useVotes, sortCriteria: commentSortCriteria, order })
       );
 
       if (voteSummary) {
@@ -244,11 +324,18 @@ export function fetchComments({
       }
 
       return dispatch(
-        receiveComments(module, referenceId, referenceGroupId, {
-          comments,
-          likesByCurrentUser,
-          error
-        })
+        receiveComments(
+          module,
+          referenceId,
+          referenceGroupId,
+          {
+            comments,
+            likesByCurrentUser,
+            error
+          },
+          commentSortCriteria,
+          order
+        )
       );
     } catch (e) {
       console.error("Couldn't fetchComments: ", e);
@@ -262,6 +349,8 @@ export function fetchComments({
  * @param id
  * @param referenceId
  * @param referenceGroupId
+ * @param commentSortCriteria
+ * @param order
  * @param useVotes
  */
 export function fetchComment({
@@ -269,25 +358,36 @@ export function fetchComment({
   id,
   referenceId,
   referenceGroupId = 0,
+  commentSortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES,
+  order = SortOrder.DESCENDING,
   useVotes = false
 }: {
   module: CommentModule;
   id: number;
   referenceId: number;
   referenceGroupId: number;
+  commentSortCriteria?: CommentSortCriteria;
+  order?: SortOrder;
   useVotes?: boolean;
 }): Thunk<Promise<GetCommentResult>> {
   return async (dispatch: any): Promise<GetCommentResult> => {
     const r: GetCommentResult = await dispatch(getComment({ id, module, useVotes }));
 
     dispatch(
-      receiveComments(module, referenceId, referenceGroupId, {
-        comments: {
-          entries: r.comment ? [r.comment] : []
+      receiveComments(
+        module,
+        referenceId,
+        referenceGroupId,
+        {
+          comments: {
+            entries: r.comment ? [r.comment] : []
+          },
+          likesByCurrentUser: {}, // FIXME: likes
+          error: r.error
         },
-        likesByCurrentUser: {}, // FIXME: likes
-        error: r.error
-      })
+        commentSortCriteria,
+        order
+      )
     );
 
     return r;
@@ -300,17 +400,23 @@ export function fetchComment({
  * @param id
  * @param referenceId
  * @param referenceGroupId
+ * @param commentSortCriteria
+ * @param order
  */
 export function removeCommentFromStore({
   module,
   id,
   referenceId,
-  referenceGroupId = 0
+  referenceGroupId = 0,
+  commentSortCriteria,
+  order
 }: {
   module: CommentModule;
   id: number;
   referenceId: number;
   referenceGroupId?: number;
+  commentSortCriteria: CommentSortCriteria;
+  order: SortOrder;
 }): Thunk<void> {
   return (dispatch: any): void => {
     dispatch({
@@ -318,7 +424,65 @@ export function removeCommentFromStore({
       id,
       module,
       referenceId,
-      referenceGroupId
+      referenceGroupId,
+      commentSortCriteria,
+      order
     });
   };
+}
+
+/**
+ * Get comments from the redux store
+ * @param commentsState
+ * @param commentType
+ * @param referenceGroupId
+ * @param referenceId
+ * @param commentSortCriteria
+ * @param order
+ * @returns a CommentCollectionState or null, if not loaded
+ */
+export function getCommentsFromStore(
+  commentsState: CommentsState,
+  commentType: CommentModule,
+  referenceGroupId: number,
+  referenceId: number,
+  commentSortCriteria: CommentSortCriteria,
+  order: SortOrder
+): CommentCollectionState | null {
+  const key = getCommentsStateKey(commentType, referenceGroupId, commentSortCriteria, order);
+  const x = commentsState[key]?.json?.comments;
+  if (!x) {
+    return null;
+  }
+  const y: CommentCollectionState = x[referenceId];
+  return y ? y : null;
+}
+
+/**
+ * Get the number of minutes to edit a comment, or -1 for eternal.
+ * @param commentsState
+ * @param commentType
+ * @param referenceGroupId
+ * @param referenceId
+ * @param commentSortCriteria
+ * @param order
+ */
+export function getMinutesToEdit(
+  commentsState: CommentsState,
+  commentType: CommentModule,
+  referenceGroupId: number,
+  referenceId: number,
+  commentSortCriteria: CommentSortCriteria,
+  order: SortOrder
+): number {
+  const key = getCommentsStateKey(commentType, referenceGroupId, commentSortCriteria, order);
+  const json = commentsState[key]?.json;
+  if (json) {
+    const minutesToEdit = (json as any)?.minutesToEdit; // FIXME: not included in interface
+    if (typeof minutesToEdit === 'number') {
+      return minutesToEdit;
+    }
+  }
+
+  return -1;
 }

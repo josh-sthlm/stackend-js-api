@@ -1,10 +1,11 @@
 //@flow
 
 import createTestStore from './setup';
-import { Comment, CommentModule } from '../src/comments';
+import { Comment, CommentModule, CommentSortCriteria } from '../src/comments';
 import {
   fetchComment,
   fetchComments,
+  getCommentsStateKey,
   receiveComments,
   removeCommentFromStore,
   requestComments,
@@ -12,6 +13,7 @@ import {
 } from '../src/comments/commentAction';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { CommentsState } from '../src/comments/commentReducer';
+import { SortOrder } from '../src/api';
 
 const referenceId = 123;
 const referenceGroupId = 456;
@@ -34,8 +36,17 @@ const FAKE_COMMENT_2 = {
 
 const FAKE_COMMENTS: Array<Comment> = [FAKE_COMMENT_1, FAKE_COMMENT_2];
 
+const commentSortCriteria = CommentSortCriteria.CREATED_WITH_REPLIES;
+const order = SortOrder.DESCENDING;
+
 describe('Comment actions', () => {
   const store = createTestStore();
+
+  describe('getCommentsStateKey', () => {
+    expect(getCommentsStateKey(CommentModule.BLOG, 123, CommentSortCriteria.CREATED, SortOrder.ASCENDING)).toBe(
+      'blog:123:CREATED:ASCENDING'
+    );
+  });
 
   describe('fetchComments', () => {
     it('List comments', async () => {
@@ -53,14 +64,23 @@ describe('Comment actions', () => {
       expect(s.GroupComments).toBeDefined();
 
       await store.dispatch(
-        fetchComments({ referenceId: 300007, referenceGroupId: 3, module: CommentModule.GENERIC, pageSize: 4 })
+        fetchComments({
+          referenceId: 300007,
+          referenceGroupId: 3,
+          module: CommentModule.GENERIC,
+          pageSize: 4,
+          commentSortCriteria,
+          order
+        })
       );
 
       const s2 = store.getState();
-      expect(s2.GroupComments[':3']).toBeDefined();
-      expect(s2.GroupComments[':3'].json.comments).toBeDefined();
-      expect(s2.GroupComments[':3'].json.comments['300007']).toBeDefined();
-      const c = s2.GroupComments[':3'].json.comments['300007'];
+      const key = getCommentsStateKey(CommentModule.GENERIC, 3, commentSortCriteria, order);
+      expect(key).toBe(':3:CREATED_WITH_REPLIES:DESCENDING');
+      expect(s2.GroupComments[key]).toBeDefined();
+      expect(s2.GroupComments[key].json.comments).toBeDefined();
+      expect(s2.GroupComments[key].json.comments['300007']).toBeDefined();
+      const c = s2.GroupComments[key].json.comments['300007'];
       expect(c.totalSize).toBeGreaterThan(1);
       expect(c.pageSize).toBe(4);
       expect(c.entries).toBeDefined();
@@ -74,7 +94,8 @@ describe('Comment actions', () => {
       let s: CommentsState = store.getState().GroupComments;
 
       function get(s: CommentsState): any {
-        return s[':3']?.json?.comments[300007];
+        const key = getCommentsStateKey(CommentModule.GENERIC, 3, commentSortCriteria, order);
+        return s[key]?.json?.comments[300007];
       }
 
       let x = get(s);
@@ -83,7 +104,14 @@ describe('Comment actions', () => {
       const id = x.entries[x.entries.length - 1].id;
 
       store.dispatch(
-        removeCommentFromStore({ module: CommentModule.GENERIC, id, referenceId: 300007, referenceGroupId: 3 })
+        removeCommentFromStore({
+          module: CommentModule.GENERIC,
+          id,
+          referenceId: 300007,
+          referenceGroupId: 3,
+          commentSortCriteria,
+          order
+        })
       );
       s = store.getState().GroupComments;
       x = get(s);
@@ -114,18 +142,26 @@ describe('Comment actions', () => {
   describe('state manipulation', () => {
     it('manipulates state', () => {
       // Unless this is done, receiveComments will crash
-      store.dispatch(requestComments(CommentModule.GENERIC, referenceId, referenceGroupId));
+      store.dispatch(requestComments(CommentModule.GENERIC, referenceId, referenceGroupId, commentSortCriteria, order));
 
       store.dispatch(
-        receiveComments(CommentModule.GENERIC, referenceId, referenceGroupId, {
-          comments: { entries: FAKE_COMMENTS },
-          likesByCurrentUser: {},
-          error: undefined
-        })
+        receiveComments(
+          CommentModule.GENERIC,
+          referenceId,
+          referenceGroupId,
+          {
+            comments: { entries: FAKE_COMMENTS },
+            likesByCurrentUser: {},
+            error: undefined
+          },
+          commentSortCriteria,
+          order
+        )
       );
 
       function get(state: CommentsState): any {
-        return state[':' + referenceGroupId]?.json?.comments[referenceId];
+        const key = getCommentsStateKey(CommentModule.GENERIC, referenceGroupId, commentSortCriteria, order);
+        return state[key]?.json?.comments[referenceId];
       }
 
       let s: CommentsState = store.getState().GroupComments;
@@ -137,10 +173,18 @@ describe('Comment actions', () => {
 
       // Update
       store.dispatch(
-        updateComment(1, CommentModule.GENERIC, referenceId, referenceGroupId, {
-          ...FAKE_COMMENT_1,
-          body: 'Tjo!'
-        } as Comment)
+        updateComment(
+          1,
+          CommentModule.GENERIC,
+          referenceId,
+          referenceGroupId,
+          {
+            ...FAKE_COMMENT_1,
+            body: 'Tjo!'
+          } as Comment,
+          commentSortCriteria,
+          order
+        )
       );
       s = store.getState().GroupComments;
       x = get(s);
@@ -148,7 +192,16 @@ describe('Comment actions', () => {
       expect(x.entries[0].body).toBe('Tjo!');
 
       // Remove
-      store.dispatch(removeCommentFromStore({ module: CommentModule.GENERIC, id: 1, referenceId, referenceGroupId }));
+      store.dispatch(
+        removeCommentFromStore({
+          module: CommentModule.GENERIC,
+          id: 1,
+          referenceId,
+          referenceGroupId,
+          commentSortCriteria,
+          order
+        })
+      );
       s = store.getState().GroupComments;
       x = get(s);
       expect(x.entries).toBeDefined();

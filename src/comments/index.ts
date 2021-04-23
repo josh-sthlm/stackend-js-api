@@ -98,7 +98,7 @@ export enum CommentModule {
 
 export interface BaseCommentRequest extends XcapOptionalParameters {
   module: CommentModule;
-  useVotes: boolean;
+  useVotes?: boolean;
 }
 
 export interface ListRequest extends BaseCommentRequest {
