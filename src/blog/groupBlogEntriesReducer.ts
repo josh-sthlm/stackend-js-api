@@ -72,7 +72,7 @@ interface Invalidate {
   blogKey: BlogKey;
 }
 
-//Reducer
+// FIXME: The reducer stores a lot of crap. The entire json response
 export const groupBlogEntries = createReducer(
   {},
   {

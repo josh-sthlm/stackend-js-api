@@ -16,6 +16,7 @@ import {
   UPDATE_FORUM_THREAD_ENTRY
 } from './forumThreadReducer';
 import { PaginatedCollection } from '../api/PaginatedCollection';
+import { receiveLikes } from '../like/likeActions';
 
 //import { sendEventToGA } from '../analytics/analyticsFunctions';
 
@@ -40,6 +41,8 @@ export function fetchForumThreads({
       console.error(forumPermalink + ': ' + api.getJsonErrorText(json));
       return { error: "Couldn't fetchForumThreads :" + api.getJsonErrorText(json) };
     }
+
+    dispatch(receiveLikes(json.likes));
 
     dispatch(
       forumActions.receiveForums({
@@ -94,6 +97,9 @@ export function fetchForumThreadEntries({
         console.error("couldn't fetchForumThreadEntries :", api.getJsonErrorText(data));
         return { error: "couldn't fetchForumThreadEntries :" + api.getJsonErrorText(data) };
       }
+
+      dispatch(receiveLikes(data.likes));
+
       dispatch(
         forumActions.receiveForums({
           entries: Object.keys(data.__relatedObjects)

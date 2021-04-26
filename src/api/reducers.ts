@@ -22,6 +22,7 @@ import vote from '../vote/voteReducer';
 import GroupComments from '../comments/commentReducer';
 import throbber from '../throbber/throbberReducer';
 import { Reducer } from 'redux';
+import likes from '../like/likeReducer';
 
 /**
  * Minimum set of reducers with their expected names
@@ -63,5 +64,6 @@ export const STANDARD_REDUCERS: { [name: string]: Reducer<any, any> } = {
   qna,
   search,
   shop,
-  vote
+  vote,
+  likes
 };

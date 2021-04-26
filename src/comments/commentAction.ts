@@ -23,7 +23,8 @@ import {
 } from './index';
 import { SortOrder, Thunk, XcapJsonErrors } from '../api';
 import { receiveVotes } from '../vote/voteActions';
-import { LikeDataMap } from '../like';
+import { LikeDataMap, LikesByCurrentUser } from '../like';
+import { receiveLikes } from '../like/likeActions';
 
 /**
  * The default page size: 3
@@ -147,6 +148,7 @@ export function fetchMultipleComments({
       getMultipleComments({ module, referenceIds, pageSize, p, sortCriteria: commentSortCriteria, order })
     );
     dispatch(receiveGroupComments(module, referenceGroupId, json, commentSortCriteria, order));
+    dispatch(receiveCommentLikes(json));
     return json;
   };
 }
@@ -155,7 +157,7 @@ export interface ReceiveCommentsJson {
   comments: {
     entries: Array<Comment>;
   };
-  likesByCurrentUser: LikeDataMap;
+  likesByCurrentUser: LikesByCurrentUser;
   error?: XcapJsonErrors;
 }
 
@@ -323,20 +325,10 @@ export function fetchComments({
         dispatch(receiveVotes(module ? module : 'comments', voteSummary, votes, hasVoted, myReview));
       }
 
-      return dispatch(
-        receiveComments(
-          module,
-          referenceId,
-          referenceGroupId,
-          {
-            comments,
-            likesByCurrentUser,
-            error
-          },
-          commentSortCriteria,
-          order
-        )
-      );
+      const json = { comments, likesByCurrentUser, error };
+
+      dispatch(receiveCommentLikes(json));
+      return dispatch(receiveComments(module, referenceId, referenceGroupId, json, commentSortCriteria, order));
     } catch (e) {
       console.error("Couldn't fetchComments: ", e);
     }
@@ -389,6 +381,8 @@ export function fetchComment({
         order
       )
     );
+
+    // FIXME: receiveCommentLikes
 
     return r;
   };
@@ -485,4 +479,23 @@ export function getMinutesToEdit(
   }
 
   return -1;
+}
+
+/**
+ * Update the comments likes in the redux store
+ * @param json
+ */
+export function receiveCommentLikes(json: ReceiveCommentsJson): Thunk<void> {
+  const likeDataMap: LikeDataMap = {};
+
+  if (json?.comments?.entries) {
+    json.comments.entries.forEach(c => {
+      likeDataMap[c.obfuscatedReference] = {
+        likes: c.numberOfLikes,
+        likedByCurrentUser: json.likesByCurrentUser[c.id] || false
+      };
+    });
+  }
+
+  return (dispatch: any): void => dispatch(receiveLikes(likeDataMap));
 }

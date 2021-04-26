@@ -1,11 +1,10 @@
 // @flow
-import get from 'lodash/get';
-import { post, getJson, XcapJsonResult, _getApiUrl, Config, Thunk, XcapOptionalParameters } from '../api';
-import type { PaginatedCollection } from '../api/PaginatedCollection';
-import type { Community } from '../stackend';
 
-const COMPONENT_NAME = 'like';
-const CONTEXT = 'like';
+import { post, getJson, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
+import type { PaginatedCollection } from '../api/PaginatedCollection';
+
+export const COMPONENT_NAME = 'like';
+export const CONTEXT = 'like';
 
 /**
  * Xcap Like API constants and methods.
@@ -27,7 +26,7 @@ export type LikesByCurrentUser = { [id: string]: boolean };
  * Like data map.
  * Maps from obfuscated reference to like data.
  */
-export type LikeDataMap = { [ref: string]: LikeData };
+export type LikeDataMap = { [obfuscatedReference: string]: LikeData };
 
 /**
  * Get like data for an object given a likes object.
@@ -51,6 +50,8 @@ export function getLikeData(likes: LikeDataMap, object: unknown): LikeData {
 }
 
 export interface LikeResult extends XcapJsonResult {
+  obfuscatedReference: string;
+  reference: string;
   numberOfLikes: number;
 }
 /**
@@ -188,37 +189,5 @@ export function getToplist({
   return getJson({
     url: '/like/toplist',
     parameters: arguments
-  });
-}
-
-export function getToplistUrl({
-  creatorUserId,
-  objectCreatorUserId,
-  interval,
-  objectType,
-  objectContext,
-  p,
-  pageSize,
-  community,
-  config
-}: GetToplist & { community: Community; config: Config }): string {
-  const url = '/like/toplist';
-  const communityPermalink = get(community, 'permalink');
-
-  return _getApiUrl({
-    state: { communities: { community }, config },
-    url,
-    parameters: {
-      creatorUserId,
-      objectCreatorUserId,
-      interval,
-      objectType,
-      objectContext,
-      p,
-      pageSize
-    },
-    community: communityPermalink,
-    componentName: COMPONENT_NAME,
-    context: CONTEXT
   });
 }

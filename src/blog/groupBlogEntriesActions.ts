@@ -33,6 +33,7 @@ import {
   //gaPostEventObject,
   //gaEditPostEventObject
 } from './index';
+import { receiveLikes } from '../like/likeActions';
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**
@@ -127,7 +128,9 @@ export function fetchBlogEntries({
         console.error("Couldn't receiveGroupsAuth in fetchBlogEntries for " + blogKey + ': ', e);
       }
 
-      const blogEntries = await dispatch(getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry }));
+      const blogEntries: GetEntriesResult = await dispatch(
+        getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry })
+      );
       // FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
       const groupRef = get(blogEntries, 'blog.groupRef');
       if (groupRef) {
@@ -144,6 +147,9 @@ export function fetchBlogEntries({
       if (invalidatePrevious) {
         await dispatch(cleanCacheBlogEntries({ blogKey }));
       }
+
+      dispatch(receiveLikes(blogEntries.likes));
+
       return dispatch(receiveBlogEntries(blogKey, blogEntries));
     } catch (e) {
       console.error("Couldn't fetchBlogEntries for " + blogKey + ': ', e);
@@ -175,6 +181,7 @@ export function fetchBlogEntry({
       }
 
       const json = await dispatch(getEntry({ id, entryPermaLink: permalink, blogKey }));
+      dispatch(receiveLikes(json.likes));
       await dispatch(_fetchBlogEntry(blogKey, json));
       return json;
     } catch (e) {
@@ -248,6 +255,7 @@ export function fetchBlogEntryWithComments({
       const response = await dispatch(fetchBlogEntry({ id, permalink, blogKey }));
       const blogEntry = response.blogEntry;
       if (blogEntry) {
+        dispatch(receiveLikes(response.likes));
         return dispatch(
           commentActions.fetchComments({
             module: commentApi.CommentModule.BLOG,

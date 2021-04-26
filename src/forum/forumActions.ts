@@ -1,15 +1,16 @@
 // @flow
 import get from 'lodash/get';
-import { Forum, listForums } from './index';
+import { Forum, listForums, ListForumsResult } from './index';
 import { Thunk } from '../api';
 import { ForumActions, RECEIVE_FORUMS, REQUEST_FORUMS } from './forumReducer';
 
 //Requests and receive comments and store them in redux-state
-export function fetchForums(): Thunk<void> {
-  return async (dispatch: any): Promise<void> => {
+export function fetchForums(): Thunk<Promise<ListForumsResult>> {
+  return async (dispatch: any): Promise<ListForumsResult> => {
     dispatch(requestForums());
     const json = await dispatch(listForums({}));
     dispatch(receiveForums({ entries: get(json, 'forumsPaginated.entries', []) }));
+    return json;
   };
 }
 

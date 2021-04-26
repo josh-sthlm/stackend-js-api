@@ -6,6 +6,7 @@ import {
   fetchComment,
   fetchComments,
   getCommentsStateKey,
+  receiveCommentLikes,
   receiveComments,
   removeCommentFromStore,
   requestComments,
@@ -14,6 +15,8 @@ import {
 import { loadInitialStoreValues } from '../src/api/actions';
 import { CommentsState } from '../src/comments/commentReducer';
 import { SortOrder } from '../src/api';
+import { LikesState } from '../src/like/likeReducer';
+import { getNumberOfLikes, isLikedByCurrentUser } from '../src/like/likeActions';
 
 const referenceId = 123;
 const referenceGroupId = 456;
@@ -206,6 +209,36 @@ describe('Comment actions', () => {
       x = get(s);
       expect(x.entries).toBeDefined();
       expect(x.entries[0].id).toBe(2);
+    });
+
+    it('receiveCommentLikes', () => {
+      store.dispatch(
+        receiveCommentLikes({
+          likesByCurrentUser: {
+            2: true
+          },
+          comments: {
+            entries: [
+              {
+                id: 1,
+                obfuscatedReference: 'mno',
+                numberOfLikes: 3
+              } as Comment,
+              {
+                id: 2,
+                obfuscatedReference: 'pqr',
+                numberOfLikes: 5
+              } as Comment
+            ]
+          }
+        })
+      );
+
+      const likes: LikesState = store.getState().likes;
+      expect(isLikedByCurrentUser(likes, 'mno')).toBe(false);
+      expect(getNumberOfLikes(likes, 'mno')).toBe(3);
+      expect(isLikedByCurrentUser(likes, 'pqr')).toBe(true);
+      expect(getNumberOfLikes(likes, 'pqr')).toBe(5);
     });
   });
 });
