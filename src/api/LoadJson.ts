@@ -141,7 +141,7 @@ export async function LoadJson({
     headers,
     mode: 'cors',
     cache: 'default',
-    credentials: 'include',
+    //credentials: 'include',
     body: undefined
   };
 
