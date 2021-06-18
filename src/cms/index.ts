@@ -185,6 +185,10 @@ export interface Page {
   content: Array<PageContent>;
 }
 
+export enum PageContentType {
+  CMS = 'stackend-cms'
+}
+
 export interface PageContent {
   name: string;
   /** Simple reference type name */
