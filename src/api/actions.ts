@@ -155,7 +155,7 @@ export function loadInitialStoreValues({
     dispatch(loadCommunity(r.stackendCommunity as Community));
     //dispatch(receiveNotificationCounts({ numberOfUnseen: r.numberOfUnseen }));
 
-    dispatch(receiveResourceUsage((r as any) as ResourceUsage)); // fields not documented
+    dispatch(receiveResourceUsage(r as any as ResourceUsage)); // fields not documented
 
     if (r.shopData) {
       const { products, collections, listings } = r.shopData;
