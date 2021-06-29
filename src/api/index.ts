@@ -1248,6 +1248,9 @@ export function post<T extends XcapJsonResult>({
   context?: string | null;
 }): Thunk<Promise<T>> {
   return async (dispatch: any): Promise<T> => {
+    // Must get token before constructing the url, because session may be established when requesting the token
+    const xpressToken = await dispatch(getXpressToken({ community, componentName, context }));
+
     const params = argsToObject(parameters);
 
     if (typeof community === 'undefined' && params && typeof (params as any)[COMMUNITY_PARAMETER] !== 'undefined') {
@@ -1263,8 +1266,6 @@ export function post<T extends XcapJsonResult>({
         context
       })
     );
-
-    const xpressToken = await dispatch(getXpressToken({ community, componentName, context }));
 
     const result = await LoadJson({
       url: p,
