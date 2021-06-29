@@ -1,9 +1,9 @@
 //@flow
 import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginReducer';
 import { getCurrentUser, User } from '../user';
-import { post, Thunk, XcapJsonResult } from '../api';
+import { newXcapJsonResult, post, Thunk, XcapJsonResult } from '../api';
 import get from 'lodash/get';
-import { getPersistentData, PersistentData } from '../api/AccessToken';
+import { getAccessTokenValue, getPersistentData, PersistentData } from '../api/AccessToken';
 
 const LOGIN_TTL: number = 60 * 1000;
 
@@ -111,7 +111,15 @@ export function authenticateUsingCredentials({
       credentials = getPersistentData();
     }
 
-    // Skip if no credentials?
+    // Skip if no credentials or access token
+    const at = getAccessTokenValue();
+    if (!at && (!credentials || Object.keys(credentials).length == 0)) {
+      return newXcapJsonResult<AuthenticateUsingCredentialsResult>('success', {
+        user: null,
+        authenticatedToCommunities: []
+      });
+    }
+
     // if (credentials && Object.keys(credentials).length != 0) {
     const r: AuthenticateUsingCredentialsResult = await dispatch(
       post({
