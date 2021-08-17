@@ -54,7 +54,7 @@ export type CommunityActions =
     }
   | {
       type: typeof SET_COMMUNITY_SETTINGS;
-      community: Community;
+      community: Community | null | undefined;
       objectsRequiringModeration?: number;
     }
   | {
@@ -126,20 +126,22 @@ export default function communityReducer(
     }
 
     case SET_COMMUNITY_SETTINGS: {
+      let objectsRequiringModeration = state.objectsRequiringModeration;
+
       if (action.community) {
         // FIXME: Use of window still needed for xcap.js and old javascripts
         if (isRunningInBrowser()) {
           window.xcapCommunityName = action.community.name;
           window.xcapCommunityPermalink = action.community.permalink;
         }
+
+        objectsRequiringModeration = Object.assign({}, state.objectsRequiringModeration, {
+          [action.community.id]: action.objectsRequiringModeration || 0
+        });
       }
 
-      const objectsRequiringModeration = Object.assign({}, state.objectsRequiringModeration, {
-        [action.community.id]: action.objectsRequiringModeration || 0
-      });
-
       return update(state, {
-        community: { $set: action.community },
+        community: { $set: action.community || null },
         objectsRequiringModeration: { $set: objectsRequiringModeration }
       });
     }

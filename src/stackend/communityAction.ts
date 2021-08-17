@@ -72,7 +72,10 @@ export const loadCommunity = setCurrentCommunity;
  * @param community
  * @param objectsRequiringModeration
  */
-export function setCurrentCommunity(community: Community, objectsRequiringModeration?: number): CommunityActions {
+export function setCurrentCommunity(
+  community: Community | null | undefined,
+  objectsRequiringModeration?: number
+): CommunityActions {
   return {
     type: SET_COMMUNITY_SETTINGS,
     community: community,

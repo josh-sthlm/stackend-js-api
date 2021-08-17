@@ -37,5 +37,12 @@ describe('Stackend Actions', () => {
       expect(communities.community).toBeNull();
       expect(communities.objectsRequiringModeration[55]).toBeUndefined();
     });
+
+    it('Set current community', () => {
+      // Should not crash
+      store.dispatch(setCurrentCommunity(undefined as any, 666));
+      const { communities } = store.getState();
+      expect(communities.community).toBeNull();
+    });
   });
 });
