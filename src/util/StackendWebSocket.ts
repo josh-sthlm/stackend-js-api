@@ -711,14 +711,14 @@ export function removeInitializer(initializer: Initializer): boolean {
  */
 export function getInstance(community: Community): Thunk<StackendWebSocket> {
   return (dispatch, getState): StackendWebSocket => {
-    if (!community) throw 'community required';
+    if (!community?.id) throw 'Community required';
 
     let instance: StackendWebSocket = instances[community.xcapCommunityName];
 
     if (!instance) {
       const config: Config = getState().config;
       const url = config.server + config.contextPath + '/' + community.permalink + StackendWebSocket.DEFAULT_URL;
-      console.debug('Creating StackendWebSocket for ' + community.xcapCommunityName + ', ' + url);
+      console.debug('Stackend: Creating StackendWebSocket for ' + community.xcapCommunityName + ', ' + url);
       const sws = new StackendWebSocket(community, url);
       for (const init of initializers) {
         init(sws);
