@@ -41,7 +41,7 @@
     "watch": "tsc --watch",
     "test": "jest",
     "lint": "eslint --ext ts src tests",
-    "clean": "rimraf types lib {abuse,api,blog,category,cms,comments,counter,event,forum,group,like,login,media,poll,qna,rating,request,search,shop,stackend,throbber,user,util,vote}",
+    "clean": "rimraf types lib {abuse,api,blog,category,cms,comments,counter,event,forum,group,like,login,media,moderation,poll,qna,rating,request,search,shop,stackend,throbber,user,util,vote}",
     "format:check": "prettier --list-different \"{src,tests}/**/*.ts\" \"**/*.md\"",
     "format": "prettier --config .prettierrc.json \"{src,tests}/**/*.ts\" \"**/*.md\" --write",
     "prepack": "npm run clean && npm run build",
