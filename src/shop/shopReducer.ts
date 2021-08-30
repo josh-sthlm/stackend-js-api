@@ -25,7 +25,8 @@ import {
   getPreviousCursor,
   PageInfo,
   GraphQLList,
-  forEachGraphQLList
+  forEachGraphQLList,
+  mapGraphQLList
 } from '../util/graphql';
 
 export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
@@ -376,7 +377,7 @@ export default function shopReducer(
           nextCursor: getNextCursor(listing),
           previousCursor: getPreviousCursor(listing),
           selection: request,
-          products: []
+          products: mapGraphQLList(listing, (e: SlimProduct) => e)
         };
         listings[key] = l;
       }
