@@ -216,7 +216,7 @@ export type AddToBasketAction = {
   quantity: number;
 };
 
-export type RemoveBromBasketAction = {
+export type RemoveFromBasketAction = {
   type: typeof REMOVE_FROM_BASKET;
   product: Product;
   variant: ProductVariant;
@@ -261,7 +261,7 @@ export type ShopActions =
   | ReceiveCollectionListAction
   | ClearCacheAction
   | AddToBasketAction
-  | RemoveBromBasketAction
+  | RemoveFromBasketAction
   | BasketUpdatedAction
   | ReceiveCheckoutAction
   | ClearCheckoutAction
