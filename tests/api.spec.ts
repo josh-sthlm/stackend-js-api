@@ -28,6 +28,7 @@ import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stacke
 import assert from 'assert';
 import { listMy, ListResult } from '../src/media';
 import { getProductListKey } from '../src/shop/shopActions';
+import { urlEncodeParameters } from '../src/api/LoadJson';
 
 describe('API', () => {
   const store = createTestStore();
@@ -263,6 +264,16 @@ describe('API', () => {
       expect(c).toBeDefined();
       expect(c.server).toBe('http://localhost:8080/');
       expect(c.apiUrl).toBe('http://localhost:8080/stackend/api');
+    });
+  });
+
+  describe('urlEncodeParameters', () => {
+    it('Encode url parameters', () => {
+      const r = urlEncodeParameters({
+        test: 'räksmörgås',
+        apa: 'ola'
+      });
+      expect(r).toBe('test=r%C3%A4ksm%C3%B6rg%C3%A5s&apa=ola');
     });
   });
 });

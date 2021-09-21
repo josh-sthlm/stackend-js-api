@@ -46,7 +46,10 @@ export enum ModuleType {
   SHOP_COLLECTION = 'stackend-shop-collection',
 
   /** The shopping basket and checkout user interface */
-  SHOP_BASKET = 'stackend-shop-basket'
+  SHOP_BASKET = 'stackend-shop-basket',
+
+  /** Live Event with video and chat */
+  LIVE = 'stackend-live'
 }
 
 export interface ModuleInfo {
@@ -261,6 +264,18 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     complex: false,
     xcapModuleType: 'shop',
     defaultContext: 'shop'
+  },
+  [ModuleType.LIVE]: {
+    name: 'Live Event',
+    type: ModuleType.LIVE,
+    singleton: false,
+    addAutomatically: false,
+    parameters: ['id', 'layout'],
+    simpleId: false,
+    fetchData: true,
+    complex: false,
+    xcapModuleType: 'live',
+    defaultContext: 'live'
   }
 };
 

@@ -104,7 +104,9 @@ describe('API actions', () => {
         })
       );
 
-      expect(u).toBe('https://api.stackend.com/' + STACKEND_COM_COMMUNITY_PERMALINK + '/api/test?a=1');
+      expect(
+        u.match('https://api.stackend.com/' + STACKEND_COM_COMMUNITY_PERMALINK + '/api/test;s=.+?a=1') != null
+      ).toBeTruthy();
 
       await store.dispatch(
         initialize({
@@ -119,10 +121,10 @@ describe('API actions', () => {
           parameters: { a: 2 }
         })
       );
-      expect(u).toBe('https://api.stackend.com/husdjur/api/test2?a=2');
+      expect(u.match('https://api.stackend.com/husdjur/api/test2;s=.*?a=2') != null).toBeTruthy();
 
       u = _getApiUrl({ state: store.getState(), url: '/test3', parameters: { b: 3 } });
-      expect(u).toBe('https://api.stackend.com/husdjur/api/test3?b=3');
+      expect(u.match('https://api.stackend.com/husdjur/api/test3;s=.*?b=3') != null).toBeTruthy();
     });
   });
 
@@ -140,7 +142,7 @@ describe('API actions', () => {
       expect(config.contextPath).toBe('/stackend');
       expect(config.apiUrl).toBe('https://localhost:8443/stackend/api');
       let u = _getApiUrl({ state: store.getState(), url: '/test3', parameters: { b: 3 } });
-      expect(u).toBe('https://localhost:8443/stackend/husdjur/api/test3?b=3');
+      expect(u.match('https://localhost:8443/stackend/husdjur/api/test3;s=.*?b=3') != null).toBeTruthy();
 
       await store.dispatch(resetConfiguration());
       config = store.getState().config;
@@ -148,7 +150,7 @@ describe('API actions', () => {
       expect(config.contextPath).toBe(STACKEND_DEFAULT_CONTEXT_PATH);
       expect(config.apiUrl).toBe(STACKEND_DEFAULT_SERVER + STACKEND_DEFAULT_CONTEXT_PATH + '/api');
       u = _getApiUrl({ state: store.getState(), url: '/test3', parameters: { b: 3 } });
-      expect(u).toBe('https://api.stackend.com/husdjur/api/test3?b=3');
+      expect(u.match('https://api.stackend.com/husdjur/api/test3;s=.*?b=3') != null).toBeTruthy();
     });
   });
 });

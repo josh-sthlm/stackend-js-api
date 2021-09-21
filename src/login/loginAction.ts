@@ -1,8 +1,9 @@
 //@flow
 import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginReducer';
 import { getCurrentUser, User } from '../user';
-import { Thunk } from '../api';
+import { newXcapJsonResult, post, Thunk, XcapJsonResult } from '../api';
 import get from 'lodash/get';
+import { getAccessTokenValue, getPersistentData, PersistentData } from '../api/AccessToken';
 
 const LOGIN_TTL: number = 60 * 1000;
 
@@ -78,5 +79,66 @@ export function receiveLoginData(json: { user: User | null }): LoginActions {
   return {
     type: UPDATE_LOGIN_DATA,
     json
+  };
+}
+
+export interface AuthenticateUsingCredentialsResult extends XcapJsonResult {
+  /**
+   * The current user
+   */
+  user: User | null;
+
+  /**
+   * Additional communities the user was authenticated to
+   */
+  authenticatedToCommunities: Array<string>;
+}
+
+/**
+ * Authenticate a user using its credentials.
+ * @param credentials optional credentials
+ * @param community optional community name
+ */
+export function authenticateUsingCredentials({
+  credentials,
+  community
+}: {
+  credentials?: PersistentData;
+  community?: string;
+}): Thunk<Promise<AuthenticateUsingCredentialsResult>> {
+  return async (dispatch: any, getState): Promise<any> => {
+    if (!credentials) {
+      credentials = getPersistentData();
+    }
+
+    // Skip if no credentials or access token
+    const at = getAccessTokenValue();
+    if (!at && (!credentials || Object.keys(credentials).length == 0)) {
+      return newXcapJsonResult<AuthenticateUsingCredentialsResult>('success', {
+        user: null,
+        authenticatedToCommunities: []
+      });
+    }
+
+    // if (credentials && Object.keys(credentials).length != 0) {
+    const r: AuthenticateUsingCredentialsResult = await dispatch(
+      post({
+        url: '/user/get-current',
+        community,
+        parameters: {
+          credentials: JSON.stringify(credentials)
+        }
+      })
+    );
+
+    if (!r.error) {
+      dispatch(
+        receiveLoginData({
+          user: r.user
+        })
+      );
+    }
+
+    return r;
   };
 }

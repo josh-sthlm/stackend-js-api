@@ -301,18 +301,17 @@ export function applyDefaults(req: ListProductsQuery, defaults: ShopDefaults): v
  * Create a new ListProductsRequest with default options
  * @param req
  */
-export const newListProductsRequest = (req?: Partial<ListProductsRequest>): Thunk<ListProductsRequest> => (
-  dispatch: any,
-  getState: any
-): ListProductsRequest => {
-  if (!req) {
-    req = {};
-  }
+export const newListProductsRequest =
+  (req?: Partial<ListProductsRequest>): Thunk<ListProductsRequest> =>
+  (dispatch: any, getState: any): ListProductsRequest => {
+    if (!req) {
+      req = {};
+    }
 
-  applyDefaults(req, getState().shop.defaults);
+    applyDefaults(req, getState().shop.defaults);
 
-  return req;
-};
+    return req;
+  };
 
 /**
  * List products
@@ -339,23 +338,22 @@ export interface GetProductResult extends XcapJsonResult {
  * Create a new GetProductRequest with default image sizes
  * @param req GetProductRequest or handle
  */
-export const newGetProductRequest = (req: GetProductRequest | string): Thunk<GetProductRequest> => (
-  dispatch: any,
-  getState: any
-): GetProductRequest => {
-  if (typeof req === 'string') {
-    req = {
-      handle: req
-    };
-  }
+export const newGetProductRequest =
+  (req: GetProductRequest | string): Thunk<GetProductRequest> =>
+  (dispatch: any, getState: any): GetProductRequest => {
+    if (typeof req === 'string') {
+      req = {
+        handle: req
+      };
+    }
 
-  const defaults: ShopDefaults = getState().shop.defaults;
-  if (!req.imageMaxWidth) {
-    req.imageMaxWidth = defaults.imageMaxWidth;
-  }
+    const defaults: ShopDefaults = getState().shop.defaults;
+    if (!req.imageMaxWidth) {
+      req.imageMaxWidth = defaults.imageMaxWidth;
+    }
 
-  return req;
-};
+    return req;
+  };
 
 /**
  * Get a single product
@@ -384,23 +382,22 @@ export interface GetProductsResult extends XcapJsonResult {
  * Create a new GetProductsRequest with default image sizes
  * @param req GetProductsRequest or handles
  */
-export const newGetProductsRequest = (req: GetProductsRequest | Array<string>): Thunk<GetProductsRequest> => (
-  dispatch: any,
-  getState: any
-): GetProductsRequest => {
-  if (Array.isArray(req)) {
-    req = {
-      handles: req
-    };
-  }
+export const newGetProductsRequest =
+  (req: GetProductsRequest | Array<string>): Thunk<GetProductsRequest> =>
+  (dispatch: any, getState: any): GetProductsRequest => {
+    if (Array.isArray(req)) {
+      req = {
+        handles: req
+      };
+    }
 
-  if (!req.imageMaxWidth) {
-    const defaults: ShopDefaults = getState().shop.defaults;
-    req.imageMaxWidth = defaults.imageMaxWidth;
-  }
+    if (!req.imageMaxWidth) {
+      const defaults: ShopDefaults = getState().shop.defaults;
+      req.imageMaxWidth = defaults.imageMaxWidth;
+    }
 
-  return req;
-};
+    return req;
+  };
 
 /**
  * Get multiple products

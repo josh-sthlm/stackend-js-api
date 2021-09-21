@@ -18,16 +18,24 @@ export const RECEIVE_RESOURCE_USAGE = 'RECEIVE_RESOURCE_USAGE';
 declare let window: any;
 
 export interface CommunityState {
-  community?:
-    | (Community & {
-        objectsRequiringModeration?: number;
-      })
-    | null;
+  /**
+   * Current community, if any
+   */
+  community?: Community | null;
+  /**
+   * List of users communities
+   */
   communities?: PaginatedCollection<Community>;
   resourceUsage?: ResourceUsage;
   isFetching?: boolean;
   didInvalidate?: boolean;
   lastUpdated?: number;
+  /**
+   * Number of objects requiring moderation
+   */
+  objectsRequiringModeration: {
+    [communityId: number]: number;
+  };
 }
 
 export type CommunityActions =
@@ -46,7 +54,7 @@ export type CommunityActions =
     }
   | {
       type: typeof SET_COMMUNITY_SETTINGS;
-      community: Community;
+      community: Community | null | undefined;
       objectsRequiringModeration?: number;
     }
   | {
@@ -60,7 +68,12 @@ export type CommunityActions =
     });
 
 //Reducer
-export default function communityReducer(state: CommunityState = {}, action: CommunityActions): CommunityState {
+export default function communityReducer(
+  state: CommunityState = {
+    objectsRequiringModeration: {}
+  },
+  action: CommunityActions
+): CommunityState {
   switch (action.type) {
     case REQUEST_COMMUNITIES:
       return Object.assign({}, state, {
@@ -113,33 +126,44 @@ export default function communityReducer(state: CommunityState = {}, action: Com
     }
 
     case SET_COMMUNITY_SETTINGS: {
+      let objectsRequiringModeration = state.objectsRequiringModeration;
+
       if (action.community) {
         // FIXME: Use of window still needed for xcap.js and old javascripts
         if (isRunningInBrowser()) {
           window.xcapCommunityName = action.community.name;
           window.xcapCommunityPermalink = action.community.permalink;
         }
+
+        objectsRequiringModeration = Object.assign({}, state.objectsRequiringModeration, {
+          [action.community.id]: action.objectsRequiringModeration || 0
+        });
       }
 
-      const x = {
-        objectsRequiringModeration: action.objectsRequiringModeration,
-        ...action.community
-      };
-
       return update(state, {
-        community: { $set: x }
+        community: { $set: action.community || null },
+        objectsRequiringModeration: { $set: objectsRequiringModeration }
       });
     }
 
     case REMOVE_COMMUNITIES:
       //window.xcapCommunityName = '';
       //window.xcapCommunityPermalink = '';
-      return {};
+      return {
+        objectsRequiringModeration: {}
+      };
 
-    case REMOVE_COMMUNITY:
+    case REMOVE_COMMUNITY: {
+      let objectsRequiringModeration = state.objectsRequiringModeration;
+      if (state.community) {
+        objectsRequiringModeration = Object.assign({}, state.objectsRequiringModeration);
+        delete objectsRequiringModeration[state.community.id];
+      }
       return update(state, {
-        community: { $set: null }
+        community: { $set: null },
+        objectsRequiringModeration: { $set: objectsRequiringModeration }
       });
+    }
 
     case RECEIVE_RESOURCE_USAGE:
       return update(state, {

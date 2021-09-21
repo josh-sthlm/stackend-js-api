@@ -12,7 +12,7 @@ import {
   Thunk
 } from './index';
 import { receiveLoginData } from '../login/loginAction';
-import { loadCommunity, receiveResourceUsage, ResourceUsage } from '../stackend/communityAction';
+import { receiveResourceUsage, ResourceUsage, setCurrentCommunity } from '../stackend/communityAction';
 import { XCAP_INITIAL_STORE_DATA_RECEIVED } from './configReducer';
 import { setRequestInfo } from '../request/requestActions';
 import { receiveModules } from '../stackend/moduleAction';
@@ -152,10 +152,10 @@ export function loadInitialStoreValues({
     dispatch(receiveInitialStoreValues(r));
     dispatch(setRequestInfo({ referenceUrlId: r.referenceUrlId }));
     dispatch(receiveLoginData({ user: r.user }));
-    dispatch(loadCommunity(r.stackendCommunity as Community));
+    dispatch(setCurrentCommunity(r.stackendCommunity as Community));
     //dispatch(receiveNotificationCounts({ numberOfUnseen: r.numberOfUnseen }));
 
-    dispatch(receiveResourceUsage((r as any) as ResourceUsage)); // fields not documented
+    dispatch(receiveResourceUsage(r as any as ResourceUsage)); // fields not documented
 
     if (r.shopData) {
       const { products, collections, listings } = r.shopData;

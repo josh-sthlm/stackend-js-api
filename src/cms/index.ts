@@ -185,6 +185,10 @@ export interface Page {
   content: Array<PageContent>;
 }
 
+export enum PageContentType {
+  CMS = 'stackend-cms'
+}
+
 export interface PageContent {
   name: string;
   /** Simple reference type name */
@@ -739,9 +743,7 @@ export function createContentValue(html: string, css: string, js: string): strin
  * @param content
  * @returns {{htmlValue: (*|string), javascriptValue: (*|string), cssValue: (*|string)}}
  */
-export function extractContentValues(
-  content: Content | null
-): {
+export function extractContentValues(content: Content | null): {
   htmlValue: string;
   javascriptValue: string;
   cssValue: string;

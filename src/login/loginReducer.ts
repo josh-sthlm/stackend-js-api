@@ -2,6 +2,7 @@
 import get from 'lodash/get';
 import { User } from '../user';
 import { LoginActions } from './loginAction';
+import { clearPersistentData } from '../api/AccessToken';
 
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
@@ -24,6 +25,7 @@ export const loginReducer = (
       return Object.assign({}, state, { isLoggedIn: true, lastUpdated: now });
 
     case LOGOUT:
+      clearPersistentData();
       return Object.assign({}, state, { isLoggedIn: false, lastUpdated: now });
 
     case REQUEST_LOGIN_DATA:

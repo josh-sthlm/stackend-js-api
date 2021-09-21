@@ -11,6 +11,7 @@ import {
   isRunningInBrowser,
   XcapOptionalParameters
 } from '../api';
+import { clearAccessToken, clearPersistentData } from '../api/AccessToken';
 
 declare let browserHistory: { push: (location: string) => any }; // FIXME: for backward compatibility with react-router
 declare let window: any; // FIXME: For client side stuff
@@ -209,10 +210,15 @@ export function _getLogoutUrl({
 export function logout({
   redirectUrl
 }: { redirectUrl?: string | null } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
-  return post({
+  const r = post({
     url: '/user/logout',
     parameters: arguments
   });
+
+  clearPersistentData();
+  clearAccessToken();
+
+  return r;
 }
 
 export interface LoginResult extends XcapJsonResult {

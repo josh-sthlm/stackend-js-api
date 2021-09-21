@@ -6,11 +6,21 @@ import {
   REMOVE_COMMUNITIES,
   REMOVE_COMMUNITY,
   RECEIVE_RESOURCE_USAGE,
-  CommunityActions
+  CommunityActions,
+  CommunityState
 } from './communityReducer';
 
 import { Thunk } from '../api';
-import { Community, CommunityStatus, getCommunity, searchCommunity, storeCommunity } from './index';
+import {
+  Community,
+  CommunityStatus,
+  getCommunity,
+  GetCommunityResult,
+  searchCommunity,
+  SearchCommunityResult,
+  storeCommunity,
+  StoreCommunityResult
+} from './index';
 
 export interface ResourceUsage {
   maximumUseBeforeCharge: { [key: string]: number };
@@ -49,7 +59,23 @@ export function requestCommunities(status: string): CommunityActions {
   };
 }
 
-export function loadCommunity(community: Community, objectsRequiringModeration?: number): CommunityActions {
+/**
+ * Set the current community
+ * @param community
+ * @param objectsRequiringModeration
+ * @deprecated, use setCurrentCommunity instead
+ */
+export const loadCommunity = setCurrentCommunity;
+
+/**
+ * Set the current community
+ * @param community
+ * @param objectsRequiringModeration
+ */
+export function setCurrentCommunity(
+  community: Community | null | undefined,
+  objectsRequiringModeration?: number
+): CommunityActions {
   return {
     type: SET_COMMUNITY_SETTINGS,
     community: community,
@@ -57,22 +83,49 @@ export function loadCommunity(community: Community, objectsRequiringModeration?:
   };
 }
 
-export function removeCommunities(): CommunityActions {
+export function clearCommunities(): CommunityActions {
   return {
     type: REMOVE_COMMUNITIES
   };
 }
 
-export function removeCommunity(): CommunityActions {
+/**
+ * Remove all communities from the redux state
+ * @deprecated use clearCommunities instead
+ */
+export const removeCommunities = clearCommunities;
+
+/**
+ * Remove the current community from the redux state
+ * @deprecated use clearCurrentCommunity instead
+ */
+export const removeCommunity = clearCurrentCommunity;
+
+/**
+ * Remove the current community from the redux state
+ */
+export function clearCurrentCommunity(): CommunityActions {
   return {
     type: REMOVE_COMMUNITY
   };
 }
 
-export function fetchCommunity({ id, permalink }: { id?: number; permalink?: string }): Thunk<any> {
-  return async (dispatch: any /*, getState: any*/): Promise<any> => {
+/**
+ * Fetch a single community and set it to be the current community
+ * @param id
+ * @param permalink
+ */
+export function fetchCommunity({
+  id,
+  permalink
+}: {
+  id?: number;
+  permalink?: string;
+}): Thunk<Promise<GetCommunityResult>> {
+  return async (dispatch: any /*, getState: any*/): Promise<GetCommunityResult> => {
     const json = await dispatch(getCommunity({ id, permalink }));
-    return dispatch(loadCommunity(json.stackendCommunity));
+    dispatch(setCurrentCommunity(json.stackendCommunity, json.objectsRequiringModeration));
+    return json;
   };
 }
 
@@ -84,20 +137,33 @@ export type FetchCommunities = {
   pageSize?: number;
 };
 
+/**
+ * Fetch a list of communities
+ * @param myCommunities
+ * @param creatorUserId
+ * @param status
+ * @param p
+ * @param pageSize
+ */
 export function fetchCommunities({
   myCommunities = true,
   creatorUserId,
   status = '*',
   p = 1,
   pageSize = 10
-}: FetchCommunities): Thunk<any> {
-  return async (dispatch: any /*, getState: any*/): Promise<any> => {
+}: FetchCommunities): Thunk<Promise<SearchCommunityResult>> {
+  return async (dispatch: any /*, getState: any*/): Promise<SearchCommunityResult> => {
     dispatch(requestCommunities(status));
     const json = await dispatch(searchCommunity({ myCommunities, creatorUserId, status, pageSize, p }));
-    return dispatch(receiveCommunities(json));
+    dispatch(receiveCommunities(json));
+    return json;
   };
 }
 
+/**
+ * Update the current community
+ * @param community
+ */
 function updateCommunity(community: Community): CommunityActions {
   return {
     type: UPDATE_COMMUNITY,
@@ -106,6 +172,16 @@ function updateCommunity(community: Community): CommunityActions {
   };
 }
 
+/**
+ * Store a community and update the redux store
+ * @param id
+ * @param name
+ * @param permalink
+ * @param description
+ * @param status
+ * @param locale
+ * @param domains
+ */
 export function editCommunity({
   id = 0,
   name = '',
@@ -123,7 +199,7 @@ export function editCommunity({
   locale: string; //The body text
   domains: any;
 }): Thunk<any> {
-  return async (dispatch: any /*, getState: any*/): Promise<any> => {
+  return async (dispatch: any /*, getState: any*/): Promise<StoreCommunityResult> => {
     const response = await dispatch(storeCommunity({ id, name, permalink, description, status, locale, domains }));
 
     if (!!id && id !== 0) {
@@ -140,6 +216,7 @@ export function editCommunity({
         })
       );
     }
+    return response;
   };
 }
 
@@ -159,9 +236,9 @@ export function loadCommunitySettings({
         //console.log("couldn't find community: ",permalink)
         return;
       }
-      return dispatch(loadCommunity(r.stackendCommunity, r.objectsRequiringModeration));
+      return dispatch(setCurrentCommunity(r.stackendCommunity, r.objectsRequiringModeration));
     } catch (e) {
-      console.error("Couldn't loadCommunitySettings: ", e);
+      console.error("Stackend: Couldn't loadCommunitySettings: ", e);
     }
   };
 }
@@ -174,4 +251,14 @@ export function receiveResourceUsage(json: ResourceUsage): CommunityActions {
     hasPaymentMethod: json.hasPaymentMethod,
     isUserExcludedFromBilling: json.isUserExcludedFromBilling
   };
+}
+
+/**
+ * Get the number of objets requiring moderation for a given community
+ * @param communityState
+ * @param communityId
+ * @return a number, never null
+ */
+export function getObjectsRequiringModeration(communityState: CommunityState, communityId: number): number {
+  return communityState.objectsRequiringModeration[communityId] || 0;
 }

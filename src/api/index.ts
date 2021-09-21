@@ -15,6 +15,7 @@ import { XCAP_SET_CONFIG } from './configReducer';
 import { Dispatch } from 'redux';
 import { ListProductsQuery, ShopDataResult } from '../shop';
 import Logger, { ConsoleLogger } from '../util/Logger';
+import { appendAccessToken, handleAccessToken } from './AccessToken';
 
 function createDefaultLogger(): Logger {
   return new ConsoleLogger('stackend');
@@ -1006,6 +1007,7 @@ export function _getApiUrl({
       pfx += '/' + community + '/api';
     }
     path = pfx + url;
+    path = appendAccessToken(path);
   }
 
   const args = urlEncodeParameters(params);
@@ -1147,6 +1149,8 @@ export function getJson<T extends XcapJsonResult>({
       }
 
       if (result.json) {
+        handleAccessToken(result.json);
+
         if (result.error) {
           logger.error(getJsonErrorText(result.json) + ' ' + p);
           dispatch(setLoadingThrobberVisible(false));
@@ -1244,6 +1248,9 @@ export function post<T extends XcapJsonResult>({
   context?: string | null;
 }): Thunk<Promise<T>> {
   return async (dispatch: any): Promise<T> => {
+    // Must get token before constructing the url, because session may be established when requesting the token
+    const xpressToken = await dispatch(getXpressToken({ community, componentName, context }));
+
     const params = argsToObject(parameters);
 
     if (typeof community === 'undefined' && params && typeof (params as any)[COMMUNITY_PARAMETER] !== 'undefined') {
@@ -1260,8 +1267,6 @@ export function post<T extends XcapJsonResult>({
       })
     );
 
-    const xpressToken = await dispatch(getXpressToken({ community, componentName, context }));
-
     const result = await LoadJson({
       url: p,
       method: 'POST',
@@ -1276,6 +1281,8 @@ export function post<T extends XcapJsonResult>({
       }
 
       if (result.json) {
+        handleAccessToken(result.json);
+
         if (result.json.error) {
           logger.warn(getJsonErrorText(result.json) + ': ' + p);
         }
@@ -1875,7 +1882,8 @@ export async function logJsError(error: any /* Error */): Promise<any> {
     pageUrl: document.location.href
   };
 
-  const url = _getServer(null) + _getContextPath(null) + +'/api/js-log';
+  let url = _getServer(null) + _getContextPath(null) + '/api/js-log';
+  url = appendAccessToken(url);
 
   let r = null;
   try {

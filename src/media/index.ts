@@ -1,6 +1,6 @@
 //@flow
 import * as Stackend from '../stackend';
-import { LoadJson, LoadJsonResult } from '../api/LoadJson';
+import { appendQueryString, LoadJson, LoadJsonResult, urlEncodeParameters } from '../api/LoadJson';
 import type { PaginatedCollection } from '../api/PaginatedCollection';
 import {
   getJson,
@@ -21,6 +21,7 @@ import {
   ReferenceIdAware
 } from '../api';
 import _get from 'lodash/get';
+import { appendAccessToken } from '../api/AccessToken';
 
 /**
  * Image
@@ -121,7 +122,7 @@ export interface ImageThumbnail extends Thumbnail {
   createdDate: number;
 
   /**
-   * Thubnail config
+   * Thumbnail configuration
    */
   config: ThumbnailConfig;
 }
@@ -390,12 +391,21 @@ export function getContextMediaUploadUrl({
 }): string {
   const cp = getAbsoluteContextPrefix({ config, communityPermalink, context });
 
-  let p =
-    cp +
-    '/media/upload?context=' +
-    context +
-    '&temporary=' +
-    (typeof temporary === 'undefined' ? 'false' : String(temporary));
+  let p = cp + '/media/upload';
+
+  p = appendAccessToken(p);
+
+  const q = urlEncodeParameters({
+    context,
+    temporary: typeof temporary === 'undefined' ? 'false' : String(temporary),
+    thumbnail,
+    referenceId,
+    maxWidth,
+    maxHeight,
+    responsive: typeof responsive !== 'undefined'
+  });
+  /*
+  p += '?context=' + context + '&temporary=' + (typeof temporary === 'undefined' ? 'false' : String(temporary));
 
   if (typeof thumbnail !== 'undefined') {
     p += '&thumbnail=' + thumbnail;
@@ -417,6 +427,8 @@ export function getContextMediaUploadUrl({
     p += '&responsive=true';
   }
   return p;
+   */
+  return appendQueryString(p, q);
 }
 
 export interface UploadMediaFileResult {

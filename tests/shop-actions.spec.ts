@@ -14,7 +14,7 @@ import {
 } from '../src/shop/shopActions';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
-import { ShopState } from '../src/shop/shopReducer';
+import { RECEIVE_LISTINGS, ShopState } from '../src/shop/shopReducer';
 import assert from 'assert';
 import { ProductSortKeys, Country, AddressFieldName } from '../src/shop';
 
@@ -221,6 +221,56 @@ describe('Shop Actions/Reducers', () => {
       const f = shop.addressFieldsByCountryCode['SV'];
       expect(f).toBeDefined();
       expect(f.length).toBeGreaterThan(3);
+    });
+  });
+
+  describe('RECEIVE_LISTINGS', () => {
+    it('Loads product listings into store', async () => {
+      store.dispatch({
+        type: RECEIVE_LISTINGS,
+        listings: {
+          'black;;;BEST_SELLING;256;4;;;;': {
+            request: {
+              q: 'black',
+              productTypes: null,
+              tags: null,
+              sort: 'BEST_SELLING',
+              imageMaxWidth: 256,
+              first: 4,
+              after: null,
+              last: null,
+              before: null
+            },
+            listing: {
+              edges: [
+                {
+                  node: {
+                    id: 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzk4OTUzMDcxMzk=',
+                    handle: 'dknypure-tee-with-underlayer'
+                  }
+                },
+                {
+                  node: {
+                    id: 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzk4OTUzMjEyODM=',
+                    handle: 'double-racer-back-dress'
+                  }
+                }
+              ],
+              pageInfo: {
+                hasNextPage: true,
+                hasPreviousPage: false
+              }
+            }
+          }
+        }
+      });
+      const shop: ShopState = store.getState().shop;
+      expect(shop.productListings['black;;;BEST_SELLING;256;4;;;;']).toBeDefined();
+      expect(shop.productListings['black;;;BEST_SELLING;256;4;;;;'].products).toBeDefined();
+      expect(shop.productListings['black;;;BEST_SELLING;256;4;;;;'].products[0].handle).toBe(
+        'dknypure-tee-with-underlayer'
+      );
+      expect(shop.productListings['black;;;BEST_SELLING;256;4;;;;'].selection).toBeDefined();
     });
   });
 
