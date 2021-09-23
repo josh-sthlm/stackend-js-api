@@ -69,13 +69,38 @@ export function fetchModules({ communityId }: { communityId: number }): Thunk<Pr
  * @param moduleState
  */
 export function getModules(moduleState: ModuleState): Array<Module> {
+  return filterModules(moduleState);
+}
+
+/**
+ * Get the modules as an array
+ * @param moduleState
+ * @param filter Optional filter method
+ */
+export function filterModules(moduleState: ModuleState, filter?: (m: Module) => boolean): Array<Module> {
   const modules: Array<Module> = [];
   moduleState.moduleIds.forEach(id => {
     const m = moduleState.modulesById[id];
-    if (m) {
+    if (m && (!filter || filter(m))) {
       modules.push(m);
     }
   });
 
   return modules;
+}
+
+/**
+ * Find the first module matching the expression
+ * @param moduleState
+ * @param find
+ * @returns {null|*}
+ */
+export function findModule(moduleState: ModuleState, find: (m: Module) => boolean): Module | null {
+  for (const id of moduleState.moduleIds) {
+    const m = moduleState.modulesById[id];
+    if (m && find(m)) {
+      return m;
+    }
+  }
+  return null;
 }

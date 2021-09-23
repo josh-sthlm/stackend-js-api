@@ -1072,7 +1072,8 @@ const COMPONENT_CLASS_TO_MODULE_NAME: { [name: string]: string } = {
   'se.josh.xcap.cms.impl.CmsManagerImpl': 'CMS',
   'se.josh.xcap.like.impl.LikeManagerImpl': 'Like',
   'net.josh.community.group.GroupManager': 'Group',
-  'net.josh.community.category.CategoryManager': 'Page'
+  'net.josh.community.category.CategoryManager': 'Page',
+  'stackend.live.LiveEventManager': 'Live Event'
 };
 
 const MODULE_TYPE_TO_COMPONENT_CLASS: { [name: string]: string } = {
@@ -1081,7 +1082,8 @@ const MODULE_TYPE_TO_COMPONENT_CLASS: { [name: string]: string } = {
   forum: 'net.josh.community.forum.impl.ForumManagerImpl',
   cms: 'se.josh.xcap.cms.impl.CmsManagerImpl',
   group: 'net.josh.community.group.GroupManager',
-  page: 'net.josh.community.category.CategoryManager'
+  page: 'net.josh.community.category.CategoryManager',
+  live: 'stackend.live.LiveEventManager'
 };
 
 /**

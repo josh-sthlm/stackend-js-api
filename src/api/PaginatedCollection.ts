@@ -61,3 +61,24 @@ export function newPaginatedCollection<T>({
 export function emptyPaginatedCollection<T>(pageSize = 10): PaginatedCollection<T> {
   return newPaginatedCollection({ pageSize });
 }
+
+/**
+ * From a list, extract the entries making up the page using the page size
+ * @param entries
+ * @param page
+ * @param pageSize
+ */
+export function getEntriesOfPage<T>(entries: Array<T>, page: number, pageSize: number): Array<T> {
+  if (!entries) {
+    return [];
+  }
+
+  let start = (page - 1) * pageSize;
+  let end = start + pageSize;
+
+  if (end > entries.length) end = entries.length;
+
+  if (start > end) start = end;
+
+  return entries.slice(start, end);
+}
