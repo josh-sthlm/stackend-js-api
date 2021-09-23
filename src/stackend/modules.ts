@@ -275,7 +275,7 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     fetchData: true,
     complex: false,
     xcapModuleType: 'live',
-    defaultContext: 'live'
+    defaultContext: 'comments'
   }
 };
 
