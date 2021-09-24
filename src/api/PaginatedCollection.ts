@@ -38,7 +38,7 @@ export function newPaginatedCollection<T>({
   const previousPage = page > 1 ? page - 1 : 1;
   const hasNextPage = pageSize * page < tz;
   const nextPage = hasNextPage ? page + 1 : 1;
-  const lastPage = hasNextPage ? Math.max(1, Math.ceil(tz / pageSize)) : 1;
+  const lastPage = Math.max(1, Math.ceil(tz / pageSize));
 
   return {
     page: page,
@@ -60,6 +60,35 @@ export function newPaginatedCollection<T>({
  */
 export function emptyPaginatedCollection<T>(pageSize = 10): PaginatedCollection<T> {
   return newPaginatedCollection({ pageSize });
+}
+
+/**
+ * Create a new paginated collection given an array of all entries. Only the current page will be included in the pagination
+ * @param entries All entries
+ * @param page
+ * @param pageSize
+ */
+export function newPaginatedCollectionForPage<T>({
+  entries = [],
+  page = 1,
+  pageSize = 10
+}: {
+  entries?: Array<T>;
+  page?: number;
+  pageSize?: number;
+}): PaginatedCollection<T> {
+  if (!entries || entries.length === 0) {
+    return emptyPaginatedCollection(pageSize);
+  }
+
+  const pageEntries = getEntriesOfPage(entries, page, pageSize);
+
+  return newPaginatedCollection({
+    entries: pageEntries,
+    page,
+    pageSize,
+    totalSize: entries.length
+  });
 }
 
 /**
