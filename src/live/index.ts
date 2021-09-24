@@ -1,5 +1,3 @@
-//@flow
-
 import { Module, newModule } from '../stackend';
 
 /**
@@ -54,7 +52,8 @@ export function newLiveEventModule({
   });
 
   m.componentName = COMPONENT_NAME;
-  m.settings = settings || {};
+  m.settings = Object.assign({ showTitle: true }, settings || {});
+
   return m;
 }
 
