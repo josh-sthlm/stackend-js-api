@@ -36,6 +36,7 @@
       <excludeFolder url="file://$MODULE_DIR$/util" />
       <excludeFolder url="file://$MODULE_DIR$/vote" />
       <excludeFolder url="file://$MODULE_DIR$/moderate" />
+      <excludeFolder url="file://$MODULE_DIR$/live" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
