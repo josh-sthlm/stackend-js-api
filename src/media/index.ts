@@ -220,6 +220,14 @@ export const ThumbnailSize = {
 };
 
 /**
+ * Orientation: Landscape or portrait?
+ */
+export enum Orientation {
+  LANDSCAPE = 'LANDSCAPE',
+  PORTRAIT = 'PORTRAIT'
+}
+
+/**
  * Given an url, get an url to a thumbnail of the desired size.
  * Effectively inserting the size into the url.
  * @param url
