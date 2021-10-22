@@ -18,7 +18,8 @@ import {
   ReferenceIdAware,
   UserApprovalAware,
   ReferenceAble,
-  ReferenceGroupIdAware
+  ReferenceGroupIdAware,
+  UserApprovalStatus
 } from '../api';
 //import * as groupApi from './group';
 //import * as gaFunctions from '../functions/gaFunctions';
@@ -290,12 +291,8 @@ export function setCommentUserApprovalStatus({
   status: UserApprovalStatus;
   commentModule: CommentModule;
 } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
-  return (dispatch): Promise<XcapJsonResult> => {
-    return dispatch(
-      post({
-        url: (commentModule !== CommentModule.GENERIC ? '/' + commentModule : '') + '/comments/moderate',
-        parameters: arguments
-      })
-    );
-  };
+  return post({
+    url: (commentModule !== CommentModule.GENERIC ? '/' + commentModule : '') + '/comments/moderate',
+    parameters: arguments
+  });
 }
