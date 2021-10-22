@@ -91,20 +91,58 @@ export const CommmunitySettings = {
   OAUTH2_LOGIN: 'oauth2Login'
 };
 
-export interface Module {
-  id: number;
+/**
+ * A module / function
+ */
+export interface Module extends XcapObject, NameAware {
+  __type: 'se.josh.xcap.community.Module';
+
+  /** Community owning this module */
   communityId: number;
-  name: string;
+
+  /** If set to true, the module will be visible on site */
   enabled: boolean;
+
+  /** XCAP community context for the component */
   componentContext: string;
-  componentClass: any;
+
+  /** XCAP component class name */
+  componentClass: string;
+
+  /** Component name, for example "comments" */
   componentName: string;
+
+  /**
+   * Does the module have categories?
+   */
   hasCategories: boolean;
-  objectReference: string;
-  objectRef: any;
+
+  /**
+   * Does the module have additional comments?
+   */
+  hasComments: boolean;
+
+  obfuscatedReference: string;
+
+  /** Related object key, if any */
+  objectRef: null | string;
+
+  /** Rule type id used when applying rules */
   ruleTypeId: number;
-  settings: string;
-  style: string;
+
+  /**
+   * Additional module specific settings
+   */
+  settings: {
+    [key: string]: any;
+  };
+
+  /**
+   * Additional style settings
+   */
+  style: {
+    [key: string]: string;
+  };
 }
 
 export interface ModuleRule {

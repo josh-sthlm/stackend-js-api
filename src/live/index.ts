@@ -22,10 +22,17 @@ export const COMPONENT_CONTEXT = 'comments';
  * Settings for live modules
  */
 export interface LiveEventModuleSettings {
-  startDate: string;
+  startDate?: number;
+  descriptionCmsId?: number;
+  showTitle: boolean;
+  videoId?: string;
   videoUrl: string;
   videoHtml?: string;
-  descriptionCmsId?: number;
+  videoWidth?: number;
+  videoHeight?: number;
+  videoTitle?: string;
+  videoDescription?: string;
+  videoThumbnail?: string;
 }
 
 /**
@@ -64,4 +71,15 @@ export function newLiveEventModule({
  */
 export function isLiveEventModule(module: Module): boolean {
   return module && module.componentClass === COMPONENT_CLASS;
+}
+
+/**
+ * Get live event settings. Ensure this is a live event
+ * @param module
+ */
+export function getLiveEventModuleSettings(module: Module): LiveEventModuleSettings {
+  if (!isLiveEventModule(module)) {
+    throw 'Not a live event module: ' + module.id + ' (' + module.componentName + ')';
+  }
+  return module.settings as LiveEventModuleSettings;
 }
