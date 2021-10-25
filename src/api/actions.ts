@@ -137,7 +137,9 @@ export function loadInitialStoreValues({
     if (r.cmsContents && Object.keys(r.cmsContents).length !== 0) {
       Object.values(r.cmsContents).forEach(c => {
         const y = c as Content;
-        allCmsContents[y.id] = y;
+        if (y) {
+          allCmsContents[y.id] = y;
+        }
       });
     }
 
