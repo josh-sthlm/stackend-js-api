@@ -313,25 +313,25 @@ export function fetchComments({
   p = 1,
   pageSize = DEFAULT_PAGE_SIZE,
   useVotes = false
-}: FetchComments): Thunk<any> {
-  return async (dispatch: any): Promise<any> => {
+}: FetchComments): Thunk<Promise<GetCommentResult | null>> {
+  return async (dispatch: any): Promise<GetCommentResult | null> => {
     dispatch(requestComments(module, referenceId, referenceGroupId, commentSortCriteria, order));
-    try {
-      const { comments, likesByCurrentUser, error, voteSummary, votes, hasVoted, myReview } = await dispatch(
-        getComments({ module, referenceId, pageSize, p, useVotes, sortCriteria: commentSortCriteria, order })
-      );
 
-      if (voteSummary) {
-        dispatch(receiveVotes(module ? module : 'comments', voteSummary, votes, hasVoted, myReview));
-      }
+    const r = await dispatch(
+      getComments({ module, referenceId, pageSize, p, useVotes, sortCriteria: commentSortCriteria, order })
+    );
 
-      const json = { comments, likesByCurrentUser, error };
-
-      dispatch(receiveCommentLikes(json));
-      return dispatch(receiveComments(module, referenceId, referenceGroupId, json, commentSortCriteria, order));
-    } catch (e) {
-      console.error("Couldn't fetchComments: ", e);
+    const { comments, likesByCurrentUser, error, voteSummary, votes, hasVoted, myReview } = r;
+    if (voteSummary) {
+      dispatch(receiveVotes(module ? module : 'comments', voteSummary, votes, hasVoted, myReview));
     }
+
+    const json = { comments, likesByCurrentUser, error };
+
+    dispatch(receiveCommentLikes(json));
+    dispatch(receiveComments(module, referenceId, referenceGroupId, json, commentSortCriteria, order));
+
+    return r;
   };
 }
 
