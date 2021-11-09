@@ -33,6 +33,10 @@ export interface LiveEventModuleSettings {
   videoTitle?: string;
   videoDescription?: string;
   videoThumbnail?: string;
+  /**
+   * Ids of users with elevated privs
+   */
+  trustedUsers?: Array<number>;
 }
 
 /**
