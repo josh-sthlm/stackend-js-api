@@ -281,15 +281,18 @@ export function postComment({
  * @param id
  * @param status
  * @param commentModule
+ * @param moduleId, optional module id for checking elevated privileges
  */
 export function setCommentUserApprovalStatus({
   id,
   status,
-  commentModule = CommentModule.GENERIC
+  commentModule = CommentModule.GENERIC,
+  moduleId
 }: {
   id: number;
   status: UserApprovalStatus;
   commentModule: CommentModule;
+  moduleId?: number;
 } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({
     url: (commentModule !== CommentModule.GENERIC ? '/' + commentModule : '') + '/comments/moderate',
