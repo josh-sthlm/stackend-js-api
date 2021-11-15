@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 import { COMMUNITY_PARAMETER } from '../src/api';
 import { getPoll, GetPollResult } from '../src/poll';

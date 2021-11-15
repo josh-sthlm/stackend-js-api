@@ -1,5 +1,3 @@
-//@flow
-
 export enum ModuleType {
   /** Styling */
   GLOBAL_STYLE = 'stackend-global-style',

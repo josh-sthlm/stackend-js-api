@@ -1,5 +1,3 @@
-//@flow
-
 import { appendQueryString, LoadJson, LoadJsonResult, urlEncodeParameters } from './LoadJson';
 import get from 'lodash/get';
 import forIn from 'lodash/forIn';
@@ -16,6 +14,8 @@ import { Dispatch } from 'redux';
 import { ListProductsQuery, ShopDataResult } from '../shop';
 import Logger, { ConsoleLogger } from '../util/Logger';
 import { appendAccessToken, handleAccessToken } from './AccessToken';
+import { signalApiAccessFailed } from './actions';
+import XcapObject from './XcapObject';
 
 function createDefaultLogger(): Logger {
   return new ConsoleLogger('stackend');
@@ -154,15 +154,6 @@ export const COMMUNITY_PARAMETER = '__community';
 export const RICH_CONTENT_CHAIN_PARAMETER = 'xcap.rich-content-chain';
 
 /**
- * Search order
- */
-export enum Order {
-  ASCENDING = 'ASCENDING',
-  DESCENDING = 'DESCENDING',
-  UNORDERED = 'UNORDERED'
-}
-
-/**
  * API errors
  */
 export interface XcapJsonErrors {
@@ -210,157 +201,6 @@ export interface XcapJsonResult {
 }
 
 /**
- * Base class for all xcap objects
- */
-export interface XcapObject {
-  __type: string;
-  id: number;
-}
-
-export interface CreatedDateAware {
-  /**
-   * Date when the object was created.
-   * Can be passed directly to new Date(createdDate)
-   */
-  createdDate: number;
-}
-
-export interface CreatorUserIdAware {
-  /**
-   * Id of the user that created the object
-   */
-  creatorUserId: number;
-
-  /**
-   * User that created the object
-   */
-  creatorUserRef?: User | null;
-}
-
-export interface ModifiedDateAware {
-  /**
-   * Date when the object was modified. May be null.
-   */
-  modifiedDate: number | null;
-}
-
-export interface ModifiedByUserIdAware {
-  /**
-   * Id of the user that last modified the object. 0 if not modified
-   */
-  modifiedByUserId: number;
-
-  /**
-   * User that last modified the object.
-   */
-  modifiedByUserRef?: User | null;
-}
-
-export interface PermalinkAware {
-  /**
-   * The objects permalink, an unique id used to construct urls.
-   * The permalink consists of lower case letters, numbers and the character "-".
-   * The permalink is typically automatically derived from the name/title of an object when the object is created.
-   * It is never null for a saved object.
-   */
-  permalink: string;
-}
-
-export interface ModerationStatusAware {
-  /**
-   * Moderation status
-   */
-  modStatus: ModerationStatus;
-}
-
-export interface ModerationAware extends ModerationStatusAware {
-  /**
-   * Moderation Time To Live in minutes for post moderated objects.
-   * @see ModerationStatus.POST
-   */
-  ttl: number;
-}
-
-export interface ExpirationDateAware {
-  /**
-   * Expiration date for post moderated objects
-   * @see ModerationAware
-   * @see ModerationStatus.POST
-   */
-  expiresDate: number;
-}
-
-export interface ReferenceIdAware<T extends XcapObject> {
-  /**
-   * Id of a another referenced object.
-   * For example the blog entry id for a comment
-   */
-  referenceId: number;
-
-  /**
-   * A referenced object
-   * For example the blog entry for a comment.
-   */
-  referenceRef?: T | null;
-}
-
-export interface ReferenceGroupIdAware {
-  /**
-   * An id used to differentiate a set of objects from another set of objects in the same context.
-   */
-  referenceGroupId: number;
-}
-
-export interface NameAware {
-  /**
-   * Name of the object
-   */
-  name: string;
-}
-
-export interface DescriptionAware {
-  /**
-   * Description of the object
-   */
-  description: string;
-}
-
-export interface UserApprovalAware {
-  userApprovalStatus: UserApprovalStatus;
-}
-
-export interface ReferenceAble {
-  /**
-   * An opaque id that contains the objects community context, type and id
-   */
-  obfuscatedReference: string;
-}
-
-export interface PublishDateAware {
-  /**
-   * Date when the object will be published
-   */
-  publishDate: number | null;
-}
-
-export enum UserApprovalStatus {
-  /**
-   * The object has been approved by the user
-   */
-  USER_APPROVED = 'USER_APPROVED',
-
-  /**
-   * The object is waiting user approval
-   */
-  AWAITING_USER_APPROVAL = 'AWAITING_USER_APPROVAL',
-
-  /**
-   * The object has been disapproved by the user
-   */
-  USER_DISAPPROVED = 'USER_DISAPPROVED'
-}
-
-/**
  * Redux store state
  */
 export type State = { [key: string]: any };
@@ -370,29 +210,6 @@ export type State = { [key: string]: any };
  */
 //export type Thunk<A> = (dispatch: Dispatch, getState: () => State) => Promise<A> | A | any;
 export type Thunk<A> = (dispatch: Dispatch, getState: () => State) => A;
-
-/**
- * Invert the ordering
- * @param order
- * @returns {string}
- */
-export function invertOrder(order: Order): Order {
-  if (Order.ASCENDING === order) {
-    return Order.DESCENDING;
-  } else if (Order.DESCENDING === order) {
-    return Order.ASCENDING;
-  }
-
-  return Order.UNORDERED;
-}
-
-/**
- * Generic sort order. Some components supports additional orders.
- */
-export enum SortOrder {
-  ASCENDING = 'ASCENDING',
-  DESCENDING = 'DESCENDING'
-}
 
 /**
  * Xcap types and their names
@@ -420,157 +237,6 @@ const typeNames: { [type: string]: string } = {
   'se.josh.xcap.cms.impl.ContentImpl': 'CMS Content',
   'se.josh.xcap.community.Community': 'Site'
 };
-
-/**
- * Moderation visibility indicator, used to filter content depending on
- * moderation status. Managers that accept this visibility filter must maintain
- * sensible defaults (i.e {@link #VISIBLE}) for safety reasons.
- */
-export enum ModerationVisibility {
-  /**
-   * All will return all items disregarding any moderation status, useful for
-   * administration purposes.
-   */
-  ALL = 'ALL',
-
-  /**
-   * Visible is the normal behavior, which filters out all disapproved items
-   * but includes items that are post moderated and not expired.
-   */
-  VISIBLE = 'VISIBLE',
-
-  /**
-   * The same behavior as {@link #VISIBLE} but for modules that support user
-   * approval like  CommentManager, the objects awaiting approval are
-   * also included. For modules that do not support this, treat like
-   * {@link #VISIBLE}.
-   */
-  VISIBLE_INCLUDING_AWAITING_USER_APPROVAL = 'VISIBLE_INCLUDING_AWAITING_USER_APPROVAL',
-
-  /**
-   * The same behavior as {@link #VISIBLE} but for modules that support user
-   * approval like CommentManager, the objects awaiting approval,
-   * approved and disapproved are also included. For modules that do not
-   * support this, treat like {@link #VISIBLE}.
-   */
-  VISIBLE_INCLUDING_USER_APPROVAL = 'VISIBLE_INCLUDING_USER_APPROVAL',
-
-  /**
-   * Only approved will approve content that has been actively approved or
-   * items that has never been considered for moderation (no moderation). Post
-   * moderated items that have not yet been approved will be left out. Useful
-   * for extra sensitive listings (a front page listing for example).
-   */
-  APPROVED = 'APPROVED',
-
-  /**
-   * Only disapproved means that only content that has been disapproved will
-   * be included.
-   */
-  DISAPPROVED = 'DISAPPROVED',
-
-  /**
-   * All objects that are pending pre moderation or expired post moderation - i.e. items that are not included in {@link #VISIBLE}.
-   */
-  MODERATION_REQUIRED = 'MODERATION_REQUIRED',
-
-  /**
-   * All objects pending moderation, all pre moderated and post moderated items regardless of expiration.
-   */
-  MODERATION_PENDING = 'MODERATION_PENDING'
-}
-
-/**
- * Moderation statuses
- */
-export enum ModerationStatus {
-  /**
-   * No moderation required 0
-   */
-  NONE = 'NONE',
-
-  /**
-   * Approved by a moderator 1
-   */
-  PASSED = 'PASSED',
-
-  /**
-   * Disapproved by a moderator 2
-   */
-  NOT_PASSED = 'NOT_PASSED',
-
-  /**
-   * Pre moderation required 4
-   */
-  PRE = 'PRE',
-
-  /**
-   * Post moderation required within the specified TTL 5
-   */
-  POST = 'POST'
-}
-
-const ModerationStatusNames = {
-  [ModerationStatus.NONE]: 'Visible, not moderated',
-  [ModerationStatus.NOT_PASSED]: 'Disapproved',
-  [ModerationStatus.PASSED]: 'Approved',
-  [ModerationStatus.POST]: 'Post moderation',
-  [ModerationStatus.PRE]: 'Hidden, requires moderation'
-};
-
-export function getModerationStatus(n: number): ModerationStatus {
-  switch (n) {
-    case 0:
-      return ModerationStatus.NONE;
-    case 1:
-      return ModerationStatus.PASSED;
-    case 2:
-      return ModerationStatus.NOT_PASSED;
-    case 4:
-      return ModerationStatus.PRE;
-    case 5:
-      return ModerationStatus.POST;
-    default:
-      throw Error(n + ' is not a moderation status');
-  }
-}
-
-export function getModerationStatusName(m: ModerationStatus): string {
-  const x = ModerationStatusNames[m];
-  if (x) {
-    return x;
-  }
-  return ModerationStatusNames[ModerationStatus.NONE];
-}
-
-export const ModerationStatusCode = {
-  [ModerationStatus.NONE]: 0,
-  [ModerationStatus.PASSED]: 1,
-  [ModerationStatus.NOT_PASSED]: 2,
-  [ModerationStatus.PRE]: 4,
-  [ModerationStatus.POST]: 5
-};
-
-export type ModerationStatusCodes = 0 | 1 | 2 | 4 | 5;
-
-/**
- * A community context represents a instance of some functionality,
- * for example comments, blog etc. Some functions may multiple instances,
- * like for example stand alone comments or comments on blog posts.
- */
-export interface CommunityContext {
-  community: string;
-  context: string;
-}
-
-/**
- * UID of a specific type of object in a context
- */
-export interface Reference {
-  communityContext: CommunityContext;
-  type: string;
-  id: number;
-}
 
 /**
  * Construct basic configuration from the environment.
@@ -1154,6 +820,7 @@ export function getJson<T extends XcapJsonResult>({
         if (result.error) {
           logger.error(getJsonErrorText(result.json) + ' ' + p);
           dispatch(setLoadingThrobberVisible(false));
+          dispatch(signalApiAccessFailed(p, result));
 
           if (result.status === 403) {
             // Unauthorized
@@ -1896,104 +1563,6 @@ export async function logJsError(error: any /* Error */): Promise<any> {
     logger.error('Failed to log: ' + JSON.stringify(params), '\nCause: ' + JSON.stringify(e));
   }
   return r;
-}
-
-/**
- * Parse a community context.
- * @param communityContext
- * @returns {null|CommunityContext}
- */
-export function parseCommunityContext(communityContext: string | null): CommunityContext | null {
-  if (!communityContext) {
-    return null;
-  }
-
-  const p = communityContext.split(':', 3);
-  if (p.length !== 2) {
-    return null;
-  }
-
-  return {
-    community: p[0],
-    context: p[1]
-  };
-}
-
-/**
- * Parse a reference
- * @param reference
- * @returns {null|Reference}
- */
-export function parseReference(reference: string | null): Reference | null {
-  if (!reference) {
-    return null;
-  }
-
-  const p = reference.split('-', 4);
-  if (p.length !== 3) {
-    return null;
-  }
-
-  const id = parseInt(p[2]);
-  if (isNaN(id)) {
-    return null;
-  }
-
-  const cc = parseCommunityContext(p[0]);
-  if (!cc) {
-    return null;
-  }
-
-  return {
-    communityContext: cc,
-    type: p[1],
-    id
-  };
-}
-
-/**
- * Construct a reference
- * @param xcapCommunityName
- * @param context
- * @param type
- * @param id
- */
-export function constructReference(xcapCommunityName: string, context: string, type: string, id: number): Reference {
-  const c = xcapCommunityName + ':' + context;
-  const cc = parseCommunityContext(c);
-  if (!cc) {
-    throw Error('Invalid communityContext: ' + c);
-  }
-
-  return {
-    communityContext: cc,
-    type,
-    id
-  };
-}
-
-/**
- * Get a reference
- * @param xcapCommunityName
- * @param context
- * @param obj
- * @returns {Reference}
- */
-export function getReference(xcapCommunityName: string, context: string, obj: XcapObject): Reference {
-  return constructReference(xcapCommunityName, context, obj.__type, obj.id);
-}
-
-/**
- * Get a reference as a string
- * @param ref
- * @returns {string|null}
- */
-export function getReferenceAsString(ref: Reference | null): string | null {
-  if (!ref) {
-    return null;
-  }
-
-  return ref.communityContext.community + ':' + ref.communityContext.context + '-' + ref.type + '-' + ref.id;
 }
 
 export const TEMPLATE_START = '{{';

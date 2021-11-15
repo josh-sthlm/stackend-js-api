@@ -1,4 +1,3 @@
-//@flow
 import * as Stackend from '../stackend';
 import { appendQueryString, LoadJson, LoadJsonResult, urlEncodeParameters } from '../api/LoadJson';
 import type { PaginatedCollection } from '../api/PaginatedCollection';
@@ -7,21 +6,21 @@ import {
   post,
   COMMUNITY_PARAMETER,
   XcapJsonResult,
-  Reference,
-  XcapObject,
   Config,
   _getServer,
   _getContextPath,
   _getConfig,
   Thunk,
-  XcapOptionalParameters,
-  DescriptionAware,
-  CreatorUserIdAware,
-  ModifiedDateAware,
-  ReferenceIdAware
+  XcapOptionalParameters
 } from '../api';
 import _get from 'lodash/get';
 import { appendAccessToken } from '../api/AccessToken';
+import XcapObject from '../api/XcapObject';
+import DescriptionAware from '../api/DescriptionAware';
+import CreatorUserIdAware from '../api/CreatorUserIdAware';
+import ModifiedDateAware from '../api/ModifiedDateAware';
+import ReferenceIdAware from '../api/ReferenceIdAware';
+import Reference from '../api/Reference';
 
 /**
  * Image

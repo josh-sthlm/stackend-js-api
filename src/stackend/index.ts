@@ -1,28 +1,21 @@
-//@flow
 import { Request } from '../request';
-import {
-  getJson,
-  post,
-  getCurrentCommunityPermalink,
-  XcapJsonResult,
-  Order,
-  XcapObject,
-  ModerationStatus,
-  Thunk,
-  NameAware,
-  DescriptionAware,
-  PermalinkAware,
-  CreatorUserIdAware,
-  CreatedDateAware,
-  ExpirationDateAware,
-  ModerationStatusAware
-} from '../api';
+import { getJson, post, getCurrentCommunityPermalink, XcapJsonResult, Thunk } from '../api';
+import ModerationStatus from '../api/ModerationStatus';
+import Order from '../api/Order';
 import { fetchModules } from './moduleAction';
 import { hasElevatedPrivilege, User } from '../user';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { CurrentUserType } from '../login/loginReducer';
 import { PrivilegeTypeId, PrivilegeTypeIds } from '../user/privileges';
 import { Image } from '../media';
+import XcapObject from '../api/XcapObject';
+import NameAware from '../api/NameAware';
+import DescriptionAware from '../api/DescriptionAware';
+import PermalinkAware from '../api/PermalinkAware';
+import CreatorUserIdAware from '../api/CreatorUserIdAware';
+import CreatedDateAware from '../api/CreatedDateAware';
+import ModerationStatusAware from '../api/ModerationStatusAware';
+import ExpirationDateAware from '../api/ExpirationDateAware';
 
 /**
  * Stackend API constants and methods.

@@ -1,5 +1,3 @@
-//@flow
-
 import { getJsonErrorText, newXcapJsonResult, Thunk } from '../api';
 
 import {

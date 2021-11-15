@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 import {
   _getApiUrl,

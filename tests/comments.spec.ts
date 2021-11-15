@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 import { CommentModule, getComments, GetCommentsResult } from '../src/comments';
 import { COMMUNITY_PARAMETER } from '../src/api';

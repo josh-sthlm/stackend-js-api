@@ -1,4 +1,3 @@
-//@flow
 import { XcapJsonResult, post, getJson, Thunk, XcapOptionalParameters } from '../api';
 
 /**

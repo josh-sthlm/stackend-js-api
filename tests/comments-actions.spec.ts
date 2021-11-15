@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 import { Comment, CommentModule, CommentSortCriteria } from '../src/comments';
 import {
@@ -14,7 +12,7 @@ import {
 } from '../src/comments/commentAction';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { CommentsState } from '../src/comments/commentReducer';
-import { SortOrder } from '../src/api';
+import SortOrder from '../src/api/SortOrder';
 import { LikesState } from '../src/like/likeReducer';
 import { getNumberOfLikes, isLikedByCurrentUser } from '../src/like/likeActions';
 

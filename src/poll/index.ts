@@ -1,19 +1,12 @@
-//@flow
-import {
-  getJson,
-  post,
-  XcapJsonResult,
-  XcapObject,
-  Thunk,
-  XcapOptionalParameters,
-  DescriptionAware,
-  CreatedDateAware,
-  CreatorUserIdAware,
-  ModifiedDateAware,
-  ReferenceIdAware,
-  ReferenceAble
-} from '../api';
+import { getJson, post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
 import { VoteSummary } from '../vote';
+import XcapObject from '../api/XcapObject';
+import DescriptionAware from '../api/DescriptionAware';
+import CreatedDateAware from '../api/CreatedDateAware';
+import CreatorUserIdAware from '../api/CreatorUserIdAware';
+import ModifiedDateAware from '../api/ModifiedDateAware';
+import ReferenceIdAware from '../api/ReferenceIdAware';
+import ReferenceAble from '../api/ReferenceAble';
 
 /**
  * Xcap Blog poll api constants and methods.

@@ -1,4 +1,3 @@
-//@flow
 import deburr from 'lodash/deburr';
 import { isRunningInBrowser, State, Thunk } from '../api';
 import get from 'lodash/get';

@@ -1,5 +1,3 @@
-//@flow
-
 export interface GraphQLListNode<T> {
   node: T;
 }

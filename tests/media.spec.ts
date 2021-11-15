@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 import { get, GetMediaResult, list, ListResult, MediaListOrder, ThumbnailSize } from '../src/media';
 import { COMMUNITY_PARAMETER } from '../src/api';

@@ -1,4 +1,3 @@
-// @flow
 import * as reducer from './referenceReducer';
 
 interface ReceiveReferences {

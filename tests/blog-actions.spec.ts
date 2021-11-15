@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';

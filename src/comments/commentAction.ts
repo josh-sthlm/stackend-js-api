@@ -21,7 +21,8 @@ import {
   GetCommentResult,
   CommentSortCriteria
 } from './index';
-import { SortOrder, Thunk, XcapJsonErrors } from '../api';
+import { Thunk, XcapJsonErrors } from '../api';
+import SortOrder from '../api/SortOrder';
 import { receiveVotes } from '../vote/voteActions';
 import { LikeDataMap, LikesByCurrentUser } from '../like';
 import { receiveLikes } from '../like/likeActions';

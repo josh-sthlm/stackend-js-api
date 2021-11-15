@@ -1,24 +1,4 @@
-//@flow
-import {
-  getJson,
-  post,
-  createCommunityUrl,
-  XcapJsonResult,
-  XcapObject,
-  Thunk,
-  logger,
-  XcapOptionalParameters,
-  NameAware,
-  DescriptionAware,
-  PermalinkAware,
-  CreatedDateAware,
-  ModifiedDateAware,
-  ModerationAware,
-  ReferenceIdAware,
-  ReferenceAble,
-  CreatorUserIdAware,
-  PublishDateAware
-} from '../api';
+import { getJson, post, createCommunityUrl, XcapJsonResult, Thunk, logger, XcapOptionalParameters } from '../api';
 import * as event from '../event';
 import { Poll } from '../poll';
 import * as group from '../group';
@@ -30,6 +10,17 @@ import { Image } from '../media';
 import { AuthObject } from '../user/privileges';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { LikeDataMap } from '../like';
+import CreatedDateAware from '../api/CreatedDateAware';
+import CreatorUserIdAware from '../api/CreatorUserIdAware';
+import XcapObject from '../api/XcapObject';
+import NameAware from '../api/NameAware';
+import DescriptionAware from '../api/DescriptionAware';
+import PermalinkAware from '../api/PermalinkAware';
+import ModifiedDateAware from '../api/ModifiedDateAware';
+import ReferenceAble from '../api/ReferenceAble';
+import PublishDateAware from '../api/PublishDateAware';
+import ModerationAware from '../api/ModerationAware';
+import ReferenceIdAware from '../api/ReferenceIdAware';
 
 /**
  * Xcap Blog api constants and methods.

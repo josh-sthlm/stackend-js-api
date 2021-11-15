@@ -111,7 +111,8 @@ describe('Util', () => {
         referenceId: sub.referenceId,
         obfuscatedReference: null,
         type: 'Test',
-        userId: 0
+        userId: 0,
+        likes: null
       };
 
       sws._broadcast(StackendWebSocketEvent.MESSAGE_RECEIVED, {} as Event, {
@@ -153,7 +154,8 @@ describe('Util', () => {
         referenceId: 0,
         obfuscatedReference: 'abc123',
         type: COMMENT_CLASS,
-        userId: 0
+        userId: 0,
+        likes: null
       };
 
       sws._broadcast(StackendWebSocketEvent.MESSAGE_RECEIVED, {} as Event, {

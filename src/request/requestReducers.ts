@@ -1,4 +1,3 @@
-//@flow
 import update from 'immutability-helper';
 import { Request } from './index';
 import { isCommunityUrlBlocked } from '../stackend';

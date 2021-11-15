@@ -1,5 +1,3 @@
-//@flow
-
 import { Content, GetContentResult } from './index';
 import { getJsonErrorText } from '../api';
 

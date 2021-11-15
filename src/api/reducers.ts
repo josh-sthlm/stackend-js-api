@@ -1,5 +1,3 @@
-//@flow
-
 import blogs from '../blog/blogReducer';
 import groupBlogEntries from '../blog/groupBlogEntriesReducer';
 import categories from '../category/categoryReducer';

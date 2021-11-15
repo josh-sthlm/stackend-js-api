@@ -1,5 +1,3 @@
-//@flow
-
 import { GraphQLListNode } from '../util/graphql';
 
 /**

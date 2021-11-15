@@ -1,12 +1,12 @@
-import { ReferenceAble } from '../api';
-import { XcapObject } from '../api';
-import { ReferenceIdAware } from '../api';
-
 /**
  * Get ids of all objects
  * @param objects
  * @returns {Set<string>}
  */
+import XcapObject from '../api/XcapObject';
+import ReferenceAble from '../api/ReferenceAble';
+import ReferenceIdAware from '../api/ReferenceIdAware';
+
 export function getIds(objects: Array<XcapObject>): Set<number> {
   const s = new Set<number>();
   if (!objects) {

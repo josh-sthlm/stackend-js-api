@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 
 describe('Store', () => {

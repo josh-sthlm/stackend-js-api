@@ -1,5 +1,3 @@
-//@flow
-
 import {
   addModuleInfo,
   AUTOMATIC_MODULE_TYPES,

@@ -1,7 +1,6 @@
-//@flow
-
-import { Reference, XcapObject } from './index';
 import { generatePermalink } from './permalink';
+import Reference from './Reference';
+import XcapObject from './XcapObject';
 
 export const TREE_CLASS = 'se.josh.xcap.tree.impl.TreeImpl';
 

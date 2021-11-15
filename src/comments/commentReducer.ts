@@ -7,7 +7,7 @@ import * as commentAction from './commentAction';
 import * as commentsApi from './index';
 import { Comment, CommentModule, CommentSortCriteria } from './index';
 import { emptyPaginatedCollection, PaginatedCollection } from '../api/PaginatedCollection';
-import { SortOrder } from '../api';
+import SortOrder from '../api/SortOrder';
 
 //Action Type
 export const REQUEST_GROUP_COMMENTS = 'REQUEST_GROUP_COMMENTS';

@@ -1,5 +1,3 @@
-//@flow
-
 import { login } from '../src/login';
 
 describe('Login', () => {

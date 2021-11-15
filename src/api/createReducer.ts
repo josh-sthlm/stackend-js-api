@@ -1,5 +1,3 @@
-//@flow
-
 import { Action } from 'redux';
 
 type Reducer<S, A> = (S: any, A: any) => S;

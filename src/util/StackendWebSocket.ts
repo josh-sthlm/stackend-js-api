@@ -1,6 +1,7 @@
 import SockJS from 'sockjs-client';
-import { Config, parseCommunityContext, Thunk } from '../api';
+import { Config, Thunk } from '../api';
 import { Community } from '../stackend';
+import { parseCommunityContext } from '../api/CommunityContext';
 
 export interface Message {
   communityContext: string;

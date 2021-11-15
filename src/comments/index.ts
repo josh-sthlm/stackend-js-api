@@ -1,30 +1,23 @@
 // @flow
-import {
-  getJson,
-  post,
-  SortOrder,
-  XcapJsonResult,
-  XcapObject,
-  Thunk,
-  isRunningInBrowser,
-  XcapOptionalParameters,
-  CreatorUserIdAware,
-  CreatedDateAware,
-  ModifiedDateAware,
-  PermalinkAware,
-  ModerationAware,
-  ExpirationDateAware,
-  ModifiedByUserIdAware,
-  ReferenceIdAware,
-  UserApprovalAware,
-  ReferenceAble,
-  ReferenceGroupIdAware,
-  UserApprovalStatus
-} from '../api';
+import { getJson, post, XcapJsonResult, Thunk, isRunningInBrowser, XcapOptionalParameters } from '../api';
+import SortOrder from '../api/SortOrder';
+import UserApprovalStatus from '../api/UserApprovalStatus';
 //import * as groupApi from './group';
 //import * as gaFunctions from '../functions/gaFunctions';
 import { LikesByCurrentUser } from '../like';
 import { PaginatedCollection } from '../api/PaginatedCollection';
+import CreatedDateAware from '../api/CreatedDateAware';
+import XcapObject from '../api/XcapObject';
+import CreatorUserIdAware from '../api/CreatorUserIdAware';
+import ModifiedDateAware from '../api/ModifiedDateAware';
+import ModifiedByUserIdAware from '../api/ModifiedByUserIdAware';
+import PermalinkAware from '../api/PermalinkAware';
+import ModerationAware from '../api/ModerationAware';
+import ExpirationDateAware from '../api/ExpirationDateAware';
+import ReferenceIdAware from '../api/ReferenceIdAware';
+import ReferenceGroupIdAware from '../api/ReferenceGroupIdAware';
+import UserApprovalAware from '../api/UserApprovalAware';
+import ReferenceAble from '../api/ReferenceAble';
 
 /**
  * Comment class name

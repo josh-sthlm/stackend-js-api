@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 
 import { initialize, loadInitialStoreValues } from '../src/api/actions';

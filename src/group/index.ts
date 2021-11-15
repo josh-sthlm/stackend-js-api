@@ -1,24 +1,16 @@
-//@flow
-import {
-  getJson,
-  post,
-  createCommunityUrl,
-  XcapJsonResult,
-  XcapObject,
-  Thunk,
-  XcapOptionalParameters,
-  NameAware,
-  DescriptionAware,
-  PermalinkAware,
-  CreatorUserIdAware,
-  CreatedDateAware,
-  ModifiedDateAware,
-  ModerationAware
-} from '../api';
+import { getJson, post, createCommunityUrl, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
 import { User } from '../user';
 import { Request } from '../request';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { AuthObject } from '../user/privileges';
+import XcapObject from '../api/XcapObject';
+import NameAware from '../api/NameAware';
+import DescriptionAware from '../api/DescriptionAware';
+import PermalinkAware from '../api/PermalinkAware';
+import CreatorUserIdAware from '../api/CreatorUserIdAware';
+import CreatedDateAware from '../api/CreatedDateAware';
+import ModifiedDateAware from '../api/ModifiedDateAware';
+import ModerationAware from '../api/ModerationAware';
 
 /**
  * Xcap group api constants and methods.

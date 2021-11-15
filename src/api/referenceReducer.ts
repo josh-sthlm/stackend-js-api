@@ -1,4 +1,3 @@
-// @flow
 import update from 'immutability-helper';
 import createReducer from './createReducer';
 

@@ -1,4 +1,3 @@
-//@flow
 import { VoteSummary, Vote } from './index';
 import update from 'immutability-helper';
 import { Comment } from '../comments';

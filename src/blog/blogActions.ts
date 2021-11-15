@@ -1,4 +1,3 @@
-//@flow
 import * as reducer from './blogReducer';
 import { Blog } from './index';
 import { BlogActions } from './blogReducer';

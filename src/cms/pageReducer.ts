@@ -1,4 +1,3 @@
-//@flow
 import { getJsonErrorText } from '../api';
 import { GetPagesResult, Page, SubSite } from './index';
 

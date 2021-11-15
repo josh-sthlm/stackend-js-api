@@ -1,4 +1,3 @@
-//@flow
 import get from 'lodash/get';
 import find from 'lodash/find';
 

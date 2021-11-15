@@ -1,5 +1,3 @@
-//@flow
-
 //import log4js from 'log4js';
 import { logger, Parameters, XcapJsonResult } from './index';
 
@@ -258,9 +256,9 @@ export async function LoadJson({
         response
       };
     }
-  } catch (e) {
+  } catch (e: any) {
     logger.error(e, request ? JSON.stringify(request) : '');
-    if (e.message === 'Failed to fetch') {
+    if (e?.message === 'Failed to fetch') {
       return {
         error: "Can't access stackend api. Please make sure you've allowed this domain in your stack settings.",
         status: 500,

@@ -1,4 +1,3 @@
-//@flow
 import { LOGIN, LOGOUT, REQUEST_LOGIN_DATA, UPDATE_LOGIN_DATA } from './loginReducer';
 import { getCurrentUser, User } from '../user';
 import { newXcapJsonResult, post, Thunk, XcapJsonResult } from '../api';
@@ -25,7 +24,6 @@ export type LoginActions =
       };
     };
 
-//Action Creator
 export function reduxLogin(): LoginActions {
   return {
     type: LOGIN
@@ -38,14 +36,12 @@ export function reduxLogout(): LoginActions {
   };
 }
 
-//Action Creator
 function requestLoginData(): LoginActions {
   return {
     type: REQUEST_LOGIN_DATA
   };
 }
 
-//Action Creator
 /**
  * Refresh the current user. Cached 1 minute.
  * @param params { force?:boolean }

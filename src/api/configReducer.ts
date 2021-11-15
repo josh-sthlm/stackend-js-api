@@ -1,4 +1,3 @@
-//@flow
 import get from 'lodash/get';
 import { Config, DeployProfile, STACKEND_DEFAULT_CONTEXT_PATH, STACKEND_DEFAULT_SERVER } from './index';
 import { Action } from 'redux';

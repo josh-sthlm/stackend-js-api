@@ -1,19 +1,5 @@
-import {
-  getJson,
-  createCommunityUrl,
-  post,
-  getApiUrl,
-  XcapJsonResult,
-  Order,
-  invertOrder,
-  Thunk,
-  XcapOptionalParameters,
-  XcapObject,
-  NameAware,
-  PermalinkAware,
-  CreatedDateAware,
-  ReferenceAble
-} from '../api';
+import { getJson, createCommunityUrl, post, getApiUrl, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
+import { Order, invertOrder } from '../api/Order';
 import { Request } from '../request';
 import { AuthenticationType } from '../login';
 import { PaginatedCollection } from '../api/PaginatedCollection';
@@ -21,6 +7,11 @@ import get from 'lodash/get';
 import { CurrentUserType } from '../login/loginReducer';
 import { Community } from '../stackend';
 import { AuthObject, PrivilegeTypeId, PrivilegeTypeIds } from './privileges';
+import XcapObject from '../api/XcapObject';
+import NameAware from '../api/NameAware';
+import PermalinkAware from '../api/PermalinkAware';
+import ReferenceAble from '../api/ReferenceAble';
+import CreatedDateAware from '../api/CreatedDateAware';
 
 export const TYPE_USER = 'net.josh.community.user.backend.xcap.XcapUser';
 
@@ -273,7 +264,7 @@ export function getProfileLink(
  * @param componentContext {String} Context name, for example "members", "news", "cms"
  * @param componentClass {String} Component, for example "net.josh.community.user.UserManager", "net.josh.community.blog.BlogManager",
  *  "se.josh.xcap.cms.CmsManager", "net.josh.community.forum.ForumManager"
- * @param privilegeType {number} Minimum required privilege
+ * @param privilegeTypeId {number} Minimum required privilege
  */
 export function hasElevatedPrivilege(
   currentUser: CurrentUserType | User | null,
@@ -464,7 +455,7 @@ export function getUserPrivileges({
   return getJson({ url: '/user/get-privileges', parameters: arguments });
 }
 
-const ORDER_MAPPING = {
+const ORDER_MAPPING: { [key: string]: number } = {
   [OrderBy.ALIAS + Order.DESCENDING]: 1,
   [OrderBy.ALIAS + Order.ASCENDING]: 2,
   [OrderBy.CREATED + Order.DESCENDING]: 3,

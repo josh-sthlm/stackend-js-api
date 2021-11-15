@@ -1,5 +1,3 @@
-//@flow
-
 import { COMMUNITY_PARAMETER, getJson, post, Thunk, XcapJsonResult, XcapOptionalParameters } from '../api';
 import { getLocale } from '../util';
 import { forEachGraphQLList, GraphQLList, PaginatedGraphQLList, PaginatedGraphQLRequest } from '../util/graphql';

@@ -1,5 +1,3 @@
-//@flow
-
 import {
   ACCESS_TOKEN_SESSION_STORAGE_KEY,
   clearAccessToken,

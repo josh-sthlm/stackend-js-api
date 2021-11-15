@@ -1,4 +1,3 @@
-//@flow
 import { SET_REQUEST_INFO } from './requestReducers';
 import { Location, StackendAnchor } from './index';
 import { AnyAction } from 'redux';

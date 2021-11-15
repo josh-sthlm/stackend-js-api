@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 import { GetBlogEntryResult, getEntries, GetEntriesResult, getEntry, newBlogEntry } from '../src/blog';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';

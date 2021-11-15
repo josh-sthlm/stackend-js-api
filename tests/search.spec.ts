@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 import { COMMUNITY_PARAMETER } from '../src/api';
 import { search, SearchAbleType, SearchResult } from '../src/search';

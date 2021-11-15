@@ -1,16 +1,10 @@
-//@flow
-import {
-  getJson,
-  post,
-  XcapJsonResult,
-  XcapObject,
-  Thunk,
-  DescriptionAware,
-  PermalinkAware,
-  CreatedDateAware,
-  NameAware,
-  ReferenceAble
-} from '../api';
+import { getJson, post, XcapJsonResult, Thunk } from '../api';
+import XcapObject from '../api/XcapObject';
+import NameAware from '../api/NameAware';
+import DescriptionAware from '../api/DescriptionAware';
+import PermalinkAware from '../api/PermalinkAware';
+import CreatedDateAware from '../api/CreatedDateAware';
+import ReferenceAble from '../api/ReferenceAble';
 
 /**
  * Xcap category api constants and methods.

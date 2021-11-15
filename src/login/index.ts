@@ -1,4 +1,3 @@
-//@flow
 import get from 'lodash/get';
 import { Request } from '../request';
 import {

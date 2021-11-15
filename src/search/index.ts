@@ -6,7 +6,6 @@ import {
   post,
   Config,
   XcapJsonResult,
-  XcapObject,
   Thunk,
   XcapOptionalParameters
 } from '../api';
@@ -15,6 +14,7 @@ import get from 'lodash/get';
 import { Request } from '../request';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { LikeDataMap } from '../like';
+import XcapObject from '../api/XcapObject';
 
 /**
  * Search functionality

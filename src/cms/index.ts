@@ -1,29 +1,28 @@
-//@flow
 import {
   COMMUNITY_PARAMETER,
   getJson,
   post,
   XcapJsonResult,
-  ModerationStatus,
-  XcapObject,
   Thunk,
   isRunningServerSide,
-  XcapOptionalParameters,
-  PermalinkAware,
-  NameAware,
-  ModerationAware,
-  CreatorUserIdAware,
-  CreatedDateAware,
-  ModifiedDateAware,
-  ModifiedByUserIdAware,
-  PublishDateAware
+  XcapOptionalParameters
 } from '../api';
+import ModerationStatus from '../api/ModerationStatus';
 import { generatePermalink } from '../api/permalink';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { Insertion, Category } from '../category';
 import { Order } from '../search';
 import { Tree, Node, newTree, newTreeNode } from '../api/tree';
 import { ModuleType } from '../stackend/modules';
+import XcapObject from '../api/XcapObject';
+import PermalinkAware from '../api/PermalinkAware';
+import NameAware from '../api/NameAware';
+import ModerationAware from '../api/ModerationAware';
+import CreatedDateAware from '../api/CreatedDateAware';
+import CreatorUserIdAware from '../api/CreatorUserIdAware';
+import ModifiedDateAware from '../api/ModifiedDateAware';
+import ModifiedByUserIdAware from '../api/ModifiedByUserIdAware';
+import PublishDateAware from '../api/PublishDateAware';
 
 /**
  * Xcap Cms api constants and methods.

@@ -1,5 +1,3 @@
-//@flow
-
 import createTestStore from './setup';
 
 import { LikesState } from '../src/like/likeReducer';

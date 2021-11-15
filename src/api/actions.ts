@@ -1,5 +1,3 @@
-//@flow
-
 import {
   Config,
   getInitialStoreValues,
@@ -24,6 +22,7 @@ import { ModuleType } from '../stackend/modules';
 import { Community } from '../stackend';
 import { RECEIVE_COLLECTIONS, RECEIVE_LISTINGS, RECEIVE_MULTIPLE_PRODUCTS } from '../shop/shopReducer';
 import Logger from '../util/Logger';
+import { LoadJsonResult } from './LoadJson';
 
 export interface InitializeRequest extends GetInitialStoreValuesRequest {
   config?: Partial<Config>;
@@ -187,5 +186,30 @@ export function loadInitialStoreValues({
 		*/
 
     return r;
+  };
+}
+
+/**
+ * Signals that an api access has failed due to some error, for example server down or insufficient privileges.
+ * A custom reducer could set up logic to handle re-authentication
+ */
+export const XCAP_API_ACCESS_FAILED = 'XCAP_API_ACCESS_FAILED';
+
+export type ApiAccessFailedAction = AnyAction & {
+  url: string;
+  result: LoadJsonResult;
+};
+
+/**
+ * Signals that an api access has failed due to some error, for example server down or insufficient privileges
+ *
+ * @param url
+ * @param result
+ */
+export function signalApiAccessFailed(url: string, result: LoadJsonResult): ApiAccessFailedAction {
+  return {
+    type: XCAP_API_ACCESS_FAILED,
+    url,
+    result
   };
 }

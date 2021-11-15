@@ -1,5 +1,3 @@
-//@flow
-
 import { listForums } from '../src/forum';
 
 describe('Forum', () => {

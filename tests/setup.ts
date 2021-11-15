@@ -1,5 +1,3 @@
-//@flow
-
 import { applyMiddleware, combineReducers, compose, createStore, Reducer } from 'redux';
 import thunk from 'redux-thunk';
 import { STANDARD_REDUCERS } from '../src/api/reducers';
@@ -23,7 +21,8 @@ export default function createTestStore(): any {
  */
 export function createCustomTestStore(reducers: { [name: string]: Reducer<any, any> }): any {
   enableDebug();
-  return createStore(combineReducers(reducers), {}, compose(applyMiddleware(thunk)));
+  const r = combineReducers(reducers);
+  return createStore(r, {}, compose(applyMiddleware(thunk)));
 }
 
 /**

@@ -1,5 +1,3 @@
-//@flow
-
 export interface PaginatedCollection<T> {
   page: number;
   pageSize: number;

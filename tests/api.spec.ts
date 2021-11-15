@@ -1,19 +1,11 @@
-//@flow
-
 import createTestStore from './setup';
 import {
   argsToObject,
   Config,
-  constructReference,
   createUrl,
   getConfiguration,
   getInitialStoreValues,
-  getReferenceAsString,
   getTypeName,
-  invertOrder,
-  Order,
-  parseCommunityContext,
-  parseReference,
   STACKEND_DEFAULT_SERVER,
   templateReplace,
   templateReplaceUrl,
@@ -24,11 +16,14 @@ import {
   newXcapJsonResult,
   GetInitialStoreValuesResult
 } from '../src/api';
+import { invertOrder, Order } from '../src/api/Order';
 import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import assert from 'assert';
 import { listMy, ListResult } from '../src/media';
 import { getProductListKey } from '../src/shop/shopActions';
 import { urlEncodeParameters } from '../src/api/LoadJson';
+import { parseCommunityContext } from '../src/api/CommunityContext';
+import { constructReference, getReferenceAsString, parseReference } from '../src/api/Reference';
 
 describe('API', () => {
   const store = createTestStore();

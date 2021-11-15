@@ -1,17 +1,10 @@
-import {
-  getJson,
-  post,
-  XcapJsonResult,
-  XcapObject,
-  ModerationStatusCodes,
-  ModerationStatus,
-  ModerationVisibility,
-  Thunk,
-  ModerationStatusCode,
-  Order
-} from '../api';
+import { getJson, post, XcapJsonResult, Thunk } from '../api';
+import { ModerationStatus, ModerationStatusCode, ModerationStatusCodes } from '../api/ModerationStatus';
+import { Order } from '../api/Order';
+import ModerationVisibility from '../api/ModerationVisibility';
 import { User } from '../user';
 import { PaginatedCollection } from '../api/PaginatedCollection';
+import XcapObject from '../api/XcapObject';
 
 /**
  * Result of a single content filter

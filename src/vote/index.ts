@@ -1,17 +1,10 @@
-//@flow
-
-import {
-  post,
-  XcapJsonResult,
-  Thunk,
-  XcapOptionalParameters,
-  CreatedDateAware,
-  CreatorUserIdAware,
-  ReferenceGroupIdAware,
-  ReferenceIdAware,
-  XcapObject
-} from '../api';
+import { post, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
 import { CommentModule } from '../comments';
+import ReferenceIdAware from '../api/ReferenceIdAware';
+import XcapObject from '../api/XcapObject';
+import ReferenceGroupIdAware from '../api/ReferenceGroupIdAware';
+import CreatedDateAware from '../api/CreatedDateAware';
+import CreatorUserIdAware from '../api/CreatorUserIdAware';
 
 /** VoteSummary is used for like and dislike in forum*/
 export interface VoteSummary extends ReferenceIdAware<XcapObject>, ReferenceGroupIdAware {

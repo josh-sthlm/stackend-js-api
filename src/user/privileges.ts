@@ -1,4 +1,3 @@
-//@flow
 import { User, hasElevatedPrivilege } from './index';
 import * as groupApi from '../group';
 

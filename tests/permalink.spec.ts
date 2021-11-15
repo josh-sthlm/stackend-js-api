@@ -1,5 +1,3 @@
-//@flow
-
 import { generatePermalink, getParentPermalink } from '../src/api/permalink';
 
 describe('Permalink', () => {

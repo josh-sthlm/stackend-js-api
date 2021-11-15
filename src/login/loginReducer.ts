@@ -1,4 +1,3 @@
-//@flow
 import get from 'lodash/get';
 import { User } from '../user';
 import { LoginActions } from './loginAction';
