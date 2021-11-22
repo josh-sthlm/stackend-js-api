@@ -253,7 +253,7 @@ describe('Shop', () => {
       const r: Array<Country> = await store.dispatch(getCountries({ locale: 'en_US' }));
       assert(r);
       expect(r.length).toBeGreaterThan(10);
-      console.log(r);
+      console.log(r[0]);
     });
   });
 
