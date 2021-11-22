@@ -12,7 +12,9 @@ import {
   DeployProfile,
   setConfiguration,
   newXcapJsonResult,
-  GetInitialStoreValuesResult
+  GetInitialStoreValuesResult,
+  addModuleExtraParameters,
+  GetInitialStoreValuesRequest
 } from '../src/api';
 import { invertOrder, Order } from '../src/api/Order';
 import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
@@ -242,6 +244,24 @@ describe('API', () => {
         apa: 'ola'
       });
       expect(r).toBe('test=r%C3%A4ksm%C3%B6rg%C3%A5s&apa=ola');
+    });
+  });
+
+  describe('addModuleExtraParameters', () => {
+    it('Adds module parameters', () => {
+      const r: GetInitialStoreValuesRequest = {};
+      addModuleExtraParameters(r, 'comment', 123, {
+        pageSize: 10,
+        referenceId: 1
+      });
+      addModuleExtraParameters(r, 'stackend-comment', 456, {
+        pageSize: 15,
+        referenceId: 2
+      });
+      expect(r['comment.123.pageSize']).toBe(10);
+      expect(r['comment.123.referenceId']).toBe(1);
+      expect(r['comment.456.pageSize']).toBe(15);
+      expect(r['comment.456.referenceId']).toBe(2);
     });
   });
 });

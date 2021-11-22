@@ -30,7 +30,7 @@ describe('API actions', () => {
       );
 
       // Correct result
-      expect(r.stackendCommunity).toBeDefined();
+      assert(r.stackendCommunity);
       expect(r.subSites).toBeDefined();
       expect(r.subSites['1']).toBeDefined();
       expect(r.cmsPages).toBeDefined();
@@ -55,8 +55,15 @@ describe('API actions', () => {
 
       // Backwards compatible
       console.log('Keys in cmsContent', Object.keys(cmsContent));
-      // @ts-ignore
-      expect(cmsContent['39']).toBeDefined(); // Content for start page
+      expect((cmsContent as any)['39']).toBeDefined(); // Content for start page
+
+      // FIXME: When backend released, enable this
+      /*
+      assert(r.translations);
+      expect(r.translations.lang).toBe(r.stackendCommunity.locale);
+      assert(r.translations.messages);
+      expect(Object.keys(r.translations.messages)).toContain('Cancel');
+       */
     });
 
     it('Shop data', async () => {

@@ -1408,6 +1408,26 @@ export function getTypeName(objectOrClassName: string | XcapObject): string {
   return 'Unknown type';
 }
 
+/**
+ * Translations
+ */
+export interface Translations {
+  /** Language code */
+  lang: string;
+  messages: {
+    [key: string]: string;
+  };
+}
+
+/**
+ * Extra data required by some modules, like for example comment listings for comment modules
+ */
+export interface ModuleExtraData {
+  [moduleType: string]: {
+    [referenceOrModuleId: number]: any;
+  };
+}
+
 export interface GetInitialStoreValuesResult extends XcapJsonResult {
   /** Was the community determined from the domain rather that from the permalink? */
   communityFromDomain: boolean;
@@ -1442,9 +1462,52 @@ export interface GetInitialStoreValuesResult extends XcapJsonResult {
 
   /** Shop data, if requested */
   shopData: ShopDataResult | null;
+
+  /** Translation data, if not stackend.com */
+  translations: Translations | null;
+
+  /** Extra data for modules */
+  data: ModuleExtraData;
 }
 
-export interface GetInitialStoreValuesRequest {
+export interface ModuleExtraParameters {
+  [key: string]: any | undefined;
+}
+
+/**
+ * Get the parameter name
+ * @param moduleType
+ * @param referenceOrModuleId
+ * @param name
+ */
+export function getModuleExtraParameter(moduleType: string, referenceOrModuleId: number, name: string): string {
+  let key = moduleType;
+  if (key.startsWith('stackend-')) {
+    key = key.substring('stackend-'.length);
+  }
+  return key + '.' + referenceOrModuleId + '.' + name;
+}
+
+/**
+ * Add all extra parameters
+ * @param params
+ * @param moduleType
+ * @param referenceOrModuleId
+ * @param values
+ */
+export function addModuleExtraParameters(
+  params: ModuleExtraParameters,
+  moduleType: string,
+  referenceOrModuleId: number,
+  values: { [name: string]: any }
+): void {
+  Object.keys(values).forEach(k => {
+    const n = getModuleExtraParameter(moduleType, referenceOrModuleId, k);
+    params[n] = values[k];
+  });
+}
+
+export interface GetInitialStoreValuesRequest extends ModuleExtraParameters {
   permalink?: string;
   domain?: string;
   communityId?: number;
