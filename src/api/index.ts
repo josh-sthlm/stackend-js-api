@@ -3,7 +3,7 @@ import get from 'lodash/get';
 import forIn from 'lodash/forIn';
 import { receiveReferences } from './referenceActions';
 import { Request, getRequest } from '../request';
-import { Community, Module } from '../stackend';
+import { Community, Module, STACKEND_COMMUNITY } from '../stackend';
 import { User } from '../user';
 import { setLoadingThrobberVisible } from '../throbber/throbberActions';
 import { Content, Page, SubSite } from '../cms';
@@ -281,7 +281,7 @@ export function getConfiguration(): Thunk<Config> {
  * @param config
  */
 export function setConfiguration(config: Partial<Config>): Thunk<any> {
-  return (dispatch, getState): any => {
+  return (dispatch, _getState): any => {
     return dispatch({
       type: XCAP_SET_CONFIG,
       config
@@ -1576,14 +1576,15 @@ export function getInitialStoreValues({
 /**
  * Log a javascript error
  * @param error Browser Error object
+ * @param store
  */
-export async function logJsError(error: any /* Error */): Promise<any> {
+export async function logJsError(error: any /* Error */, store?: any): Promise<any> {
   if (!error) {
     return;
   }
 
   const communityId = 0;
-  const store = '';
+
   /* FIXME: Re add this
 	let api = getClientSideApi();
 	if (api && api.reduxStore) {
@@ -1612,8 +1613,18 @@ export async function logJsError(error: any /* Error */): Promise<any> {
     pageUrl: document.location.href
   };
 
-  let url = _getServer(null) + _getContextPath(null) + '/api/js-log';
-  url = appendAccessToken(url);
+  let url = null;
+  if (store) {
+    url = await store.dispatch(
+      getApiUrl({
+        url: '/js-log',
+        community: STACKEND_COMMUNITY
+      })
+    );
+  } else {
+    url = _getServer(null) + _getContextPath(null) + '/api/js-log';
+    url = appendAccessToken(url);
+  }
 
   let r = null;
   try {
