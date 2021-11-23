@@ -662,12 +662,12 @@ export function _addContentToDom(
   if (parent && (html || css)) {
     const addHtml = (css ? css : '') + (html ? html : '');
     try {
-      const x = document.createRange().createContextualFragment(addHtml);
+      const f = document.createRange().createContextualFragment(addHtml);
       // Replace children
       while (parent.childNodes.length > 0) {
         parent.removeChild(parent.childNodes[0]);
       }
-      parent.appendChild(x);
+      parent.appendChild(f);
     } catch (x) {
       console.warn('Error in javascript tag: ', addHtml, ' from cms module: ', contentId);
     }
@@ -700,7 +700,7 @@ export function addContentToDom(parent: Element, content: Content): void {
 
   const { htmlValue, javascriptValue, cssValue } = extractContentValues(content);
 
-  const style = `<style type="text/css">${cssValue}</style>`;
+  const style = `<style>${cssValue}</style>`;
   let javascript = '';
   if (javascriptValue !== '') {
     javascript = `<script type="text/javascript" id="stackend-cms-js-${content.id}">${javascriptValue}</script>`;
