@@ -68,43 +68,11 @@ export type LoadInitialStoreValuesRequest = GetInitialStoreValuesRequest;
 /*
  * Populate the initial redux store.
  */
-export function loadInitialStoreValues({
-  permalink,
-  domain,
-  cookie,
-  communityId,
-  moduleIds,
-  contentIds,
-  pageIds,
-  subSiteIds,
-  referenceUrl,
-  stackendMode = false,
-  productHandles,
-  productCollectionHandles,
-  productListings,
-  shopImageMaxWidth,
-  shopListingImageMaxWidth
-}: GetInitialStoreValuesRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
+export function loadInitialStoreValues(
+  params: GetInitialStoreValuesRequest
+): Thunk<Promise<GetInitialStoreValuesResult>> {
   return async (dispatch: any): Promise<GetInitialStoreValuesResult> => {
-    const r: GetInitialStoreValuesResult = await dispatch(
-      getInitialStoreValues({
-        permalink,
-        domain,
-        cookie,
-        communityId,
-        moduleIds,
-        contentIds,
-        pageIds,
-        subSiteIds,
-        referenceUrl,
-        stackendMode,
-        productHandles,
-        productCollectionHandles,
-        productListings,
-        shopImageMaxWidth,
-        shopListingImageMaxWidth
-      })
-    );
+    const r: GetInitialStoreValuesResult = await dispatch(getInitialStoreValues(params));
 
     if (typeof r === 'undefined' || r === null || r.error) {
       return r;
