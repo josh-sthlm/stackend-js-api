@@ -1528,48 +1528,23 @@ export interface GetInitialStoreValuesRequest extends ModuleExtraParameters {
 /**
  * Load the initial store values
  */
-export function getInitialStoreValues({
-  permalink,
-  domain,
-  communityId,
-  moduleIds,
-  contentIds,
-  pageIds,
-  subSiteIds,
-  cookie,
-  referenceUrl,
-  stackendMode,
-  productHandles,
-  productCollectionHandles,
-  productListings,
-  shopImageMaxWidth,
-  shopListingImageMaxWidth
-}: GetInitialStoreValuesRequest): Thunk<Promise<GetInitialStoreValuesResult>> {
+export function getInitialStoreValues(
+  params: GetInitialStoreValuesRequest
+): Thunk<Promise<GetInitialStoreValuesResult>> {
   let pl: Array<string> | undefined = undefined;
-  if (productListings && productListings.length !== 0) {
-    pl = productListings.map(q => JSON.stringify(q));
+  if (params.productListings && params.productListings.length !== 0) {
+    pl = params.productListings.map(q => JSON.stringify(q));
   }
+
+  const q = Object.assign({}, params, {
+    productListings: pl
+  });
 
   return getJson({
     url: '/init',
-    parameters: {
-      permalink,
-      domain,
-      communityId,
-      moduleIds,
-      contentIds,
-      pageIds,
-      subSiteIds,
-      referenceUrl,
-      stackendMode,
-      productHandles,
-      productCollectionHandles,
-      productListings: pl,
-      shopImageMaxWidth,
-      shopListingImageMaxWidth
-    },
+    parameters: q,
     community: DEFAULT_COMMUNITY,
-    cookie
+    cookie: params.cookie
   });
 }
 
