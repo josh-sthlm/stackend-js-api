@@ -2,7 +2,6 @@ import get from 'lodash/get';
 import concat from 'lodash/concat';
 import assign from 'lodash/assign';
 import update from 'immutability-helper';
-import * as blogApi from './index';
 import createReducer from '../api/createReducer';
 import { getJsonErrorText } from '../api';
 import { REACT_ROUTER_REDUX_LOCATION_CHANGE } from '../request/requestReducers';
@@ -22,21 +21,47 @@ export type GroupBlogEntriesActions = Receive | Update | Request | Invalidate;
 
 type BlogKey = string; //ex: groups/news
 
-export interface GroupBlogEntriesState {
-  [BlogKey: string]: {
-    isFetching: boolean;
-    didInvalidate: boolean;
-    json: {
-      resultPaginated: {
-        entries: Array<blogApi.BlogEntry>;
-      };
-      userRsvpStatuses: any;
-      likesByCurrentUser: any;
-      likes: LikeDataMap;
-      blogId: number;
+export interface GroupBlogState {
+  isFetching: boolean;
+  didInvalidate: boolean;
+  json: {
+    resultPaginated: {
+      entries: Array<BlogEntry>;
     };
-    lastUpdated: number;
+    userRsvpStatuses: any;
+    likesByCurrentUser: any;
+    likes: LikeDataMap;
+    blogId: number;
   };
+  lastUpdated: number;
+}
+export interface GroupBlogEntriesState {
+  [blogKey: string]: GroupBlogState;
+}
+
+/**
+ * Get the state for a given blogKey
+ * @param groupBlogEntriesState
+ * @param blogKey
+ */
+export function getGroupBlogState(
+  groupBlogEntriesState: GroupBlogEntriesState,
+  blogKey: string
+): GroupBlogState | null {
+  return groupBlogEntriesState[blogKey] || null;
+}
+
+/**
+ * Get the blog entries
+ * @param groupBlogEntriesState
+ * @param blogKey
+ */
+export function getBlogEntries(groupBlogEntriesState: GroupBlogEntriesState, blogKey: string): Array<BlogEntry> | null {
+  const x: GroupBlogState | null = groupBlogEntriesState[blogKey];
+  if (x) {
+    return x.json?.resultPaginated?.entries || null;
+  }
+  return null;
 }
 
 interface Receive {
