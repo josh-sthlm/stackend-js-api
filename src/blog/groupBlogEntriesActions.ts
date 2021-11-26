@@ -34,6 +34,7 @@ import {
   //gaEditPostEventObject
 } from './index';
 import { receiveLikes } from '../like/likeActions';
+import { PaginatedCollection } from '../api/PaginatedCollection';
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**
@@ -291,14 +292,13 @@ function _fetchBlogEntry(blogKey: string, json: any): Thunk<Promise<any>> {
       dispatch(blogActions.receiveBlogs({ entries: blogRef }));
     }
 
+    const resultPaginated = { entries: [json.blogEntry] } as PaginatedCollection<BlogEntry>;
+
     return dispatch(
       receiveBlogEntries(blogKey, {
-        // @ts-ignore
-        resultPaginated: {
-          entries: [json.blogEntry]
-        },
+        resultPaginated,
         likes: json.likes
-      })
+      } as GetEntriesResult)
     );
   };
 }
