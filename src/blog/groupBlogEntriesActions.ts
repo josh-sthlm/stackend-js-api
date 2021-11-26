@@ -48,7 +48,7 @@ import { receiveLikes } from '../like/likeActions';
  * @param blogKey
  * @param json
  */
-function receiveBlogEntries(blogKey: string, json: GetEntriesResult): GroupBlogEntriesActions {
+export function receiveBlogEntries(blogKey: string, json: GetEntriesResult): GroupBlogEntriesActions {
   return {
     type: RECEIVE_GROUP_BLOG_ENTRIES,
     blogKey,
