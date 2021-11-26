@@ -11,12 +11,39 @@ import {
 import { Group, GroupMemberAuth } from './index';
 import { AuthObject } from '../user/privileges';
 
+import LoadingState from '../api/LoadingState';
+
+export interface MyGroupsState {
+  loadingState: LoadingState;
+  /**
+   * Id's of my groups
+   */
+  ids: Array<number>;
+}
+
 export interface GroupState {
   isFetching: boolean;
   didInvalidate: boolean;
   lastUpdated: number;
-  entries: { [key: number]: Group }; //entries is an object with group id: group
-  auth: { [key: number]: AuthObject }; //object with group-ids mapped to auth object
+
+  /**
+   * All loaded groups by id
+   */
+  entries: { [key: number]: Group };
+
+  /**
+   * My groups
+   */
+  myGroups: MyGroupsState;
+
+  /**
+   * Auth arranged by group id
+   */
+  auth: { [key: number]: AuthObject };
+
+  /**
+   * Group members by group id
+   */
   groupMembers: { [key: number]: Array<GroupMemberAuth> };
 }
 
@@ -25,6 +52,10 @@ const initialState: GroupState = {
   didInvalidate: false,
   lastUpdated: Date.now(),
   entries: {},
+  myGroups: {
+    loadingState: LoadingState.NOT_STARTED,
+    ids: []
+  },
   auth: {},
   groupMembers: {}
 };
@@ -40,21 +71,41 @@ export default function groups(state: GroupState = initialState, action: GroupAc
       // FIXME: action.errors not passed on
       if (action.entries) {
         const uniqueGroupEntries: { [groupId: number]: Group } = {};
-        // @ts-ignore
-        [].concat(action.entries).map((group: Group) => (uniqueGroupEntries[group.id] = group));
+
+        const newGroupIds: Array<number> = [];
+        action.entries.forEach((group: Group) => {
+          uniqueGroupEntries[group.id] = group;
+          newGroupIds.push(group.id);
+        });
+
+        let myGroups = state.myGroups;
+        if (action.mine) {
+          myGroups = Object.assign({}, myGroups, {
+            loadingState: LoadingState.READY,
+            ids: myGroups.ids.concat(newGroupIds)
+          });
+        }
 
         return update(state, {
           isFetching: { $set: false },
           didInvalidate: { $set: false },
           lastUpdated: { $set: Date.now() },
-          entries: { $merge: uniqueGroupEntries }
+          entries: { $merge: uniqueGroupEntries },
+          myGroups: { $set: myGroups }
         });
       } else {
+        let myGroups = state.myGroups;
+        if (action.mine) {
+          myGroups = Object.assign({}, myGroups, {
+            loadingState: LoadingState.READY
+          });
+        }
         return update(state, {
           isFetching: { $set: false },
           didInvalidate: { $set: false },
           lastUpdated: { $set: Date.now() },
-          entries: { $merge: [] }
+          entries: { $merge: [] },
+          myGroups: { $set: myGroups }
         });
       }
 

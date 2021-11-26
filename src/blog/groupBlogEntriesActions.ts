@@ -18,7 +18,8 @@ import {
   UPDATE_GROUP_BLOG_ENTRY,
   GroupBlogEntriesActions,
   UpdateBlogEntry,
-  OpenBlogEntryWriteCommentSectionActions
+  OpenBlogEntryWriteCommentSectionActions,
+  hasBlogEntries
 } from './groupBlogEntriesReducer';
 
 import {
@@ -35,6 +36,7 @@ import {
 } from './index';
 import { receiveLikes } from '../like/likeActions';
 import { PaginatedCollection } from '../api/PaginatedCollection';
+import { fetchMyGroups } from '../group/groupActions';
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**
@@ -117,21 +119,30 @@ export function fetchBlogEntries({
     const categoryId = get(categories, '[0].id', null);
 
     try {
-      dispatch(requestBlogEntries(blogKey));
-      const { currentUser, groups } = getState();
+      const { currentUser, groups, groupBlogEntries } = getState();
+
+      // FIXME: Really list groups here?
       const auth = get(groups, 'auth', {});
       try {
         if (get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
-          const myGroups = await dispatch(listMyGroups({}));
-          dispatch(groupActions.receiveGroupsAuth({ entries: get(myGroups, 'groupAuth') }));
+          await dispatch(fetchMyGroups());
         }
       } catch (e) {
         console.error("Couldn't receiveGroupsAuth in fetchBlogEntries for " + blogKey + ': ', e);
       }
 
+      // Ignore if already present
+      if (hasBlogEntries(groupBlogEntries, blogKey, pageSize, p, categoryId) && !invalidatePrevious) {
+        return;
+      }
+
+      dispatch(requestBlogEntries(blogKey));
+
+      // FIXME: Category id not used in key?
       const blogEntries: GetEntriesResult = await dispatch(
         getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry })
       );
+
       // FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
       const groupRef = get(blogEntries, 'blog.groupRef');
       if (groupRef) {
@@ -145,10 +156,10 @@ export function fetchBlogEntries({
       } else {
         console.error("Couldn't receiveBlogs in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
       }
+
       if (invalidatePrevious) {
         await dispatch(cleanCacheBlogEntries({ blogKey }));
       }
-
       dispatch(receiveLikes(blogEntries.likes));
 
       return dispatch(receiveBlogEntries(blogKey, blogEntries));
@@ -251,7 +262,7 @@ export function fetchBlogEntryWithComments({
   permalink?: string;
   blogKey: string;
 }): Thunk<Promise<any>> {
-  return async (dispatch: any, getState: any): Promise<any> => {
+  return async (dispatch: any, _getState: any): Promise<any> => {
     try {
       const response = await dispatch(fetchBlogEntry({ id, permalink, blogKey }));
       const blogEntry = response.blogEntry;

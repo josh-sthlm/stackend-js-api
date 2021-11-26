@@ -2,19 +2,23 @@
 import get from 'lodash/get';
 import { AuthObject } from '../user/privileges';
 import {
+  applyForMembership as _applyForMembership,
+  getGroup,
+  GetGroupResult,
   Group,
   GroupMemberAuth,
-  listMyGroups,
-  subscribe as _subscribe,
-  unsubscribe as _unsubscribe,
-  applyForMembership as _applyForMembership,
   listMembers,
-  getGroup,
   ListMembersResult,
-  SubscribeResult
+  listMyGroups,
+  ListMyGroupsResult,
+  subscribe as _subscribe,
+  SubscribeResult,
+  unsubscribe as _unsubscribe
 } from './index';
 
 import { Thunk, XcapJsonResult } from '../api';
+import { GroupState } from './groupReducer';
+import LoadingState from '../api/LoadingState';
 
 export const REQUEST_GROUPS = 'REQUEST_GROUPS';
 export const RECEIVE_GROUPS = 'RECEIVE_GROUPS';
@@ -22,9 +26,9 @@ export const INVALIDATE_GROUPS = 'INVALIDATE_GROUPS';
 export const RECEIVE_GROUPS_AUTH = 'RECEIVE_GROUPS_AUTH';
 export const RECEIVE_GROUP_MEMBERS = 'RECEIVE_GROUP_MEMBERS';
 
-export type Request = { type: typeof REQUEST_GROUPS };
-export type Receive = { type: typeof RECEIVE_GROUPS; entries: Array<Group> };
-export type ReceiveGroup = { type: typeof RECEIVE_GROUPS; entries: Array<Group> };
+export type Request = { type: typeof REQUEST_GROUPS; mine?: boolean };
+export type Receive = { type: typeof RECEIVE_GROUPS; entries: Array<Group>; mine?: boolean };
+export type ReceiveGroup = { type: typeof RECEIVE_GROUPS; entries: Array<Group>; mine?: boolean };
 export type Invalidate = { type: typeof INVALIDATE_GROUPS };
 export type ReceiveAuth = { type: typeof RECEIVE_GROUPS_AUTH; entries: { [id: number]: AuthObject } };
 
@@ -37,25 +41,80 @@ export type GroupActions = Request | Receive | ReceiveGroup | Invalidate | Recei
 
 /**
  * Fetch my groups
+ * @param refresh
  */
-export function fetchMyGroups(): Thunk<void> {
-  return async (dispatch: any /*, getState: GetState*/): Promise<void> => {
-    dispatch(requestGroups());
-    const json = await dispatch(listMyGroups({}));
-    dispatch(receiveGroups({ entries: json }));
+export function fetchMyGroups(refresh = false): Thunk<void> {
+  return async (dispatch: any, getState: any): Promise<void> => {
+    const groups: GroupState = getState().groups;
+    if (
+      groups.myGroups.loadingState === LoadingState.NOT_STARTED ||
+      (refresh && groups.myGroups.loadingState === LoadingState.READY)
+    ) {
+      dispatch(requestGroups(true));
+      const json: ListMyGroupsResult = await dispatch(listMyGroups({}));
+      dispatch(receiveGroups({ entries: json.groups.entries, mine: true }));
+      dispatch(receiveGroupsAuth({ entries: json.groupAuth }));
+    }
   };
 }
 
 /**
- * Add group
+ * Get my groups from
+ * @param groups
  */
-export function addGroup({ groupPermalink, groupId }: { groupPermalink?: string; groupId?: number }): Thunk<void> {
-  return async (dispatch: any /*, getState: GetState*/): Promise<void> => {
+export function getMyGroups(groups: GroupState): Array<Group> {
+  if (groups.myGroups.loadingState !== LoadingState.READY) {
+    return [];
+  }
+
+  const r: Array<Group> = [];
+  groups.myGroups.ids.forEach(id => {
+    const g = groups.entries[id];
+    if (g) {
+      r.push(g);
+    }
+  });
+  return r;
+}
+
+/**
+ * Request a group
+ */
+export function fetchGroup({
+  groupPermalink,
+  groupId,
+  refresh = false
+}: {
+  groupPermalink?: string;
+  groupId?: number;
+  refresh?: boolean;
+}): Thunk<Promise<Group | null>> {
+  return async (dispatch: any, getState: any): Promise<Group | null> => {
+    if (!refresh) {
+      const groups: GroupState = getState().groups;
+      let group: Group | null = null;
+      if (groupId) {
+        group = groups.entries[groupId];
+      } else {
+        const id: any = Object.keys(groups.entries).find((id: any) => groups.entries[id]?.permalink === groupPermalink);
+        group = groups.entries[id];
+      }
+      if (group) {
+        return group;
+      }
+    }
     dispatch(requestGroups());
-    const json = await dispatch(getGroup({ groupPermalink, groupId }));
-    dispatch(receiveGroups({ entries: [json.group] }));
+    const json: GetGroupResult = await dispatch(getGroup({ groupPermalink, groupId }));
+    dispatch(receiveGroups({ entries: json.group ? [json.group] : [] }));
+    return json.group;
   };
 }
+
+/**
+ * Request a group
+ * @deprecated use fetchGroup instead
+ */
+export const addGroup = fetchGroup;
 
 /**
  * Subscribe to a group
@@ -126,18 +185,20 @@ export function applyForMembership({ groupPermalink, groupId }: ApplyForMembersh
   };
 }
 
-export function requestGroups(): Request {
-  return { type: REQUEST_GROUPS };
+export function requestGroups(mine?: boolean): Request {
+  return { type: REQUEST_GROUPS, mine };
 }
 
 export interface ReceiveGroups {
   entries: Array<Group>;
+  mine?: boolean;
 }
 
-export function receiveGroups({ entries }: ReceiveGroups): Receive {
+export function receiveGroups({ entries, mine }: ReceiveGroups): Receive {
   return {
     type: RECEIVE_GROUPS,
-    entries
+    entries,
+    mine
   };
 }
 

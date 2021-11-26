@@ -8,6 +8,7 @@ import { REACT_ROUTER_REDUX_LOCATION_CHANGE } from '../request/requestReducers';
 import { logger } from '../api';
 import { BlogEntry, GetEntriesResult } from './index';
 import { LikeDataMap } from '../like';
+import { PaginatedCollection } from '../api/PaginatedCollection';
 
 //Action Type
 export const REQUEST_GROUP_BLOG_ENTRIES = 'REQUEST_GROUP_BLOG_ENTRIES';
@@ -56,12 +57,44 @@ export function getGroupBlogState(
  * @param groupBlogEntriesState
  * @param blogKey
  */
-export function getBlogEntries(groupBlogEntriesState: GroupBlogEntriesState, blogKey: string): Array<BlogEntry> | null {
+export function getBlogEntries(
+  groupBlogEntriesState: GroupBlogEntriesState,
+  blogKey: string
+): PaginatedCollection<BlogEntry> | null {
   const x: GroupBlogState | null = groupBlogEntriesState[blogKey];
   if (x) {
-    return x.json?.resultPaginated?.entries || null;
+    return (x.json?.resultPaginated as PaginatedCollection<BlogEntry>) || null;
   }
   return null;
+}
+
+/**
+ * Check if relevant blog entries exists in store
+ * @param groupBlogEntriesState
+ * @param blogKey
+ * @param pageSize
+ * @param p
+ * @param categoryId
+ */
+export function hasBlogEntries(
+  groupBlogEntriesState: GroupBlogEntriesState,
+  blogKey: string,
+  pageSize: number,
+  p: number,
+  categoryId: number
+): boolean {
+  const pe = getBlogEntries(groupBlogEntriesState, blogKey);
+  if (pe) {
+    if (pe.page < p) {
+      return false;
+    }
+    if (pe.pageSize != pageSize) {
+      return false;
+    }
+    return true;
+    // FIXME: categoryId included in request, but not key
+  }
+  return false;
 }
 
 interface Receive {
