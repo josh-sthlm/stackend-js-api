@@ -71,7 +71,6 @@ export default function groups(state: GroupState = initialState, action: GroupAc
       // FIXME: action.errors not passed on
       if (action.entries) {
         const uniqueGroupEntries: { [groupId: number]: Group } = {};
-
         const newGroupIds: Array<number> = [];
         action.entries.forEach((group: Group) => {
           uniqueGroupEntries[group.id] = group;

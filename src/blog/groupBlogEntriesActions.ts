@@ -146,7 +146,7 @@ export function fetchBlogEntries({
       // FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
       const groupRef = get(blogEntries, 'blog.groupRef');
       if (groupRef) {
-        await dispatch(groupActions.receiveGroups({ entries: groupRef }));
+        await dispatch(groupActions.receiveGroups({ entries: [groupRef] }));
       } else {
         console.error("Couldn't receiveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
       }
