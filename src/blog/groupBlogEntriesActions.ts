@@ -72,7 +72,7 @@ export function cleanCacheBlogEntries({ blogKey }: { blogKey: string }): GroupBl
  * Request comments from the server
  * @param blogKey
  */
-function requestBlogEntries(blogKey: string): GroupBlogEntriesActions {
+export function requestBlogEntries(blogKey: string): GroupBlogEntriesActions {
   return {
     type: REQUEST_GROUP_BLOG_ENTRIES,
     blogKey
