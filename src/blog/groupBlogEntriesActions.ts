@@ -191,7 +191,7 @@ export function fetchBlogEntry({
   };
 }
 
-interface FetchBlogEntriesWithComments {
+export interface FetchBlogEntriesWithComments {
   blogKey: string;
   page?: number;
   categories?: Array<categoryApi.Category>;
