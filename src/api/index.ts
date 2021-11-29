@@ -1565,6 +1565,7 @@ export function getInitialStoreValues(
     productListings: pl,
     d
   });
+  delete q.moduleExtraParameters;
 
   const p = q as unknown as Parameters;
 
