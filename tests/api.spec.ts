@@ -14,7 +14,7 @@ import {
   newXcapJsonResult,
   GetInitialStoreValuesResult,
   addModuleExtraParameters,
-  GetInitialStoreValuesRequest
+  ModuleExtraParameters
 } from '../src/api';
 import { invertOrder, Order } from '../src/api/Order';
 import { CommunityStatus, STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
@@ -111,7 +111,12 @@ describe('API', () => {
           permalink: 'husdjur',
           productHandles: ['snare-boot'],
           productCollectionHandles: ['latest-stuff'],
-          productListings: [listing]
+          productListings: [listing],
+          moduleExtraParameters: {
+            comments: {
+              '3_3': {}
+            }
+          }
         })
       );
       expect(r.__resultCode).toBe('success');
@@ -249,19 +254,38 @@ describe('API', () => {
 
   describe('addModuleExtraParameters', () => {
     it('Adds module parameters', () => {
-      const r: GetInitialStoreValuesRequest = {};
-      addModuleExtraParameters(r, 'comment', 123, {
-        pageSize: 10,
-        referenceId: 1
+      const p: ModuleExtraParameters = {};
+      addModuleExtraParameters(p, 'comment', 123, 0, {
+        pageSize: 10
       });
-      addModuleExtraParameters(r, 'stackend-comment', 456, {
-        pageSize: 15,
-        referenceId: 2
+      addModuleExtraParameters(p, 'comment', 123, 456, {
+        pageSize: 5
       });
-      expect(r['comment.123.pageSize']).toBe(10);
-      expect(r['comment.123.referenceId']).toBe(1);
-      expect(r['comment.456.pageSize']).toBe(15);
-      expect(r['comment.456.referenceId']).toBe(2);
+
+      addModuleExtraParameters(p, 'stackend-comment', 456, 0, {
+        pageSize: 15
+      });
+      addModuleExtraParameters(p, 'feed', 123, 456, {
+        pageSize: 5
+      });
+      expect(p).toStrictEqual({
+        comment: {
+          '123_0': {
+            pageSize: 10
+          },
+          '123_456': {
+            pageSize: 5
+          },
+          '456_0': {
+            pageSize: 15
+          }
+        },
+        feed: {
+          '123_456': {
+            pageSize: 5
+          }
+        }
+      });
     });
   });
 });

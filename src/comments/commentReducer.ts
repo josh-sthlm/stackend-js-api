@@ -211,12 +211,12 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
       });
 
       const referenceIdUniqueComments: Array<Comment> = concat(origComments, newComments);
-      // @ts-ignore
+
       const pagination: PaginatedCollection<Comment> = get(
         state,
         `[${key}].json.comments[${referenceId}]`,
         emptyPaginatedCollection()
-      );
+      ) as PaginatedCollection<Comment>;
 
       delete (pagination as any)['entries'];
       pagination.totalSize += action.json.comments.entries.length;

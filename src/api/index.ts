@@ -1470,44 +1470,61 @@ export interface GetInitialStoreValuesResult extends XcapJsonResult {
   data: ModuleExtraData;
 }
 
-export interface ModuleExtraParameters {
-  [key: string]: any | undefined;
-}
-
 /**
- * Get the parameter name
- * @param moduleType
- * @param referenceOrModuleId
- * @param name
+ * Extra module specific parameters
  */
-export function getModuleExtraParameter(moduleType: string, referenceOrModuleId: number, name: string): string {
-  let key = moduleType;
-  if (key.startsWith('stackend-')) {
-    key = key.substring('stackend-'.length);
-  }
-  return key + '.' + referenceOrModuleId + '.' + name;
+export interface ModuleExtraParameters {
+  /**
+   * Key given by module handler, for example comments
+   */
+  [moduleHandlerKey: string]: {
+    /**
+     * Key: moduleId + "_" + referenceId
+     */
+    [moduleId_referenceId: string]: {
+      /**
+       * Parameter names and values
+       */
+      [name: string]: any;
+    };
+  };
 }
 
 /**
  * Add all extra parameters
  * @param params
- * @param moduleType
- * @param referenceOrModuleId
+ * @param moduleKey
+ * @param moduleId (may be 0 if not used)
+ * @param referenceId (may be 0 if not used)
  * @param values
  */
 export function addModuleExtraParameters(
   params: ModuleExtraParameters,
-  moduleType: string,
-  referenceOrModuleId: number,
+  moduleKey: string,
+  moduleId: number,
+  referenceId: number,
   values: { [name: string]: any }
 ): void {
-  Object.keys(values).forEach(k => {
-    const n = getModuleExtraParameter(moduleType, referenceOrModuleId, k);
-    params[n] = values[k];
-  });
+  let mk = moduleKey;
+  if (mk.startsWith('stackend-')) {
+    mk = mk.substring('stackend-'.length);
+  }
+  let x = params[mk];
+  if (!x) {
+    x = {};
+    params[mk] = x;
+  }
+
+  const key = moduleId + '_' + referenceId;
+  let y = x[key];
+  if (!y) {
+    y = {};
+    x[key] = y;
+  }
+  Object.assign(y, values);
 }
 
-export interface GetInitialStoreValuesRequest extends ModuleExtraParameters {
+export interface GetInitialStoreValuesRequest {
   permalink?: string;
   domain?: string;
   communityId?: number;
@@ -1523,6 +1540,10 @@ export interface GetInitialStoreValuesRequest extends ModuleExtraParameters {
   productListings?: Array<ListProductsQuery>;
   shopImageMaxWidth?: number;
   shopListingImageMaxWidth?: number;
+  /**
+   * Module specific parameters
+   */
+  moduleExtraParameters?: ModuleExtraParameters;
 }
 
 /**
@@ -1536,13 +1557,20 @@ export function getInitialStoreValues(
     pl = params.productListings.map(q => JSON.stringify(q));
   }
 
+  let d = undefined;
+  if (params.moduleExtraParameters) {
+    d = JSON.stringify(params.moduleExtraParameters);
+  }
   const q = Object.assign({}, params, {
-    productListings: pl
+    productListings: pl,
+    d
   });
+
+  const p = q as unknown as Parameters;
 
   return getJson({
     url: '/init',
-    parameters: q,
+    parameters: p,
     community: DEFAULT_COMMUNITY,
     cookie: params.cookie
   });
