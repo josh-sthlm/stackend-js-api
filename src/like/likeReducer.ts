@@ -42,8 +42,7 @@ export function Likes(state: LikesState = {}, action: LikeActions): LikesState {
       if (action.likes) {
         const x = Object.assign({}, state);
         Object.keys(action.likes).forEach(oRef => {
-          // @ts-ignore wtf?
-          const v: LikeData = action.likes[oRef];
+          const v: LikeData = (action.likes as LikeDataMap)[oRef]; // Stupid compiler
           updateLike(x, oRef, v.likes, v.likedByCurrentUser);
         });
         return x;
