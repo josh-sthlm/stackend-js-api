@@ -4,8 +4,11 @@ import {
   clearCurrentCommunity,
   fetchCommunity,
   getObjectsRequiringModeration,
+  receiveCommunities,
   setCurrentCommunity
 } from '../src/stackend/communityAction';
+import CommunityMock from './CommunutyMock';
+import { CommunityState } from '../src/stackend/communityReducer';
 
 describe('Stackend Actions', () => {
   const store = createTestStore();
@@ -41,6 +44,32 @@ describe('Stackend Actions', () => {
       store.dispatch(setCurrentCommunity(undefined as any, 666));
       const { communities } = store.getState();
       expect(communities.community).toBeNull();
+    });
+
+    it('receiveCommunities/setCurrentCommunity', () => {
+      const c1 = CommunityMock();
+      store.dispatch(
+        receiveCommunities({
+          results: {
+            pageSize: 10,
+            page: 1,
+            entries: [c1]
+          }
+        })
+      );
+      let communities: CommunityState = store.getState().communities;
+      expect(communities?.communities?.entries[0]?.name).toBe(c1.name);
+
+      // Ensures that setCurrentCommunity updates the other communities as well
+      const c1Mod = Object.assign(c1, {
+        name: 'new name'
+      });
+      store.dispatch(setCurrentCommunity(c1Mod));
+      communities = store.getState().communities;
+      expect(communities?.community?.name).toBe('new name');
+      expect(communities?.communities?.entries[0]?.name).toBe('new name');
+
+      store.dispatch(setCurrentCommunity(undefined as any, 666));
     });
   });
 });

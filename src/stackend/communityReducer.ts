@@ -128,6 +128,7 @@ export default function communityReducer(
     case SET_COMMUNITY_SETTINGS: {
       let objectsRequiringModeration = state.objectsRequiringModeration;
 
+      let communities = state.communities;
       if (action.community) {
         // FIXME: Use of window still needed for xcap.js and old javascripts
         if (isRunningInBrowser()) {
@@ -138,10 +139,20 @@ export default function communityReducer(
         objectsRequiringModeration = Object.assign({}, state.objectsRequiringModeration, {
           [action.community.id]: action.objectsRequiringModeration || 0
         });
+
+        // May also update a community in the list
+        if (state.communities) {
+          const c = state.communities?.entries.find(c => c.id === (action.community as Community).id);
+          if (c) {
+            Object.assign(c, action.community);
+          }
+          communities = Object.assign({}, communities);
+        }
       }
 
       return update(state, {
         community: { $set: action.community || null },
+        communities: { $set: communities },
         objectsRequiringModeration: { $set: objectsRequiringModeration }
       });
     }
