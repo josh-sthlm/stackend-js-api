@@ -11,7 +11,7 @@ import ModerationStatus from '../api/ModerationStatus';
 import { generatePermalink } from '../api/permalink';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { Insertion, Category } from '../category';
-import { Order } from '../search';
+import Order from '../api/Order';
 import { Tree, Node, newTree, newTreeNode } from '../api/tree';
 import { ModuleType } from '../stackend/modules';
 import XcapObject from '../api/XcapObject';
@@ -141,23 +141,33 @@ export interface SearchResult extends XcapJsonResult {
   results: PaginatedCollection<Content>;
 }
 
+export enum ContentSortCritera {
+  'CREATED' = 'CREATED',
+  'MODIFIED' = 'MODIFIED',
+  'NAME' = 'NAME',
+  'SORT' = 'SORT'
+}
+
 /**
  * Search CMS content. Requires stack admin.
  * @param q Search expression
  * @param p Page number (optional)
  * @param pageSize Page size (optional)
- * @param orderBy Order by (optional)
+ * @param orderBy ContentSortCritera by (optional)
+ * @param order: Order (optional)
  */
 export function search({
   q,
   p = 1,
   pageSize,
-  orderBy
+  orderBy,
+  order
 }: {
   q?: string;
   p?: number;
   pageSize?: number;
-  orderBy?: 'CREATED' | 'MODIFIED' | 'SORT';
+  orderBy?: ContentSortCritera;
+  order?: Order;
 } & XcapOptionalParameters): Thunk<Promise<SearchResult>> {
   return getJson({
     url: '/cms/search',
@@ -165,7 +175,8 @@ export function search({
       q,
       p,
       pageSize,
-      orderBy
+      orderBy,
+      order
     }
   });
 }
