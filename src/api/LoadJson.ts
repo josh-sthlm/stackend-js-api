@@ -90,6 +90,12 @@ export interface LoadJsonResult {
   json?: XcapJsonResult;
 }
 
+export const DEFAULT_OPTIONS: RequestInit = {
+  mode: 'cors',
+  cache: 'default'
+  //credentials: 'include',
+};
+
 /**
  * Load an url as json. Supports GET and POST (using application/x-www-form-urlencoded or a json body)
  *
@@ -109,7 +115,8 @@ export async function LoadJson({
   body = null,
   bodyContentType = CONTENT_TYPE_X_WWW_FORM_URLENCODED,
   xpressToken,
-  cookie
+  cookie,
+  options
 }: {
   url: string;
   method?: string;
@@ -118,6 +125,7 @@ export async function LoadJson({
   bodyContentType?: string;
   xpressToken?: string;
   cookie?: string | null;
+  options?: RequestInit;
 }): Promise<LoadJsonResult> {
   //console.log("Fetching json: ",url);
   //console.trace("Fetching json: ",url);
@@ -135,13 +143,15 @@ export async function LoadJson({
   }
 
   const opts: RequestInit = {
+    ...DEFAULT_OPTIONS,
     method,
     headers,
-    mode: 'cors',
-    cache: 'default',
-    //credentials: 'include',
     body: undefined
   };
+
+  if (options) {
+    Object.assign(opts, options);
+  }
 
   // Encode json if needed
   if (body && bodyContentType === CONTENT_TYPE_JSON && typeof body === 'object') {
