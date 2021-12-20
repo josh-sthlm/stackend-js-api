@@ -1,4 +1,4 @@
-import { newTree, addNode, newTreeNode } from '../src/api/tree';
+import { addNode, InsertionPoint, moveTreeNode, newTree, newTreeNode } from '../src/api/tree';
 
 describe('Tree', () => {
   describe('newTree', () => {
@@ -38,6 +38,47 @@ describe('Tree', () => {
 
       addNode(t, n);
       expect(t.children.length).toBe(1);
+    });
+  });
+
+  describe('moveTreeNode', () => {
+    const t = newTree('Tree');
+    const n1 = newTreeNode('Node 1');
+    const n2 = newTreeNode('Node 2');
+    addNode(t, n1);
+    addNode(t, n2);
+    expect(t.children.length).toBe(2);
+    expect(t.children).toStrictEqual([n1, n2]);
+
+    it('Move a tree node InsertionPoint.BEFORE', () => {
+      moveTreeNode(t, n2, InsertionPoint.BEFORE, n1);
+      expect(t.children.length).toBe(2);
+      expect(t.children).toStrictEqual([n2, n1]);
+
+      /* Should cause no change
+      moveTreeNode(t, n2, InsertionPoint.BEFORE, n2);
+      console.log(t);
+      expect(t.children.length).toBe(2);
+      expect(t.children).toStrictEqual([n2, n1]);
+       */
+    });
+
+    it('Move a tree node InsertionPoint.AFTER', () => {
+      moveTreeNode(t, n2, InsertionPoint.AFTER, n1);
+      expect(t.children.length).toBe(2);
+      expect(t.children).toStrictEqual([n1, n2]);
+
+      // Should be able to repeat
+      moveTreeNode(t, n2, InsertionPoint.AFTER, n1);
+      expect(t.children.length).toBe(2);
+      expect(t.children).toStrictEqual([n1, n2]);
+    });
+
+    it('Move a tree node InsertionPoint.CHILD', () => {
+      moveTreeNode(t, n2, InsertionPoint.CHILD, n1);
+      expect(t.children.length).toBe(1);
+      expect(t.children).toStrictEqual([n1]);
+      expect(t.children[0].children).toStrictEqual([n2]);
     });
   });
 });

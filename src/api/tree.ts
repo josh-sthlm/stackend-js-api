@@ -238,6 +238,7 @@ export function moveTreeNode(tree: Tree, node: Node, insertionPoint: InsertionPo
   if (insertionPoint === InsertionPoint.CHILD) {
     relativeTo.children.push(node);
     makeNodePermalinksUnique(relativeTo.children);
+    return true;
   }
 
   // Insertion before or after
