@@ -21,6 +21,8 @@ import ReferenceAble from '../api/ReferenceAble';
 import PublishDateAware from '../api/PublishDateAware';
 import ModerationAware from '../api/ModerationAware';
 import ReferenceIdAware from '../api/ReferenceIdAware';
+import { UserRsvpStatuses } from '../event';
+import { RsvpUserResponses } from '../event/eventReducer';
 
 /**
  * Xcap Blog api constants and methods.
@@ -65,6 +67,9 @@ export enum BlogEntryStatus {
   DELETED = 'DELETED'
 }
 
+/**
+ * @deprecated Will be moved to front end code
+ */
 export enum DisplayType {
   FeedEntry = 'feedEntry',
   BlogEntry = 'blogEntry',
@@ -248,10 +253,11 @@ export interface BlogEntryListingResult extends XcapJsonResult {
 
 export interface GetEntriesResult extends BlogEntryListingResult {
   likes: LikeDataMap;
-  userRsvpStatuses: any;
+  userRsvpStatuses: UserRsvpStatuses;
 
   /** Maps from event id to status to list */
-  rsvpUserIds: { [eventId: string]: { [status: string]: any } };
+  rsvpUserIds: RsvpUserResponses;
+  //rsvpUserIds: { [eventId: string]: { [status: string]: PaginatedCollection<number> } };
 
   likesByCurrentUser: LikeDataMap;
 

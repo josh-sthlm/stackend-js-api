@@ -8,11 +8,9 @@ import ModerationAware from '../api/ModerationAware';
 import NameAware from '../api/NameAware';
 import ReferenceIdAware from '../api/ReferenceIdAware';
 
-/**
- * Xcap Event api constants and methods.
- *
- * @since 3 mar 2017
- */
+export const CALENDAR_CONTEXT = 'calendar';
+
+export const EVENT_CLASS = 'net.josh.community.eventcalendar.Event';
 
 /**
  * Event definition
@@ -35,7 +33,11 @@ export interface Event
   copyOf: number;
   eventDescriptionId: number;
   multipleDays: boolean;
-  data: any;
+
+  /**
+   * Additional data (title, location, startTime, endTime, link)
+   */
+  data: { [key: string]: string | number };
 }
 
 /**
@@ -60,6 +62,37 @@ export enum RSVPStatus {
 }
 
 /**
+ * Maps from eventId to RSVPStatus for the current user
+ */
+export interface UserRsvpStatuses {
+  [eventId: number]: RSVPStatus;
+}
+
+/**
+ * A "set" of user ids
+ */
+export interface RsvpUserIds {
+  [userId: number]: number;
+}
+
+export interface RsvpResult extends XcapJsonResult {
+  success: boolean;
+  eventContext: string;
+  eventId: number;
+  counts: {
+    status: RSVPStatus;
+    rsvp: {
+      accepted: RsvpUserIds;
+      interested: RsvpUserIds;
+      declined: RsvpUserIds;
+      nAccepted: number;
+      nInterested: number;
+      nDeclined: number;
+    };
+  };
+}
+
+/**
  * Respond to an event invitation
  * @param eventId
  * @param status
@@ -67,7 +100,7 @@ export enum RSVPStatus {
 export function rsvp({
   eventId,
   status
-}: { eventId: number; status: RSVPStatus } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+}: { eventId: number; status: RSVPStatus } & XcapOptionalParameters): Thunk<Promise<RsvpResult>> {
   return post({ url: '/blog/event/rsvp', parameters: arguments });
 }
 

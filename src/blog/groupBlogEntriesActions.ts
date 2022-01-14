@@ -37,6 +37,8 @@ import {
 import { receiveLikes } from '../like/likeActions';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { fetchMyGroups } from '../group/groupActions';
+import { eventsReceived } from '../event/eventActions';
+
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
 /**
@@ -161,6 +163,14 @@ export function fetchBlogEntries({
         await dispatch(cleanCacheBlogEntries({ blogKey }));
       }
       dispatch(receiveLikes(blogEntries.likes));
+
+      dispatch(
+        eventsReceived({
+          relatedObjects: blogEntries.__relatedObjects,
+          rsvpUserIds: blogEntries.rsvpUserIds,
+          userRsvpStatuses: blogEntries.userRsvpStatuses
+        })
+      );
 
       return dispatch(receiveBlogEntries(blogKey, blogEntries));
     } catch (e) {

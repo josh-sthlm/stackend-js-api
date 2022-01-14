@@ -192,11 +192,19 @@ export const groupBlogEntries = createReducer(
               lastUpdated: { $set: action.receivedAt },
               json: {
                 $apply: (context): any =>
-                  update(Object.assign({}, context, action.json), {
+                  update(Object.assign({}, context, { resultPaginated: action.json.resultPaginated }), {
                     resultPaginated: {
                       entries: { $set: uniqueBlogEntries }
-                    }
-                  })
+                    },
+                    likes: { $set: action.json.likes },
+                    likesByCurrentUser: { $set: action.json.likesByCurrentUser },
+                    blog: { $set: action.json.blog },
+                    authBlog: { $set: action.json.authBlog },
+                    blogKey: { $set: action.json.blogKey },
+                    categories: { $set: action.json.categories }
+
+                    /* FIXME: Improve this */
+                  } as any)
               }
             })
         }

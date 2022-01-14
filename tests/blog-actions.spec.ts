@@ -22,11 +22,13 @@ describe('Blog', () => {
       expect(groupBlogEntries).toBeDefined();
       expect(groupBlogEntries['groups/news']).toBeDefined();
       expect(groupBlogEntries['groups/news'].json).toBeDefined();
+      console.log(groupBlogEntries['groups/news'].json);
       expect(groupBlogEntries['groups/news'].json.resultPaginated).toBeDefined();
       expect(groupBlogEntries['groups/news'].json.resultPaginated.totalSize).toBeGreaterThan(1);
       expect(groupBlogEntries['groups/news'].json.resultPaginated.entries).toBeDefined();
 
-      // FIXME: Check likes
+      //expect(groupBlogEntries['groups/news'].json).toBeUndefined();
+
       console.log(likes);
       expect(Object.keys(likes).length).toBeGreaterThan(Object.keys(likes1).length);
     });
