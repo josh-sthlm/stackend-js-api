@@ -1,11 +1,11 @@
 import {
   CALENDAR_CONTEXT,
+  CurrentUserRsvpStatuses,
   Event,
   EVENT_CLASS,
   rsvp as postRsvp,
   RsvpResult,
-  RSVPStatus,
-  UserRsvpStatuses
+  RSVPStatus
 } from './index';
 import { Thunk } from '../api';
 import {
@@ -16,6 +16,7 @@ import {
   EventsState,
   EventState,
   RESET_EVENTS,
+  RsvpUserLists,
   RsvpUserResponses
 } from './eventReducer';
 import XcapObject from '../api/XcapObject';
@@ -53,6 +54,21 @@ export function getEventFromStore(
 ): Event | null {
   const s = getEventState(events, eventId, context);
   return s ? s.event : null;
+}
+
+/**
+ * Get an events rsvp state from the store
+ * @param events
+ * @param eventId
+ * @param context
+ */
+export function getRsvpUserLists(
+  events: EventsState,
+  eventId: number,
+  context: string = CALENDAR_CONTEXT
+): RsvpUserLists | null {
+  const s = getEventState(events, eventId, context);
+  return s ? s.rsvpUserLists : null;
 }
 
 /**
@@ -145,21 +161,21 @@ export function rsvp({
  * @param extraData
  */
 export function rsvpReceived({
-  userRsvpStatuses,
+  currentUserRsvpStatuses,
   rsvpUserIds,
   context = CALENDAR_CONTEXT,
   extraData
 }: {
-  userRsvpStatuses?: UserRsvpStatuses;
+  currentUserRsvpStatuses?: CurrentUserRsvpStatuses;
   context?: string;
-  rsvpUserIds: RsvpUserResponses;
+  rsvpUserIds?: RsvpUserResponses;
   extraData?: any;
 }): Thunk<Promise<void>> {
   return async (dispatch: any): Promise<void> => {
     dispatch({
       type: EVENT_RSVP_RECEIVED,
       context,
-      userRsvpStatuses,
+      currentUserRsvpStatuses,
       rsvpUserIds,
       extraData
     });
@@ -178,14 +194,14 @@ export function rsvpReceived({
 export function eventsReceived({
   events,
   relatedObjects,
-  userRsvpStatuses,
+  currentUserRsvpStatuses,
   rsvpUserIds,
   context = CALENDAR_CONTEXT,
   extraData
 }: {
   events?: Array<Event>;
   relatedObjects?: { [ref: string]: XcapObject };
-  userRsvpStatuses?: UserRsvpStatuses;
+  currentUserRsvpStatuses?: CurrentUserRsvpStatuses;
   rsvpUserIds?: RsvpUserResponses;
   context?: string;
   extraData?: any;
@@ -213,7 +229,7 @@ export function eventsReceived({
     dispatch({
       type: EVENT_RSVP_RECEIVED,
       context,
-      userRsvpStatuses,
+      currentUserRsvpStatuses,
       rsvpUserIds,
       extraData
     });

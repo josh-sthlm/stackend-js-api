@@ -38,6 +38,8 @@ export interface Event
    * Additional data (title, location, startTime, endTime, link)
    */
   data: { [key: string]: string | number };
+
+  rsvp: RsvpCounters;
 }
 
 /**
@@ -61,10 +63,16 @@ export enum RSVPStatus {
   DECLINED = 'DECLINED'
 }
 
+export interface RsvpCounters {
+  nAccepted: number;
+  nDeclined: number;
+  nInterested: number;
+}
+
 /**
  * Maps from eventId to RSVPStatus for the current user
  */
-export interface UserRsvpStatuses {
+export interface CurrentUserRsvpStatuses {
   [eventId: number]: RSVPStatus;
 }
 
@@ -81,13 +89,10 @@ export interface RsvpResult extends XcapJsonResult {
   eventId: number;
   counts: {
     status: RSVPStatus;
-    rsvp: {
+    rsvp: RsvpCounters & {
       accepted: RsvpUserIds;
       interested: RsvpUserIds;
       declined: RsvpUserIds;
-      nAccepted: number;
-      nInterested: number;
-      nDeclined: number;
     };
   };
 }

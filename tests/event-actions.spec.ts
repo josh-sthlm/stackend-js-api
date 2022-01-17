@@ -1,5 +1,5 @@
 import createTestStore from './setup';
-import { eventsReceived, getEventFromStore } from '../src/event/eventActions';
+import { eventsReceived, getEventFromStore, getRsvpUserLists, rsvpReceived } from '../src/event/eventActions';
 import { CALENDAR_CONTEXT, Event, EVENT_CLASS, EventCalendar, RSVPStatus } from '../src/event';
 import ModerationStatus from '../src/api/ModerationStatus';
 import { emptyPaginatedCollection, newPaginatedCollection } from '../src/api/PaginatedCollection';
@@ -30,6 +30,11 @@ function mockEvent(id: number): Event {
       location: 'Stockholm',
       link: 'https://stackend.com',
       title: 'Ice Skating'
+    },
+    rsvp: {
+      nInterested: 0,
+      nDeclined: 0,
+      nAccepted: 0
     }
   };
 }
@@ -42,14 +47,15 @@ describe('Event actions', () => {
       let events = store.getState().events;
       expect(events).toBeDefined();
 
+      const event1 = mockEvent(1);
       await store.dispatch(
         eventsReceived({
-          events: [mockEvent(1)],
+          events: [event1],
           relatedObjects: {
             '123': { __type: 'korv', id: 1 },
             '456': mockEvent(2)
           },
-          userRsvpStatuses: {
+          currentUserRsvpStatuses: {
             1: RSVPStatus.INTERESTED,
             5: RSVPStatus.ACCEPTED /* no such event, but should not crash */
           },
@@ -70,16 +76,43 @@ describe('Event actions', () => {
       );
 
       events = store.getState().events;
-      console.log(events[CALENDAR_CONTEXT]);
+      //console.log(events[CALENDAR_CONTEXT]);
       console.log(events[CALENDAR_CONTEXT][1]);
       expect(events[CALENDAR_CONTEXT]).toBeDefined();
       expect(events[CALENDAR_CONTEXT][1]).toBeDefined();
-      expect(events[CALENDAR_CONTEXT][1].event).toBeDefined();
-      expect(events[CALENDAR_CONTEXT][1].rsvp).toBeDefined();
+      expect(events[CALENDAR_CONTEXT][1].event).toStrictEqual(event1);
+      expect(events[CALENDAR_CONTEXT][1].currentUserRsvp).toBe(RSVPStatus.INTERESTED);
+      expect(events[CALENDAR_CONTEXT][1].rsvpUserLists).toBeDefined();
+      expect(events[CALENDAR_CONTEXT][1].event.rsvp.nInterested).toBe(1);
+      expect(events[CALENDAR_CONTEXT][1].event.rsvp.nAccepted).toBe(0);
+      expect(events[CALENDAR_CONTEXT][1].event.rsvp.nDeclined).toBe(0);
       expect(events[CALENDAR_CONTEXT][2]).toBeDefined();
 
-      expect(getEventFromStore(events, 1)).toBeDefined();
+      expect(getEventFromStore(events, 1)).toStrictEqual(event1);
       expect(getEventFromStore(events, 666)).toBeNull();
+      expect(getRsvpUserLists(events, 1)).toBeDefined();
+      expect(getRsvpUserLists(events, 666)).toBeNull();
+
+      await store.dispatch(
+        rsvpReceived({
+          currentUserRsvpStatuses: {
+            1: RSVPStatus.ACCEPTED,
+            7: RSVPStatus.ACCEPTED /* no such event, but should not crash */
+          },
+          rsvpUserIds: {
+            1: {
+              interested: emptyPaginatedCollection(),
+              accepted: newPaginatedCollection({ entries: [1], totalSize: 1 }),
+              declined: emptyPaginatedCollection()
+            }
+          }
+        })
+      );
+
+      expect(events[CALENDAR_CONTEXT][1].currentUserRsvp).toBe(RSVPStatus.ACCEPTED);
+      expect(events[CALENDAR_CONTEXT][1].event.rsvp.nInterested).toBe(0);
+      expect(events[CALENDAR_CONTEXT][1].event.rsvp.nAccepted).toBe(1);
+      expect(events[CALENDAR_CONTEXT][1].event.rsvp.nDeclined).toBe(0);
     });
   });
 });

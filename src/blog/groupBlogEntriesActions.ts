@@ -168,7 +168,7 @@ export function fetchBlogEntries({
         eventsReceived({
           relatedObjects: blogEntries.__relatedObjects,
           rsvpUserIds: blogEntries.rsvpUserIds,
-          userRsvpStatuses: blogEntries.userRsvpStatuses
+          currentUserRsvpStatuses: blogEntries.userRsvpStatuses
         })
       );
 

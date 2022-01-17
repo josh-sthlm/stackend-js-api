@@ -1,5 +1,5 @@
 import createReducer from '../api/createReducer';
-import { Event, RsvpResult, RSVPStatus, UserRsvpStatuses } from './index';
+import { Event, RsvpResult, RSVPStatus, CurrentUserRsvpStatuses } from './index';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 
 export const EVENT_RSVP_UPDATED = 'EVENT_RSVP_UPDATED';
@@ -44,20 +44,14 @@ export interface RsvpUserResponses {
 export interface EventRsvpReceivedAction {
   type: typeof EVENT_RSVP_RECEIVED;
   context: string;
-  userRsvpStatuses?: UserRsvpStatuses;
+  currentUserRsvpStatuses?: CurrentUserRsvpStatuses;
   rsvpUserIds?: RsvpUserResponses;
   extraData: any;
 }
 
 export type RsvpUsersState = PaginatedCollection<number>;
 
-export interface RsvpState {
-  /** The current users response */
-  currentUserRsvp: RSVPStatus;
-  nAccepted: number;
-  nInterested: number;
-  nDeclined: number;
-
+export interface RsvpUserLists {
   /** List of interested users, if loaded */
   interested: RsvpUsersState | null;
 
@@ -68,12 +62,8 @@ export interface RsvpState {
   declined: RsvpUsersState | null;
 }
 
-export function newRsvpState(): RsvpState {
+export function newRsvpUserLists(): RsvpUserLists {
   return {
-    currentUserRsvp: RSVPStatus.UNKNOWN,
-    nAccepted: 0,
-    nInterested: 0,
-    nDeclined: 0,
     interested: null,
     accepted: null,
     declined: null
@@ -84,14 +74,22 @@ export interface EventState {
   /** The event */
   event: Event | null;
 
+  /** The current users response */
+  currentUserRsvp: RSVPStatus;
+
   /** Rsvp responses */
-  rsvp: RsvpState;
+  rsvpUserLists: RsvpUserLists;
 }
 
-export function newEventState(event?: Event | null, rsvp?: RsvpState | null): EventState {
+export function newEventState(
+  event?: Event | null,
+  currentUserRsvp: RSVPStatus | null = RSVPStatus.UNKNOWN,
+  rsvpUserLists?: RsvpUserLists | null
+): EventState {
   return {
     event: event || null,
-    rsvp: rsvp || newRsvpState()
+    currentUserRsvp: currentUserRsvp || RSVPStatus.UNKNOWN,
+    rsvpUserLists: rsvpUserLists || newRsvpUserLists()
   };
 }
 
@@ -147,44 +145,49 @@ export const events = createReducer(
       }
 
       const s: EventState = getOrCreateEventState(state, action.context, action.result.eventId);
-      const rsvp = s.rsvp;
       const counts = action.result.counts;
+      s.currentUserRsvp = counts.status;
 
-      rsvp.currentUserRsvp = counts.status;
-      rsvp.nDeclined = counts.rsvp.nDeclined;
-      rsvp.nAccepted = counts.rsvp.nAccepted;
-      rsvp.nInterested = counts.rsvp.nInterested;
+      if (s.event) {
+        const r = s.event.rsvp;
+        r.nDeclined = counts.rsvp.nDeclined;
+        r.nAccepted = counts.rsvp.nAccepted;
+        r.nInterested = counts.rsvp.nInterested;
+      }
 
-      // FIXME: use counts.rsvp.interested etc
+      // FIXME: use counts.rsvp.interested etc (backend broken. Update is delayed?)
 
       return Object.assign({}, state);
     },
 
     EVENT_RSVP_RECEIVED: (state: EventsState, action: EventRsvpReceivedAction): EventsState => {
-      const { rsvpUserIds, userRsvpStatuses } = action;
+      const { rsvpUserIds, currentUserRsvpStatuses } = action;
 
-      if (!rsvpUserIds && !userRsvpStatuses) {
+      if (!rsvpUserIds && !currentUserRsvpStatuses) {
         return state;
       }
       const s = getOrCreateEventContextState(state, action.context);
 
       if (rsvpUserIds) {
         Object.keys(rsvpUserIds).forEach((eventId: any) => {
-          const e = getOrCreateEventState2(s, eventId);
+          const es = getOrCreateEventState2(s, eventId);
           const x = rsvpUserIds[eventId];
-          e.rsvp.interested = x.interested;
-          e.rsvp.accepted = x.accepted;
-          e.rsvp.declined = x.declined;
-          e.rsvp.nInterested = x.interested.totalSize;
-          e.rsvp.nAccepted = x.accepted.totalSize;
-          e.rsvp.nDeclined = x.declined.totalSize;
+          const event = es.event;
+          if (event) {
+            event.rsvp.nInterested = x.interested.totalSize;
+            event.rsvp.nAccepted = x.accepted.totalSize;
+            event.rsvp.nDeclined = x.declined.totalSize;
+          }
+          es.rsvpUserLists.interested = x.interested;
+          es.rsvpUserLists.accepted = x.accepted;
+          es.rsvpUserLists.declined = x.declined;
         });
       }
 
-      if (userRsvpStatuses) {
-        Object.keys(userRsvpStatuses).forEach((eventId: any) => {
-          const e = getOrCreateEventState2(s, eventId);
-          e.rsvp.currentUserRsvp = userRsvpStatuses[eventId];
+      if (currentUserRsvpStatuses) {
+        Object.keys(currentUserRsvpStatuses).forEach((eventId: any) => {
+          const es = getOrCreateEventState2(s, eventId);
+          es.currentUserRsvp = currentUserRsvpStatuses[eventId];
         });
       }
 
