@@ -144,20 +144,27 @@ export const events = createReducer(
         return state;
       }
 
-      const s: EventState = getOrCreateEventState(state, action.context, action.result.eventId);
+      const cs = getOrCreateEventContextState(state, action.context);
+      const es: EventState = getOrCreateEventState(cs, action.result.eventId);
       const counts = action.result.counts;
-      s.currentUserRsvp = counts.status;
+      es.currentUserRsvp = counts.status;
 
-      if (s.event) {
-        const r = s.event.rsvp;
-        r.nDeclined = counts.rsvp.nDeclined;
-        r.nAccepted = counts.rsvp.nAccepted;
-        r.nInterested = counts.rsvp.nInterested;
+      if (es.event) {
+        es.event = Object.assign({}, es.event, {
+          rsvp: {
+            nInterested: counts.rsvp.nInterested,
+            nAccepted: counts.rsvp.nAccepted,
+            nDeclined: counts.rsvp.nDeclined
+          }
+        });
       }
+      cs[action.result.eventId] = Object.assign({}, es);
 
       // FIXME: use counts.rsvp.interested etc (backend broken. Update is delayed?)
 
-      return Object.assign({}, state);
+      return Object.assign({}, state, {
+        [action.context]: Object.assign({}, cs)
+      });
     },
 
     EVENT_RSVP_RECEIVED: (state: EventsState, action: EventRsvpReceivedAction): EventsState => {
@@ -166,32 +173,40 @@ export const events = createReducer(
       if (!rsvpUserIds && !currentUserRsvpStatuses) {
         return state;
       }
-      const s = getOrCreateEventContextState(state, action.context);
+      const cs = getOrCreateEventContextState(state, action.context);
 
       if (rsvpUserIds) {
         Object.keys(rsvpUserIds).forEach((eventId: any) => {
-          const es = getOrCreateEventState2(s, eventId);
+          const es = getOrCreateEventState(cs, eventId);
           const x = rsvpUserIds[eventId];
           const event = es.event;
           if (event) {
-            event.rsvp.nInterested = x.interested.totalSize;
-            event.rsvp.nAccepted = x.accepted.totalSize;
-            event.rsvp.nDeclined = x.declined.totalSize;
+            es.event = Object.assign({}, event, {
+              rsvp: {
+                nInterested: x.interested.totalSize,
+                nAccepted: x.accepted.totalSize,
+                nDeclined: x.declined.totalSize
+              }
+            });
           }
           es.rsvpUserLists.interested = x.interested;
           es.rsvpUserLists.accepted = x.accepted;
           es.rsvpUserLists.declined = x.declined;
+
+          cs[eventId] = Object.assign({}, es);
         });
       }
 
       if (currentUserRsvpStatuses) {
         Object.keys(currentUserRsvpStatuses).forEach((eventId: any) => {
-          const es = getOrCreateEventState2(s, eventId);
+          const es = getOrCreateEventState(cs, eventId);
           es.currentUserRsvp = currentUserRsvpStatuses[eventId];
         });
       }
 
-      return Object.assign({}, state);
+      return Object.assign({}, state, {
+        [action.context]: Object.assign({}, cs)
+      });
     }
   }
 );
@@ -206,19 +221,10 @@ function getOrCreateEventContextState(state: EventsState, context: string): Even
   return s;
 }
 
-function getOrCreateEventState2(ecs: EventContextState, eventId: number): EventState {
+function getOrCreateEventState(ecs: EventContextState, eventId: number): EventState {
   let e: EventState = ecs[eventId];
   if (!e) {
     ecs[eventId] = e = newEventState();
-  }
-  return e;
-}
-
-function getOrCreateEventState(state: EventsState, context: string, eventId: number): EventState {
-  const s = getOrCreateEventContextState(state, context);
-  let e: EventState = s[eventId];
-  if (!e) {
-    s[eventId] = e = newEventState();
   }
   return e;
 }

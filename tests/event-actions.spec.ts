@@ -80,7 +80,12 @@ describe('Event actions', () => {
       console.log(events[CALENDAR_CONTEXT][1]);
       expect(events[CALENDAR_CONTEXT]).toBeDefined();
       expect(events[CALENDAR_CONTEXT][1]).toBeDefined();
-      expect(events[CALENDAR_CONTEXT][1].event).toStrictEqual(event1);
+      expect(events[CALENDAR_CONTEXT][1].event).toBeDefined();
+      expect(events[CALENDAR_CONTEXT][1].event.rsvp).toStrictEqual({
+        nAccepted: 0,
+        nDeclined: 0,
+        nInterested: 1
+      });
       expect(events[CALENDAR_CONTEXT][1].currentUserRsvp).toBe(RSVPStatus.INTERESTED);
       expect(events[CALENDAR_CONTEXT][1].rsvpUserLists).toBeDefined();
       expect(events[CALENDAR_CONTEXT][1].event.rsvp.nInterested).toBe(1);
@@ -88,7 +93,7 @@ describe('Event actions', () => {
       expect(events[CALENDAR_CONTEXT][1].event.rsvp.nDeclined).toBe(0);
       expect(events[CALENDAR_CONTEXT][2]).toBeDefined();
 
-      expect(getEventFromStore(events, 1)).toStrictEqual(event1);
+      expect(getEventFromStore(events, 1)).toBeDefined();
       expect(getEventFromStore(events, 666)).toBeNull();
       expect(getRsvpUserLists(events, 1)).toBeDefined();
       expect(getRsvpUserLists(events, 666)).toBeNull();
