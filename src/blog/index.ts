@@ -21,7 +21,7 @@ import ReferenceAble from '../api/ReferenceAble';
 import PublishDateAware from '../api/PublishDateAware';
 import ModerationAware from '../api/ModerationAware';
 import ReferenceIdAware from '../api/ReferenceIdAware';
-import { UserRsvpStatuses } from '../event';
+import { CurrentUserRsvpStatuses } from '../event';
 import { RsvpUserResponses } from '../event/eventReducer';
 
 /**
@@ -66,22 +66,6 @@ export enum BlogEntryStatus {
   DRAFT = 'DRAFT',
   DELETED = 'DELETED'
 }
-
-/**
- * @deprecated Will be moved to front end code
- */
-export enum DisplayType {
-  FeedEntry = 'feedEntry',
-  BlogEntry = 'blogEntry',
-  BLOG_ENTRY_PORTFOLIO = 'BLOG_ENTRY_PORTFOLIO',
-  TopList = 'toplist',
-  FeedEntryTopList = 'FeedEntryTopList',
-  BlogEntryTopList = 'BlogEntryTopList',
-  //SearchListing = 'searchListing',
-  EntrySearchResult = 'entrySearchResult'
-}
-
-//export type DisplayType = 'feedEntry' | 'blogEntry' | 'BLOG_ENTRY_PORTFOLIO' | 'entrySearchResult';
 
 export type FeedType = 'groups' | 'blog' | 'discussion';
 
@@ -253,7 +237,7 @@ export interface BlogEntryListingResult extends XcapJsonResult {
 
 export interface GetEntriesResult extends BlogEntryListingResult {
   likes: LikeDataMap;
-  userRsvpStatuses: UserRsvpStatuses;
+  userRsvpStatuses: CurrentUserRsvpStatuses;
 
   /** Maps from event id to status to list */
   rsvpUserIds: RsvpUserResponses;
