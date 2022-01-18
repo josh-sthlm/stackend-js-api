@@ -30,7 +30,8 @@ import {
   SetEntryStatus,
   setEntryStatus,
   GetEntriesResult,
-  GetBlogEntryResult
+  GetBlogEntryResult,
+  SaveBlogEntryInput
   //gaPostEventObject,
   //gaEditPostEventObject
 } from './index';
@@ -327,18 +328,18 @@ function _fetchBlogEntry(blogKey: string, json: any): Thunk<Promise<any>> {
 /**
  * Edit or create a blog entry.
  *
- * @param blogEntryJson
+ * @param blogEntryInput
  * @param type
  * @param draftId
  * @param blogKey
  */
 export function postBlogEntry({
-  blogEntryJson,
+  blogEntryInput,
   type,
   draftId,
   blogKey
 }: {
-  blogEntryJson: any;
+  blogEntryInput: SaveBlogEntryInput;
   type: 'PUBLISHED' | '';
   blogKey: string; //The id of the blogKey that you want to store the data in redux
   draftId?: number;
@@ -348,7 +349,7 @@ export function postBlogEntry({
 
     const response = await dispatch(
       saveEntry({
-        blogEntryJson,
+        blogEntryInput,
         type,
         draftId,
         blogKey
@@ -365,7 +366,7 @@ export function postBlogEntry({
     });
     const state = { resultPaginated };
 
-    if (!!blogEntryJson.id && blogEntryJson.id > 0) {
+    if (!!blogEntryInput.id && blogEntryInput.id > 0) {
       //Edit an blogEntry
       dispatch(toggleWriteCommentOrEdit({ blogEntryId: response.entry.id, editorType: 'EDIT' }));
       // FIXME: Re add ga

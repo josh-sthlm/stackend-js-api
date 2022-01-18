@@ -195,12 +195,12 @@ export function getBlogEntryUrl({ request, entry }: { request: Request; entry: B
  * Create a new blogEntry that is ok to save.
  * @returns BlogEntry
  */
-export function newBlogEntry(blogKey: string): any {
+export function newBlogEntry(blogKey: string): SaveBlogEntryInput {
   //FIXME: a lot of hardcoded stuff, not sure what is necessary
   return {
     id: 0,
     __type: 'net.josh.community.blog.BlogEntry',
-    name: '',
+    title: '',
     description: '',
     body: '',
     publishDate: null,
@@ -226,8 +226,7 @@ export function newBlogEntry(blogKey: string): any {
       hasVideoSlide: false,
       empty: true
     },
-    tags: [],
-    products: []
+    tags: []
   };
 }
 
@@ -441,6 +440,57 @@ export interface SaveEntryResult extends XcapJsonResult {
   entry: BlogEntry | null;
 }
 
+export interface SaveBlogEntryPollAnswer {
+  id: number;
+  answer: string;
+}
+
+export interface SaveBlogEntryPoll {
+  description: string;
+  answers: Array<SaveBlogEntryPollAnswer>;
+}
+
+export interface SaveBlogEntrySlideshow {
+  slides: Array<string>;
+  frame: boolean;
+  shadow: boolean;
+  hasImageSlide?: boolean;
+  hasVideoSlide?: boolean;
+  empty?: boolean;
+}
+
+export interface SaveBlogEntryEvent {
+  title: string;
+  /** Start date yyyy-MM-dd HH:mm (time part discarded) */
+  startDate: string;
+  /** Start time: HH:mm */
+  startTime: string;
+  /** End date yyyy-MM-dd HH:mm (time part discarded) */
+  endDate: string;
+  /** End time: HH:mm */
+  endTime: string;
+  location: string;
+  link: string;
+}
+export interface SaveBlogEntryInput {
+  id: number;
+  __type: 'net.josh.community.blog.BlogEntry';
+  blogKey: string;
+  title: string;
+  description: string;
+  body: string;
+  /** Publish date yyyy-MM-dd HH:mm */
+  publishDate: string | null;
+  allowComments: boolean;
+  categories?: Array<number>;
+  poll?: SaveBlogEntryPoll;
+  event?: SaveBlogEntryEvent;
+  slideshow?: SaveBlogEntrySlideshow;
+  tags?: Array<string>;
+  /** old deprecated stuff */
+  headerStyle?: any;
+}
+
 /**
  * Save a blog entry.
  * @param blogEntryJson
@@ -450,12 +500,12 @@ export interface SaveEntryResult extends XcapJsonResult {
  * @returns {Promise}
  */
 export function saveEntry({
-  blogEntryJson,
+  blogEntryInput,
   type,
   draftId,
   blogKey
 }: {
-  blogEntryJson: any;
+  blogEntryInput: SaveBlogEntryInput;
   type: any;
   draftId?: number;
   blogKey: string;
@@ -463,7 +513,7 @@ export function saveEntry({
   return post({
     url: '/blog/save-blog-entry',
     parameters: {
-      blogEntryJson: JSON.stringify(blogEntryJson),
+      blogEntryJson: JSON.stringify(blogEntryInput),
       draftId,
       type,
       blogKey
