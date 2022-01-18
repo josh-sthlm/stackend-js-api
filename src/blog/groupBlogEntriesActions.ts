@@ -5,7 +5,7 @@ import * as categoryApi from '../category';
 import * as groupActions from '../group/groupActions';
 import * as blogActions from './blogActions';
 import { listMyGroups } from '../group';
-import { getJsonErrorText, Thunk } from '../api';
+import { getJsonErrorText, newXcapJsonErrorResult, Thunk } from '../api';
 import * as commentActions from '../comments/commentAction';
 import * as commentApi from '../comments';
 
@@ -31,7 +31,8 @@ import {
   setEntryStatus,
   GetEntriesResult,
   GetBlogEntryResult,
-  SaveBlogEntryInput
+  SaveBlogEntryInput,
+  SaveEntryResult
   //gaPostEventObject,
   //gaEditPostEventObject
 } from './index';
@@ -39,6 +40,8 @@ import { receiveLikes } from '../like/likeActions';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { fetchMyGroups } from '../group/groupActions';
 import { eventsReceived } from '../event/eventActions';
+import { updatePoll } from '../poll/pollActions';
+import { GetCommentResult, GetMultipleCommentsResult } from '../comments';
 
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
@@ -117,8 +120,8 @@ export function fetchBlogEntries({
   categories,
   invalidatePrevious = false,
   goToBlogEntry
-}: FetchBlogEntries): Thunk<Promise<any>> {
-  return async (dispatch: any, getState): Promise<any> => {
+}: FetchBlogEntries): Thunk<Promise<GetEntriesResult | null>> {
+  return async (dispatch: any, getState): Promise<GetEntriesResult | null> => {
     const categoryId = get(categories, '[0].id', null);
 
     try {
@@ -136,46 +139,55 @@ export function fetchBlogEntries({
 
       // Ignore if already present
       if (hasBlogEntries(groupBlogEntries, blogKey, pageSize, p, categoryId) && !invalidatePrevious) {
-        return;
+        return null;
       }
 
       dispatch(requestBlogEntries(blogKey));
 
       // FIXME: Category id not used in key?
-      const blogEntries: GetEntriesResult = await dispatch(
-        getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry })
-      );
+      const result: GetEntriesResult = await dispatch(getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry }));
+      if (result.error) {
+        return result;
+      }
 
       // FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
-      const groupRef = get(blogEntries, 'blog.groupRef');
+      const groupRef = get(result, 'blog.groupRef');
       if (groupRef) {
         await dispatch(groupActions.receiveGroups({ entries: [groupRef] }));
       } else {
-        console.error("Couldn't receiveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
+        console.error("Couldn't receiveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', result);
       }
-      const blogRef = get(blogEntries, 'blog');
+      const blogRef = get(result, 'blog');
       if (blogRef) {
         await dispatch(blogActions.receiveBlogs({ entries: [blogRef] }));
       } else {
-        console.error("Couldn't receiveBlogs in fetchBlogEntries for " + blogKey + '. Entries: ', blogEntries);
+        console.error("Couldn't receiveBlogs in fetchBlogEntries for " + blogKey + '. Entries: ', result);
       }
 
       if (invalidatePrevious) {
         await dispatch(cleanCacheBlogEntries({ blogKey }));
       }
-      dispatch(receiveLikes(blogEntries.likes));
+
+      dispatch(receiveLikes(result.likes));
 
       dispatch(
         eventsReceived({
-          relatedObjects: blogEntries.__relatedObjects,
-          rsvpUserIds: blogEntries.rsvpUserIds,
-          currentUserRsvpStatuses: blogEntries.userRsvpStatuses
+          relatedObjects: result.__relatedObjects,
+          rsvpUserIds: result.rsvpUserIds,
+          currentUserRsvpStatuses: result.userRsvpStatuses
         })
       );
 
-      return dispatch(receiveBlogEntries(blogKey, blogEntries));
+      result.resultPaginated.entries.forEach((e: BlogEntry) => {
+        dispatch(updatePoll(e.pollRef));
+      });
+
+      dispatch(receiveBlogEntries(blogKey, result));
+
+      return result;
     } catch (e) {
       console.error("Couldn't fetchBlogEntries for " + blogKey + ': ', e);
+      return newXcapJsonErrorResult<GetEntriesResult>("Couldn't fetchBlogEntries for " + blogKey);
     }
   };
 }
@@ -203,10 +215,21 @@ export function fetchBlogEntry({
         await dispatch(groupActions.receiveGroupsAuth({ entries: get(json, 'groupAuth') }));
       }
 
-      const json = await dispatch(getEntry({ id, entryPermaLink: permalink, blogKey }));
-      dispatch(receiveLikes(json.likes));
-      await dispatch(_fetchBlogEntry(blogKey, json));
-      return json;
+      const response = await dispatch(getEntry({ id, entryPermaLink: permalink, blogKey }));
+      if (response.error) {
+        return response;
+      }
+
+      dispatch(receiveLikes(response.likes));
+      dispatch(
+        eventsReceived({
+          relatedObjects: response.__relatedObjects
+        })
+      );
+      dispatch(updatePoll(response.blogEntry.pollRef));
+
+      await dispatch(_fetchBlogEntry(blogKey, response));
+      return response;
     } catch (e) {
       console.log('Error fetchBlogEntry ' + (id ? id : permalink ? permalink : '') + ' from ' + blogKey + ':', e);
       return null;
@@ -221,6 +244,11 @@ export interface FetchBlogEntriesWithComments {
   goToBlogEntry?: string;
 }
 
+export interface FetchBlogEntriesWithCommentsResult {
+  fetchBlogEntries: GetEntriesResult | null;
+  fetchMultipleComments: GetMultipleCommentsResult | null;
+}
+
 /**
  * Fetch blog entries and their comments
  * @param blogKey
@@ -233,31 +261,47 @@ export function fetchBlogEntriesWithComments({
   page = 1,
   categories,
   goToBlogEntry
-}: FetchBlogEntriesWithComments): Thunk<Promise<any>> {
-  return async (dispatch: any): Promise<any> => {
-    let response = null;
+}: FetchBlogEntriesWithComments): Thunk<Promise<FetchBlogEntriesWithCommentsResult>> {
+  return async (dispatch: any): Promise<FetchBlogEntriesWithCommentsResult> => {
+    let blogResponse: GetEntriesResult | null = null;
+    let commentResponse: GetMultipleCommentsResult | null = null;
     try {
-      response = await dispatch(fetchBlogEntries({ blogKey, p: page, categories, goToBlogEntry }));
-      if (response.json.error) {
-        console.error('Could not get blog entries for ' + blogKey + ': ', getJsonErrorText(response.json));
-        return null;
+      blogResponse = await dispatch(fetchBlogEntries({ blogKey, p: page, categories, goToBlogEntry }));
+      if (!blogResponse || blogResponse.error) {
+        console.error(
+          'Could not get blog entries for ' + blogKey + ': ',
+          blogResponse ? getJsonErrorText(blogResponse) : ''
+        );
+        return {
+          fetchBlogEntries: blogResponse,
+          fetchMultipleComments: null
+        };
       }
-      const referenceIds = response.json.resultPaginated.entries.map((entry: BlogEntry) => entry.id);
+      const referenceIds = blogResponse.resultPaginated.entries.map((entry: BlogEntry) => entry.id);
 
-      return dispatch(
+      commentResponse = dispatch(
         commentActions.fetchMultipleComments({
           module: commentApi.CommentModule.BLOG,
           referenceIds,
-          referenceGroupId: response.json.blogId
+          referenceGroupId: blogResponse.json.blogId
         })
       );
     } catch (e) {
       //FIXME: Probably a private group but need fail-check
-      console.error("Couldn't fetchBlogEntriesWithComments for " + blogKey + ': ', response, e);
+      console.error("Couldn't fetchBlogEntriesWithComments for " + blogKey + ': ', blogResponse, commentResponse, e);
     }
+
+    return {
+      fetchBlogEntries: blogResponse,
+      fetchMultipleComments: commentResponse
+    };
   };
 }
 
+export interface FetchBlogEntryWithCommentsResult {
+  fetchBlogEntry: GetBlogEntryResult | null;
+  fetchComments: GetCommentResult | null;
+}
 /**
  * Fetch a blog entry and its comments
  * @param id
@@ -272,14 +316,28 @@ export function fetchBlogEntryWithComments({
   id?: number;
   permalink?: string;
   blogKey: string;
-}): Thunk<Promise<any>> {
-  return async (dispatch: any, _getState: any): Promise<any> => {
+}): Thunk<Promise<FetchBlogEntryWithCommentsResult>> {
+  return async (dispatch: any): Promise<FetchBlogEntryWithCommentsResult> => {
+    let blogResponse: GetBlogEntryResult | null = null;
+    let commentsResponse: GetCommentResult | null = null;
     try {
-      const response = await dispatch(fetchBlogEntry({ id, permalink, blogKey }));
-      const blogEntry = response.blogEntry;
+      blogResponse = await dispatch(fetchBlogEntry({ id, permalink, blogKey }));
+      if (!blogResponse) {
+        return { fetchBlogEntry: null, fetchComments: null };
+      }
+
+      if (!blogResponse.error) {
+        dispatch(
+          eventsReceived({
+            relatedObjects: blogResponse.__relatedObjects
+          })
+        );
+        dispatch(updatePoll(blogResponse.blogEntry?.pollRef));
+      }
+      const blogEntry = blogResponse.blogEntry;
       if (blogEntry) {
-        dispatch(receiveLikes(response.likes));
-        return dispatch(
+        dispatch(receiveLikes(blogResponse.likes));
+        commentsResponse = dispatch(
           commentActions.fetchComments({
             module: commentApi.CommentModule.BLOG,
             referenceId: blogEntry.id,
@@ -300,6 +358,10 @@ export function fetchBlogEntryWithComments({
       //FIXME: Probably a private group but need fail-check
       console.warn(e);
     }
+    return {
+      fetchBlogEntry: blogResponse,
+      fetchComments: commentsResponse
+    };
   };
 }
 
@@ -343,8 +405,8 @@ export function postBlogEntry({
   type: 'PUBLISHED' | '';
   blogKey: string; //The id of the blogKey that you want to store the data in redux
   draftId?: number;
-}): Thunk<Promise<any>> {
-  return async (dispatch: any, getState): Promise<any> => {
+}): Thunk<Promise<SaveEntryResult>> {
+  return async (dispatch: any, getState): Promise<SaveEntryResult> => {
     dispatch(requestBlogEntries(blogKey));
 
     const response = await dispatch(
@@ -366,18 +428,29 @@ export function postBlogEntry({
     });
     const state = { resultPaginated };
 
+    dispatch(
+      eventsReceived({
+        relatedObjects: response.__relatedObjects
+      })
+    );
+
+    dispatch(updatePoll(response.entry.pollRef));
+
     if (!!blogEntryInput.id && blogEntryInput.id > 0) {
       //Edit an blogEntry
       dispatch(toggleWriteCommentOrEdit({ blogEntryId: response.entry.id, editorType: 'EDIT' }));
       // FIXME: Re add ga
       //dispatch(sendEventToGA(gaEditPostEventObject({ blogEntry: response.entry })));
-      return dispatch(updateBlogEntry(blogKey, state));
+
+      dispatch(updateBlogEntry(blogKey, state));
     } else {
       //Add new blogEntry
       // FIXME: Re add ga
       //dispatch(sendEventToGA(gaPostEventObject({ blogEntry: response.entry })));
-      return dispatch(receiveBlogEntries(blogKey, state as GetEntriesResult));
+      dispatch(receiveBlogEntries(blogKey, state as GetEntriesResult));
     }
+
+    return response;
   };
 }
 

@@ -65,6 +65,12 @@ export function getPoll({
   return getJson({ url: '/poll/get', parameters: arguments });
 }
 
+export interface VoteResult extends XcapJsonResult {
+  poll: Poll;
+  referenceId: number;
+  answerId: number;
+}
+
 /**
  * Vote for a poll option.
  *
@@ -79,7 +85,7 @@ export function vote({
 }: {
   referenceId: number;
   answerId: number;
-} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+} & XcapOptionalParameters): Thunk<Promise<VoteResult>> {
   return post({ url: '/poll/vote', parameters: arguments });
 }
 
