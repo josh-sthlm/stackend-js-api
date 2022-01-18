@@ -283,7 +283,7 @@ export function fetchBlogEntriesWithComments({
         commentActions.fetchMultipleComments({
           module: commentApi.CommentModule.BLOG,
           referenceIds,
-          referenceGroupId: blogResponse.json.blogId
+          referenceGroupId: blogResponse.blogId
         })
       );
     } catch (e) {
@@ -365,7 +365,7 @@ export function fetchBlogEntryWithComments({
   };
 }
 
-function _fetchBlogEntry(blogKey: string, json: any): Thunk<Promise<any>> {
+function _fetchBlogEntry(blogKey: string, json: GetBlogEntryResult): Thunk<Promise<any>> {
   return (dispatch: any): Promise<any> => {
     const groupRef = get(json, 'blog.groupRef', get(json, 'blogEntry.blogRef.groupRef'));
     if (groupRef) {
