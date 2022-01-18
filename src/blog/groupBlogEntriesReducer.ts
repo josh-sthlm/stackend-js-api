@@ -4,7 +4,7 @@ import assign from 'lodash/assign';
 import update from 'immutability-helper';
 import createReducer from '../api/createReducer';
 import { getJsonErrorText } from '../api';
-import { REACT_ROUTER_REDUX_LOCATION_CHANGE } from '../request/requestReducers';
+
 import { logger } from '../api';
 import { BlogEntry, GetEntriesResult } from './index';
 import { LikeDataMap } from '../like';
@@ -14,8 +14,6 @@ import { PaginatedCollection } from '../api/PaginatedCollection';
 export const REQUEST_GROUP_BLOG_ENTRIES = 'REQUEST_GROUP_BLOG_ENTRIES';
 export const RECEIVE_GROUP_BLOG_ENTRIES = 'RECEIVE_GROUP_BLOG_ENTRIES';
 export const INVALIDATE_GROUP_BLOG_ENTRIES = 'INVALIDATE_GROUP_BLOG_ENTRIES';
-export const TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY = 'TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY';
-export const CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY = 'CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY';
 export const UPDATE_GROUP_BLOG_ENTRY = 'UPDATE_GROUP_BLOG_ENTRY';
 
 export type GroupBlogEntriesActions = Receive | Update | Request | Invalidate;
@@ -248,40 +246,3 @@ export const groupBlogEntries = createReducer(
 );
 
 export default groupBlogEntries;
-
-type OpenBlogEntryWriteCommentSection = false | { blogEntryId: number; editorType: 'EDIT' | 'COMMENT' };
-
-export type OpenBlogEntryWriteCommentSectionActions =
-  | {
-      type: typeof TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY;
-      blogEntryId: number;
-      editorType: 'EDIT' | 'COMMENT';
-    }
-  | {
-      type: typeof REACT_ROUTER_REDUX_LOCATION_CHANGE;
-    }
-  | {
-      type: typeof CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY;
-    };
-
-export function openBlogEntryWriteCommentSection(
-  state: OpenBlogEntryWriteCommentSection = false,
-  action: OpenBlogEntryWriteCommentSectionActions
-): OpenBlogEntryWriteCommentSection {
-  switch (action.type) {
-    case TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY:
-      if (!!state && state.blogEntryId === action.blogEntryId && state.editorType === action.editorType) {
-        return false;
-      } else {
-        return {
-          blogEntryId: action.blogEntryId,
-          editorType: action.editorType
-        };
-      }
-    case REACT_ROUTER_REDUX_LOCATION_CHANGE:
-    case CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY:
-      return false;
-    default:
-      return state;
-  }
-}

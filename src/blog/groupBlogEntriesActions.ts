@@ -13,12 +13,9 @@ import {
   INVALIDATE_GROUP_BLOG_ENTRIES,
   RECEIVE_GROUP_BLOG_ENTRIES,
   REQUEST_GROUP_BLOG_ENTRIES,
-  TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
-  CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY,
   UPDATE_GROUP_BLOG_ENTRY,
   GroupBlogEntriesActions,
   UpdateBlogEntry,
-  OpenBlogEntryWriteCommentSectionActions,
   hasBlogEntries
 } from './groupBlogEntriesReducer';
 
@@ -437,9 +434,6 @@ export function postBlogEntry({
     dispatch(updatePoll(response.entry.pollRef));
 
     if (!!blogEntryInput.id && blogEntryInput.id > 0) {
-      //Edit an blogEntry
-      dispatch(toggleWriteCommentOrEdit({ blogEntryId: response.entry.id, editorType: 'EDIT' }));
-      // FIXME: Re add ga
       //dispatch(sendEventToGA(gaEditPostEventObject({ blogEntry: response.entry })));
 
       dispatch(updateBlogEntry(blogKey, state));
@@ -465,30 +459,4 @@ export function changeBlogEntryStatus({ blogKey, id, status }: SetEntryStatus): 
     const response = await dispatch(setEntryStatus({ blogKey, id, status }));
     dispatch(updateBlogEntry(blogKey, { resultPaginated: { entries: [response.entry] } }));
   };
-}
-
-/**
- * Toggle Reply editor for selected parent comment id
- * @param blogEntryId
- * @param editorType
- */
-export function toggleWriteCommentOrEdit({
-  blogEntryId,
-  editorType
-}: {
-  blogEntryId: number; //BlogEntry id
-  editorType: 'EDIT' | 'COMMENT';
-}): OpenBlogEntryWriteCommentSectionActions {
-  return {
-    type: TOGGLE_EDIT_OR_COMMENT_BLOG_ENTRY,
-    blogEntryId,
-    editorType
-  };
-}
-
-/**
- * Close comment editor
- */
-export function closeWriteCommentOrEdit(): OpenBlogEntryWriteCommentSectionActions {
-  return { type: CLOSE_EDIT_OR_COMMENT_BLOG_ENTRY };
 }
