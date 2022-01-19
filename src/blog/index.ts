@@ -230,6 +230,24 @@ export function newBlogEntry(blogKey: string): SaveBlogEntryInput {
   };
 }
 
+export interface GetBlogParams extends XcapOptionalParameters {
+  blogId?: number;
+  blogKey?: string;
+}
+
+export interface GetBlogResult extends XcapJsonResult {
+  blog: Blog | null;
+  authBlog: AuthBlog | null;
+}
+
+/**
+ * Get a blog given blogId or blogKey
+ * @param parameters
+ */
+export function getBlog(parameters: GetBlogParams): Thunk<Promise<GetBlogResult>> {
+  return getJson({ url: '', parameters: parameters as any });
+}
+
 export interface BlogEntryListingResult extends XcapJsonResult {
   resultPaginated: PaginatedCollection<BlogEntry>;
 }

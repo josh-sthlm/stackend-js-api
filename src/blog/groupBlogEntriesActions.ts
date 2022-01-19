@@ -156,7 +156,9 @@ export function fetchBlogEntries({
       }
       const blogRef = get(result, 'blog');
       if (blogRef) {
-        await dispatch(blogActions.receiveBlogs({ entries: [blogRef] }));
+        await dispatch(
+          blogActions.receiveBlogs({ entries: [blogRef], authBlogs: result.authBlog ? [result.authBlog as any] : [] })
+        );
       } else {
         console.error("Couldn't receiveBlogs in fetchBlogEntries for " + blogKey + '. Entries: ', result);
       }
@@ -239,6 +241,7 @@ export interface FetchBlogEntriesWithComments {
   page?: number;
   categories?: Array<categoryApi.Category>;
   goToBlogEntry?: string;
+  invalidatePrevious?: boolean;
 }
 
 export interface FetchBlogEntriesWithCommentsResult {
@@ -252,18 +255,22 @@ export interface FetchBlogEntriesWithCommentsResult {
  * @param page
  * @param categories
  * @param goToBlogEntry
+ * @param invalidatePrevious
  */
 export function fetchBlogEntriesWithComments({
   blogKey,
   page = 1,
   categories,
-  goToBlogEntry
+  goToBlogEntry,
+  invalidatePrevious = false
 }: FetchBlogEntriesWithComments): Thunk<Promise<FetchBlogEntriesWithCommentsResult>> {
   return async (dispatch: any): Promise<FetchBlogEntriesWithCommentsResult> => {
     let blogResponse: GetEntriesResult | null = null;
     let commentResponse: GetMultipleCommentsResult | null = null;
     try {
-      blogResponse = await dispatch(fetchBlogEntries({ blogKey, p: page, categories, goToBlogEntry }));
+      blogResponse = await dispatch(
+        fetchBlogEntries({ blogKey, p: page, categories, goToBlogEntry, invalidatePrevious })
+      );
       if (!blogResponse || blogResponse.error) {
         console.error(
           'Could not get blog entries for ' + blogKey + ': ',
@@ -370,7 +377,9 @@ function _fetchBlogEntry(blogKey: string, json: GetBlogEntryResult): Thunk<Promi
     }
     const blogRef = get(json, 'blog', get(json, 'blogEntry.blogRef'));
     if (blogRef) {
-      dispatch(blogActions.receiveBlogs({ entries: blogRef }));
+      dispatch(
+        blogActions.receiveBlogs({ entries: [blogRef], authBlogs: json.authBlog ? [json.authBlog] : undefined })
+      );
     }
 
     const resultPaginated = { entries: [json.blogEntry] } as PaginatedCollection<BlogEntry>;

@@ -1,29 +1,48 @@
 // @flow
 import update from 'immutability-helper';
 
-import { Blog } from './index';
+import { AuthBlog, Blog } from './index';
+import { AuthObject } from '../user/privileges';
 
 export const REQUEST_BLOGS = 'REQUEST_BLOGS';
 export const RECEIVE_BLOGS = 'RECEIVE_BLOGS';
 export const INVALIDATE_BLOGS = 'INVALIDATE_BLOGS';
+export const CLEAR_BLOGS = 'CLEAR_BLOGS';
 
 export interface BlogState {
   isFetching: boolean;
   didInvalidate: boolean;
   lastUpdated: number;
-  entries: { [blogId: number]: Blog }; //entries is an object with blogId: blog
+
+  /**
+   * Blogs
+   */
+  blogs: { [blogId: number]: Blog }; //entries is an object with blogId: blog
+
+  /**
+   * Blog id by permalink / blogKey
+   */
+  idByPermalink: { [blogKey: string]: number };
+
+  /**
+   * AuthObject by blog id
+   */
+  auth: { [blogId: number]: AuthObject };
 }
 
 export type BlogActions =
   | { type: typeof REQUEST_BLOGS }
-  | { type: typeof RECEIVE_BLOGS; entries: Array<Blog> }
-  | { type: typeof INVALIDATE_BLOGS };
+  | { type: typeof RECEIVE_BLOGS; entries: Array<Blog>; authBlogs?: Array<AuthBlog> }
+  | { type: typeof INVALIDATE_BLOGS }
+  | { type: typeof CLEAR_BLOGS };
 
 export default function blogs(
   state: BlogState = {
     isFetching: false,
     didInvalidate: false,
-    entries: {},
+    blogs: {},
+    idByPermalink: {},
+    auth: {},
     lastUpdated: Date.now()
   },
   action: BlogActions
@@ -37,13 +56,24 @@ export default function blogs(
 
     case RECEIVE_BLOGS: {
       const newBlogs: { [id: number]: Blog } = {};
-      action.entries.map(group => (newBlogs[group.id] = group));
+      const newIdByPermalink: { [blogKey: string]: number } = {};
+      action.entries.map(b => {
+        newBlogs[b.id] = b;
+        newIdByPermalink[b.permalink] = b.id;
+      });
+
+      const newAuth: { [id: number]: AuthObject } = {};
+      if (action.authBlogs) {
+        action.authBlogs.map((ab: AuthBlog) => (newAuth[ab.id] = ab.auth));
+      }
 
       return update(state, {
         isFetching: { $set: false },
         didInvalidate: { $set: false },
         lastUpdated: { $set: Date.now() },
-        entries: { $merge: newBlogs }
+        blogs: { $merge: newBlogs },
+        idByPermalink: { $merge: newIdByPermalink },
+        auth: { $merge: newAuth }
       });
     }
 
@@ -51,6 +81,16 @@ export default function blogs(
       return update(state, {
         didInvalidate: { $set: true }
       });
+
+    case CLEAR_BLOGS:
+      return {
+        isFetching: false,
+        didInvalidate: false,
+        blogs: {},
+        idByPermalink: {},
+        auth: {},
+        lastUpdated: Date.now()
+      };
 
     default:
       return state;

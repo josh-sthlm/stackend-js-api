@@ -15,8 +15,9 @@ export const REQUEST_GROUP_BLOG_ENTRIES = 'REQUEST_GROUP_BLOG_ENTRIES';
 export const RECEIVE_GROUP_BLOG_ENTRIES = 'RECEIVE_GROUP_BLOG_ENTRIES';
 export const INVALIDATE_GROUP_BLOG_ENTRIES = 'INVALIDATE_GROUP_BLOG_ENTRIES';
 export const UPDATE_GROUP_BLOG_ENTRY = 'UPDATE_GROUP_BLOG_ENTRY';
+export const UPDATE_AUTH_BLOG = 'UPDATE_AUTH_BLOG';
 
-export type GroupBlogEntriesActions = Receive | Update | Request | Invalidate;
+export type GroupBlogEntriesActions = Receive | Update | Request | Invalidate | UpdateAuthBlog;
 
 type BlogKey = string; //ex: groups/news
 
@@ -27,7 +28,6 @@ export interface GroupBlogState {
     resultPaginated: {
       entries: Array<BlogEntry>;
     };
-    userRsvpStatuses: any;
     likesByCurrentUser: any;
     likes: LikeDataMap;
     blogId: number;
@@ -125,6 +125,11 @@ interface Request {
 
 interface Invalidate {
   type: typeof INVALIDATE_GROUP_BLOG_ENTRIES;
+  blogKey: BlogKey;
+}
+
+interface UpdateAuthBlog {
+  type: typeof UPDATE_AUTH_BLOG;
   blogKey: BlogKey;
 }
 
