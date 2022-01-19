@@ -4,7 +4,13 @@ import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import { fetchBlogEntries } from '../src/blog/groupBlogEntriesActions';
 import { initialize } from '../src/api/actions';
 import { Privilege } from '../src/user/privileges';
-import { getBlogAuthById, getBlogAuthByPermalink, getBlogById, getBlogByPermalink } from '../src/blog/blogActions';
+import {
+  fetchBlog,
+  getBlogAuthById,
+  getBlogAuthByPermalink,
+  getBlogById,
+  getBlogByPermalink
+} from '../src/blog/blogActions';
 
 describe('Blog', () => {
   const store = createTestStore();
@@ -46,6 +52,12 @@ describe('Blog', () => {
       console.log(likes);
       expect(Object.keys(likes).length).toBeGreaterThan(Object.keys(likes1).length);
     });
+  });
+
+  it('fetchBlog', async () => {
+    const r = await store.dispatch(fetchBlog({ blogKey: 'groups/news' }));
+    console.log(r);
+    // FIXME: Improve this
   });
 
   /* FIXME: Broken reducer

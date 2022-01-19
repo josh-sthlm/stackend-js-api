@@ -244,8 +244,8 @@ export interface GetBlogResult extends XcapJsonResult {
  * Get a blog given blogId or blogKey
  * @param parameters
  */
-export function getBlog(parameters: GetBlogParams): Thunk<Promise<GetBlogResult>> {
-  return getJson({ url: '/blog/get', parameters: parameters as any });
+export function getBlog({ blogId, blogKey }: GetBlogParams): Thunk<Promise<GetBlogResult>> {
+  return getJson({ url: '/blog/get', parameters: arguments });
 }
 
 export interface BlogEntryListingResult extends XcapJsonResult {
