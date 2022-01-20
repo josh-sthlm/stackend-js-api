@@ -1,9 +1,9 @@
 // @flow
 import get from 'lodash/get';
 import update from 'immutability-helper';
-import * as categoryApi from '../category';
-import * as groupActions from '../group/groupActions';
-import * as blogActions from './blogActions';
+import { Category } from '../category';
+import { receiveGroups, fetchMyGroups, receiveGroupsAuth } from '../group/groupActions';
+import { receiveBlogs } from './blogActions';
 import { listMyGroups } from '../group';
 import { getJsonErrorText, newXcapJsonErrorResult, Thunk } from '../api';
 import * as commentActions from '../comments/commentAction';
@@ -35,7 +35,6 @@ import {
 } from './index';
 import { receiveLikes } from '../like/likeActions';
 import { PaginatedCollection } from '../api/PaginatedCollection';
-import { fetchMyGroups } from '../group/groupActions';
 import { eventsReceived } from '../event/eventActions';
 import { updatePoll } from '../poll/pollActions';
 import { GetCommentResult, GetMultipleCommentsResult } from '../comments';
@@ -102,7 +101,7 @@ export interface FetchBlogEntries {
   blogKey: string; //The id of the blogKey that you want to store the data in redux
   pageSize?: number;
   p?: number; //page number in paginated collection
-  categories?: Array<categoryApi.Category>;
+  categories?: Array<Category>;
   invalidatePrevious?: boolean; //if true, invalidates previous blog-entries in this blog,
   goToBlogEntry?: string; // Start the pagination at the specified entry permalink
 }
@@ -148,16 +147,19 @@ export function fetchBlogEntries({
       }
 
       // FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
-      const groupRef = get(result, 'blog.groupRef');
-      if (groupRef) {
-        await dispatch(groupActions.receiveGroups({ entries: [groupRef] }));
+      const group = result.blog?.groupRef;
+      if (group) {
+        await dispatch(receiveGroups({ entries: [group] }));
       } else {
         console.error("Couldn't receiveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', result);
       }
-      const blogRef = get(result, 'blog');
-      if (blogRef) {
+      const blog = result.blog;
+      if (blog) {
         await dispatch(
-          blogActions.receiveBlogs({ entries: [blogRef], authBlogs: result.authBlog ? [result.authBlog as any] : [] })
+          receiveBlogs({
+            entries: [blog],
+            authBlogs: result.authBlog ? [result.authBlog] : undefined
+          })
         );
       } else {
         console.error("Couldn't receiveBlogs in fetchBlogEntries for " + blogKey + '. Entries: ', result);
@@ -208,13 +210,13 @@ export function fetchBlogEntry({
     try {
       await dispatch(requestBlogEntries(blogKey));
       const { currentUser, groups } = getState();
-      const auth = get(groups, 'auth', {});
-      if (get(currentUser, 'isLoggedIn', false) && (auth == null || Object.keys(auth).length === 0)) {
-        const json = await dispatch(listMyGroups({}));
-        await dispatch(groupActions.receiveGroupsAuth({ entries: get(json, 'groupAuth') }));
+      const auth = groups?.auth || null;
+      if (currentUser?.isLoggedIn && (auth == null || Object.keys(auth).length === 0)) {
+        const r = await dispatch(listMyGroups({}));
+        await dispatch(receiveGroupsAuth({ entries: r.groupAuth }));
       }
 
-      const response = await dispatch(getEntry({ id, entryPermaLink: permalink, blogKey }));
+      const response: GetBlogEntryResult = await dispatch(getEntry({ id, entryPermaLink: permalink, blogKey }));
       if (response.error) {
         return response;
       }
@@ -225,7 +227,9 @@ export function fetchBlogEntry({
           relatedObjects: response.__relatedObjects
         })
       );
-      dispatch(updatePoll(response.blogEntry.pollRef));
+      if (response.blogEntry) {
+        dispatch(updatePoll(response.blogEntry.pollRef));
+      }
 
       await dispatch(_fetchBlogEntry(blogKey, response));
       return response;
@@ -239,7 +243,7 @@ export function fetchBlogEntry({
 export interface FetchBlogEntriesWithComments {
   blogKey: string;
   page?: number;
-  categories?: Array<categoryApi.Category>;
+  categories?: Array<Category>;
   goToBlogEntry?: string;
   invalidatePrevious?: boolean;
 }
@@ -371,15 +375,13 @@ export function fetchBlogEntryWithComments({
 
 function _fetchBlogEntry(blogKey: string, json: GetBlogEntryResult): Thunk<Promise<any>> {
   return (dispatch: any): Promise<any> => {
-    const groupRef = get(json, 'blog.groupRef', get(json, 'blogEntry.blogRef.groupRef'));
+    const groupRef = json.blog?.groupRef || json.blogEntry?.blogRef?.groupRef;
     if (groupRef) {
-      dispatch(groupActions.receiveGroups({ entries: groupRef }));
+      dispatch(receiveGroups({ entries: groupRef }));
     }
-    const blogRef = get(json, 'blog', get(json, 'blogEntry.blogRef'));
-    if (blogRef) {
-      dispatch(
-        blogActions.receiveBlogs({ entries: [blogRef], authBlogs: json.authBlog ? [json.authBlog] : undefined })
-      );
+    const blog = json.blog || json.blogEntry?.blogRef;
+    if (blog) {
+      dispatch(receiveBlogs({ entries: [blog], authBlogs: json.authBlog ? [json.authBlog] : undefined }));
     }
 
     const resultPaginated = { entries: [json.blogEntry] } as PaginatedCollection<BlogEntry>;

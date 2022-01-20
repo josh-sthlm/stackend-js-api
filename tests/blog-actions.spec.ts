@@ -11,6 +11,8 @@ import {
   getBlogById,
   getBlogByPermalink
 } from '../src/blog/blogActions';
+//import { GetBlogEntryResult } from '../src/blog';
+//import assert from 'assert';
 
 describe('Blog', () => {
   const store = createTestStore();
@@ -60,9 +62,15 @@ describe('Blog', () => {
     // FIXME: Improve this
   });
 
-  /* FIXME: Broken reducer
+  /* Enable when backend support is deployed
   it('Get entry ', async () => {
-    const r: GetBlogEntryResult | null = await store.dispatch(fetchBlogEntry({ id: 52, blogKey: 'groups/news' }));
+    const r: GetBlogEntryResult | null = await store.dispatch(
+      fetchBlogEntry({
+        id: 23,
+        permalink: 'stackend-supports-cake-goal-zero-sawc-and-trifilon',
+        blogKey: 'groups/news'
+      })
+    );
     assert(r);
     expect(r.blogEntry).toBeDefined();
   });

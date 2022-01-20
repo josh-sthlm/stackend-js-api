@@ -6,15 +6,18 @@ import { AuthObject } from '../user/privileges';
 
 export function receiveBlogs({
   entries,
-  authBlogs
+  authBlogs,
+  authObjects
 }: {
   entries: Array<Blog>;
   authBlogs?: Array<AuthBlog>;
+  authObjects?: { [blogId: number]: AuthObject };
 }): BlogActions {
   return {
     type: reducer.RECEIVE_BLOGS,
     entries,
-    authBlogs
+    authBlogs,
+    authObjects
   };
 }
 
@@ -38,7 +41,7 @@ export function fetchBlog(params: GetBlogParams): Thunk<Promise<GetBlogResult>> 
   return async (dispatch: any): Promise<GetBlogResult> => {
     const r = await dispatch(getBlog(params));
     if (!r.error && r.blog) {
-      dispatch(receiveBlogs({ entries: r.blog ? [r.blog] : [], authBlogs: r.authBlog ? [r.authBlog] : [] }));
+      dispatch(receiveBlogs({ entries: r.blog ? [r.blog] : [], authBlogs: r.authBlog ? [r.authBlog] : undefined }));
     }
     return r;
   };

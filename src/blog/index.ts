@@ -258,13 +258,13 @@ export interface GetEntriesResult extends BlogEntryListingResult {
 
   /** Maps from event id to status to list */
   rsvpUserIds: RsvpUserResponses;
-  //rsvpUserIds: { [eventId: string]: { [status: string]: PaginatedCollection<number> } };
 
   likesByCurrentUser: LikeDataMap;
 
   categories: Array<Category>;
   blog: Blog | null;
-  authBlog: AuthObject | null;
+  authBlog: AuthBlog | null;
+  auth: AuthObject | null;
 }
 
 /**

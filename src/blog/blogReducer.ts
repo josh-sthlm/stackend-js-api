@@ -32,7 +32,12 @@ export interface BlogState {
 
 export type BlogActions =
   | { type: typeof REQUEST_BLOGS }
-  | { type: typeof RECEIVE_BLOGS; entries: Array<Blog>; authBlogs?: Array<AuthBlog> }
+  | {
+      type: typeof RECEIVE_BLOGS;
+      entries: Array<Blog>;
+      authBlogs?: Array<AuthBlog>;
+      authObjects?: { [blogId: number]: AuthObject };
+    }
   | { type: typeof INVALIDATE_BLOGS }
   | { type: typeof CLEAR_BLOGS };
 
@@ -65,6 +70,13 @@ export default function blogs(
       const newAuth: { [id: number]: AuthObject } = {};
       if (action.authBlogs) {
         action.authBlogs.map((ab: AuthBlog) => (newAuth[ab.id] = ab.auth));
+      }
+
+      if (action.authObjects) {
+        Object.keys(action.authObjects).forEach((blogId: any) => {
+          const a = (action.authObjects as any)[blogId];
+          newAuth[blogId] = a;
+        });
       }
 
       return update(state, {
