@@ -3,7 +3,9 @@ import {
   XCAP_MODAL_THROBBER_DECREASE,
   XCAP_LOADING_THROBBER_INCREASE,
   XCAP_LOADING_THROBBER_DECREASE,
-  ThrobberActions
+  ThrobberActions,
+  ThrobberState,
+  XCAP_LOADING_COMPLETE
 } from './throbberReducer';
 import { Thunk } from '../api';
 
@@ -25,9 +27,18 @@ export function setModalThrobberVisible(visible: boolean): Thunk<void> {
  * @returns {Function}
  */
 export function setLoadingThrobberVisible(visible: boolean): Thunk<void> {
-  return (dispatch): ThrobberActions => {
-    return dispatch({
+  return (dispatch, getState): void => {
+    dispatch({
       type: visible ? XCAP_LOADING_THROBBER_INCREASE : XCAP_LOADING_THROBBER_DECREASE
     });
+
+    if (!visible) {
+      const throbber: ThrobberState = getState().throbber;
+      if (!throbber.loading) {
+        dispatch({
+          type: XCAP_LOADING_COMPLETE
+        });
+      }
+    }
   };
 }

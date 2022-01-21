@@ -3,13 +3,22 @@ export const XCAP_MODAL_THROBBER_DECREASE = 'XCAP_MODAL_THROBBER_DECREASE';
 export const XCAP_LOADING_THROBBER_INCREASE = 'XCAP_LOADING_THROBBER_INCREASE';
 export const XCAP_LOADING_THROBBER_DECREASE = 'XCAP_LOADING_THROBBER_DECREASE';
 
+/**
+ * Dispatched when the number of requests reaches 0
+ */
+export const XCAP_LOADING_COMPLETE = 'XCAP_LOADING_COMPLETE';
+
 export interface ThrobberState {
-  // Controls the modal throbber
+  /** Is the modal throbber visible? */
   visible: boolean;
+
+  /** Number of modal requests */
   n: number;
 
-  // Controls the loading throbber
+  /** Is the loading throbber visible? */
   loading: boolean;
+
+  /** Number of loading requests */
   requests: number;
 }
 

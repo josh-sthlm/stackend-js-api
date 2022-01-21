@@ -1,4 +1,4 @@
-import { ClearUserAction, ClearUsersAction, UsersReceivedAction } from './usersReducer';
+import { ClearUserAction, ClearUsersAction, UsersReceivedAction, UsersState } from './usersReducer';
 import { getUser, GetUserResult, User } from './index';
 import { Thunk, XcapOptionalParameters } from '../api';
 
@@ -36,4 +36,13 @@ export function fetchUser(
     }
     return r;
   };
+}
+
+/**
+ * Get a user from the store
+ * @param state
+ * @param id
+ */
+export function getUserFromStore(state: UsersState, id: number): User | null {
+  return state[id] || null;
 }

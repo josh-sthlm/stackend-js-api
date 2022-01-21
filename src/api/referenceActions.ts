@@ -36,8 +36,8 @@ export function applyReferenceHandlers({ entries }: ReceiveReferences): Thunk<vo
     // Get the objects
     Object.keys(entries).forEach(key => {
       const object = entries[key as any];
-      if (object && object.___type) {
-        const handler = REFERENCE_HANDLERS[object.___type];
+      if (object && object.__type) {
+        const handler = REFERENCE_HANDLERS[object.__type];
         if (handler) {
           let objects = handlerObjects[handler.type];
           if (!objects) {

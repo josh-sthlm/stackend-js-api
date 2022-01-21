@@ -1,14 +1,13 @@
 import get from 'lodash/get';
 import concat from 'lodash/concat';
-import assign from 'lodash/assign';
 import update from 'immutability-helper';
 import createReducer from '../api/createReducer';
-import { getJsonErrorText } from '../api';
+import { getJsonErrorText, XcapJsonErrors } from '../api';
 
 import { logger } from '../api';
 import { BlogEntry, GetEntriesResult } from './index';
 import { LikeDataMap } from '../like';
-import { PaginatedCollection } from '../api/PaginatedCollection';
+import { emptyPaginatedCollection, PaginatedCollection } from '../api/PaginatedCollection';
 
 //Action Type
 export const REQUEST_GROUP_BLOG_ENTRIES = 'REQUEST_GROUP_BLOG_ENTRIES';
@@ -24,16 +23,16 @@ type BlogKey = string; //ex: groups/news
 export interface GroupBlogState {
   isFetching: boolean;
   didInvalidate: boolean;
+  lastUpdated: number;
+  error?: XcapJsonErrors;
   json: {
-    resultPaginated: {
-      entries: Array<BlogEntry>;
-    };
+    resultPaginated: PaginatedCollection<BlogEntry>;
     likesByCurrentUser: any;
     likes: LikeDataMap;
     blogId: number;
   };
-  lastUpdated: number;
 }
+
 export interface GroupBlogEntriesState {
   [blogKey: string]: GroupBlogState;
 }
@@ -161,8 +160,7 @@ export const groupBlogEntries = createReducer(
                 isFetching: { $set: false },
                 didInvalidate: { $set: false },
                 lastUpdated: { $set: action.receivedAt },
-                // @ts-ignore
-                json: { $merge: { resultPaginated: { page: 1, totalSize: 0, entries: [] } } },
+                json: { $merge: { resultPaginated: emptyPaginatedCollection<BlogEntry>() } },
                 error: { $set: action.json.error }
               })
           }
@@ -170,13 +168,17 @@ export const groupBlogEntries = createReducer(
       }
 
       // Combine the existing and new entries, update the existing if needed
-      // @ts-ignore
-      const origEntries: Array<BlogEntry> = get(state, `[${action.blogKey}].json.resultPaginated.entries`, []);
+
+      const origEntries: Array<BlogEntry> = get(
+        getGroupBlogState(state, action.blogKey),
+        'json.resultPaginated.entries',
+        []
+      );
       const addEntries: Array<BlogEntry> = [];
       action.json.resultPaginated.entries.forEach(e => {
         const existingEntry = origEntries.find(o => o.id === e.id);
         if (existingEntry) {
-          assign(existingEntry, e);
+          Object.assign(existingEntry, e);
         } else {
           addEntries.push(e);
         }
