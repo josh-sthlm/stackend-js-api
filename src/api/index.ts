@@ -1,7 +1,7 @@
 import { appendQueryString, LoadJson, LoadJsonResult, urlEncodeParameters } from './LoadJson';
 import get from 'lodash/get';
 import forIn from 'lodash/forIn';
-import { receiveReferences } from './referenceActions';
+import { applyReferenceHandlers, ReceiveReferences, receiveReferences } from './referenceActions';
 import { Request, getRequest } from '../request';
 import { Community, Module, STACKEND_COMMUNITY } from '../stackend';
 import { User } from '../user';
@@ -728,7 +728,9 @@ export function getApiUrl({
 export function addRelatedObjectsToStore(dispatch: Dispatch, json: any): void {
   if (!!json[RELATED_OBJECTS] && Object.keys(json[RELATED_OBJECTS]).length > 0) {
     const relatedObjects = json[RELATED_OBJECTS];
-    dispatch(receiveReferences({ entries: relatedObjects }));
+    const rr: ReceiveReferences = { entries: relatedObjects };
+    dispatch(receiveReferences(rr) as any);
+    dispatch(applyReferenceHandlers(rr) as any);
   }
 }
 

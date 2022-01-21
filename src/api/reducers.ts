@@ -23,6 +23,7 @@ import { Reducer } from 'redux';
 import likes from '../like/likeReducer';
 import events from '../event/eventReducer';
 import polls from '../poll/pollReducer';
+import users from '../user/usersReducer';
 
 /**
  * Minimum set of reducers with their expected names
@@ -67,5 +68,6 @@ export const STANDARD_REDUCERS: { [name: string]: Reducer<any, any> } = {
   vote,
   likes,
   events,
-  polls
+  polls,
+  users
 };
