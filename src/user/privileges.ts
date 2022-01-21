@@ -101,3 +101,18 @@ export function isSuperUser({ user }: { user: User | null }): boolean {
 export function isAdminUser({ user }: { user: User | null }): boolean {
   return hasElevatedPrivilege(user, 'cms', CMS_COMPONENT_CLASS, PrivilegeTypeId.TRUSTED);
 }
+
+/**
+ * Default AuthObject for visitors
+ */
+export const VISITOR_READ_ONLY_AUTH_OBJECT: AuthObject = {
+  userPrivilege: Privilege.VISITOR,
+  comment: false,
+  create: false,
+  moderate: false,
+  read: true,
+  postModerateRequired: false,
+  textFilteredPre: true,
+  textFilteringRequired: true,
+  ruleId: 0
+};

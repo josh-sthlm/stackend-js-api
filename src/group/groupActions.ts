@@ -43,7 +43,7 @@ export type GroupActions = Request | Receive | ReceiveGroup | Invalidate | Recei
  * Fetch my groups
  * @param refresh
  */
-export function fetchMyGroups(refresh = false): Thunk<void> {
+export function fetchMyGroups(refresh = false): Thunk<Promise<void>> {
   return async (dispatch: any, getState: any): Promise<void> => {
     const groups: GroupState = getState().groups;
     if (

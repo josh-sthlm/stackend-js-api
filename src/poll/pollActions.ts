@@ -1,6 +1,6 @@
 import { Poll, vote, VoteResult, getPoll, GetPollResult } from './index';
 import { Thunk } from '../api';
-import { UPDATE_POLL, PollsState, CLEAR_POLL, CLEAR_POLLS } from './pollReducer';
+import { UPDATE_POLL, PollsState, CLEAR_POLL, CLEAR_POLLS, UPDATE_POLLS } from './pollReducer';
 
 export const DEFAULT_POLL_CONTEXT = 'newspoll';
 
@@ -62,6 +62,26 @@ export function updatePoll(poll: Poll | null | undefined, context: string = DEFA
       dispatch({
         type: UPDATE_POLL,
         poll,
+        context
+      });
+    }
+  };
+}
+
+/**
+ * Add multiple polls to the state
+ * @param polls
+ * @param context
+ */
+export function updatePolls(
+  polls: Array<Poll> | null | undefined,
+  context: string = DEFAULT_POLL_CONTEXT
+): Thunk<void> {
+  return function (dispatch: any): void {
+    if (polls && polls.length != 0) {
+      dispatch({
+        type: UPDATE_POLLS,
+        polls,
         context
       });
     }

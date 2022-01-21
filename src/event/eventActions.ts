@@ -170,8 +170,8 @@ export function rsvpReceived({
   context?: string;
   rsvpUserIds?: RsvpUserResponses;
   extraData?: any;
-}): Thunk<Promise<void>> {
-  return async (dispatch: any): Promise<void> => {
+}): Thunk<void> {
+  return (dispatch: any): void => {
     dispatch({
       type: EVENT_RSVP_RECEIVED,
       context,
@@ -205,8 +205,8 @@ export function eventsReceived({
   rsvpUserIds?: RsvpUserResponses;
   context?: string;
   extraData?: any;
-}): Thunk<Promise<void>> {
-  return async (dispatch: any): Promise<void> => {
+}): Thunk<void> {
+  return (dispatch: any): void => {
     const addEvents: Array<Event> = events ? events : [];
 
     if (relatedObjects) {

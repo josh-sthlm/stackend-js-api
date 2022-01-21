@@ -36,9 +36,10 @@ import {
 import { receiveLikes } from '../like/likeActions';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { eventsReceived } from '../event/eventActions';
-import { updatePoll } from '../poll/pollActions';
+import { updatePoll, updatePolls } from '../poll/pollActions';
 import { GetCommentResult, GetMultipleCommentsResult } from '../comments';
 import { AuthObject } from '../user/privileges';
+import { Poll } from '../poll';
 
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
@@ -150,7 +151,7 @@ export function fetchBlogEntries({
       // FIXME: this should use the blog object returned by the above call, because this fails if there are no entries
       const group = result.blog?.groupRef;
       if (group) {
-        await dispatch(receiveGroups({ entries: [group] }));
+        dispatch(receiveGroups({ entries: [group] }));
       } else {
         console.error("Couldn't receiveGroups in fetchBlogEntries for " + blogKey + '. Entries: ', result);
       }
@@ -178,7 +179,7 @@ export function fetchBlogEntries({
       }
 
       if (invalidatePrevious) {
-        await dispatch(cleanCacheBlogEntries({ blogKey }));
+        dispatch(cleanCacheBlogEntries({ blogKey }));
       }
 
       dispatch(receiveLikes(result.likes));
@@ -191,9 +192,13 @@ export function fetchBlogEntries({
         })
       );
 
+      const polls: Array<Poll> = [];
       result.resultPaginated.entries.forEach((e: BlogEntry) => {
-        dispatch(updatePoll(e.pollRef));
+        if (e.pollRef) {
+          polls.push(e.pollRef);
+        }
       });
+      dispatch(updatePolls(polls));
 
       dispatch(receiveBlogEntries(blogKey, result));
 
@@ -385,8 +390,8 @@ export function fetchBlogEntryWithComments({
   };
 }
 
-function _fetchBlogEntry(blogKey: string, json: GetBlogEntryResult): Thunk<Promise<any>> {
-  return (dispatch: any): Promise<any> => {
+function _fetchBlogEntry(blogKey: string, json: GetBlogEntryResult): Thunk<any> {
+  return (dispatch: any): any => {
     const groupRef = json.blog?.groupRef || json.blogEntry?.blogRef?.groupRef;
     if (groupRef) {
       dispatch(receiveGroups({ entries: groupRef }));
