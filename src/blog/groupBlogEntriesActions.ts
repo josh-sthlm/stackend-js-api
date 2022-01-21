@@ -38,6 +38,7 @@ import { PaginatedCollection } from '../api/PaginatedCollection';
 import { eventsReceived } from '../event/eventActions';
 import { updatePoll } from '../poll/pollActions';
 import { GetCommentResult, GetMultipleCommentsResult } from '../comments';
+import { AuthObject } from '../user/privileges';
 
 //import { sendEventToGA } from '../analytics/analyticsFunctions.js';
 
@@ -155,10 +156,21 @@ export function fetchBlogEntries({
       }
       const blog = result.blog;
       if (blog) {
+        const authObjects: { [blogId: number]: AuthObject } = {};
+        // FIXME: Workaround for different return types
+        if (result.authBlog) {
+          if (result.authBlog.auth) {
+            authObjects[blog.id] = result.authBlog.auth;
+          } else {
+            authObjects[blog.id] = result.authBlog as any;
+          }
+        }
+
         await dispatch(
           receiveBlogs({
             entries: [blog],
-            authBlogs: result.authBlog ? [result.authBlog] : undefined
+            authBlogs: result.authBlog ? [result.authBlog] : undefined,
+            authObjects
           })
         );
       } else {
