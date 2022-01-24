@@ -1,8 +1,19 @@
 import createTestStore from './setup';
-import { GetBlogEntryResult, getEntries, GetEntriesResult, getEntry, newBlogEntry } from '../src/blog';
+import {
+  Blog,
+  BLOG_ENTRY_CLASS,
+  BlogEntry,
+  GetBlogEntryResult,
+  getEntries,
+  GetEntriesResult,
+  getEntry,
+  newBlogEntry
+} from '../src/blog';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import { COMMUNITY_PARAMETER } from '../src/api';
 import assert from 'assert';
+import ModerationStatus from '../src/api/ModerationStatus';
+import { Group } from '../src/group';
 
 describe('Blog', () => {
   const store = createTestStore();
@@ -46,3 +57,56 @@ describe('Blog', () => {
     });
   });
 });
+
+export function mockBlog(id: number, blogKey: string, group: Group): Blog {
+  const now = Date.now();
+  return {
+    __type: 'net.josh.community.blog.Blog',
+    id,
+    name: 'Test blog ' + id,
+    ttl: 0,
+    type: 0,
+    subtype: 0,
+    modStatus: ModerationStatus.PASSED,
+    modifiedDate: now,
+    createdDate: now,
+    description: 'Test ' + id,
+    permalink: 'test-' + id,
+    referenceId: 0,
+    obfuscatedReference: 'blog' + id,
+    creatorUserRef: null,
+    publishedEntrySize: 1,
+    entrySize: 1,
+    cssName: '',
+    css: 0,
+    categoryRef: null,
+    groupRef: group
+  };
+}
+
+export function mockBlogEntry(blog: Blog, id: number): BlogEntry {
+  const now = Date.now();
+  return {
+    __type: BLOG_ENTRY_CLASS,
+    id,
+    permalink: 'entry-' + id,
+    type: '',
+    creatorUserId: 0,
+    creatorUserRef: null,
+    blogId: 1,
+    blogRef: blog,
+    createdDate: now,
+    obfuscatedReference: 'abc' + id,
+    description: '',
+    modifiedDate: now,
+    ttl: 0,
+    body: 'Test ' + id,
+    plainTextBody: 'Test ' + id,
+    modStatus: ModerationStatus.PASSED,
+    name: 'Title ' + id,
+    publishDate: now,
+    numberOfComments: 0,
+    numberOfLikes: 0,
+    categoryRef: []
+  };
+}

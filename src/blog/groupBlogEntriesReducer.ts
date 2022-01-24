@@ -196,20 +196,37 @@ export const groupBlogEntries = createReducer(
               didInvalidate: { $set: false },
               lastUpdated: { $set: action.receivedAt },
               json: {
-                $apply: (context): any =>
-                  update(Object.assign({}, context, { resultPaginated: action.json.resultPaginated }), {
+                $apply: (context): any => {
+                  const op: any = {
                     resultPaginated: {
                       entries: { $set: uniqueBlogEntries }
-                    },
-                    likes: { $set: action.json.likes },
-                    likesByCurrentUser: { $set: action.json.likesByCurrentUser },
-                    blog: { $set: action.json.blog },
-                    authBlog: { $set: action.json.authBlog },
-                    blogKey: { $set: action.json.blogKey },
-                    categories: { $set: action.json.categories }
+                    }
+                  };
+                  /* FIXME: Improve this. The check is typically needed when this is called from saveEntry */
+                  if (action.json.likes) {
+                    op.likes = { $set: action.json.likes };
+                  }
+                  if (action.json.likesByCurrentUser) {
+                    op.likesByCurrentUser = { $set: action.json.likesByCurrentUser };
+                  }
+                  if (action.json.blog) {
+                    op.blog = { $set: action.json.blog };
+                  }
+                  if (action.json.authBlog) {
+                    op.authBlog = { $set: action.json.authBlog };
+                  }
+                  if (action.json.blogKey) {
+                    op.blogKey = { $set: action.json.blogKey };
+                  }
+                  if (action.json.categories) {
+                    op.categories = { $set: action.json.categories };
+                  }
 
-                    /* FIXME: Improve this */
-                  } as any)
+                  return update(
+                    Object.assign({}, context, { resultPaginated: action.json.resultPaginated }),
+                    op as any
+                  );
+                }
               }
             })
         }

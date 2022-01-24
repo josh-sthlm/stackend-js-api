@@ -4,7 +4,7 @@ import update from 'immutability-helper';
 import { Category } from '../category';
 import { receiveGroups, fetchMyGroups, receiveGroupsAuth } from '../group/groupActions';
 import { receiveBlogs } from './blogActions';
-import { listMyGroups } from '../group';
+import { Group, listMyGroups } from '../group';
 import { getJsonErrorText, newXcapJsonErrorResult, Thunk } from '../api';
 import * as commentActions from '../comments/commentAction';
 import * as commentApi from '../comments';
@@ -16,7 +16,10 @@ import {
   UPDATE_GROUP_BLOG_ENTRY,
   GroupBlogEntriesActions,
   UpdateBlogEntry,
-  hasBlogEntries
+  hasBlogEntries,
+  getGroupBlogState,
+  GroupBlogEntriesState,
+  GroupBlogState
 } from './groupBlogEntriesReducer';
 
 import {
@@ -392,9 +395,9 @@ export function fetchBlogEntryWithComments({
 
 function _fetchBlogEntry(blogKey: string, json: GetBlogEntryResult): Thunk<any> {
   return (dispatch: any): any => {
-    const groupRef = json.blog?.groupRef || json.blogEntry?.blogRef?.groupRef;
+    const groupRef: Group | null = json.blog?.groupRef || json.blogEntry?.blogRef?.groupRef;
     if (groupRef) {
-      dispatch(receiveGroups({ entries: groupRef }));
+      dispatch(receiveGroups({ entries: [groupRef] }));
     }
     const blog = json.blog || json.blogEntry?.blogRef;
     if (blog) {
@@ -434,7 +437,7 @@ export function postBlogEntry({
   return async (dispatch: any, getState): Promise<SaveEntryResult> => {
     dispatch(requestBlogEntries(blogKey));
 
-    const response = await dispatch(
+    const response: SaveEntryResult = await dispatch(
       saveEntry({
         blogEntryInput,
         type,
@@ -448,10 +451,16 @@ export function postBlogEntry({
     }
 
     //In order to keep pagination-object we need to merge with current state
-    const resultPaginated = update(get(getState(), `groupBlogEntries[${blogKey}].json.resultPaginated`), {
+    const { groupBlogEntries }: { groupBlogEntries: GroupBlogEntriesState } = getState() as any;
+    const groupBlogState: GroupBlogState | null = getGroupBlogState(groupBlogEntries, blogKey);
+    const resultPaginated = update(get(groupBlogState, 'json.resultPaginated', {}), {
       entries: { $push: [response.entry] }
     });
-    const state = { resultPaginated };
+
+    // FIXME: Fake some data. should not be needed
+    const getEntriesResult: GetEntriesResult = {
+      resultPaginated
+    } as GetEntriesResult;
 
     dispatch(
       eventsReceived({
@@ -459,17 +468,17 @@ export function postBlogEntry({
       })
     );
 
-    dispatch(updatePoll(response.entry.pollRef));
+    dispatch(updatePoll(response.entry?.pollRef));
 
     if (!!blogEntryInput.id && blogEntryInput.id > 0) {
       //dispatch(sendEventToGA(gaEditPostEventObject({ blogEntry: response.entry })));
 
-      dispatch(updateBlogEntry(blogKey, state));
+      dispatch(updateBlogEntry(blogKey, getEntriesResult));
     } else {
       //Add new blogEntry
       // FIXME: Re add ga
       //dispatch(sendEventToGA(gaPostEventObject({ blogEntry: response.entry })));
-      dispatch(receiveBlogEntries(blogKey, state as GetEntriesResult));
+      dispatch(receiveBlogEntries(blogKey, getEntriesResult));
     }
 
     return response;

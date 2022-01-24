@@ -78,6 +78,28 @@ export function getMyGroups(groups: GroupState): Array<Group> {
 }
 
 /**
+ * Get a group by id from the store
+ * @param groups
+ * @param id
+ */
+export function getGroupById(groups: GroupState, id: number): Group | null {
+  return groups.entries[id] || null;
+}
+
+/**
+ * Get a group by permalink from the store
+ * @param groups
+ * @param permalink
+ */
+export function getGroupByPermalink(groups: GroupState, permalink: string): Group | null {
+  const id = groups.idByPermalink[permalink];
+  if (!id) {
+    return null;
+  }
+  return getGroupById(groups, id);
+}
+
+/**
  * Request a group
  */
 export function fetchGroup({

@@ -32,6 +32,11 @@ export interface GroupState {
   entries: { [key: number]: Group };
 
   /**
+   * Group ids by permalink
+   */
+  idByPermalink: { [permalink: string]: number };
+
+  /**
    * My groups
    */
   myGroups: MyGroupsState;
@@ -52,6 +57,7 @@ const initialState: GroupState = {
   didInvalidate: false,
   lastUpdated: Date.now(),
   entries: {},
+  idByPermalink: {},
   myGroups: {
     loadingState: LoadingState.NOT_STARTED,
     ids: []
@@ -72,9 +78,11 @@ export default function groups(state: GroupState = initialState, action: GroupAc
       if (action.entries) {
         const uniqueGroupEntries: { [groupId: number]: Group } = {};
         const newGroupIds: Array<number> = [];
+        const idByPermalink: { [permalink: string]: number } = {};
         action.entries.forEach((group: Group) => {
           uniqueGroupEntries[group.id] = group;
           newGroupIds.push(group.id);
+          idByPermalink[group.permalink] = group.id;
         });
 
         let myGroups = state.myGroups;
@@ -90,7 +98,8 @@ export default function groups(state: GroupState = initialState, action: GroupAc
           didInvalidate: { $set: false },
           lastUpdated: { $set: Date.now() },
           entries: { $merge: uniqueGroupEntries },
-          myGroups: { $set: myGroups }
+          myGroups: { $set: myGroups },
+          idByPermalink: { $merge: idByPermalink }
         });
       } else {
         let myGroups = state.myGroups;

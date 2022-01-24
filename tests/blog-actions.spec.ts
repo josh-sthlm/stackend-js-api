@@ -4,7 +4,9 @@ import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import {
   fetchBlogEntries,
   fetchBlogEntriesWithComments,
-  FetchBlogEntriesWithCommentsResult
+  FetchBlogEntriesWithCommentsResult,
+  fetchBlogEntry,
+  receiveBlogEntries
 } from '../src/blog/groupBlogEntriesActions';
 import { initialize } from '../src/api/actions';
 import { Privilege } from '../src/user/privileges';
@@ -18,9 +20,10 @@ import {
 import { getBlogEntries, getGroupBlogState, GroupBlogState } from '../src/blog/groupBlogEntriesReducer';
 import assert from 'assert';
 import { PaginatedCollection } from '../src/api/PaginatedCollection';
-import { BlogEntry } from '../src/blog';
+import { BlogEntry, GetBlogEntryResult } from '../src/blog';
 import { getUserFromStore } from '../src/user/userActions';
 import { User } from '../src/user';
+import { mockBlogEntry } from './blog.spec';
 //import { GetBlogEntryResult } from '../src/blog';
 //import assert from 'assert';
 
@@ -111,15 +114,31 @@ describe('Blog', () => {
     expect(e.entries[0]).toBeDefined();
     assert(e.entries[0].creatorUserRef);
     expect(e.entries[0].creatorUserRef.id).toBe(1);
+
+    // FIXME: Improve this test. Tries to mimic whats happening when saving
+    store.dispatch(
+      receiveBlogEntries('groups/news', {
+        resultPaginated: {
+          entries: [mockBlogEntry(null as any, 123)]
+        }
+      } as any)
+    );
+    const groupBlogEntries2 = store.getState().groupBlogEntries;
+    const gbs = getGroupBlogState(groupBlogEntries2, 'groups/news');
+    console.log(Object.keys(gbs?.json as any));
   });
 
   it('fetchBlog', async () => {
     const r = await store.dispatch(fetchBlog({ blogKey: 'groups/news' }));
-    console.log(r);
-    // FIXME: Improve this
+    expect(r.error).toBeUndefined();
+    assert(r.blog);
+    const blogs = store.getState().blogs;
+    const blog = getBlogByPermalink(blogs, 'groups/news');
+    assert(blog);
+    expect(blog.permalink).toBe('groups/news');
+    expect(blog.id).toBe(1);
   });
 
-  /* Enable when backend support is deployed
   it('Get entry ', async () => {
     const r: GetBlogEntryResult | null = await store.dispatch(
       fetchBlogEntry({
@@ -130,6 +149,9 @@ describe('Blog', () => {
     );
     assert(r);
     expect(r.blogEntry).toBeDefined();
+    const groupBlogEntries = store.getState().groupBlogEntries;
+    const pc = getBlogEntries(groupBlogEntries, 'groups/news');
+    assert(pc);
+    expect(pc.entries.find(x => x.id == 23)).toBeDefined();
   });
-   */
 });
