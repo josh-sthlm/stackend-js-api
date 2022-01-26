@@ -20,7 +20,7 @@ import {
 import { getBlogEntries, getGroupBlogState, GroupBlogState } from '../src/blog/groupBlogEntriesReducer';
 import assert from 'assert';
 import { PaginatedCollection } from '../src/api/PaginatedCollection';
-import { BlogEntry, GetBlogEntryResult } from '../src/blog';
+import { AuthBlog, BlogEntry, GetBlogEntryResult, GetBlogResult } from '../src/blog';
 import { getUserFromStore } from '../src/user/userActions';
 import { User } from '../src/user';
 import { mockBlogEntry } from './blog.spec';
@@ -129,7 +129,7 @@ describe('Blog', () => {
   });
 
   it('fetchBlog', async () => {
-    const r = await store.dispatch(fetchBlog({ blogKey: 'groups/news' }));
+    const r: GetBlogResult = await store.dispatch(fetchBlog({ blogKey: 'groups/news' }));
     expect(r.error).toBeUndefined();
     assert(r.blog);
     const blogs = store.getState().blogs;
@@ -137,6 +137,11 @@ describe('Blog', () => {
     assert(blog);
     expect(blog.permalink).toBe('groups/news');
     expect(blog.id).toBe(1);
+
+    assert(r.authBlog);
+    console.log('authBlog is a ', (r.authBlog as AuthBlog).auth ? 'AuthBlog' : 'AuthObject');
+    const ab = getBlogAuthById(blogs, blog.id);
+    assert(ab);
   });
 
   it('Get entry ', async () => {

@@ -237,7 +237,8 @@ export interface GetBlogParams extends XcapOptionalParameters {
 
 export interface GetBlogResult extends XcapJsonResult {
   blog: Blog | null;
-  authBlog: AuthBlog | null;
+  // FIXME: this is backend a bug?
+  authBlog: AuthBlog | AuthObject | null;
 }
 
 /**

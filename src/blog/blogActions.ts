@@ -39,9 +39,23 @@ export function clearBlogs(): BlogActions {
  */
 export function fetchBlog(params: GetBlogParams): Thunk<Promise<GetBlogResult>> {
   return async (dispatch: any): Promise<GetBlogResult> => {
-    const r = await dispatch(getBlog(params));
+    const r: GetBlogResult = await dispatch(getBlog(params));
     if (!r.error && r.blog) {
-      dispatch(receiveBlogs({ entries: r.blog ? [r.blog] : [], authBlogs: r.authBlog ? [r.authBlog] : undefined }));
+      const x = {
+        entries: [r.blog],
+        authObjects: undefined as any,
+        authBlogs: undefined as any
+      };
+      if (r.authBlog) {
+        // FIXME: Hack. Sometimes this is a AuthBlog, others an AuthObject
+        if ((r.authBlog as AuthBlog).auth) {
+          x.authBlogs = [r.authBlog];
+        } else {
+          x.authObjects = { [r.blog.id]: r.authBlog };
+        }
+      }
+
+      dispatch(receiveBlogs(x));
     }
     return r;
   };
