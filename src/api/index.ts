@@ -16,6 +16,7 @@ import Logger, { ConsoleLogger } from '../util/Logger';
 import { appendAccessToken, handleAccessToken } from './AccessToken';
 import { signalApiAccessFailed } from './actions';
 import XcapObject from './XcapObject';
+import { applyExtraObjectHandlers } from './extraObjectActions';
 
 function createDefaultLogger(): Logger {
   return new ConsoleLogger('stackend');
@@ -130,6 +131,12 @@ export const DEFAULT_COMMUNITY = 'stackend';
 export const RELATED_OBJECTS = '__relatedObjects';
 
 /**
+ * Key holding related objects that are not IdAware in the json response.
+ * @type {string}
+ */
+export const EXTRA_OBJECTS = '__extraObjects';
+
+/**
  * Key holding related likes in the json response.
  * @type {string}
  */
@@ -171,6 +178,18 @@ export interface XcapJsonErrors {
 }
 
 /**
+ * Extra objects that are not IdAware.
+ * The key and id is implementation dependant.
+ */
+export type ExtraObjects = {
+  [key: string]: {
+    [context: string]: {
+      [id: string]: any;
+    };
+  };
+};
+
+/**
  * Base type for API results
  */
 export interface XcapJsonResult {
@@ -195,6 +214,12 @@ export interface XcapJsonResult {
    * Present only when a call is successful.
    */
   __relatedObjects?: { [ref: string]: XcapObject };
+
+  /**
+   * Related objects that are not IdAware
+   * Present only when a call is successful and has extra objects.
+   */
+  __extraObjects?: ExtraObjects;
 
   /** Additional properties specific to the called API method  */
   [propName: string]: any;
@@ -731,6 +756,11 @@ export function addRelatedObjectsToStore(dispatch: Dispatch, json: any): void {
     const rr: ReceiveReferences = { entries: relatedObjects };
     dispatch(receiveReferences(rr) as any);
     dispatch(applyReferenceHandlers(rr) as any);
+  }
+
+  const extraObjects = json[EXTRA_OBJECTS];
+  if (extraObjects && Object.keys(extraObjects).length > 0) {
+    dispatch(applyExtraObjectHandlers(extraObjects) as any);
   }
 }
 

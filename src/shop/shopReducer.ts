@@ -28,6 +28,8 @@ import {
   forEachGraphQLList,
   mapGraphQLList
 } from '../util/graphql';
+import { ExtraObjectHandler, registerExtraObjectHandler } from '../api/extraObjectActions';
+import { newXcapJsonResult } from '../api';
 
 export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
@@ -471,3 +473,18 @@ export default function shopReducer(
 
   return state;
 }
+
+const PRODUCT_REFERENCE_HANDLER: ExtraObjectHandler<Product> = {
+  key: 'products',
+  context: 'shop',
+  onExtraObjectsReceived: (objects, dispatch) => {
+    const products: { [handle: string]: Product } = objects as any;
+    const json = newXcapJsonResult<GetProductsResult>('success', {
+      products
+    });
+    dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json });
+  }
+};
+
+// If this reducer is used, register its reference handler
+registerExtraObjectHandler(PRODUCT_REFERENCE_HANDLER);

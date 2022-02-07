@@ -274,6 +274,26 @@ describe('Shop Actions/Reducers', () => {
     });
   });
 
+  describe('Get related products', () => {
+    it('Loads product from RichContent', async () => {
+      const r = await store.dispatch(
+        loadInitialStoreValues({
+          permalink: 'husdjur',
+          moduleIds: [4],
+          referenceUrl: 'https://xcap.de/jens/stackend/live/feed.html'
+        })
+      );
+      expect(r.error).toBeUndefined();
+      expect(r.__extraObjects).toBeDefined();
+      expect(r.__extraObjects.products).toBeDefined();
+      expect(r.__extraObjects.products.shop).toBeDefined();
+      expect(r.__extraObjects.products.shop['rise-crew']).toBeDefined();
+      const shop: ShopState = store.getState().shop;
+      assert(shop);
+      expect(shop.products['rise-crew']).toBeDefined();
+    });
+  });
+
   /*
   describe('checkout', () => {
     it('add/remove from checkout', async () => {
