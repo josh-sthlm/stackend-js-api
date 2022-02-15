@@ -5,11 +5,17 @@ import { ShopDefaults } from './shopReducer';
 
 export interface SlimProductImage {
   altText: string | null;
-  transformedSrc: string;
+  /**
+   * The url to the scaled version of the image
+   */
+  url: string;
 }
 
 export interface ProductImage extends SlimProductImage {
-  originalSrc: string;
+  /**
+   * The url to the original version of the image
+   */
+  url__originalSrc: string;
 }
 
 export interface MoneyV2 {
@@ -515,7 +521,7 @@ export function findProductVariantByImage(product: Product, image: ProductImage)
   }
 
   const x = product.variants.edges.find(v => {
-    return v.node?.image?.transformedSrc === image.transformedSrc;
+    return v.node?.image?.url === image.url;
   });
 
   return x ? x.node : null;
@@ -619,17 +625,17 @@ export function getAllUniqueImages(product: Product): Array<ProductImage> {
   }
 
   forEachGraphQLList(product.images, img => {
-    if (!s.has(img.transformedSrc)) {
+    if (!s.has(img.url)) {
       images.push(img);
-      s.add(img.transformedSrc);
+      s.add(img.url);
     }
   });
 
   forEachGraphQLList(product.variants, v => {
     const img = v.image;
-    if (img && !s.has(img.transformedSrc)) {
+    if (img && !s.has(img.url)) {
       images.push(img);
-      s.add(img.transformedSrc);
+      s.add(img.url);
     }
   });
 
