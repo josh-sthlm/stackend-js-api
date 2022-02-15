@@ -125,7 +125,7 @@ describe('Shop', () => {
 
       const img = getVariantImage(p, 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zNjYwNzYyMjA4Mw==');
       assert(img);
-      expect(img.url || img.transformedSrc).toBeDefined();
+      expect(img.url || (img as any).transformedSrc).toBeDefined();
       expect(img.altText).toBeDefined();
 
       const vp = getLowestVariantPrice(p);

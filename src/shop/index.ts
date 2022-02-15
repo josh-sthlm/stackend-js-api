@@ -9,21 +9,9 @@ export interface SlimProductImage {
    * The url to the scaled version of the image
    */
   url: string;
-
-  /**
-   * The url to the scaled version of the image.
-   * @deprecated Use url instead
-   */
-  transformedSrc: string;
 }
 
 export interface ProductImage extends SlimProductImage {
-  /**
-   * The url to the original version of the image.
-   * @deprecated Use url__originalSrc instead
-   */
-  originalSrc: string;
-
   /**
    * The url to the original version of the image
    */
