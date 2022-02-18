@@ -30,6 +30,7 @@ import {
 } from '../util/graphql';
 import { ExtraObjectHandler, registerExtraObjectHandler } from '../api/extraObjectActions';
 import { newXcapJsonResult } from '../api';
+import { TradeRegion } from './vat';
 
 export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
@@ -48,6 +49,7 @@ export const RECEIVE_CHECKOUT = 'RECEIVE_CHECKOUT';
 export const CLEAR_CHECKOUT = 'CLEAR_CHECKOUT';
 export const RECEIVE_COUNTRIES = 'RECEIVE_COUNTRIES';
 export const RECEIVE_ADDRESS_FIELDS = 'RECEIVE_ADDRESS_FIELDS';
+export const SET_VATS = 'SET_VATS';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -69,6 +71,26 @@ export interface SlimProductListing extends AbstractProductListing {
    * Products for this page in the listing
    */
   products: Array<SlimProduct>;
+}
+
+export interface TradeRegionVatState {
+  /** Basic VAT (25 = 25%) for selling to this region */
+  vat: number;
+  overrides: {
+    /** Vat (25 = 25%) for a product collection handle */
+    [collectionHandle: string]: number;
+  };
+}
+
+export interface VatState {
+  showPricesUsingVAT: boolean;
+  shopCountryCode: string;
+  /** Vats for national trade, if applicable */
+  [TradeRegion.NATIONAL]?: TradeRegionVatState;
+  /** Vats for the EU etc, if applicable */
+  [TradeRegion.REGIONAL]?: TradeRegionVatState;
+  /** Vats for international trade, if applicable */
+  [TradeRegion.WORLDWIDE]?: TradeRegionVatState;
 }
 
 export interface ShopDefaults {
@@ -156,6 +178,11 @@ export interface ShopState {
    * Required Address fields by country code
    */
   addressFieldsByCountryCode: { [code: string]: AddressFieldName[][] };
+
+  /**
+   * Vats
+   */
+  vats: VatState | null;
 }
 
 export type SetShopDefaultsAction = {
@@ -251,6 +278,11 @@ export type ReceiveAddressFieldsAction = {
   addressFields: AddressFieldName[][];
 };
 
+export type SetVATsAction = {
+  type: typeof SET_VATS;
+  vats: VatState;
+};
+
 export type ShopActions =
   | SetShopDefaultsAction
   | ReceiveProductTypesAction
@@ -268,7 +300,8 @@ export type ShopActions =
   | ReceiveCheckoutAction
   | ClearCheckoutAction
   | ReceiveCountriesAction
-  | ReceiveAddressFieldsAction;
+  | ReceiveAddressFieldsAction
+  | SetVATsAction;
 
 export default function shopReducer(
   state: ShopState = {
@@ -288,7 +321,8 @@ export default function shopReducer(
     checkoutUserErrors: null,
     countryCodes: null,
     countriesByCode: {},
-    addressFieldsByCountryCode: {}
+    addressFieldsByCountryCode: {},
+    vats: null
   },
   action: ShopActions
 ): ShopState {
@@ -467,6 +501,12 @@ export default function shopReducer(
 
       return Object.assign({}, state, {
         addressFieldsByCountryCode
+      });
+    }
+
+    case SET_VATS: {
+      return Object.assign({}, state, {
+        vats: Object.assign({}, state.vats, action.vats)
       });
     }
   }

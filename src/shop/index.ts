@@ -116,6 +116,9 @@ export interface Product extends SlimProduct {
 
   /** Images. Actual number of images and size depends on context/listing */
   images: GraphQLList<ProductImage>;
+
+  /** List of collection handles */
+  collections: GraphQLList<{ handle: string }>;
 }
 
 export interface Country {

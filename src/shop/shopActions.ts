@@ -1,14 +1,37 @@
 import {
+  AddressFieldName,
+  applyDefaults,
+  Checkout,
+  CheckoutLineItem,
+  checkoutReplaceItems as doCheckoutReplaceItems,
+  CheckoutReplaceItemsRequest,
   CheckoutResult,
+  Country,
+  createCheckout as doCreateCheckout,
+  CreateCheckoutRequest,
+  getAddressFields,
+  getCheckout,
+  GetCheckoutRequest,
+  GetCheckoutResult,
+  getCollection,
+  GetCollectionRequest,
+  GetCollectionResult,
+  getCollections,
+  GetCollectionsResult,
+  getCountries,
+  getLowestVariantPrice,
   getProduct,
   GetProductRequest,
   GetProductResult,
   getProducts,
   GetProductsRequest,
   GetProductsResult,
+  LineItem,
+  LineItemArray,
   listProducts,
   listProductsAndTypes,
   ListProductsAndTypesResult,
+  ListProductsQuery,
   ListProductsRequest,
   ListProductsResult,
   listProductTypes,
@@ -17,59 +40,41 @@ import {
   Product,
   ProductSortKeys,
   ProductVariant,
-  createCheckout as doCreateCheckout,
-  CreateCheckoutRequest,
   selectShipping as doSelectShipping,
-  checkoutReplaceItems as doCheckoutReplaceItems,
   SelectShippingRequest,
-  getAddressFields,
-  getCountries,
-  GetCheckoutRequest,
-  GetCheckoutResult,
-  getCheckout,
-  setShippingAddress,
-  SetShippingAddressRequest,
-  CheckoutReplaceItemsRequest,
-  Checkout,
-  LineItemArray,
-  LineItem,
-  CheckoutLineItem,
-  SetCheckoutEmailRequest,
   setCheckoutEmail,
-  applyDefaults,
-  GetCollectionRequest,
-  GetCollectionResult,
-  getCollection,
-  getCollections,
-  ListProductsQuery,
-  Country,
-  AddressFieldName,
-  GetCollectionsResult
+  SetCheckoutEmailRequest,
+  setShippingAddress,
+  SetShippingAddressRequest
 } from './index';
 import {
-  SHOP_CLEAR_CACHE,
+  ADD_TO_BASKET,
+  BASKET_UPDATED,
+  CLEAR_CHECKOUT,
+  RECEIVE_ADDRESS_FIELDS,
+  RECEIVE_CHECKOUT,
+  RECEIVE_COLLECTION,
+  RECEIVE_COLLECTION_LIST,
+  RECEIVE_COUNTRIES,
+  RECEIVE_LISTING,
+  RECEIVE_MULTIPLE_PRODUCTS,
   RECEIVE_PRODUCT,
   RECEIVE_PRODUCT_TYPES,
-  RECEIVE_LISTING,
-  ShopState,
-  RECEIVE_MULTIPLE_PRODUCTS,
-  ADD_TO_BASKET,
   REMOVE_FROM_BASKET,
-  SlimProductListing,
-  RECEIVE_CHECKOUT,
-  RECEIVE_COUNTRIES,
-  RECEIVE_ADDRESS_FIELDS,
-  CLEAR_CHECKOUT,
-  BASKET_UPDATED,
-  ShopDefaults,
   SET_SHOP_DEFAULTS,
-  RECEIVE_COLLECTION,
-  RECEIVE_COLLECTION_LIST
+  SET_VATS,
+  SHOP_CLEAR_CACHE,
+  ShopDefaults,
+  ShopState,
+  SlimProductListing,
+  VatState
 } from './shopReducer';
 import { newXcapJsonResult, Thunk } from '../api';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../util';
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
+import { TradeRegion } from './vat';
+import { Community } from '../stackend';
 
 /**
  * Set shop default configuration
@@ -878,4 +883,98 @@ export function getProductTypeLabel(productType: string): string {
   }
 
   return productType.substring(i + 1);
+}
+
+/**
+ * Get the vat for a productCollectionHandle
+ * @param shopState
+ * @param productCollectionHandle
+ * @param tradeRegion
+ */
+export function getVATMultiplier(
+  shopState: ShopState,
+  productCollectionHandle: string,
+  tradeRegion: TradeRegion = TradeRegion.NATIONAL
+): number {
+  if (!shopState.vats || !shopState.vats.showPricesUsingVAT) {
+    return 1;
+  }
+
+  const regionalVats = shopState.vats[tradeRegion];
+  if (!regionalVats) {
+    return 1;
+  }
+
+  const typeVat = regionalVats.overrides[productCollectionHandle];
+  if (typeVat) {
+    return 1 + typeVat / 100;
+  }
+
+  if (regionalVats.vat) {
+    return 1 + regionalVats.vat / 100;
+  }
+
+  return 1;
+}
+
+/**
+ * Get the vat
+ * @param shopState
+ * @param product
+ * @param productVariant
+ * @param tradeRegion
+ */
+export function getPriceIncludingVAT(
+  shopState: ShopState,
+  product: Product,
+  productVariant: ProductVariant | null,
+  tradeRegion: TradeRegion = TradeRegion.NATIONAL
+): number {
+  let price = 0;
+  if (productVariant) {
+    price = parseFloat(productVariant.priceV2.amount);
+  } else {
+    const m = getLowestVariantPrice(product);
+    if (!m) {
+      return 0;
+    }
+    price = parseFloat(m.amount);
+  }
+
+  if (!shopState.vats?.showPricesUsingVAT) {
+    return price;
+  }
+
+  let maxVat = 1;
+  forEachGraphQLList(product.collections, i => {
+    const m = getVATMultiplier(shopState, i.handle, tradeRegion);
+    if (m > maxVat) {
+      maxVat = m;
+    }
+  });
+
+  return price * maxVat;
+}
+
+/**
+ * Set the vats
+ * @param vats
+ */
+export function setVATs(vats: VatState): Thunk<void> {
+  return (dispatch: any, _getState: any): void => {
+    dispatch({ type: SET_VATS, vats });
+  };
+}
+
+/**
+ * Set the vats using a community
+ * @param community
+ */
+export function setCommunityVATS(community: Community | null): Thunk<void> {
+  return (dispatch: any, _getState: any): void => {
+    if (community && community.settings.shop) {
+      const vats = community.settings.shop as VatState;
+      dispatch({ type: SET_VATS, vats });
+    }
+  };
 }

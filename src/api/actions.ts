@@ -23,6 +23,7 @@ import { Community } from '../stackend';
 import { RECEIVE_COLLECTIONS, RECEIVE_LISTINGS, RECEIVE_MULTIPLE_PRODUCTS } from '../shop/shopReducer';
 import Logger from '../util/Logger';
 import { LoadJsonResult } from './LoadJson';
+import { setCommunityVATS } from '../shop/shopActions';
 
 export interface InitializeRequest extends GetInitialStoreValuesRequest {
   config?: Partial<Config>;
@@ -122,6 +123,7 @@ export function loadInitialStoreValues(
     dispatch(setRequestInfo({ referenceUrlId: r.referenceUrlId }));
     dispatch(receiveLoginData({ user: r.user }));
     dispatch(setCurrentCommunity(r.stackendCommunity as Community));
+    dispatch(setCommunityVATS(r.stackendCommunity as Community));
     //dispatch(receiveNotificationCounts({ numberOfUnseen: r.numberOfUnseen }));
 
     dispatch(receiveResourceUsage(r as any as ResourceUsage)); // fields not documented
