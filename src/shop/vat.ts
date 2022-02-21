@@ -11,6 +11,11 @@ export enum TradeRegion {
   WORLDWIDE = 'worldwide'
 }
 
+export enum CustomerType {
+  CONSUMER = 'b2c',
+  BUSINESS = 'b2b'
+}
+
 /**
  * Format 1.25 as 25%
  * @param vatMultiplier

@@ -73,7 +73,7 @@ import { newXcapJsonResult, Thunk } from '../api';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../util';
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
-import { TradeRegion } from './vat';
+import { CustomerType, TradeRegion, VatType } from './vat';
 import { Community } from '../stackend';
 
 /**
@@ -890,28 +890,52 @@ export function getProductTypeLabel(productType: string): string {
  * @param shopState
  * @param productCollectionHandle
  * @param tradeRegion
+ * @param customerType
  */
-export function getVATMultiplier(
-  shopState: ShopState,
-  productCollectionHandle: string,
-  tradeRegion: TradeRegion = TradeRegion.NATIONAL
-): number {
+export function getVATMultiplier({
+  shopState,
+  productCollectionHandle,
+  customerType = CustomerType.CONSUMER,
+  tradeRegion
+}: {
+  shopState: ShopState;
+  productCollectionHandle: string;
+  customerType?: CustomerType;
+  tradeRegion?: TradeRegion;
+}): number {
   if (!shopState.vats || !shopState.vats.showPricesUsingVAT) {
     return 1;
   }
 
-  const regionalVats = shopState.vats[tradeRegion];
-  if (!regionalVats) {
+  const region = tradeRegion || shopState.vats.customerTradeRegion || TradeRegion.NATIONAL;
+
+  if (
+    /* No VAT charged to international customers */
+    region === TradeRegion.WORLDWIDE ||
+    /* No VAT charged to b2b customer within the region */
+    (region == TradeRegion.REGIONAL && customerType == CustomerType.BUSINESS)
+  ) {
     return 1;
   }
 
-  const typeVat = regionalVats.overrides[productCollectionHandle];
-  if (typeVat) {
-    return 1 + typeVat / 100;
+  // FIXME: Handle B2B rates
+
+  const vats: VatState = shopState.vats;
+  let rate: boolean | number = false;
+
+  // Use an override rate?
+  const vatType = vats.overrides[productCollectionHandle];
+  if (vatType) {
+    rate = vats.vatRates[vatType];
   }
 
-  if (regionalVats.vat) {
-    return 1 + regionalVats.vat / 100;
+  // Fall back to standard VAT
+  if (!rate) {
+    rate = vats.vatRates[VatType.STANDARD];
+  }
+
+  if (typeof rate === 'number') {
+    return 1 + rate / 100;
   }
 
   return 1;
@@ -922,14 +946,22 @@ export function getVATMultiplier(
  * @param shopState
  * @param product
  * @param productVariant
+ * @param customerType
  * @param tradeRegion
  */
-export function getPriceIncludingVAT(
-  shopState: ShopState,
-  product: Product,
-  productVariant: ProductVariant | null,
-  tradeRegion: TradeRegion = TradeRegion.NATIONAL
-): number {
+export function getPriceIncludingVAT({
+  shopState,
+  product,
+  productVariant,
+  customerType,
+  tradeRegion = TradeRegion.NATIONAL
+}: {
+  shopState: ShopState;
+  product: Product;
+  productVariant: ProductVariant | null;
+  customerType?: CustomerType;
+  tradeRegion?: TradeRegion;
+}): number {
   let price = 0;
   if (productVariant) {
     price = parseFloat(productVariant.priceV2.amount);
@@ -947,7 +979,7 @@ export function getPriceIncludingVAT(
 
   let maxVat = 1;
   forEachGraphQLList(product.collections, i => {
-    const m = getVATMultiplier(shopState, i.handle, tradeRegion);
+    const m = getVATMultiplier({ shopState, productCollectionHandle: i.handle, customerType, tradeRegion });
     if (m > maxVat) {
       maxVat = m;
     }

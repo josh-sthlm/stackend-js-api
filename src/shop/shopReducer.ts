@@ -30,7 +30,7 @@ import {
 } from '../util/graphql';
 import { ExtraObjectHandler, registerExtraObjectHandler } from '../api/extraObjectActions';
 import { newXcapJsonResult } from '../api';
-import { TradeRegion } from './vat';
+import { TradeRegion, VatType } from './vat';
 
 export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
@@ -73,24 +73,34 @@ export interface SlimProductListing extends AbstractProductListing {
   products: Array<SlimProduct>;
 }
 
-export interface TradeRegionVatState {
-  /** Basic VAT (25 = 25%) for selling to this region */
-  vat: number;
-  overrides: {
-    /** Vat (25 = 25%) for a product collection handle */
-    [collectionHandle: string]: number;
-  };
-}
-
 export interface VatState {
+  /** Should the UI display prices using VAT by default? */
   showPricesUsingVAT: boolean;
+
+  /** Shops origin */
   shopCountryCode: string;
-  /** Vats for national trade, if applicable */
-  [TradeRegion.NATIONAL]?: TradeRegionVatState;
-  /** Vats for the EU etc, if applicable */
-  [TradeRegion.REGIONAL]?: TradeRegionVatState;
-  /** Vats for international trade, if applicable */
-  [TradeRegion.WORLDWIDE]?: TradeRegionVatState;
+
+  /** Country code of the customer */
+  customerCountryCode: string | null;
+
+  /** Trade region of the customer */
+  customerTradeRegion: TradeRegion;
+
+  /** VAT rates as percent for the shops country */
+  vatRates: {
+    [VatType.STANDARD]: number | boolean;
+    [VatType.REDUCED]: number | boolean;
+    [VatType.REDUCED_ALT]: number | boolean;
+    [VatType.SUPER_REDUCED]: number | boolean;
+    [VatType.PARKING]: number | boolean;
+  };
+
+  /** Overrides from the standard vat rate
+   *  Maps from product collection to VatType
+   */
+  overrides: {
+    [collectionHandle: string]: VatType;
+  };
 }
 
 export interface ShopDefaults {
