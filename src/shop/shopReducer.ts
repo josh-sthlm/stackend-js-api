@@ -30,7 +30,7 @@ import {
 } from '../util/graphql';
 import { ExtraObjectHandler, registerExtraObjectHandler } from '../api/extraObjectActions';
 import { newXcapJsonResult } from '../api';
-import { TradeRegion, VatType } from './vat';
+import { CustomerType, TradeRegion, VatType } from './vat';
 
 export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
@@ -50,6 +50,7 @@ export const CLEAR_CHECKOUT = 'CLEAR_CHECKOUT';
 export const RECEIVE_COUNTRIES = 'RECEIVE_COUNTRIES';
 export const RECEIVE_ADDRESS_FIELDS = 'RECEIVE_ADDRESS_FIELDS';
 export const SET_VATS = 'SET_VATS';
+export const SET_CUSTOMER_VAT_INFO = 'SET_CUSTOMER_VAT_INFO';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -85,6 +86,9 @@ export interface VatState {
 
   /** Trade region of the customer */
   customerTradeRegion: TradeRegion;
+
+  /** Type of customer */
+  customerType: CustomerType | null;
 
   /** VAT rates as percent for the shops country */
   vatRates: {
@@ -293,6 +297,13 @@ export type SetVATsAction = {
   vats: VatState;
 };
 
+export type SetCustomerVATInfoAction = {
+  type: typeof SET_CUSTOMER_VAT_INFO;
+  customerCountryCode?: string;
+  customerTradeRegion?: TradeRegion;
+  customerType?: CustomerType;
+};
+
 export type ShopActions =
   | SetShopDefaultsAction
   | ReceiveProductTypesAction
@@ -311,7 +322,8 @@ export type ShopActions =
   | ClearCheckoutAction
   | ReceiveCountriesAction
   | ReceiveAddressFieldsAction
-  | SetVATsAction;
+  | SetVATsAction
+  | SetCustomerVATInfoAction;
 
 export default function shopReducer(
   state: ShopState = {
@@ -517,6 +529,16 @@ export default function shopReducer(
     case SET_VATS: {
       return Object.assign({}, state, {
         vats: Object.assign({}, state.vats, action.vats)
+      });
+    }
+
+    case SET_CUSTOMER_VAT_INFO: {
+      return Object.assign({}, state, {
+        vats: Object.assign({}, state.vats, {
+          customerCountryCode: action.customerCountryCode,
+          customerTradeRegion: action.customerTradeRegion,
+          customerType: action.customerType
+        })
       });
     }
   }

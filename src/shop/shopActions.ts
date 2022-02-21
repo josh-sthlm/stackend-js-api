@@ -61,6 +61,7 @@ import {
   RECEIVE_PRODUCT,
   RECEIVE_PRODUCT_TYPES,
   REMOVE_FROM_BASKET,
+  SET_CUSTOMER_VAT_INFO,
   SET_SHOP_DEFAULTS,
   SET_VATS,
   SHOP_CLEAR_CACHE,
@@ -889,13 +890,13 @@ export function getProductTypeLabel(productType: string): string {
  * Get the vat for a productCollectionHandle
  * @param shopState
  * @param productCollectionHandle
- * @param tradeRegion
- * @param customerType
+ * @param tradeRegion Override the set trade region
+ * @param customerType Override the set customer type
  */
 export function getVATMultiplier({
   shopState,
   productCollectionHandle,
-  customerType = CustomerType.CONSUMER,
+  customerType,
   tradeRegion
 }: {
   shopState: ShopState;
@@ -907,13 +908,14 @@ export function getVATMultiplier({
     return 1;
   }
 
+  const typeOfCustomer = customerType || shopState.vats.customerType || CustomerType.CONSUMER;
   const region = tradeRegion || shopState.vats.customerTradeRegion || TradeRegion.NATIONAL;
 
   if (
     /* No VAT charged to international customers */
     region === TradeRegion.WORLDWIDE ||
     /* No VAT charged to b2b customer within the region */
-    (region == TradeRegion.REGIONAL && customerType == CustomerType.BUSINESS)
+    (region == TradeRegion.REGIONAL && typeOfCustomer == CustomerType.BUSINESS)
   ) {
     return 1;
   }
@@ -995,6 +997,22 @@ export function getPriceIncludingVAT({
 export function setVATs(vats: VatState): Thunk<void> {
   return (dispatch: any, _getState: any): void => {
     dispatch({ type: SET_VATS, vats });
+  };
+}
+
+/**
+ * Set VAT parameters for current customer
+ * @param customerCountryCode
+ * @param customerTradeRegion
+ * @param customerType
+ */
+export function setCustomerVatInfo(
+  customerCountryCode?: string,
+  customerTradeRegion?: TradeRegion,
+  customerType?: CustomerType
+) {
+  return (dispatch: any, _getState: any): void => {
+    dispatch({ type: SET_CUSTOMER_VAT_INFO, customerCountryCode, customerTradeRegion, customerType });
   };
 }
 
