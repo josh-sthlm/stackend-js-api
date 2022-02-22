@@ -10,7 +10,7 @@ import {
   CommunityState
 } from './communityReducer';
 
-import { Thunk } from '../api';
+import { newXcapJsonErrorResult, Thunk } from '../api';
 import {
   Community,
   CommunityStatus,
@@ -21,6 +21,7 @@ import {
   storeCommunity,
   StoreCommunityResult
 } from './index';
+import { setCommunityVATS } from '../shop/shopActions';
 
 export interface ResourceUsage {
   maximumUseBeforeCharge: { [key: string]: number };
@@ -198,7 +199,7 @@ export function editCommunity({
   status: string;
   locale: string; //The body text
   domains: any;
-}): Thunk<any> {
+}): Thunk<Promise<StoreCommunityResult>> {
   return async (dispatch: any /*, getState: any*/): Promise<StoreCommunityResult> => {
     const response = await dispatch(storeCommunity({ id, name, permalink, description, status, locale, domains }));
 
@@ -220,6 +221,12 @@ export function editCommunity({
   };
 }
 
+/**
+ * Load and set the current community
+ * @param id
+ * @param permalink
+ * @param domain
+ */
 export function loadCommunitySettings({
   id,
   permalink,
@@ -228,17 +235,20 @@ export function loadCommunitySettings({
   id?: number;
   permalink?: string;
   domain?: string;
-}): Thunk<any> {
-  return async function (dispatch: any): Promise<any> {
+}): Thunk<Promise<GetCommunityResult>> {
+  return async function (dispatch: any): Promise<GetCommunityResult> {
     try {
       const r = await dispatch(getCommunity({ id, permalink, domain }));
       if (r.stackendCommunity === null) {
         //console.log("couldn't find community: ",permalink)
-        return;
+        return r;
       }
-      return dispatch(setCurrentCommunity(r.stackendCommunity, r.objectsRequiringModeration));
+      dispatch(setCurrentCommunity(r.stackendCommunity, r.objectsRequiringModeration));
+      dispatch(setCommunityVATS(r.stackendCommunity as Community));
+      return r;
     } catch (e) {
       console.error("Stackend: Couldn't loadCommunitySettings: ", e);
+      return newXcapJsonErrorResult<GetCommunityResult>("Couldn't loadCommunitySettings: " + e);
     }
   };
 }
