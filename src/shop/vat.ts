@@ -1,7 +1,8 @@
 import { getJson, Thunk, XcapJsonResult } from '../api';
 import { ShopState } from './shopReducer';
-import { MoneyV2, Product, ProductVariant, SlimProduct } from './index';
+import { Checkout, MoneyV2, Product, ProductVariant, SlimProduct } from './index';
 import { forEachGraphQLList } from '../util/graphql';
+import { getProductAndVariant } from './shopActions';
 
 export enum TradeRegion {
   /** Domestic trade */
@@ -146,7 +147,7 @@ export function getPriceIncludingVAT({
   product,
   productVariant,
   customerType,
-  tradeRegion = TradeRegion.NATIONAL,
+  tradeRegion,
   quantity = 1
 }: {
   shopState: ShopState;
@@ -235,4 +236,44 @@ export function getVATType(shopState: ShopState, product: SlimProduct): VatType 
   }
 
   return vatType;
+}
+
+/**
+ * Get the total price for a checkout
+ * @param shopState
+ * @param checkout
+ * @param customerType
+ * @param tradeRegion
+ */
+export function getTotalPriceIncludingVAT({
+  shopState,
+  checkout,
+  customerType,
+  tradeRegion
+}: {
+  shopState: ShopState;
+  checkout: Checkout;
+  customerType?: CustomerType;
+  tradeRegion?: TradeRegion;
+}): MoneyV2 {
+  let total = 0;
+  forEachGraphQLList(checkout.lineItems, i => {
+    const pv = getProductAndVariant(shopState, i);
+    if (pv) {
+      const p = getPriceIncludingVAT({
+        shopState,
+        product: pv.product,
+        productVariant: pv.variant,
+        quantity: i.quantity,
+        customerType,
+        tradeRegion
+      });
+      total += parseFloat(p.amount);
+    }
+  });
+
+  return {
+    amount: String(total),
+    currencyCode: checkout.currencyCode
+  };
 }
