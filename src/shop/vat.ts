@@ -1,6 +1,6 @@
 import { getJson, Thunk, XcapJsonResult } from '../api';
-import { ShopState, VatState } from './shopReducer';
-import { getLowestVariantPrice, MoneyV2, Product, ProductVariant } from './index';
+import { ShopState } from './shopReducer';
+import { MoneyV2, Product, ProductVariant, SlimProduct } from './index';
 import { forEachGraphQLList } from '../util/graphql';
 
 export enum TradeRegion {
@@ -99,63 +99,6 @@ export function listVats(): Thunk<Promise<ListVatsResult>> {
 }
 
 /**
- * Get the vat for a productCollectionHandle. Follows the VAT setup and falls back to standard vat.
- * @param shopState
- * @param productCollectionHandle
- * @param tradeRegion Override the set trade region
- * @param customerType Override the set customer type
- */
-export function getVATMultiplier({
-  shopState,
-  productCollectionHandle,
-  customerType,
-  tradeRegion
-}: {
-  shopState: ShopState;
-  productCollectionHandle: string;
-  customerType?: CustomerType;
-  tradeRegion?: TradeRegion;
-}): number {
-  if (!shopState.vats || !shopState.vats.showPricesUsingVAT) {
-    return 1;
-  }
-
-  const typeOfCustomer = customerType || shopState.vats.customerType || CustomerType.CONSUMER;
-  const region = tradeRegion || shopState.vats.customerTradeRegion || TradeRegion.NATIONAL;
-
-  if (
-    /* No VAT charged to international customers */
-    region === TradeRegion.WORLDWIDE ||
-    /* No VAT charged to b2b customer within the region */
-    (region == TradeRegion.REGIONAL && typeOfCustomer == CustomerType.BUSINESS)
-  ) {
-    return 1;
-  }
-
-  // FIXME: Handle B2B rates
-
-  const vats: VatState = shopState.vats;
-  let rate: boolean | number = false;
-
-  // Use an override rate?
-  const vatType = vats.overrides[productCollectionHandle];
-  if (vatType) {
-    rate = vats.vatRates[vatType];
-  }
-
-  // Fall back to standard VAT
-  if (!rate) {
-    rate = vats.vatRates[VatType.STANDARD];
-  }
-
-  if (typeof rate === 'number') {
-    return 1 + rate / 100;
-  }
-
-  return 1;
-}
-
-/**
  * Should VATs be used?
  * @param shopState
  * @param customerType
@@ -205,7 +148,7 @@ export function getPriceIncludingVAT({
   tradeRegion = TradeRegion.NATIONAL
 }: {
   shopState: ShopState;
-  product: Product;
+  product: SlimProduct | Product;
   productVariant: ProductVariant | null;
   customerType?: CustomerType;
   tradeRegion?: TradeRegion;
@@ -214,14 +157,14 @@ export function getPriceIncludingVAT({
     if (productVariant) {
       return productVariant.priceV2;
     }
-    return getLowestVariantPrice(product);
+    return product.priceRange.minVariantPrice;
   }
 
   let price: MoneyV2 | null = null;
   if (productVariant) {
     price = productVariant.priceV2;
   } else {
-    price = getLowestVariantPrice(product);
+    price = product.priceRange.minVariantPrice; //getLowestVariantPrice(product);
   }
   if (!price) {
     return null;
@@ -273,7 +216,7 @@ export function applyVat(shopState: ShopState, vatType: VatType, price: MoneyV2)
  * @param shopState
  * @param product
  */
-export function getVATType(shopState: ShopState, product: Product): VatType {
+export function getVATType(shopState: ShopState, product: SlimProduct): VatType {
   let vatType = VatType.STANDARD;
   const vats = shopState.vats;
 
