@@ -19,7 +19,6 @@ import {
   getCollections,
   GetCollectionsResult,
   getCountries,
-  getLowestVariantPrice,
   getProduct,
   GetProductRequest,
   GetProductResult,
@@ -74,7 +73,7 @@ import { newXcapJsonResult, Thunk } from '../api';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../util';
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
-import { CustomerType, TradeRegion, VatType } from './vat';
+import { CustomerType, TradeRegion } from './vat';
 import { Community } from '../stackend';
 
 /**
@@ -887,116 +886,25 @@ export function getProductTypeLabel(productType: string): string {
 }
 
 /**
- * Get the vat for a productCollectionHandle
- * @param shopState
- * @param productCollectionHandle
- * @param tradeRegion Override the set trade region
- * @param customerType Override the set customer type
- */
-export function getVATMultiplier({
-  shopState,
-  productCollectionHandle,
-  customerType,
-  tradeRegion
-}: {
-  shopState: ShopState;
-  productCollectionHandle: string;
-  customerType?: CustomerType;
-  tradeRegion?: TradeRegion;
-}): number {
-  if (!shopState.vats || !shopState.vats.showPricesUsingVAT) {
-    return 1;
-  }
-
-  const typeOfCustomer = customerType || shopState.vats.customerType || CustomerType.CONSUMER;
-  const region = tradeRegion || shopState.vats.customerTradeRegion || TradeRegion.NATIONAL;
-
-  if (
-    /* No VAT charged to international customers */
-    region === TradeRegion.WORLDWIDE ||
-    /* No VAT charged to b2b customer within the region */
-    (region == TradeRegion.REGIONAL && typeOfCustomer == CustomerType.BUSINESS)
-  ) {
-    return 1;
-  }
-
-  // FIXME: Handle B2B rates
-
-  const vats: VatState = shopState.vats;
-  let rate: boolean | number = false;
-
-  // Use an override rate?
-  const vatType = vats.overrides[productCollectionHandle];
-  if (vatType) {
-    rate = vats.vatRates[vatType];
-  }
-
-  // Fall back to standard VAT
-  if (!rate) {
-    rate = vats.vatRates[VatType.STANDARD];
-  }
-
-  if (typeof rate === 'number') {
-    return 1 + rate / 100;
-  }
-
-  return 1;
-}
-
-/**
- * Get the vat
- * @param shopState
- * @param product
- * @param productVariant
- * @param customerType
- * @param tradeRegion
- */
-export function getPriceIncludingVAT({
-  shopState,
-  product,
-  productVariant,
-  customerType,
-  tradeRegion = TradeRegion.NATIONAL
-}: {
-  shopState: ShopState;
-  product: Product;
-  productVariant: ProductVariant | null;
-  customerType?: CustomerType;
-  tradeRegion?: TradeRegion;
-}): number {
-  let price = 0;
-  if (productVariant) {
-    price = parseFloat(productVariant.priceV2.amount);
-  } else {
-    const m = getLowestVariantPrice(product);
-    if (!m) {
-      return 0;
-    }
-    price = parseFloat(m.amount);
-  }
-
-  if (!shopState.vats?.showPricesUsingVAT) {
-    return price;
-  }
-
-  let maxVat = 1;
-  forEachGraphQLList(product.collections, i => {
-    const m = getVATMultiplier({ shopState, productCollectionHandle: i.handle, customerType, tradeRegion });
-    if (m > maxVat) {
-      maxVat = m;
-    }
-  });
-
-  return price * maxVat;
-}
-
-/**
  * Set the vats
  * @param vats
  */
 export function setVATs(vats: VatState): Thunk<void> {
   return (dispatch: any, _getState: any): void => {
     dispatch({ type: SET_VATS, vats });
+  };
+}
+
+/**
+ * Set the vats using a community
+ * @param community
+ */
+export function setCommunityVATS(community: Community | null): Thunk<void> {
+  return (dispatch: any, _getState: any): void => {
+    if (community && community.settings.vats) {
+      const vats = community.settings.vats as VatState;
+      dispatch({ type: SET_VATS, vats });
+    }
   };
 }
 
@@ -1013,18 +921,5 @@ export function setCustomerVatInfo(
 ) {
   return (dispatch: any, _getState: any): void => {
     dispatch({ type: SET_CUSTOMER_VAT_INFO, customerCountryCode, customerTradeRegion, customerType });
-  };
-}
-
-/**
- * Set the vats using a community
- * @param community
- */
-export function setCommunityVATS(community: Community | null): Thunk<void> {
-  return (dispatch: any, _getState: any): void => {
-    if (community && community.settings.vats) {
-      const vats = community.settings.vats as VatState;
-      dispatch({ type: SET_VATS, vats });
-    }
   };
 }
