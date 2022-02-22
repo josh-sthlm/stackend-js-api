@@ -21,7 +21,7 @@ import {
   storeCommunity,
   StoreCommunityResult
 } from './index';
-import { setCommunityVATS } from '../shop/shopActions';
+import { clearCache, setCommunityVATS } from '../shop/shopActions';
 
 export interface ResourceUsage {
   maximumUseBeforeCharge: { [key: string]: number };
@@ -244,6 +244,7 @@ export function loadCommunitySettings({
         return r;
       }
       dispatch(setCurrentCommunity(r.stackendCommunity, r.objectsRequiringModeration));
+      dispatch(clearCache());
       dispatch(setCommunityVATS(r.stackendCommunity as Community));
       return r;
     } catch (e) {

@@ -1022,8 +1022,8 @@ export function setCustomerVatInfo(
  */
 export function setCommunityVATS(community: Community | null): Thunk<void> {
   return (dispatch: any, _getState: any): void => {
-    if (community && community.settings.shop) {
-      const vats = community.settings.shop as VatState;
+    if (community && community.settings.vats) {
+      const vats = community.settings.vats as VatState;
       dispatch({ type: SET_VATS, vats });
     }
   };
