@@ -149,7 +149,7 @@ export function getPriceIncludingVAT({
 }: {
   shopState: ShopState;
   product: SlimProduct | Product;
-  productVariant: ProductVariant | null;
+  productVariant?: ProductVariant | null;
   customerType?: CustomerType;
   tradeRegion?: TradeRegion;
 }): MoneyV2 | null {
