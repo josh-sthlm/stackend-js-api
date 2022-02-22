@@ -139,41 +139,38 @@ export function useVATS({
  * @param productVariant
  * @param customerType
  * @param tradeRegion
+ * @param quantity Optional quantity, defaults to 1
  */
 export function getPriceIncludingVAT({
   shopState,
   product,
   productVariant,
   customerType,
-  tradeRegion = TradeRegion.NATIONAL
+  tradeRegion = TradeRegion.NATIONAL,
+  quantity = 1
 }: {
   shopState: ShopState;
   product: SlimProduct | Product;
   productVariant?: ProductVariant | null;
   customerType?: CustomerType;
   tradeRegion?: TradeRegion;
-}): MoneyV2 | null {
-  if (!useVATS({ shopState, customerType, tradeRegion })) {
-    if (productVariant) {
-      return productVariant.priceV2;
-    }
-    return product.priceRange.minVariantPrice;
-  }
-
+  quantity?: number;
+}): MoneyV2 {
   let price: MoneyV2 | null = null;
   if (productVariant) {
     price = productVariant.priceV2;
   } else {
     price = product.priceRange.minVariantPrice; //getLowestVariantPrice(product);
   }
-  if (!price) {
-    return null;
+
+  if (!useVATS({ shopState, customerType, tradeRegion })) {
+    return multiplyPrice(price, quantity);
   }
 
   // Check if there is a VAT exception for any of the collections the product belongs to
   const vatType: VatType = getVATType(shopState, product);
 
-  return applyVat(shopState, vatType, price);
+  return applyVat(shopState, vatType, price, quantity);
 }
 
 /**
@@ -181,32 +178,40 @@ export function getPriceIncludingVAT({
  * @param shopState
  * @param vatType
  * @param price
+ * @param quantity
  */
-export function applyVat(shopState: ShopState, vatType: VatType, price: MoneyV2): MoneyV2 {
+export function applyVat(shopState: ShopState, vatType: VatType, price: MoneyV2, quantity = 1): MoneyV2 {
   if (!shopState.vats) {
-    return price;
+    return multiplyPrice(price, quantity);
   }
 
   if (!shopState.vats.vatRates) {
     console.warn('Stackend: VAT rates not available.');
-    return price;
+    return multiplyPrice(price, quantity);
   }
 
   let rate = shopState.vats.vatRates[vatType];
   if (!rate) {
     rate = shopState.vats.vatRates[VatType.STANDARD];
     if (!rate) {
-      return price;
+      return multiplyPrice(price, quantity);
     }
   }
 
   if (typeof rate !== 'number') {
+    return multiplyPrice(price, quantity);
+  }
+
+  return multiplyPrice(price, quantity * (1 + rate / 100));
+}
+
+export function multiplyPrice(price: MoneyV2, factor: number): MoneyV2 {
+  if (factor === 1) {
     return price;
   }
 
-  const v = parseFloat(price.amount) * (1 + rate / 100);
   return {
-    amount: String(v),
+    amount: String(parseFloat(price.amount) * factor),
     currencyCode: price.currencyCode
   };
 }
