@@ -1,8 +1,9 @@
-import { getJson, Thunk, XcapJsonResult } from '../api';
+import { getJson, getJsonErrorText, Thunk, XcapJsonResult } from '../api';
 import { ShopState } from './shopReducer';
 import { Checkout, MoneyV2, Product, ProductVariant, SlimProduct } from './index';
 import { forEachGraphQLList } from '../util/graphql';
-import { getProductAndVariant } from './shopActions';
+import { getProductAndVariant, setCommunityVATS, setCustomerVatInfo } from './shopActions';
+import { getCountryCode } from '../util/getCountryCode';
 
 export enum TradeRegion {
   /** Domestic trade */
@@ -95,6 +96,48 @@ export interface ListVatsResult extends XcapJsonResult {
 export function listVats(): Thunk<Promise<ListVatsResult>> {
   return getJson({
     url: '/shop/vat/list',
+    parameters: arguments
+  });
+}
+
+export interface VatCountry {
+  countryCode: string;
+  name: string;
+}
+
+export interface ListCountriesResult extends XcapJsonResult {
+  countries: Array<VatCountry>;
+}
+/**
+ * Get all countries.
+ * @returns {Thunk<ListCountriesResult>}
+ */
+export function listCountries(): Thunk<Promise<ListCountriesResult>> {
+  return getJson({
+    url: '/shop/vat/list-countries',
+    parameters: arguments
+  });
+}
+
+export interface GetTradeRegionResult extends XcapJsonResult {
+  tradeRegion: TradeRegion;
+  customerCountryCode: string;
+  shopCountryCode: string;
+}
+
+/**
+ * Get the trade region
+ * @returns {Thunk<XcapJsonResult>}
+ */
+export function getTradeRegion({
+  customerCountryCode,
+  shopCountryCode
+}: {
+  customerCountryCode: string;
+  shopCountryCode?: string;
+}): Thunk<Promise<GetTradeRegionResult>> {
+  return getJson({
+    url: '/shop/vat/get-trade-region',
     parameters: arguments
   });
 }
@@ -275,5 +318,44 @@ export function getTotalPriceIncludingVAT({
   return {
     amount: String(total),
     currencyCode: checkout.currencyCode
+  };
+}
+
+/**
+ * Set the customers country code and update trade region accordingly
+ * @param customerCountryCode
+ */
+export function setCustomerCountryCode(customerCountryCode: string): Thunk<Promise<void>> {
+  return async (dispatch: any, getState): Promise<void> => {
+    let { shop, communities } = getState();
+
+    if (!shop.vats) {
+      if (!communities.community) {
+        throw 'No current community';
+      }
+      dispatch(setCommunityVATS(communities.community));
+      shop = getState();
+      if (!shop.vats) {
+        console.error('No VAT data available');
+        return;
+      }
+    }
+
+    const shopCountryCode = shop.vats.shopCountryCode || getCountryCode(communities.community.locale || 'EN');
+
+    customerCountryCode = customerCountryCode.toUpperCase();
+    let tradeRegion = TradeRegion.NATIONAL;
+    if (customerCountryCode === shopCountryCode) {
+      tradeRegion = TradeRegion.NATIONAL;
+    } else {
+      const r = await dispatch(getTradeRegion({ customerCountryCode }));
+      if (r.error) {
+        console.error('Stackend: failed to get trade region: ' + getJsonErrorText(r));
+        return;
+      }
+      tradeRegion = r.tradeRegion;
+    }
+
+    setCustomerVatInfo(customerCountryCode, tradeRegion, shop.vats.customerType || CustomerType.CONSUMER);
   };
 }
