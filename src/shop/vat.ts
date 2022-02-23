@@ -356,6 +356,6 @@ export function setCustomerCountryCode(customerCountryCode: string): Thunk<Promi
       tradeRegion = r.tradeRegion;
     }
 
-    setCustomerVatInfo(customerCountryCode, tradeRegion, shop.vats.customerType || CustomerType.CONSUMER);
+    dispatch(setCustomerVatInfo(customerCountryCode, tradeRegion, shop.vats.customerType || CustomerType.CONSUMER));
   };
 }
