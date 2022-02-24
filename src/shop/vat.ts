@@ -387,10 +387,10 @@ export function setCustomerCountryCode(customerCountryCode: string): Thunk<Promi
         console.error('Stackend: failed to get trade region for ' + customerCountryCode + ': ' + getJsonErrorText(r));
         return;
       }
-      tradeRegion = r.tradeRegion;
+      tradeRegion = r.tradeRegion.toLowerCase(); // To match js
     }
 
-    const customerType = shop.vats.customerType || CustomerType.CONSUMER;
+    const customerType = shop?.vats.customerType || CustomerType.CONSUMER;
 
     if (localStorage) {
       const ci: CustomerInfo = {
