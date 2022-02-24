@@ -534,10 +534,10 @@ export default function shopReducer(
 
     case SET_CUSTOMER_VAT_INFO: {
       return Object.assign({}, state, {
-        vats: Object.assign({}, state.vats, {
-          customerCountryCode: action.customerCountryCode,
-          customerTradeRegion: action.customerTradeRegion,
-          customerType: action.customerType
+        vats: Object.assign({}, state.vats || {}, {
+          customerCountryCode: action.customerCountryCode || state.vats?.customerCountryCode,
+          customerTradeRegion: action.customerTradeRegion || state.vats?.customerTradeRegion,
+          customerType: action.customerType || state.vats?.customerType
         })
       });
     }

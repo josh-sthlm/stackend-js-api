@@ -4,6 +4,7 @@ import { Checkout, MoneyV2, Product, ProductVariant, SlimProduct } from './index
 import { forEachGraphQLList } from '../util/graphql';
 import { getProductAndVariant, setCommunityVATS, setCustomerVatInfo } from './shopActions';
 import { getCountryCode } from '../util/getCountryCode';
+import { Community } from '../stackend';
 
 export enum TradeRegion {
   /** Domestic trade */
@@ -322,13 +323,13 @@ export function getTotalPriceIncludingVAT({
 }
 
 /**
- * Set the customers country code and update trade region accordingly
- * @param customerCountryCode
+ * Get the shops country code, fall back to the locale or 'EN' if not set.
  */
-export function setCustomerCountryCode(customerCountryCode: string): Thunk<Promise<void>> {
-  return async (dispatch: any, getState): Promise<void> => {
+export function getShopCountryCode(): Thunk<Promise<string>> {
+  return async (dispatch: any, getState): Promise<string> => {
     let { shop, communities } = getState();
 
+    // Load the vats, if available from the community
     if (!shop.vats) {
       if (!communities.community) {
         throw 'No current community';
@@ -336,13 +337,46 @@ export function setCustomerCountryCode(customerCountryCode: string): Thunk<Promi
       dispatch(setCommunityVATS(communities.community));
       shop = getState();
       if (!shop.vats) {
-        console.error('No VAT data available');
-        return;
+        console.error("Stackend: Can't get shop country: No VAT data set up");
       }
     }
 
-    const shopCountryCode = shop.vats.shopCountryCode || getCountryCode(communities.community.locale || 'EN');
+    if (shop.vats && shop.vats.shopCountryCode) {
+      return shop.vats.shopCountryCode;
+    }
 
+    if (!communities.community) {
+      throw 'No current community';
+    }
+
+    if (communities.community.locale) {
+      const cc = getCountryCode(communities.community.locale);
+      if (cc) {
+        return cc;
+      }
+    }
+
+    console.error("Stackend: Can't get shop country: No VAT or community locale set up. Falling back to EN");
+    return 'EN';
+  };
+}
+
+/** Customer info stored in local storage */
+export interface CustomerInfo {
+  customerCountryCode: string;
+  tradeRegion: TradeRegion;
+  customerType: CustomerType;
+}
+
+/**
+ * Set the customers country code and update trade region accordingly
+ * @param customerCountryCode
+ */
+export function setCustomerCountryCode(customerCountryCode: string): Thunk<Promise<void>> {
+  return async (dispatch: any, getState): Promise<void> => {
+    const { shop, communities } = getState();
+
+    const shopCountryCode = dispatch(getShopCountryCode());
     customerCountryCode = customerCountryCode.toUpperCase();
     let tradeRegion = TradeRegion.NATIONAL;
     if (customerCountryCode === shopCountryCode) {
@@ -350,12 +384,69 @@ export function setCustomerCountryCode(customerCountryCode: string): Thunk<Promi
     } else {
       const r = await dispatch(getTradeRegion({ customerCountryCode }));
       if (r.error) {
-        console.error('Stackend: failed to get trade region: ' + getJsonErrorText(r));
+        console.error('Stackend: failed to get trade region for ' + customerCountryCode + ': ' + getJsonErrorText(r));
         return;
       }
       tradeRegion = r.tradeRegion;
     }
 
-    dispatch(setCustomerVatInfo(customerCountryCode, tradeRegion, shop.vats.customerType || CustomerType.CONSUMER));
+    const customerType = shop.vats.customerType || CustomerType.CONSUMER;
+
+    if (localStorage) {
+      const ci: CustomerInfo = {
+        customerCountryCode,
+        tradeRegion,
+        customerType
+      };
+      localStorage.setItem(getLocalStorageCustomerInfoKey(communities.community), JSON.stringify(ci));
+    }
+
+    dispatch(setCustomerVatInfo({ customerCountryCode, customerTradeRegion: tradeRegion, customerType }));
   };
+}
+
+/**
+ * Set the type of customer
+ * @param customerType
+ */
+export function setCustomerType(customerType: CustomerType): Thunk<void> {
+  return async (dispatch: any, getState): Promise<void> => {
+    const { communities } = getState();
+    const ci = dispatch(getCustomerInfo());
+    if (ci && localStorage) {
+      ci.customerType = customerType;
+      localStorage.setItem(getLocalStorageCustomerInfoKey(communities.community), JSON.stringify(ci));
+    }
+
+    dispatch(setCustomerVatInfo({ customerType }));
+  };
+}
+
+/**
+ * Get customer info from shop.vats, with fallback to local storage
+ */
+export function getCustomerInfo(): Thunk<CustomerInfo | null> {
+  return (dispatch: any, getState): CustomerInfo | null => {
+    const { shop, communities } = getState();
+    if (shop.vats && shop.vats.tradeRegion) {
+      return {
+        customerCountryCode: shop.vats.customerCountryCode,
+        tradeRegion: shop.vats.tradeRegion,
+        customerType: shop.vats.customerType || CustomerType.CONSUMER
+      };
+    }
+
+    if (localStorage) {
+      const cc = localStorage.getItem(getLocalStorageCustomerInfoKey(communities.community));
+      if (cc) {
+        return JSON.parse(cc);
+      }
+    }
+
+    return null;
+  };
+}
+
+export function getLocalStorageCustomerInfoKey(community: Community): string {
+  return community.permalink + '-customer';
 }

@@ -914,11 +914,15 @@ export function setCommunityVATS(community: Community | null): Thunk<void> {
  * @param customerTradeRegion
  * @param customerType
  */
-export function setCustomerVatInfo(
-  customerCountryCode?: string,
-  customerTradeRegion?: TradeRegion,
-  customerType?: CustomerType
-) {
+export function setCustomerVatInfo({
+  customerCountryCode,
+  customerTradeRegion,
+  customerType
+}: {
+  customerCountryCode?: string;
+  customerTradeRegion?: TradeRegion;
+  customerType?: CustomerType;
+}) {
   return (dispatch: any, _getState: any): void => {
     dispatch({ type: SET_CUSTOMER_VAT_INFO, customerCountryCode, customerTradeRegion, customerType });
   };
