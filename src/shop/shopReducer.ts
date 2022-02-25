@@ -31,6 +31,7 @@ import {
 import { ExtraObjectHandler, registerExtraObjectHandler } from '../api/extraObjectActions';
 import { newXcapJsonResult } from '../api';
 import { CustomerType, TradeRegion, VatType } from './vat';
+import { CurrencyInfo } from './currency';
 
 export const SET_SHOP_DEFAULTS = 'SET_SHOP_DEFAULTS';
 export const RECEIVE_PRODUCT_TYPES = 'RECEIVE_PRODUCT_TYPES';
@@ -51,6 +52,7 @@ export const RECEIVE_COUNTRIES = 'RECEIVE_COUNTRIES';
 export const RECEIVE_ADDRESS_FIELDS = 'RECEIVE_ADDRESS_FIELDS';
 export const SET_VATS = 'SET_VATS';
 export const SET_CUSTOMER_VAT_INFO = 'SET_CUSTOMER_VAT_INFO';
+export const RECEIVE_CURRENCY = 'RECEIVE_CURRENCY';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -200,6 +202,11 @@ export interface ShopState {
    * Vats
    */
   vats: VatState | null;
+
+  /**
+   * Currencies
+   */
+  currencies: { [currencyCode: string]: CurrencyInfo };
 }
 
 export type SetShopDefaultsAction = {
@@ -307,6 +314,11 @@ export type SetCustomerVATInfoAction = {
   customerType?: CustomerType;
 };
 
+export type ReceiveCurrencyAction = {
+  type: typeof RECEIVE_CURRENCY;
+  currency: CurrencyInfo;
+};
+
 export type ShopActions =
   | SetShopDefaultsAction
   | ReceiveProductTypesAction
@@ -326,7 +338,8 @@ export type ShopActions =
   | ReceiveCountriesAction
   | ReceiveAddressFieldsAction
   | SetVATsAction
-  | SetCustomerVATInfoAction;
+  | SetCustomerVATInfoAction
+  | ReceiveCurrencyAction;
 
 export default function shopReducer(
   state: ShopState = {
@@ -347,7 +360,8 @@ export default function shopReducer(
     countryCodes: null,
     countriesByCode: {},
     addressFieldsByCountryCode: {},
-    vats: null
+    vats: null,
+    currencies: {}
   },
   action: ShopActions
 ): ShopState {
@@ -535,7 +549,7 @@ export default function shopReducer(
       });
     }
 
-    case SET_CUSTOMER_VAT_INFO: {
+    case SET_CUSTOMER_VAT_INFO:
       return Object.assign({}, state, {
         vats: Object.assign({}, state.vats || {}, {
           customerCountryCode: action.customerCountryCode || state.vats?.customerCountryCode,
@@ -543,7 +557,14 @@ export default function shopReducer(
           customerType: action.customerType || state.vats?.customerType
         })
       });
-    }
+
+    case RECEIVE_CURRENCY:
+      return Object.assign({}, state, {
+        currencies: {
+          ...state.currencies,
+          [action.currency.code]: action.currency
+        }
+      });
   }
 
   return state;
