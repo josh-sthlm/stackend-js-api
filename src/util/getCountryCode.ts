@@ -10,7 +10,7 @@ export function getCountryCode(locale: string): string | null {
 
   // de
   if (v.length == 1) {
-    return v[0].toUpperCase();
+    return null;
   }
 
   // en_US
