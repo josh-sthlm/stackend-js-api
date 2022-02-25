@@ -2,6 +2,7 @@ import { COMMUNITY_PARAMETER, getJson, post, Thunk, XcapJsonResult, XcapOptional
 import { getLocale } from '../util';
 import { forEachGraphQLList, GraphQLList, PaginatedGraphQLList, PaginatedGraphQLRequest } from '../util/graphql';
 import { ShopDefaults } from './shopReducer';
+import { Community } from '../stackend';
 
 export interface SlimProductImage {
   altText: string | null;
@@ -203,6 +204,9 @@ export function getShopConfiguration(): Thunk<Promise<GetShopConfigurationResult
   });
 }
 
+export interface StoreShopConfigurationResult extends XcapJsonResult {
+  stackendCommunity: Community;
+}
 /**
  * Store the shop configuration. Requires admin privs
  * @param shop
@@ -218,7 +222,7 @@ export function storeShopConfiguration({
   shop: string | null;
   storeFrontAccessToken: string | null;
   webhookKey: string | null;
-} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+} & XcapOptionalParameters): Thunk<Promise<StoreShopConfigurationResult>> {
   return post({
     url: '/shop/admin/store-config',
     parameters: arguments

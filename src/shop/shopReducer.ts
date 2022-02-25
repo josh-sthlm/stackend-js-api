@@ -99,6 +99,9 @@ export interface VatState {
     [VatType.PARKING]: number | boolean;
   };
 
+  /** Should vat price be shown for shipping rates? */
+  showVatForShipping: boolean;
+
   /** Overrides from the standard vat rate
    *  Maps from product collection to VatType
    */
