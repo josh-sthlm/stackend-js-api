@@ -56,6 +56,20 @@ export const RECEIVE_CURRENCY = 'RECEIVE_CURRENCY';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
+export interface ShopConfig {
+  /** Shopify domain */
+  domain: string;
+
+  /** Store front access token */
+  accessToken: string;
+
+  /** Country code */
+  countryCode: string;
+
+  /** Api version YYYY-MM */
+  apiVersion: string;
+}
+
 export interface AbstractProductListing extends PageInfo {
   /** Cursor not next page */
   nextCursor: string | null;

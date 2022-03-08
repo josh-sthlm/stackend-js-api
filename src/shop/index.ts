@@ -1,8 +1,18 @@
-import { COMMUNITY_PARAMETER, getJson, post, Thunk, XcapJsonResult, XcapOptionalParameters } from '../api';
+import {
+  COMMUNITY_PARAMETER,
+  getJson,
+  isRunningServerSide,
+  post,
+  Thunk,
+  XcapJsonResult,
+  XcapOptionalParameters
+} from '../api';
 import { getLocale } from '../util';
 import { forEachGraphQLList, GraphQLList, PaginatedGraphQLList, PaginatedGraphQLRequest } from '../util/graphql';
-import { ShopDefaults } from './shopReducer';
+import { ShopConfig, ShopDefaults } from './shopReducer';
 import { Community } from '../stackend';
+import { CommunityState } from '../stackend/communityReducer';
+import * as ShopifyClientside from './shopify-clientside';
 
 export interface SlimProductImage {
   altText: string | null;
@@ -195,6 +205,38 @@ export interface GetShopConfigurationResult extends XcapJsonResult {
 }
 
 /**
+ * Check if the shop is enabled
+ * @param community
+ */
+export function isShopEnabled(community: Community): boolean {
+  if (!community) {
+    return false;
+  }
+  return typeof community.settings.shop != 'undefined';
+}
+
+/**
+ * Get shopify configuration from store
+ * @return null if disabled
+ */
+export function getShopifyConfig(): Thunk<ShopConfig | null> {
+  return (dispatch: any, getState): ShopConfig | null => {
+    const communities: CommunityState = getState().communities;
+    const community = communities.community;
+    if (!community || !community.settings.shop) {
+      return null;
+    }
+
+    return {
+      domain: community.settings.shop.domain,
+      accessToken: community.settings.shop.at,
+      countryCode: community.settings.shop.countryCode,
+      apiVersion: ShopifyClientside.API_VERSION
+    };
+  };
+}
+
+/**
  * Get the shop configuration. Requires admin privs
  * @returns {Thunk<XcapJsonResult>}
  */
@@ -243,10 +285,14 @@ export interface ListProductTypesResult extends XcapJsonResult {
  * @returns {Thunk<ListProductTypesResult>}
  */
 export function listProductTypes(req: ListProductTypesRequest): Thunk<Promise<ListProductTypesResult>> {
-  return getJson({
-    url: '/shop/list-product-types',
-    parameters: arguments
-  });
+  if (isRunningServerSide()) {
+    return getJson({
+      url: '/shop/list-product-types',
+      parameters: arguments
+    });
+  } else {
+    return ShopifyClientside.listProductTypes(req);
+  }
 }
 
 export enum ProductSortKeys {
@@ -331,10 +377,14 @@ export const newListProductsRequest =
  * @returns {Thunk<ListProductsResult>}
  */
 export function listProducts(req: ListProductsRequest): Thunk<Promise<ListProductsResult>> {
-  return getJson({
-    url: '/shop/list-products',
-    parameters: arguments
-  });
+  if (isRunningServerSide()) {
+    return getJson({
+      url: '/shop/list-products',
+      parameters: arguments
+    });
+  } else {
+    return ShopifyClientside.listProducts(req);
+  }
 }
 
 export interface GetProductRequest extends XcapOptionalParameters {
@@ -373,10 +423,14 @@ export const newGetProductRequest =
  * @returns {Thunk<XcapJsonResult>}
  */
 export function getProduct(req: GetProductRequest): Thunk<Promise<GetProductResult>> {
-  return getJson({
-    url: '/shop/get-product',
-    parameters: arguments
-  });
+  if (isRunningServerSide()) {
+    return getJson({
+      url: '/shop/get-product',
+      parameters: arguments
+    });
+  } else {
+    return ShopifyClientside.getProduct(req);
+  }
 }
 
 export interface GetProductsRequest extends XcapOptionalParameters {
@@ -421,6 +475,7 @@ export function getProducts(req: GetProductsRequest): Thunk<Promise<GetProductsR
     url: '/shop/get-products',
     parameters: arguments
   });
+  // FIXME: Add client side version
 }
 
 export interface ListProductsAndTypesResult extends ListProductsResult {
@@ -433,10 +488,14 @@ export interface ListProductsAndTypesResult extends ListProductsResult {
  * @returns {Thunk<XcapJsonResult>}
  */
 export function listProductsAndTypes(req: ListProductsRequest): Thunk<Promise<ListProductsAndTypesResult>> {
-  return getJson({
-    url: '/shop/list-products-and-types',
-    parameters: arguments
-  });
+  if (isRunningServerSide()) {
+    return getJson({
+      url: '/shop/list-products-and-types',
+      parameters: arguments
+    });
+  } else {
+    return ShopifyClientside.listProductsAndTypes(req);
+  }
 }
 
 /**
@@ -683,10 +742,14 @@ export interface GetCollectionResult extends XcapJsonResult {
  * @returns {Thunk<XcapJsonResult>}
  */
 export function getCollection(req: GetCollectionRequest): Thunk<Promise<GetCollectionResult>> {
-  return getJson({
-    url: '/shop/get-collection',
-    parameters: arguments
-  });
+  if (isRunningServerSide()) {
+    return getJson({
+      url: '/shop/get-collection',
+      parameters: arguments
+    });
+  } else {
+    return ShopifyClientside.getCollection(req);
+  }
 }
 
 export interface GetCollectionsResult extends XcapJsonResult {

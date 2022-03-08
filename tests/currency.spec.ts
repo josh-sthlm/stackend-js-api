@@ -2,7 +2,7 @@ import createTestStore from './setup';
 import { requestCurrencyInfo, roundToMinimalFractionalUnit } from '../src/shop/currency';
 import { RECEIVE_CURRENCY } from '../src/shop/shopReducer';
 
-describe('Shop', () => {
+describe('Currency', () => {
   const store = createTestStore();
   store.dispatch(requestCurrencyInfo('SEK'));
   store.dispatch({
