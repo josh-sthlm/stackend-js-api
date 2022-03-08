@@ -20,6 +20,7 @@ export default function fullProductQuery(imageMaxWidth: number | null, includeOr
     minVariantPrice ${moneyV2Query()},
   },
   options {
+    id,
     name,
     values,
   },

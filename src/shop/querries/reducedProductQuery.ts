@@ -18,6 +18,7 @@ export default function reducedProductQuery(
     maxVariantPrice ${moneyV2Query()}
   },
   options {
+    id,
     name,
     values
   },
