@@ -245,7 +245,9 @@ describe('Shop', () => {
   it('getCollections', async () => {
     const r: GetCollectionsResult = await store.dispatch(getCollections({}));
     assert(r);
-    expect(r.error).toBeDefined(); // Requires admin
+    //expect(r.error).toBeDefined();
+    expect(r.collections).toBeDefined();
+    expect(r.collections.edges.length).toBeGreaterThan(1);
   });
 
   describe('getCountries', () => {

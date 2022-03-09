@@ -764,10 +764,14 @@ export type GetCollectionsRequest = XcapOptionalParameters;
  * @returns {Thunk<XcapJsonResult>}
  */
 export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCollectionsResult>> {
-  return getJson({
-    url: '/shop/get-collections',
-    parameters: arguments
-  });
+  if (isRunningServerSide()) {
+    return getJson({
+      url: '/shop/get-collections',
+      parameters: arguments
+    });
+  } else {
+    return ShopifyClientside.getCollections(req);
+  }
 }
 
 export interface LineItem {

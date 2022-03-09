@@ -1,9 +1,16 @@
 import assert from 'assert';
 
 import createTestStore from './setup';
-import { getCollection, getProduct, listProducts, listProductTypes } from '../src/shop/shopify-clientside';
+import {
+  getCollection,
+  getCollections,
+  getProduct,
+  listProducts,
+  listProductTypes
+} from '../src/shop/shopify-clientside';
 import {
   GetCollectionResult,
+  GetCollectionsResult,
   GetProductResult,
   getShopifyConfig,
   ListProductsResult,
@@ -69,6 +76,17 @@ describe('Shopify Clientside', () => {
       expect(r.error).toBeUndefined();
       expect(r.collection).toBeDefined();
       console.log(r.collection);
+    });
+  });
+
+  describe('getCollections', () => {
+    it('getCollections', async () => {
+      const r: GetCollectionsResult = await store.dispatch(getCollections({}));
+      assert(r);
+      expect(r.error).toBeUndefined();
+      expect(r.collections).toBeDefined();
+      expect(r.collections.edges.length).toBeGreaterThan(1);
+      console.log(r.collections.edges);
     });
   });
 });

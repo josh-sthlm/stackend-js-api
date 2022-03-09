@@ -11,7 +11,9 @@ import {
   GetCheckoutResult,
   ListProductsAndTypesResult,
   getShopifyConfig,
-  GetProductRequest
+  GetProductRequest,
+  GetCollectionsRequest,
+  GetCollectionsResult
 } from './index';
 
 import collectionQuery from './querries/collectionQuery';
@@ -20,8 +22,6 @@ import checkoutQuery from './querries/checkoutQuery';
 import productListingQuery from './querries/productListingQuery';
 import productTypesQuery from './querries/productTypesQuery';
 import { ShopState } from './shopReducer';
-
-//import fetch from 'node-fetch';
 
 export const API_VERSION = '2022-01';
 
@@ -119,13 +119,13 @@ export function getCollection(req: GetCollectionRequest): Thunk<Promise<GetColle
   };
 }
 
-/* Removed: fetches a lot of data. admin only
+/**
  * List collections
  * @param req
- *
+ */
 export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCollectionsResult>> {
   return query({
-    query: `collections (first: 100) {
+    query: `collections (first: 100, sortKey: TITLE) {
       edges {
         node {
           id,
@@ -137,7 +137,6 @@ export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCol
     }`
   });
 }
-*/
 
 /**
  * Get a checkout
