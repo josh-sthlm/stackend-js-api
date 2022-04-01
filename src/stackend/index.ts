@@ -411,6 +411,20 @@ export function setCommunitySetting({
   });
 }
 
+/**
+ * Set a single community setting without affecting anything else.
+ *
+ * @param id {number}
+ * @param theme StackendTheme
+ */
+export function storeCommunityTheme({ id, theme }: { id: number; theme: any }): Thunk<Promise<StoreCommunityResult>> {
+  return post({
+    url: '/stackend/community/store-theme',
+    parameters: { id, theme: typeof theme === 'string' ? theme : JSON.stringify(theme) },
+    community: STACKEND_COMMUNITY
+  });
+}
+
 export type GetCommunityPrivateSettingsResult = XcapJsonResult;
 
 /**
