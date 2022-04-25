@@ -220,6 +220,7 @@ export interface PageContent {
 export enum MenuVisibility {
   HORIZONTAL = 'HORIZONTAL',
   VERTICAL = 'VERTICAL',
+  FIXED = 'FIXED',
   OFF = 'OFF'
 }
 
@@ -228,8 +229,13 @@ export function parseMenuVisibility(v: string): MenuVisibility {
     return MenuVisibility.HORIZONTAL;
   } else if (v === 'false') {
     return MenuVisibility.OFF;
-  } else if (v.toUpperCase() === MenuVisibility.VERTICAL) {
+  }
+
+  const x = v.toUpperCase();
+  if (x === MenuVisibility.VERTICAL) {
     return MenuVisibility.VERTICAL;
+  } else if (x === MenuVisibility.FIXED) {
+    return MenuVisibility.FIXED;
   }
 
   return MenuVisibility.HORIZONTAL;

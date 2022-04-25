@@ -1,10 +1,10 @@
 import { Module, newModule } from '../stackend';
 
 /**
- * Component class: stackend.live.LiveEventManager
+ * Component class: com.stackend.live.LiveEventManager
  * @type {string}
  */
-export const COMPONENT_CLASS = 'stackend.live.LiveEventManager';
+export const COMPONENT_CLASS = 'com.stackend.live.LiveEventManager';
 
 /**
  * Component name: live
@@ -13,7 +13,7 @@ export const COMPONENT_CLASS = 'stackend.live.LiveEventManager';
 export const COMPONENT_NAME = 'live';
 
 /**
- * Live uses the generic 'comments' context but the stackend.live.LiveEventManager component
+ * Live uses the generic 'comments' context but the com.stackend.live.LiveEventManager component
  * @type {string}
  */
 export const COMPONENT_CONTEXT = 'comments';
