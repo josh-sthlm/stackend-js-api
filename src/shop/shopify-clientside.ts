@@ -13,7 +13,10 @@ import {
   getShopifyConfig,
   GetProductRequest,
   GetCollectionsRequest,
-  GetCollectionsResult
+  GetCollectionsResult,
+  GetCartRequest,
+  GetCartResult,
+  CreateCartRequest
 } from './index';
 
 import collectionQuery from './querries/collectionQuery';
@@ -139,6 +142,84 @@ export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCol
 }
 
 /**
+ * Get a cart
+ * @param req
+ */
+export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
+  return (dispatch: any): Promise<GetCartResult> => {
+    return dispatch(
+      query({
+        query: `cart (id: ${escapeQueryTerm(req.cartId)}) {
+          ${cartQuery()}
+        }`
+      })
+    );
+  };
+}
+
+/**
+ * Create a cart
+ * @param req
+ */
+export function createCart(req: CreateCartRequest): Thunk<Promise<GetCartResult>> {
+  return (dispatch: any): Promise<GetCartResult> => {
+    return dispatch(
+      mutation({
+        mutation: `cartCreate (
+          input: {
+            lines: ${JSON.stringify(req.lines || [])}
+          }
+         ) {
+          cart: ${cartQuery()}
+        }`
+      })
+    );
+  };
+}
+
+function cartQuery(): string {
+  return `
+  id
+  createdAt
+  updatedAt
+  lines(first: 100) {
+    edges {
+      node {
+        id
+        merchandise {
+          ... on ProductVariant {
+            id
+          }
+        }
+      }
+    }
+  }
+  attributes {
+    key
+    value
+  }
+  estimatedCost {
+    totalAmount {
+      amount
+      currencyCode
+    }
+    subtotalAmount {
+      amount
+      currencyCode
+    }
+    totalTaxAmount {
+      amount
+      currencyCode
+    }
+    totalDutyAmount {
+      amount
+      currencyCode
+    }
+  }
+  `;
+}
+
+/**
  * Get a checkout
  * @param req
  */
@@ -228,6 +309,47 @@ export function query<T extends XcapJsonResult>({
   headers?: { [key: string]: string };
   aliases?: { [name: string]: string };
 }): Thunk<Promise<T>> {
+  return doPost({ query, headers, aliases });
+}
+
+/**
+ * Perform a shopify mutation
+ * @param mutation
+ * @param headers
+ * @param aliases change names of returned data
+ * @returns {(function(*): Promise<XcapJsonResult>)|*}
+ */
+export function mutation<T extends XcapJsonResult>({
+  mutation,
+  headers,
+  aliases
+}: {
+  mutation: string;
+  headers?: { [key: string]: string };
+  aliases?: { [name: string]: string };
+}): Thunk<Promise<T>> {
+  return doPost({ mutation, headers, aliases });
+}
+
+/**
+ * Perform a shopify query or mutation
+ * @param query
+ * @param mutation
+ * @param headers
+ * @param aliases change names of returned data
+ * @returns {(function(*): Promise<XcapJsonResult>)|*}
+ */
+function doPost<T extends XcapJsonResult>({
+  query,
+  mutation,
+  headers,
+  aliases
+}: {
+  query?: string;
+  mutation?: string;
+  headers?: { [key: string]: string };
+  aliases?: { [name: string]: string };
+}): Thunk<Promise<T>> {
   return async (dispatch: any): Promise<T> => {
     const cfg = dispatch(getShopifyConfig());
     if (!cfg) {
@@ -236,7 +358,14 @@ export function query<T extends XcapJsonResult>({
     }
 
     const url = 'https://' + cfg.domain + '/api/' + cfg.apiVersion + '/graphql.json';
-    const body = JSON.stringify({ query: '{' + query + '}', variables: null });
+    let body = '';
+    if (mutation) {
+      body = JSON.stringify({ mutation: '{' + mutation + '}', variables: null });
+    } else if (query) {
+      body = JSON.stringify({ query: '{' + query + '}', variables: null });
+    } else {
+      throw 'Specify a query or a mutation';
+    }
 
     const h = new Headers();
     h.set('content-type', 'application/json');

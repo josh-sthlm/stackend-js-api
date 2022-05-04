@@ -774,6 +774,59 @@ export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCol
   }
 }
 
+export interface CreateCartLine {
+  /**
+   * Quantity
+   */
+  quantity: number;
+  /**
+   * Product variant id "gid://shopify/ProductVariant/1"
+   */
+  merchandiseId: string;
+}
+
+export interface CreateCartRequest {
+  lines: Array<CreateCartLine>;
+}
+
+export interface Cart {
+  id: string;
+  createdAt: number;
+  updatedAt: number;
+  lines: GraphQLList<number>; // FIXME: Improve this
+  estimatedCost: {
+    totalAmount: MoneyV2;
+    subtotalAmount: MoneyV2;
+    totalTaxAmount: MoneyV2;
+    totalDutyAmount: MoneyV2;
+  };
+  //attributes
+}
+
+export interface GetCartResult extends XcapJsonResult {
+  cart: Cart | null;
+}
+
+/**
+ * Create a cart
+ * @param req
+ */
+export function createCart(req: CreateCartRequest): Thunk<Promise<GetCartResult>> {
+  return ShopifyClientside.createCart(req);
+}
+
+export interface GetCartRequest {
+  cartId: string;
+}
+
+/**
+ * Get a cart
+ * @param req
+ */
+export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
+  return ShopifyClientside.getCart(req);
+}
+
 export interface LineItem {
   quantity: number;
   variantId: string;
