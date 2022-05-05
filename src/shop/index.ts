@@ -776,31 +776,44 @@ export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCol
 
 export interface CreateCartLine {
   /**
-   * Quantity
-   */
-  quantity: number;
-  /**
    * Product variant id "gid://shopify/ProductVariant/1"
    */
   merchandiseId: string;
+
+  /**
+   * Quantity
+   */
+  quantity?: number;
 }
 
 export interface CreateCartRequest {
   lines: Array<CreateCartLine>;
 }
 
+export interface CartLine {
+  id: string;
+  merchandise: string;
+  quantity: number;
+  discountAllocations: any;
+  attributes: any;
+  estimatedCost: {
+    subtotalAmount: MoneyV2;
+    totalAmount: MoneyV2;
+  };
+}
+
 export interface Cart {
   id: string;
-  createdAt: number;
-  updatedAt: number;
-  lines: GraphQLList<number>; // FIXME: Improve this
+  createdAt: string;
+  updatedAt: string;
+  lines: GraphQLList<CartLine>;
   estimatedCost: {
     totalAmount: MoneyV2;
     subtotalAmount: MoneyV2;
-    totalTaxAmount: MoneyV2;
-    totalDutyAmount: MoneyV2;
+    totalTaxAmount: MoneyV2 | null;
+    totalDutyAmount: MoneyV2 | null;
   };
-  //attributes
+  attributes: Array<any>;
 }
 
 export interface GetCartResult extends XcapJsonResult {

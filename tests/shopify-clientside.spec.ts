@@ -2,6 +2,9 @@ import assert from 'assert';
 
 import createTestStore from './setup';
 import {
+  createCart,
+  //createCart,
+  getCart,
   getCollection,
   getCollections,
   getProduct,
@@ -9,6 +12,7 @@ import {
   listProductTypes
 } from '../src/shop/shopify-clientside';
 import {
+  GetCartResult,
   GetCollectionResult,
   GetCollectionsResult,
   GetProductResult,
@@ -87,6 +91,30 @@ describe('Shopify Clientside', () => {
       expect(r.collections).toBeDefined();
       expect(r.collections.edges.length).toBeGreaterThan(1);
       console.log(r.collections.edges);
+    });
+  });
+
+  describe('create/get-cart', () => {
+    it('Creates and gets a cart', async () => {
+      let r: GetCartResult = await store.dispatch(
+        createCart({
+          lines: [{ merchandiseId: 'gid://shopify/Product/9895276099' }]
+        })
+      );
+      assert(r);
+      expect(r.error).toBeUndefined();
+      assert(r.cart);
+      console.log(r.cart);
+
+      r = await store.dispatch(
+        getCart({
+          cartId: r.cart.id
+        })
+      );
+      assert(r);
+      expect(r.error).toBeUndefined();
+      expect(r.cart).toBeDefined();
+      console.log(r.cart);
     });
   });
 });

@@ -16,7 +16,8 @@ import {
   GetCollectionsResult,
   GetCartRequest,
   GetCartResult,
-  CreateCartRequest
+  CreateCartRequest,
+  CreateCartLine
 } from './index';
 
 import collectionQuery from './querries/collectionQuery';
@@ -165,11 +166,12 @@ export function createCart(req: CreateCartRequest): Thunk<Promise<GetCartResult>
   return (dispatch: any): Promise<GetCartResult> => {
     return dispatch(
       mutation({
-        mutation: `cartCreate (
-          input: {
-            lines: ${JSON.stringify(req.lines || [])}
-          }
-         ) {
+        mutation: `mutation {
+          cartCreate (
+            input: {
+              lines: ${convertCartLines(req.lines || [])}
+            }
+          ) {
           cart: ${cartQuery()}
         }`
       })
@@ -177,11 +179,28 @@ export function createCart(req: CreateCartRequest): Thunk<Promise<GetCartResult>
   };
 }
 
+function convertCartLines(lines: Array<CreateCartLine>): string {
+  let r = '[';
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (i != 0) {
+      r += ',\n';
+    }
+    r += '{ merchandiseId: ' + JSON.stringify(l.merchandiseId) + '';
+    if (l.quantity) {
+      r += ', quantity: ' + l.quantity;
+    }
+    r += '}';
+  }
+  r += ']';
+  return r;
+}
+
 function cartQuery(): string {
   return `
-  id
-  createdAt
-  updatedAt
+  id,
+  createdAt,
+  updatedAt,
   lines(first: 100) {
     edges {
       node {
@@ -190,29 +209,46 @@ function cartQuery(): string {
           ... on ProductVariant {
             id
           }
+        },
+        quantity,
+        attributes {
+          key, value
+        },
+        discountAllocations {
+          discountedAmount {
+            amount, currencyCode
+          }
+        },
+        estimatedCost {
+          subtotalAmount {
+            amount, currencyCode
+          }
+          totalAmount {
+            amount, currencyCode
+          }
         }
       }
     }
-  }
+  },
   attributes {
     key
     value
-  }
+  },
   estimatedCost {
     totalAmount {
-      amount
+      amount,
       currencyCode
     }
     subtotalAmount {
-      amount
+      amount,
       currencyCode
     }
     totalTaxAmount {
-      amount
+      amount,
       currencyCode
     }
     totalDutyAmount {
-      amount
+      amount,
       currencyCode
     }
   }
@@ -328,25 +364,22 @@ export function mutation<T extends XcapJsonResult>({
   headers?: { [key: string]: string };
   aliases?: { [name: string]: string };
 }): Thunk<Promise<T>> {
-  return doPost({ mutation, headers, aliases });
+  return doPost({ query: mutation, headers, aliases });
 }
 
 /**
  * Perform a shopify query or mutation
  * @param query
- * @param mutation
  * @param headers
  * @param aliases change names of returned data
  * @returns {(function(*): Promise<XcapJsonResult>)|*}
  */
 function doPost<T extends XcapJsonResult>({
   query,
-  mutation,
   headers,
   aliases
 }: {
   query?: string;
-  mutation?: string;
   headers?: { [key: string]: string };
   aliases?: { [name: string]: string };
 }): Thunk<Promise<T>> {
@@ -358,14 +391,7 @@ function doPost<T extends XcapJsonResult>({
     }
 
     const url = 'https://' + cfg.domain + '/api/' + cfg.apiVersion + '/graphql.json';
-    let body = '';
-    if (mutation) {
-      body = JSON.stringify({ mutation: '{' + mutation + '}', variables: null });
-    } else if (query) {
-      body = JSON.stringify({ query: '{' + query + '}', variables: null });
-    } else {
-      throw 'Specify a query or a mutation';
-    }
+    const body = JSON.stringify({ query: '{' + query + '}', variables: null });
 
     const h = new Headers();
     h.set('content-type', 'application/json');
