@@ -2,6 +2,8 @@ import assert from 'assert';
 
 import createTestStore from './setup';
 import {
+  _convertCartLines,
+  cartLinesUpdate,
   createCart,
   //createCart,
   getCart,
@@ -94,18 +96,41 @@ describe('Shopify Clientside', () => {
     });
   });
 
-  describe('create/get-cart', () => {
-    it('Creates and gets a cart', async () => {
-      let r: GetCartResult = await store.dispatch(
+  describe('_convertCartLines', () => {
+    it('transform cart lines', () => {
+      expect(_convertCartLines([])).toBe('[]');
+      expect(
+        _convertCartLines([
+          {
+            merchandiseId: 'gid://shopify/Product/9895276099'
+          },
+          {
+            merchandiseId: 'gid://shopify/Product/123456',
+            quantity: 2
+          }
+        ])
+      ).toBe(
+        '[{ merchandiseId: "gid://shopify/Product/9895276099" },\n{ merchandiseId: "gid://shopify/Product/123456", quantity: 2 }]'
+      );
+    });
+  });
+
+  describe('create/get/update-cart', () => {
+    let r: GetCartResult | null = null;
+    it('Creates a cart', async () => {
+      r = await store.dispatch(
         createCart({
-          lines: [{ merchandiseId: 'gid://shopify/Product/9895276099' }]
+          lines: [{ merchandiseId: 'gid://shopify/ProductVariant/36607622083' }]
         })
       );
       assert(r);
+      console.log(r);
       expect(r.error).toBeUndefined();
-      assert(r.cart);
-      console.log(r.cart);
+      assert(r.cart != undefined);
+    });
 
+    it('get a cart', async () => {
+      assert(r && r.cart);
       r = await store.dispatch(
         getCart({
           cartId: r.cart.id
@@ -113,8 +138,30 @@ describe('Shopify Clientside', () => {
       );
       assert(r);
       expect(r.error).toBeUndefined();
-      expect(r.cart).toBeDefined();
+      assert(r.cart);
+      expect(r.cart.id).toBeDefined();
+      expect(r.cart.lines.edges.length).toBe(1);
       console.log(r.cart);
+    });
+
+    it('updates a cart', async () => {
+      assert(r && r.cart);
+      r = await store.dispatch(
+        cartLinesUpdate({
+          cartId: r.cart.id,
+          lines: [
+            { id: r.cart.lines.edges[0].node.id, merchandiseId: r.cart.lines.edges[0].node.merchandise.id, quantity: 2 }
+          ]
+        })
+      );
+      assert(r);
+      console.log(r.cart);
+      expect(r.error).toBeUndefined();
+      assert(r.cart);
+      expect(r.cart.id).toBeDefined();
+      expect(r.cart.lines.edges.length).toBe(1);
+      expect(r.cart.lines.edges[0].node.quantity).toBe(2);
+      console.log(r.cart.lines.edges[0].node);
     });
   });
 });

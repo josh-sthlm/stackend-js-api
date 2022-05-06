@@ -17,7 +17,9 @@ import {
   GetCartRequest,
   GetCartResult,
   CreateCartRequest,
-  CreateCartLine
+  CreateCartLine,
+  CartLinesUpdateRequest,
+  ModifyCartResult
 } from './index';
 
 import collectionQuery from './querries/collectionQuery';
@@ -162,35 +164,77 @@ export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
  * Create a cart
  * @param req
  */
-export function createCart(req: CreateCartRequest): Thunk<Promise<GetCartResult>> {
-  return (dispatch: any): Promise<GetCartResult> => {
-    return dispatch(
+export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any): Promise<ModifyCartResult> => {
+    const r = await dispatch(
       mutation({
         mutation: `mutation {
-          cartCreate (
-            input: {
-              lines: ${convertCartLines(req.lines || [])}
+            cartCreate ( input: { lines: ${_convertCartLines(req.lines || [])} }) {
+              cart { ${cartQuery()} },
+              userErrors { code, field, message }
             }
-          ) {
-          cart: ${cartQuery()}
-        }`
+          }`
       })
     );
+
+    return newModifyCartResult(r, 'cartCreate');
   };
 }
 
-function convertCartLines(lines: Array<CreateCartLine>): string {
+/**
+ * Convert to ModifyCartResult
+ * @param r
+ * @param pfx
+ */
+function newModifyCartResult(r: XcapJsonResult, pfx: string): ModifyCartResult {
+  r.cart = null;
+  if (r[pfx]) {
+    if (r[pfx].cart) {
+      r.cart = r[pfx].cart;
+    }
+    if (r[pfx].userErrors) {
+      r.userErrors = r[pfx].userErrors;
+    }
+    delete r[pfx];
+  }
+
+  return r as ModifyCartResult;
+}
+
+export function cartLinesUpdate(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any): Promise<GetCartResult> => {
+    const r = await dispatch(
+      mutation({
+        mutation: `mutation {
+            cartLinesUpdate(cartId: ${JSON.stringify(req.cartId)}, lines: ${_convertCartLines(req.lines)}) {
+              cart { ${cartQuery()} },
+              userErrors { code, field, message }
+            }
+          }`
+      })
+    );
+
+    return newModifyCartResult(r, 'cartLinesUpdate');
+  };
+}
+
+export function _convertCartLines(lines: Array<CreateCartLine>): string {
   let r = '[';
   for (let i = 0; i < lines.length; i++) {
     const l = lines[i];
     if (i != 0) {
       r += ',\n';
     }
-    r += '{ merchandiseId: ' + JSON.stringify(l.merchandiseId) + '';
+    r += '{';
+    if (l.id) {
+      r += ' id: ' + JSON.stringify(l.id) + ',';
+    }
+
+    r += ' merchandiseId: ' + JSON.stringify(l.merchandiseId) + '';
     if (l.quantity) {
       r += ', quantity: ' + l.quantity;
     }
-    r += '}';
+    r += ' }';
   }
   r += ']';
   return r;
@@ -204,53 +248,28 @@ function cartQuery(): string {
   lines(first: 100) {
     edges {
       node {
-        id
+        id,
         merchandise {
-          ... on ProductVariant {
-            id
-          }
+          ... on ProductVariant { id, product { id, handle } }
         },
         quantity,
-        attributes {
-          key, value
-        },
+        attributes { key, value },
         discountAllocations {
-          discountedAmount {
-            amount, currencyCode
-          }
+          discountedAmount { amount, currencyCode }
         },
         estimatedCost {
-          subtotalAmount {
-            amount, currencyCode
-          }
-          totalAmount {
-            amount, currencyCode
-          }
+          subtotalAmount { amount, currencyCode },
+          totalAmount { amount, currencyCode }
         }
       }
     }
   },
-  attributes {
-    key
-    value
-  },
+  attributes { key, value },
   estimatedCost {
-    totalAmount {
-      amount,
-      currencyCode
-    }
-    subtotalAmount {
-      amount,
-      currencyCode
-    }
-    totalTaxAmount {
-      amount,
-      currencyCode
-    }
-    totalDutyAmount {
-      amount,
-      currencyCode
-    }
+    totalAmount { amount, currencyCode },
+    subtotalAmount { amount, currencyCode },
+    totalTaxAmount { amount, currencyCode },
+    totalDutyAmount { amount, currencyCode }
   }
   `;
 }
@@ -345,7 +364,7 @@ export function query<T extends XcapJsonResult>({
   headers?: { [key: string]: string };
   aliases?: { [name: string]: string };
 }): Thunk<Promise<T>> {
-  return doPost({ query, headers, aliases });
+  return doPost({ query, isMutation: false, headers, aliases });
 }
 
 /**
@@ -364,7 +383,7 @@ export function mutation<T extends XcapJsonResult>({
   headers?: { [key: string]: string };
   aliases?: { [name: string]: string };
 }): Thunk<Promise<T>> {
-  return doPost({ query: mutation, headers, aliases });
+  return doPost({ query: mutation, isMutation: true, headers, aliases });
 }
 
 /**
@@ -376,10 +395,12 @@ export function mutation<T extends XcapJsonResult>({
  */
 function doPost<T extends XcapJsonResult>({
   query,
+  isMutation,
   headers,
   aliases
 }: {
-  query?: string;
+  query: string;
+  isMutation?: boolean;
   headers?: { [key: string]: string };
   aliases?: { [name: string]: string };
 }): Thunk<Promise<T>> {
@@ -391,7 +412,11 @@ function doPost<T extends XcapJsonResult>({
     }
 
     const url = 'https://' + cfg.domain + '/api/' + cfg.apiVersion + '/graphql.json';
-    const body = JSON.stringify({ query: '{' + query + '}', variables: null });
+    const q = isMutation ? query : '{' + query + '}';
+    const body = JSON.stringify({ query: q, variables: null });
+    if (isMutation) {
+      console.log(q);
+    }
 
     const h = new Headers();
     h.set('content-type', 'application/json');
@@ -411,13 +436,13 @@ function doPost<T extends XcapJsonResult>({
     );
 
     if (!r.ok) {
-      console.error('Stackend: shopify query failed: ' + r.status + ' ' + r.statusText, body);
+      console.error('Stackend: shopify query failed: ' + r.status + ' ' + r.statusText, q);
       return newXcapJsonErrorResult<T>(r.status + ' ' + r.statusText);
     }
 
     const json: any = await r.json();
     if (json.errors) {
-      console.error('Stackend: shopify query failed: ' + json.errors, body);
+      console.error('Stackend: shopify query failed: ', json.errors, q);
       return newXcapJsonErrorResult<T>(json.errors);
     }
 

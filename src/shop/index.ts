@@ -775,6 +775,9 @@ export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCol
 }
 
 export interface CreateCartLine {
+  /** Cart line id */
+  id?: string;
+
   /**
    * Product variant id "gid://shopify/ProductVariant/1"
    */
@@ -792,10 +795,20 @@ export interface CreateCartRequest {
 
 export interface CartLine {
   id: string;
-  merchandise: string;
+  merchandise: {
+    /**
+     * Product variant id
+     */
+    id: string;
+
+    product: {
+      id: string;
+      handle: string;
+    };
+  };
   quantity: number;
-  discountAllocations: any;
-  attributes: any;
+  discountAllocations: Array<any>;
+  attributes: Array<{ key: string; value: string }>;
   estimatedCost: {
     subtotalAmount: MoneyV2;
     totalAmount: MoneyV2;
@@ -820,12 +833,24 @@ export interface GetCartResult extends XcapJsonResult {
   cart: Cart | null;
 }
 
+export interface ModifyCartResult extends GetCartResult {
+  userErrors?: any; // FIXME: Improve type
+}
+
 /**
  * Create a cart
  * @param req
  */
-export function createCart(req: CreateCartRequest): Thunk<Promise<GetCartResult>> {
+export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> {
   return ShopifyClientside.createCart(req);
+}
+
+/**
+ * Alter the contents of the cart. You can not add new lines using this request
+ * @param req
+ */
+export function cartLinesUpdate(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return ShopifyClientside.cartLinesUpdate(req);
 }
 
 export interface GetCartRequest {
@@ -838,6 +863,10 @@ export interface GetCartRequest {
  */
 export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
   return ShopifyClientside.getCart(req);
+}
+
+export interface CartLinesUpdateRequest extends CreateCartRequest {
+  cartId: string;
 }
 
 export interface LineItem {
