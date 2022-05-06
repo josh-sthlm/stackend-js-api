@@ -218,6 +218,23 @@ export function cartLinesUpdate(req: CartLinesUpdateRequest): Thunk<Promise<Modi
   };
 }
 
+export function cartLinesAdd(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any): Promise<GetCartResult> => {
+    const r = await dispatch(
+      mutation({
+        mutation: `mutation {
+          cartLinesAdd(cartId: ${JSON.stringify(req.cartId)}, lines: ${_convertCartLines(req.lines)}) {
+              cart { ${cartQuery()} },
+              userErrors { code, field, message }
+            }
+          }`
+      })
+    );
+
+    return newModifyCartResult(r, 'cartLinesAdd');
+  };
+}
+
 export function _convertCartLines(lines: Array<CreateCartLine>): string {
   let r = '[';
   for (let i = 0; i < lines.length; i++) {

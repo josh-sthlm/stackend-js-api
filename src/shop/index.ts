@@ -853,6 +853,14 @@ export function cartLinesUpdate(req: CartLinesUpdateRequest): Thunk<Promise<Modi
   return ShopifyClientside.cartLinesUpdate(req);
 }
 
+/**
+ * Add products of the cart
+ * @param req
+ */
+export function cartLinesAdd(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return ShopifyClientside.cartLinesAdd(req);
+}
+
 export interface GetCartRequest {
   cartId: string;
 }

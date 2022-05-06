@@ -3,6 +3,7 @@ import assert from 'assert';
 import createTestStore from './setup';
 import {
   _convertCartLines,
+  cartLinesAdd,
   cartLinesUpdate,
   createCart,
   //createCart,
@@ -162,6 +163,23 @@ describe('Shopify Clientside', () => {
       expect(r.cart.lines.edges.length).toBe(1);
       expect(r.cart.lines.edges[0].node.quantity).toBe(2);
       console.log(r.cart.lines.edges[0].node);
+    });
+
+    it('add to a cart', async () => {
+      assert(r && r.cart);
+      r = await store.dispatch(
+        cartLinesAdd({
+          cartId: r.cart.id,
+          lines: [{ merchandiseId: 'gid://shopify/ProductVariant/36607712259' }]
+        })
+      );
+      assert(r);
+      console.log(r.cart);
+      expect(r.error).toBeUndefined();
+      assert(r.cart);
+      console.log(r.cart.lines.edges);
+      expect(r.cart.id).toBeDefined();
+      expect(r.cart.lines.edges.length).toBe(2);
     });
   });
 });
