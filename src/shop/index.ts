@@ -792,6 +792,7 @@ export interface CreateCartLine {
 export interface CreateCartRequest {
   lines: Array<CreateCartLine>;
   buyerIdentity?: CartBuyerIdentity;
+  imageMaxWidth?: number;
 }
 
 export interface CartLine {
@@ -820,6 +821,7 @@ export interface CartLine {
 
 export interface CartRequest {
   cartId: string;
+  imageMaxWidth?: number;
 }
 
 export interface Cart {
@@ -868,9 +870,7 @@ export function cartLinesAdd(req: CartLinesUpdateRequest): Thunk<Promise<ModifyC
   return ShopifyClientside.cartLinesAdd(req);
 }
 
-export interface GetCartRequest {
-  cartId: string;
-}
+export type GetCartRequest = CartRequest;
 
 /**
  * Get a cart

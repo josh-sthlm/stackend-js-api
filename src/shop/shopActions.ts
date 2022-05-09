@@ -7,6 +7,7 @@ import {
   CheckoutReplaceItemsRequest,
   CheckoutResult,
   Country,
+  CreateCartRequest,
   createCheckout as doCreateCheckout,
   CreateCheckoutRequest,
   getAddressFields,
@@ -44,13 +45,19 @@ import {
   setCheckoutEmail,
   SetCheckoutEmailRequest,
   setShippingAddress,
-  SetShippingAddressRequest
+  SetShippingAddressRequest,
+  createCart as doCreateCart,
+  ModifyCartResult,
+  getCart,
+  Cart,
+  CartLine
 } from './index';
 import {
   ADD_TO_BASKET,
   BASKET_UPDATED,
   CLEAR_CHECKOUT,
   RECEIVE_ADDRESS_FIELDS,
+  RECEIVE_CART,
   RECEIVE_CHECKOUT,
   RECEIVE_COLLECTION,
   RECEIVE_COLLECTION_LIST,
@@ -75,6 +82,9 @@ import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
 import { CustomerType, TradeRegion } from './vat';
 import { Community } from '../stackend';
+
+export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
+export const CART_ID_LOCAL_STORAGE_NAME = 'cart';
 
 /**
  * Set shop default configuration
@@ -272,8 +282,6 @@ export const requestCollections =
     return r;
   };
 
-export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
-
 /**
  * Get the key used to index the product listings in ShopState
  * @param req
@@ -362,6 +370,117 @@ export function hasCheckoutErrors(result: CheckoutResult): boolean {
 }
 
 /**
+ * Create a cart
+ */
+export const createCart =
+  (req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> =>
+  async (dispatch: any): Promise<ModifyCartResult> => {
+    try {
+      await dispatch(setModalThrobberVisible(true));
+      const r: ModifyCartResult = await dispatch(doCreateCart(req));
+      if (r.error || r.userErrors?.length !== 0) {
+        return r;
+      }
+
+      if (r.cart) {
+        dispatch(setLocalStorageItem(CART_ID_LOCAL_STORAGE_NAME, r.cart.id));
+      }
+
+      handleCartProductData(dispatch, r.cart);
+
+      await dispatch({
+        type: RECEIVE_CART,
+        cart: r.cart
+      });
+
+      return r;
+    } finally {
+      await dispatch(setModalThrobberVisible(false));
+    }
+  };
+
+/**
+ * Handle product data received via a cart:
+ * Adds the products to the store and transforms the returned data
+ * @param dispatch
+ * @param cart
+ */
+function handleCartProductData(dispatch: any, cart: Cart | null | undefined): boolean {
+  if (!cart || cart.lines.edges.length === 0) {
+    return false;
+  }
+
+  const products: { [handle: string]: Product } = {};
+  const lines: GraphQLList<CartLine> = { edges: [] };
+  forEachGraphQLList(cart.lines, i => {
+    const p: any = i.merchandise.product;
+
+    // Contains extra product data
+    if (typeof p['availableForSale'] === 'boolean') {
+      const product = p as Product;
+      products[product.handle] = product;
+
+      // Remove the extra data
+      const li: GraphQLListNode<CartLine> = {
+        node: {
+          ...i,
+          merchandise: {
+            id: i.merchandise.id,
+            product: {
+              id: i.merchandise.product.id,
+              handle: i.merchandise.product.handle
+            }
+          }
+        }
+      };
+      lines.edges.push(li);
+    } else {
+      lines.edges.push({ node: i });
+    }
+  });
+
+  cart.lines = lines;
+
+  if (Object.keys(products).length === 0) {
+    return false;
+  }
+
+  dispatch({
+    type: RECEIVE_MULTIPLE_PRODUCTS,
+    json: newXcapJsonResult<GetProductsResult>('success', {
+      products
+    })
+  });
+
+  return true;
+}
+
+/**
+ * If the user has established a cart, get it
+ * @param imageMaxWidth
+ */
+export const requestExistingCart =
+  ({ imageMaxWidth }: { imageMaxWidth?: number }): Thunk<Promise<ModifyCartResult>> =>
+  async (dispatch: any, _getState: any): Promise<ModifyCartResult> => {
+    const cartId = dispatch(getLocalStorageItem(CART_ID_LOCAL_STORAGE_NAME));
+    if (!cartId) {
+      return newXcapJsonResult<ModifyCartResult>('success', {
+        cart: null
+      });
+    }
+
+    const r = await dispatch(getCart({ cartId, imageMaxWidth }));
+    handleCartProductData(dispatch, r.cart);
+
+    await dispatch({
+      type: RECEIVE_CART,
+      checkout: r.cart
+    });
+
+    return r;
+  };
+
+/**
  * Create a checkout
  */
 export const createCheckout =
@@ -390,7 +509,7 @@ export const createCheckout =
   };
 
 /**
- * If the user has a active checkout set in the local storage, request that checkout to be loaded.
+ * If the user has an active checkout set in the local storage, request that checkout to be loaded.
  * If the checkout is turned into an order, the checkout is reset in local storage.
  * @param imageMaxWidth
  */
@@ -428,7 +547,8 @@ export const requestOrResetActiveCheckout =
   };
 
 /**
- * Handle product data received via checkout
+ * Handle product data received via checkout:
+ * Adds the products to the store and tranforms the returned data
  * @param dispatch
  * @param checkout
  */
