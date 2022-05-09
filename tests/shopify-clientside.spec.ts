@@ -2,11 +2,9 @@ import assert from 'assert';
 
 import createTestStore from './setup';
 import {
-  _convertCartLines,
   cartLinesAdd,
   cartLinesUpdate,
   createCart,
-  //createCart,
   getCart,
   getCollection,
   getCollections,
@@ -15,6 +13,7 @@ import {
   listProductTypes
 } from '../src/shop/shopify-clientside';
 import {
+  cartLinesRemove,
   GetCartResult,
   GetCollectionResult,
   GetCollectionsResult,
@@ -97,25 +96,6 @@ describe('Shopify Clientside', () => {
     });
   });
 
-  describe('_convertCartLines', () => {
-    it('transform cart lines', () => {
-      expect(_convertCartLines([])).toBe('[]');
-      expect(
-        _convertCartLines([
-          {
-            merchandiseId: 'gid://shopify/Product/9895276099'
-          },
-          {
-            merchandiseId: 'gid://shopify/Product/123456',
-            quantity: 2
-          }
-        ])
-      ).toBe(
-        '[{ merchandiseId: "gid://shopify/Product/9895276099" },\n{ merchandiseId: "gid://shopify/Product/123456", quantity: 2 }]'
-      );
-    });
-  });
-
   describe('create/get/update-cart', () => {
     let r: GetCartResult | null = null;
     it('Creates a cart', async () => {
@@ -174,12 +154,27 @@ describe('Shopify Clientside', () => {
         })
       );
       assert(r);
-      console.log(r.cart);
       expect(r.error).toBeUndefined();
       assert(r.cart);
       console.log(r.cart.lines.edges);
       expect(r.cart.id).toBeDefined();
       expect(r.cart.lines.edges.length).toBe(2);
+    });
+
+    it('removes from a cart', async () => {
+      assert(r && r.cart);
+      r = await store.dispatch(
+        cartLinesRemove({
+          cartId: r.cart.id,
+          lineIds: [r.cart.lines.edges[0].node.id]
+        })
+      );
+      assert(r);
+      expect(r.error).toBeUndefined();
+      assert(r.cart);
+      console.log(r.cart.lines.edges);
+      expect(r.cart.id).toBeDefined();
+      expect(r.cart.lines.edges.length).toBe(1);
     });
   });
 });

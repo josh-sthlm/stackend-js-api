@@ -791,6 +791,7 @@ export interface CreateCartLine {
 
 export interface CreateCartRequest {
   lines: Array<CreateCartLine>;
+  buyerIdentity?: CartBuyerIdentity;
 }
 
 export interface CartLine {
@@ -802,7 +803,9 @@ export interface CartLine {
     id: string;
 
     product: {
+      /** Product id */
       id: string;
+      /** Product handle */
       handle: string;
     };
   };
@@ -813,6 +816,10 @@ export interface CartLine {
     subtotalAmount: MoneyV2;
     totalAmount: MoneyV2;
   };
+}
+
+export interface CartRequest {
+  cartId: string;
 }
 
 export interface Cart {
@@ -834,7 +841,7 @@ export interface GetCartResult extends XcapJsonResult {
 }
 
 export interface ModifyCartResult extends GetCartResult {
-  userErrors?: any; // FIXME: Improve type
+  userErrors?: Array<UserError>;
 }
 
 /**
@@ -873,8 +880,37 @@ export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
   return ShopifyClientside.getCart(req);
 }
 
-export interface CartLinesUpdateRequest extends CreateCartRequest {
-  cartId: string;
+export interface CartLinesUpdateRequest extends CartRequest, CreateCartRequest {}
+
+export interface CartLinesRemoveRequest extends CartRequest {
+  lineIds: Array<string>;
+}
+
+/**
+ * Remove products from the cart
+ * @param req
+ */
+export function cartLinesRemove(req: CartLinesRemoveRequest): Thunk<Promise<ModifyCartResult>> {
+  return ShopifyClientside.cartLinesRemove(req);
+}
+
+export interface CartBuyerIdentity {
+  countryCode: string;
+  customerAccessToken: string;
+  email: string;
+  phone: string;
+}
+
+export interface CartBuyerIdentityUpdateRequest extends CartRequest {
+  buyerIdentity: CartBuyerIdentity;
+}
+
+/**
+ * Update buyer identity or country
+ * @param req
+ */
+export function cartBuyerIdentityUpdate(req: CartBuyerIdentityUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return ShopifyClientside.cartBuyerIdentityUpdate(req);
 }
 
 export interface LineItem {
@@ -909,7 +945,7 @@ export interface CreateCheckoutRequest extends XcapOptionalParameters {
   input: CreateCheckoutInput;
 }
 
-export interface CheckoutUserError {
+export interface UserError {
   field: string;
   code: string;
   message: string;
@@ -977,7 +1013,7 @@ export interface Checkout {
 
 export interface CheckoutResult extends XcapJsonResult {
   response: {
-    checkoutUserErrors: Array<CheckoutUserError>;
+    checkoutUserErrors: Array<UserError>;
     checkout: Checkout | null;
   };
 }

@@ -17,9 +17,10 @@ import {
   GetCartRequest,
   GetCartResult,
   CreateCartRequest,
-  CreateCartLine,
   CartLinesUpdateRequest,
-  ModifyCartResult
+  ModifyCartResult,
+  CartLinesRemoveRequest,
+  CartBuyerIdentityUpdateRequest
 } from './index';
 
 import collectionQuery from './querries/collectionQuery';
@@ -28,6 +29,7 @@ import checkoutQuery from './querries/checkoutQuery';
 import productListingQuery from './querries/productListingQuery';
 import productTypesQuery from './querries/productTypesQuery';
 import { ShopState } from './shopReducer';
+import { toQueryParameters } from '../util/graphql';
 
 export const API_VERSION = '2022-01';
 
@@ -152,7 +154,7 @@ export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
   return (dispatch: any): Promise<GetCartResult> => {
     return dispatch(
       query({
-        query: `cart (id: ${escapeQueryTerm(req.cartId)}) {
+        query: `cart (id: ${toQueryParameters(req.cartId)}) {
           ${cartQuery()}
         }`
       })
@@ -169,7 +171,7 @@ export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResu
     const r = await dispatch(
       mutation({
         mutation: `mutation {
-            cartCreate ( input: { lines: ${_convertCartLines(req.lines || [])} }) {
+            cartCreate ( input: { lines: ${toQueryParameters(req.lines || [])} }) {
               cart { ${cartQuery()} },
               userErrors { code, field, message }
             }
@@ -206,7 +208,7 @@ export function cartLinesUpdate(req: CartLinesUpdateRequest): Thunk<Promise<Modi
     const r = await dispatch(
       mutation({
         mutation: `mutation {
-            cartLinesUpdate(cartId: ${JSON.stringify(req.cartId)}, lines: ${_convertCartLines(req.lines)}) {
+            cartLinesUpdate(cartId: ${JSON.stringify(req.cartId)}, lines: ${toQueryParameters(req.lines)}) {
               cart { ${cartQuery()} },
               userErrors { code, field, message }
             }
@@ -223,7 +225,8 @@ export function cartLinesAdd(req: CartLinesUpdateRequest): Thunk<Promise<ModifyC
     const r = await dispatch(
       mutation({
         mutation: `mutation {
-          cartLinesAdd(cartId: ${JSON.stringify(req.cartId)}, lines: ${_convertCartLines(req.lines)}) {
+          cartLinesAdd(cartId: ${JSON.stringify(req.cartId)}, lines: ${toQueryParameters(req.lines)}
+           ) {
               cart { ${cartQuery()} },
               userErrors { code, field, message }
             }
@@ -235,26 +238,41 @@ export function cartLinesAdd(req: CartLinesUpdateRequest): Thunk<Promise<ModifyC
   };
 }
 
-export function _convertCartLines(lines: Array<CreateCartLine>): string {
-  let r = '[';
-  for (let i = 0; i < lines.length; i++) {
-    const l = lines[i];
-    if (i != 0) {
-      r += ',\n';
-    }
-    r += '{';
-    if (l.id) {
-      r += ' id: ' + JSON.stringify(l.id) + ',';
-    }
+export function cartLinesRemove(req: CartLinesRemoveRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any): Promise<GetCartResult> => {
+    const r = await dispatch(
+      mutation({
+        mutation: `mutation {
+          cartLinesRemove(cartId: ${JSON.stringify(req.cartId)}, lineIds: ${JSON.stringify(req.lineIds)}) {
+              cart { ${cartQuery()} },
+              userErrors { code, field, message }
+            }
+          }`
+      })
+    );
 
-    r += ' merchandiseId: ' + JSON.stringify(l.merchandiseId) + '';
-    if (l.quantity) {
-      r += ', quantity: ' + l.quantity;
-    }
-    r += ' }';
-  }
-  r += ']';
-  return r;
+    return newModifyCartResult(r, 'cartLinesRemove');
+  };
+}
+
+export function cartBuyerIdentityUpdate(req: CartBuyerIdentityUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any): Promise<GetCartResult> => {
+    const r = await dispatch(
+      mutation({
+        mutation: `mutation {
+          cartBuyerIdentityUpdate(
+            cartId: ${JSON.stringify(req.cartId)}
+            ${req.buyerIdentity && ', buyerIdentity: ' + toQueryParameters(req.buyerIdentity)}
+          ) {
+              cart { ${cartQuery()} },
+              userErrors { code, field, message }
+            }
+          }`
+      })
+    );
+
+    return newModifyCartResult(r, 'cartBuyerIdentityUpdate');
+  };
 }
 
 function cartQuery(): string {

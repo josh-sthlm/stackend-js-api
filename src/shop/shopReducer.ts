@@ -1,6 +1,6 @@
 import {
   Checkout,
-  CheckoutUserError,
+  UserError,
   Collection,
   GetCollectionRequest,
   GetCollectionResult,
@@ -195,7 +195,7 @@ export interface ShopState {
   /**
    * Last checkout errors, if any
    */
-  checkoutUserErrors: Array<CheckoutUserError> | null;
+  checkoutUserErrors: Array<UserError> | null;
 
   /**
    * Country codes, or null if not loaded
@@ -297,7 +297,7 @@ export type BasketUpdatedAction = {
 
 export type ReceiveCheckoutAction = {
   type: typeof RECEIVE_CHECKOUT;
-  checkoutUserErrors: Array<CheckoutUserError> | null;
+  checkoutUserErrors: Array<UserError> | null;
   checkout: Checkout;
 };
 

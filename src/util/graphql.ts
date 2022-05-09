@@ -116,3 +116,57 @@ export function mapGraphQLList<U, T>(list: GraphQLList<T>, apply: (item: T, inde
 
   return list.edges.map((value, index) => apply(value.node, index));
 }
+
+/**
+ * Convert a js object into graphql format query
+ * @param o
+ */
+export function toQueryParameters(o: any): string {
+  if (o === null) {
+    return 'null';
+  }
+
+  const t = typeof o;
+  if (t === 'undefined') {
+    return 'null';
+  }
+
+  if (t !== 'object') {
+    // Primitive
+    return JSON.stringify(o);
+  }
+
+  if (Array.isArray(o)) {
+    return _arrayToQueryParameters(o);
+  }
+
+  return _objectToQueryParameters(o);
+}
+
+export function _arrayToQueryParameters(a: Array<any>): string {
+  let r = '[';
+  for (let i = 0; i < a.length; i++) {
+    const l = a[i];
+    if (i != 0) {
+      r += ',';
+    }
+    r += toQueryParameters(l);
+  }
+  r += ']';
+  return r;
+}
+
+export function _objectToQueryParameters(o: Record<string, any>): string {
+  let r = '{';
+  Object.keys(o).forEach((k, i) => {
+    if (i !== 0) {
+      r += ',';
+    }
+    r += k + ':';
+    const v = o[k];
+    r += toQueryParameters(v);
+  });
+
+  r += '}';
+  return r;
+}
