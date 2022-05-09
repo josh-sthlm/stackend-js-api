@@ -20,7 +20,12 @@ import { AnyAction } from 'redux';
 import { Page, Content, PageContent } from '../cms';
 import { ModuleType } from '../stackend/modules';
 import { Community } from '../stackend';
-import { RECEIVE_COLLECTIONS, RECEIVE_LISTINGS, RECEIVE_MULTIPLE_PRODUCTS } from '../shop/shopReducer';
+import {
+  RECEIVE_COLLECTIONS,
+  RECEIVE_LISTINGS,
+  RECEIVE_MULTIPLE_PRODUCTS,
+  RECEIVE_SHOPIFY_DOMAIN_REFERENCE_URL_ID
+} from '../shop/shopReducer';
 import Logger from '../util/Logger';
 import { LoadJsonResult } from './LoadJson';
 import { setCommunityVATS } from '../shop/shopActions';
@@ -129,7 +134,7 @@ export function loadInitialStoreValues(
     dispatch(receiveResourceUsage(r as any as ResourceUsage)); // fields not documented
 
     if (r.shopData) {
-      const { products, collections, listings } = r.shopData;
+      const { products, collections, listings, shopifyDomainReferenceUrlId } = r.shopData;
       if (Object.keys(products).length !== 0) {
         dispatch({
           type: RECEIVE_MULTIPLE_PRODUCTS,
@@ -145,6 +150,10 @@ export function loadInitialStoreValues(
 
       if (Object.keys(listings).length !== 0) {
         dispatch({ type: RECEIVE_LISTINGS, listings });
+      }
+
+      if (shopifyDomainReferenceUrlId !== 0) {
+        dispatch({ type: RECEIVE_SHOPIFY_DOMAIN_REFERENCE_URL_ID, shopifyDomainReferenceUrlId });
       }
     }
 
