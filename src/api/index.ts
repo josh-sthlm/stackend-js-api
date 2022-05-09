@@ -1492,6 +1492,9 @@ export interface GetInitialStoreValuesResult extends XcapJsonResult {
   /** Maps the referenceUrl parameter to an id */
   referenceUrlId: number;
 
+  /** Maps the shopify domain to an id */
+  shopifyDomainReferenceUrlId: number;
+
   /** Shop data, if requested */
   shopData: ShopDataResult | null;
 

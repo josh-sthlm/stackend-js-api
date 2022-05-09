@@ -42,6 +42,7 @@ export const RECEIVE_LISTINGS = 'RECEIVE_LISTINGS';
 export const RECEIVE_COLLECTION = 'RECEIVE_COLLECTION';
 export const RECEIVE_COLLECTIONS = 'RECEIVE_COLLECTIONS';
 export const RECEIVE_COLLECTION_LIST = 'RECEIVE_COLLECTION_LIST';
+export const RECEIVE_SHOPIFY_DOMAIN_REFERENCE_URL_ID = 'RECEIVE_SHOPIFY_DOMAIN_REFERENCE_URL_ID';
 export const SHOP_CLEAR_CACHE = 'SHOP_CLEAR_CACHE';
 export const BASKET_UPDATED = 'BASKET_UPDATED';
 export const ADD_TO_BASKET = 'ADD_TO_BASKET';
@@ -221,6 +222,8 @@ export interface ShopState {
    * Currencies
    */
   currencies: { [currencyCode: string]: CurrencyInfo };
+
+  shopifyDomainReferenceUrlId: number;
 }
 
 export type SetShopDefaultsAction = {
@@ -269,6 +272,11 @@ export type ReceiveCollectionsAction = {
 export type ReceiveCollectionListAction = {
   type: typeof RECEIVE_COLLECTION_LIST;
   collections: GraphQLList<SlimCollection>;
+};
+
+export type ReceiveShopifyDomainReferenceUrlId = {
+  type: typeof RECEIVE_SHOPIFY_DOMAIN_REFERENCE_URL_ID;
+  shopifyDomainReferenceUrlId: number;
 };
 
 export type ClearCacheAction = {
@@ -343,6 +351,7 @@ export type ShopActions =
   | ReceiveCollectionAction
   | ReceiveCollectionsAction
   | ReceiveCollectionListAction
+  | ReceiveShopifyDomainReferenceUrlId
   | ClearCacheAction
   | AddToBasketAction
   | RemoveFromBasketAction
@@ -375,7 +384,8 @@ export default function shopReducer(
     countriesByCode: {},
     addressFieldsByCountryCode: {},
     vats: null,
-    currencies: {}
+    currencies: {},
+    shopifyDomainReferenceUrlId: 0
   },
   action: ShopActions
 ): ShopState {
@@ -392,7 +402,8 @@ export default function shopReducer(
         allCollections: null,
         countryCodes: null,
         countriesByCode: {},
-        addressFieldsByCountryCode: {}
+        addressFieldsByCountryCode: {},
+        shopifyDomainReferenceUrlId: 0
       });
 
     case RECEIVE_PRODUCT_TYPES: {
@@ -499,6 +510,12 @@ export default function shopReducer(
       });
       return Object.assign({}, state, {
         allCollections
+      });
+    }
+
+    case RECEIVE_SHOPIFY_DOMAIN_REFERENCE_URL_ID: {
+      return Object.assign({}, state, {
+        shopifyDomainReferenceUrlId: action.shopifyDomainReferenceUrlId
       });
     }
 

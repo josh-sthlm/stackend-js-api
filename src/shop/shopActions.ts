@@ -499,7 +499,9 @@ export const checkoutAdd =
     const q = quantity || 1;
     const shop: ShopState = getState().shop;
     const lineItems = addItem(toLineItemArray(shop.checkout), variant.id, q);
-    const r: CheckoutResult = await dispatch(checkoutUpdateOrCreateNew(shop, lineItems));
+    const r: CheckoutResult = await dispatch(
+      checkoutUpdateOrCreateNew(shop, lineItems, product.handle, variant.id, quantity || 1)
+    );
     if (!r.error) {
       dispatch({ type: ADD_TO_BASKET, product, variant, variantId: variant.id, quantity: q });
     }
@@ -548,9 +550,17 @@ export const checkoutSetQuantity =
  * Update the items in the checkout. Create a new checkout if needed.
  * @param shop
  * @param lineItems
+ * @param addedProductHandle
+ * @param quantity
  */
 export const checkoutUpdateOrCreateNew =
-  (shop: ShopState, lineItems: LineItemArray): Thunk<Promise<CheckoutResult>> =>
+  (
+    shop: ShopState,
+    lineItems: LineItemArray,
+    addedProductHandle?: string,
+    variantId?: string,
+    quantity?: number
+  ): Thunk<Promise<CheckoutResult>> =>
   async (dispatch: any): Promise<CheckoutResult> => {
     let r: CheckoutResult;
     if (shop.checkout === null || shop.checkout.completedAt !== null) {
@@ -558,14 +568,20 @@ export const checkoutUpdateOrCreateNew =
         createCheckout({
           input: {
             lineItems
-          }
+          },
+          addedProductHandle,
+          variantId,
+          quantity
         })
       );
     } else {
       r = await dispatch(
         checkoutReplaceItems({
           checkoutId: shop.checkout.id,
-          lineItems
+          lineItems,
+          addedProductHandle,
+          variantId,
+          quantity
         })
       );
     }
