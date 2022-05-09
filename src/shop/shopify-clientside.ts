@@ -30,6 +30,7 @@ import productListingQuery from './querries/productListingQuery';
 import productTypesQuery from './querries/productTypesQuery';
 import { ShopState } from './shopReducer';
 import { toQueryParameters } from '../util/graphql';
+import cartQuery from './querries/cartQuery';
 
 export const API_VERSION = '2022-01';
 
@@ -151,11 +152,13 @@ export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCol
  * @param req
  */
 export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
-  return (dispatch: any): Promise<GetCartResult> => {
+  return (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
     return dispatch(
       query({
         query: `cart (id: ${toQueryParameters(req.cartId)}) {
-          ${cartQuery()}
+          ${cartQuery(true, imw)}
         }`
       })
     );
@@ -167,12 +170,14 @@ export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
  * @param req
  */
 export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> {
-  return async (dispatch: any): Promise<ModifyCartResult> => {
+  return async (dispatch: any, getState: any): Promise<ModifyCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
     const r = await dispatch(
       mutation({
         mutation: `mutation {
             cartCreate ( input: { lines: ${toQueryParameters(req.lines || [])} }) {
-              cart { ${cartQuery()} },
+              cart { ${cartQuery(req.lines.length !== 0, imw)} },
               userErrors { code, field, message }
             }
           }`
@@ -204,12 +209,14 @@ function newModifyCartResult(r: XcapJsonResult, pfx: string): ModifyCartResult {
 }
 
 export function cartLinesUpdate(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
-  return async (dispatch: any): Promise<GetCartResult> => {
+  return async (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
     const r = await dispatch(
       mutation({
         mutation: `mutation {
             cartLinesUpdate(cartId: ${JSON.stringify(req.cartId)}, lines: ${toQueryParameters(req.lines)}) {
-              cart { ${cartQuery()} },
+              cart { ${cartQuery(true, imw)} },
               userErrors { code, field, message }
             }
           }`
@@ -221,13 +228,15 @@ export function cartLinesUpdate(req: CartLinesUpdateRequest): Thunk<Promise<Modi
 }
 
 export function cartLinesAdd(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
-  return async (dispatch: any): Promise<GetCartResult> => {
+  return async (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
     const r = await dispatch(
       mutation({
         mutation: `mutation {
           cartLinesAdd(cartId: ${JSON.stringify(req.cartId)}, lines: ${toQueryParameters(req.lines)}
            ) {
-              cart { ${cartQuery()} },
+              cart { ${cartQuery(true, imw)} },
               userErrors { code, field, message }
             }
           }`
@@ -239,12 +248,14 @@ export function cartLinesAdd(req: CartLinesUpdateRequest): Thunk<Promise<ModifyC
 }
 
 export function cartLinesRemove(req: CartLinesRemoveRequest): Thunk<Promise<ModifyCartResult>> {
-  return async (dispatch: any): Promise<GetCartResult> => {
+  return async (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
     const r = await dispatch(
       mutation({
         mutation: `mutation {
           cartLinesRemove(cartId: ${JSON.stringify(req.cartId)}, lineIds: ${JSON.stringify(req.lineIds)}) {
-              cart { ${cartQuery()} },
+              cart { ${cartQuery(false, imw)} },
               userErrors { code, field, message }
             }
           }`
@@ -256,7 +267,9 @@ export function cartLinesRemove(req: CartLinesRemoveRequest): Thunk<Promise<Modi
 }
 
 export function cartBuyerIdentityUpdate(req: CartBuyerIdentityUpdateRequest): Thunk<Promise<ModifyCartResult>> {
-  return async (dispatch: any): Promise<GetCartResult> => {
+  return async (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
     const r = await dispatch(
       mutation({
         mutation: `mutation {
@@ -264,7 +277,7 @@ export function cartBuyerIdentityUpdate(req: CartBuyerIdentityUpdateRequest): Th
             cartId: ${JSON.stringify(req.cartId)}
             ${req.buyerIdentity && ', buyerIdentity: ' + toQueryParameters(req.buyerIdentity)}
           ) {
-              cart { ${cartQuery()} },
+              cart { ${cartQuery(false, imw)} },
               userErrors { code, field, message }
             }
           }`
@@ -273,40 +286,6 @@ export function cartBuyerIdentityUpdate(req: CartBuyerIdentityUpdateRequest): Th
 
     return newModifyCartResult(r, 'cartBuyerIdentityUpdate');
   };
-}
-
-function cartQuery(): string {
-  return `
-  id,
-  createdAt,
-  updatedAt,
-  lines(first: 100) {
-    edges {
-      node {
-        id,
-        merchandise {
-          ... on ProductVariant { id, product { id, handle } }
-        },
-        quantity,
-        attributes { key, value },
-        discountAllocations {
-          discountedAmount { amount, currencyCode }
-        },
-        estimatedCost {
-          subtotalAmount { amount, currencyCode },
-          totalAmount { amount, currencyCode }
-        }
-      }
-    }
-  },
-  attributes { key, value },
-  estimatedCost {
-    totalAmount { amount, currencyCode },
-    subtotalAmount { amount, currencyCode },
-    totalTaxAmount { amount, currencyCode },
-    totalDutyAmount { amount, currencyCode }
-  }
-  `;
 }
 
 /**
