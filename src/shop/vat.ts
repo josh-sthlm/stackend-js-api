@@ -1,8 +1,8 @@
 import { getJson, getJsonErrorText, Thunk, XcapJsonResult } from '../api';
 import { ShopState } from './shopReducer';
-import { Checkout, MoneyV2, Product, ProductVariant, SlimProduct } from './index';
+import { Cart, Checkout, MoneyV2, Product, ProductVariant, SlimProduct } from './index';
 import { forEachGraphQLList } from '../util/graphql';
-import { getProductAndVariant, setCommunityVATS, setCustomerVatInfo } from './shopActions';
+import { getProductAndVariant, getProductAndVariant2, setCommunityVATS, setCustomerVatInfo } from './shopActions';
 import { getCountryCode } from '../util/getCountryCode';
 import { Community } from '../stackend';
 
@@ -319,6 +319,47 @@ export function getTotalPriceIncludingVAT({
   return {
     amount: String(total),
     currencyCode: checkout.currencyCode
+  };
+}
+
+/**
+ * Get the total price for a cart
+ * @param shopState
+ * @param cart
+ * @param customerType
+ * @param tradeRegion
+ */
+export function getCartTotalPriceIncludingVAT({
+  shopState,
+  cart,
+  customerType,
+  tradeRegion
+}: {
+  shopState: ShopState;
+  cart: Cart;
+  customerType?: CustomerType;
+  tradeRegion?: TradeRegion;
+}): MoneyV2 {
+  let total = 0;
+
+  forEachGraphQLList(cart.lines, i => {
+    const pv = getProductAndVariant2(shopState, i.merchandise.product.handle, i.merchandise.id);
+    if (pv) {
+      const p = getPriceIncludingVAT({
+        shopState,
+        product: pv.product,
+        productVariant: pv.variant,
+        quantity: i.quantity,
+        customerType,
+        tradeRegion
+      });
+      total += parseFloat(p.amount);
+    }
+  });
+
+  return {
+    amount: String(total),
+    currencyCode: cart.estimatedCost.totalAmount.currencyCode
   };
 }
 

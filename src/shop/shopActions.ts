@@ -86,7 +86,7 @@ import { newXcapJsonResult, Thunk } from '../api';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../util';
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
-import { CustomerType, TradeRegion } from './vat';
+import { CustomerType, getCustomerInfo, TradeRegion } from './vat';
 import { Community } from '../stackend';
 import { CommunityState } from '../stackend/communityReducer';
 
@@ -438,9 +438,8 @@ function handleCartProductData(dispatch: any, cart: Cart | null | undefined): bo
 /**
  * Create a cart
  */
-export const createCart =
-  (req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> =>
-  async (dispatch: any, getState: any): Promise<ModifyCartResult> => {
+export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any, getState: any): Promise<ModifyCartResult> => {
     try {
       await dispatch(setModalThrobberVisible(true));
 
@@ -450,10 +449,15 @@ export const createCart =
       }
       const bi = req.buyerIdentity as CartBuyerIdentity;
       if (bi.countryCode) {
-        const communities: CommunityState = getState().communities;
-        const countryCode = communities.community?.settings?.shop?.countryCode;
-        if (countryCode) {
-          bi.countryCode = countryCode;
+        const ci = dispatch(getCustomerInfo());
+        if (ci && ci.customerCountryCode) {
+          bi.countryCode = ci.customerCountryCode;
+        } else {
+          const communities: CommunityState = getState().communities;
+          const countryCode = communities.community?.settings?.shop?.countryCode;
+          if (countryCode) {
+            bi.countryCode = countryCode;
+          }
         }
       }
 
@@ -473,14 +477,14 @@ export const createCart =
       await dispatch(setModalThrobberVisible(false));
     }
   };
+}
 
 /**
  * If the user has established a cart, get it
  * @param imageMaxWidth
  */
-export const getCart =
-  ({ imageMaxWidth }: { imageMaxWidth?: number }): Thunk<Promise<Cart | null>> =>
-  async (dispatch: any, getState: any): Promise<Cart | null> => {
+export function getCart({ imageMaxWidth }: { imageMaxWidth?: number }): Thunk<Promise<Cart | null>> {
+  return async (dispatch: any, getState: any): Promise<Cart | null> => {
     const shop: ShopState = getState().shop;
     if (shop.cart) {
       return shop.cart;
@@ -500,19 +504,19 @@ export const getCart =
     await dispatch(clearCart());
     return null;
   };
+}
 
 /**
  * Clear cart data and remove the id
  */
-export const clearCart =
-  (): Thunk<Promise<void>> =>
-  async (dispatch: any): Promise<void> => {
+export function clearCart(): Thunk<Promise<void>> {
+  return async (dispatch: any): Promise<void> => {
     dispatch(removeLocalStorageItem(CART_ID_LOCAL_STORAGE_NAME));
-
     await dispatch({
       type: CLEAR_CART
     });
   };
+}
 
 /**
  * Add an item to the cart or increment the quantity. Creating a new cart if needed.
@@ -520,9 +524,12 @@ export const clearCart =
  * @param variant
  * @param quantity
  */
-export const cartAdd =
-  (product: Product, variant: ProductVariant, quantity?: number): Thunk<Promise<ModifyCartResult>> =>
-  async (dispatch: any): Promise<ModifyCartResult> => {
+export function cartAdd(
+  product: Product,
+  variant: ProductVariant,
+  quantity?: number
+): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any): Promise<ModifyCartResult> => {
     if (!product || !variant) {
       throw new Error('product and variant required');
     }
@@ -558,6 +565,7 @@ export const cartAdd =
 
     return r;
   };
+}
 
 /**
  * For a product in the cart, decrement the quantity. Remove if 0.
@@ -566,9 +574,12 @@ export const cartAdd =
  * @param variant
  * @param quantity
  */
-export const cartRemove =
-  (product: Product, variant: ProductVariant, quantity?: number): Thunk<Promise<ModifyCartResult>> =>
-  async (dispatch: any, _getState: any): Promise<ModifyCartResult> => {
+export function cartRemove(
+  product: Product,
+  variant: ProductVariant,
+  quantity?: number
+): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any, _getState: any): Promise<ModifyCartResult> => {
     if (!product || !variant) {
       throw new Error('product and variant required');
     }
@@ -612,15 +623,15 @@ export const cartRemove =
 
     return r;
   };
+}
 
 /**
  * Set quantity of an item.
  * @param variantId
  * @param quantity
  */
-export const cartSetQuantity =
-  (variantId: string, quantity: number): Thunk<Promise<ModifyCartResult>> =>
-  async (dispatch: any): Promise<ModifyCartResult> => {
+export function cartSetQuantity(variantId: string, quantity: number): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any): Promise<ModifyCartResult> => {
     const cart = await dispatch(getCart({}));
 
     if (!cart) {
@@ -651,6 +662,7 @@ export const cartSetQuantity =
 
     return r;
   };
+}
 
 /**
  * Create a checkout
@@ -891,20 +903,37 @@ export const checkoutUpdateOrCreateNew =
  * @param shop
  * @param item
  */
-export const getProductAndVariant = (
+export function getProductAndVariant(
   shop: ShopState,
   item: CheckoutLineItem
 ): {
   product: Product;
   variant: ProductVariant;
-} | null => {
+} | null {
+  return getProductAndVariant2(shop, item.variant.product.handle, item.variant.id);
+}
+
+/**
+ * Given a product handle and variantId, find the corresponding product variant
+ * @param shop
+ * @param productHandle
+ * @param variantId
+ */
+export function getProductAndVariant2(
+  shop: ShopState,
+  productHandle: string,
+  variantId: string
+): {
+  product: Product;
+  variant: ProductVariant;
+} | null {
   const products = shop.products;
-  const product = products[item.variant.product.handle];
+  const product = products[productHandle];
   if (!product) {
     return null;
   }
 
-  const n = product.variants.edges.find(n => n.node.id === item.variant.id);
+  const n = product.variants.edges.find(n => n.node.id === variantId);
   if (!n) {
     return null;
   }
@@ -913,7 +942,7 @@ export const getProductAndVariant = (
     product,
     variant: n.node
   };
-};
+}
 
 /**
  * Convert the line items of the checkout to an array suitable
