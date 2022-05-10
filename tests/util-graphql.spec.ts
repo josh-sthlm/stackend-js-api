@@ -5,7 +5,8 @@ import {
   GraphQLList,
   mapGraphQLList,
   nextPage,
-  previousPage
+  previousPage,
+  toQueryParameters
 } from '../src/util/graphql';
 import { ListProductsRequest } from '../src/shop';
 
@@ -186,6 +187,21 @@ describe('GraphQL', () => {
           ]
         })
       ).toBe('c-1');
+    });
+  });
+  describe('toQueryParameters', () => {
+    it('converts a js object into GraphQL query parameters', () => {
+      expect(toQueryParameters(null)).toBe('null');
+      expect(toQueryParameters(undefined)).toBe('null');
+      expect(toQueryParameters(false)).toBe('false');
+      expect(toQueryParameters(1.23)).toBe('1.23');
+      expect(toQueryParameters('apa')).toBe('"apa"');
+      expect(toQueryParameters([])).toBe('[]');
+      expect(toQueryParameters([null, 1, 'apa'])).toBe('[null,1,"apa"]');
+      expect(toQueryParameters([{ a: 1, b: 'apa' }, [1, 2]])).toBe('[{a:1,b:"apa"},[1,2]]');
+      expect(toQueryParameters({})).toBe('{}');
+      expect(toQueryParameters({ a: null, b: 1, c: 'apa' })).toBe('{a:null,b:1,c:"apa"}');
+      expect(toQueryParameters({ a: [1, 2], b: { a: 1, b: 'apa' } })).toBe('{a:[1,2],b:{a:1,b:"apa"}}');
     });
   });
 });

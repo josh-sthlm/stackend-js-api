@@ -13,7 +13,14 @@ import {
   getShopifyConfig,
   GetProductRequest,
   GetCollectionsRequest,
-  GetCollectionsResult
+  GetCollectionsResult,
+  GetCartRequest,
+  GetCartResult,
+  CreateCartRequest,
+  CartLinesUpdateRequest,
+  ModifyCartResult,
+  CartLinesRemoveRequest,
+  CartBuyerIdentityUpdateRequest
 } from './index';
 
 import collectionQuery from './querries/collectionQuery';
@@ -22,6 +29,8 @@ import checkoutQuery from './querries/checkoutQuery';
 import productListingQuery from './querries/productListingQuery';
 import productTypesQuery from './querries/productTypesQuery';
 import { ShopState } from './shopReducer';
+import { toQueryParameters } from '../util/graphql';
+import cartQuery from './querries/cartQuery';
 
 export const API_VERSION = '2022-01';
 
@@ -139,6 +148,147 @@ export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCol
 }
 
 /**
+ * Get a cart
+ * @param req
+ */
+export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
+  return (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
+    return dispatch(
+      query({
+        query: `cart (id: ${toQueryParameters(req.cartId)}) {
+          ${cartQuery(true, imw)}
+        }`
+      })
+    );
+  };
+}
+
+/**
+ * Create a cart
+ * @param req
+ */
+export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any, getState: any): Promise<ModifyCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
+    const r = await dispatch(
+      mutation({
+        mutation: `mutation {
+            cartCreate ( input: { lines: ${toQueryParameters(req.lines || [])} }) {
+              cart { ${cartQuery(req.lines.length !== 0, imw)} },
+              userErrors { code, field, message }
+            }
+          }`
+      })
+    );
+
+    return newModifyCartResult(r, 'cartCreate');
+  };
+}
+
+/**
+ * Convert to ModifyCartResult
+ * @param r
+ * @param pfx
+ */
+function newModifyCartResult(r: XcapJsonResult, pfx: string): ModifyCartResult {
+  r.cart = null;
+  if (r[pfx]) {
+    if (r[pfx].cart) {
+      r.cart = r[pfx].cart;
+    }
+    if (r[pfx].userErrors) {
+      r.userErrors = r[pfx].userErrors;
+    }
+    delete r[pfx];
+  }
+
+  return r as ModifyCartResult;
+}
+
+export function cartLinesUpdate(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
+    const r = await dispatch(
+      mutation({
+        mutation: `mutation {
+            cartLinesUpdate(cartId: ${JSON.stringify(req.cartId)}, lines: ${toQueryParameters(req.lines)}) {
+              cart { ${cartQuery(true, imw)} },
+              userErrors { code, field, message }
+            }
+          }`
+      })
+    );
+
+    return newModifyCartResult(r, 'cartLinesUpdate');
+  };
+}
+
+export function cartLinesAdd(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
+    const r = await dispatch(
+      mutation({
+        mutation: `mutation {
+          cartLinesAdd(cartId: ${JSON.stringify(req.cartId)}, lines: ${toQueryParameters(req.lines)}
+           ) {
+              cart { ${cartQuery(true, imw)} },
+              userErrors { code, field, message }
+            }
+          }`
+      })
+    );
+
+    return newModifyCartResult(r, 'cartLinesAdd');
+  };
+}
+
+export function cartLinesRemove(req: CartLinesRemoveRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
+    const r = await dispatch(
+      mutation({
+        mutation: `mutation {
+          cartLinesRemove(cartId: ${JSON.stringify(req.cartId)}, lineIds: ${JSON.stringify(req.lineIds)}) {
+              cart { ${cartQuery(false, imw)} },
+              userErrors { code, field, message }
+            }
+          }`
+      })
+    );
+
+    return newModifyCartResult(r, 'cartLinesRemove');
+  };
+}
+
+export function cartBuyerIdentityUpdate(req: CartBuyerIdentityUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any, getState: any): Promise<GetCartResult> => {
+    const shopState = getState().shop;
+    const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
+    const r = await dispatch(
+      mutation({
+        mutation: `mutation {
+          cartBuyerIdentityUpdate(
+            cartId: ${JSON.stringify(req.cartId)}
+            ${req.buyerIdentity && ', buyerIdentity: ' + toQueryParameters(req.buyerIdentity)}
+          ) {
+              cart { ${cartQuery(false, imw)} },
+              userErrors { code, field, message }
+            }
+          }`
+      })
+    );
+
+    return newModifyCartResult(r, 'cartBuyerIdentityUpdate');
+  };
+}
+
+/**
  * Get a checkout
  * @param req
  */
@@ -228,6 +378,46 @@ export function query<T extends XcapJsonResult>({
   headers?: { [key: string]: string };
   aliases?: { [name: string]: string };
 }): Thunk<Promise<T>> {
+  return doPost({ query, isMutation: false, headers, aliases });
+}
+
+/**
+ * Perform a shopify mutation
+ * @param mutation
+ * @param headers
+ * @param aliases change names of returned data
+ * @returns {(function(*): Promise<XcapJsonResult>)|*}
+ */
+export function mutation<T extends XcapJsonResult>({
+  mutation,
+  headers,
+  aliases
+}: {
+  mutation: string;
+  headers?: { [key: string]: string };
+  aliases?: { [name: string]: string };
+}): Thunk<Promise<T>> {
+  return doPost({ query: mutation, isMutation: true, headers, aliases });
+}
+
+/**
+ * Perform a shopify query or mutation
+ * @param query
+ * @param headers
+ * @param aliases change names of returned data
+ * @returns {(function(*): Promise<XcapJsonResult>)|*}
+ */
+function doPost<T extends XcapJsonResult>({
+  query,
+  isMutation,
+  headers,
+  aliases
+}: {
+  query: string;
+  isMutation?: boolean;
+  headers?: { [key: string]: string };
+  aliases?: { [name: string]: string };
+}): Thunk<Promise<T>> {
   return async (dispatch: any): Promise<T> => {
     const cfg = dispatch(getShopifyConfig());
     if (!cfg) {
@@ -236,7 +426,8 @@ export function query<T extends XcapJsonResult>({
     }
 
     const url = 'https://' + cfg.domain + '/api/' + cfg.apiVersion + '/graphql.json';
-    const body = JSON.stringify({ query: '{' + query + '}', variables: null });
+    const q = isMutation ? query : '{' + query + '}';
+    const body = JSON.stringify({ query: q, variables: null });
 
     const h = new Headers();
     h.set('content-type', 'application/json');
@@ -256,13 +447,13 @@ export function query<T extends XcapJsonResult>({
     );
 
     if (!r.ok) {
-      console.error('Stackend: shopify query failed: ' + r.status + ' ' + r.statusText, body);
+      console.error('Stackend: shopify query failed: ' + r.status + ' ' + r.statusText, q);
       return newXcapJsonErrorResult<T>(r.status + ' ' + r.statusText);
     }
 
     const json: any = await r.json();
     if (json.errors) {
-      console.error('Stackend: shopify query failed: ' + json.errors, body);
+      console.error('Stackend: shopify query failed: ', json.errors, q);
       return newXcapJsonErrorResult<T>(json.errors);
     }
 

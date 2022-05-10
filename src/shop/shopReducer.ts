@@ -1,6 +1,6 @@
 import {
   Checkout,
-  CheckoutUserError,
+  UserError,
   Collection,
   GetCollectionRequest,
   GetCollectionResult,
@@ -15,7 +15,8 @@ import {
   SlimProduct,
   Country,
   AddressFieldName,
-  SlimCollection
+  SlimCollection,
+  Cart
 } from './index';
 import get from 'lodash/get';
 import { ProductTypeTree, buildProductTypeTree } from './ProductTypeTree';
@@ -54,6 +55,8 @@ export const RECEIVE_ADDRESS_FIELDS = 'RECEIVE_ADDRESS_FIELDS';
 export const SET_VATS = 'SET_VATS';
 export const SET_CUSTOMER_VAT_INFO = 'SET_CUSTOMER_VAT_INFO';
 export const RECEIVE_CURRENCY = 'RECEIVE_CURRENCY';
+export const RECEIVE_CART = 'RECEIVE_CART';
+export const CLEAR_CART = 'CLEAR_CART';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -189,6 +192,11 @@ export interface ShopState {
   basketUpdated: number;
 
   /**
+   * Current cart, if any
+   */
+  cart: Cart | null;
+
+  /**
    * Current checkout, if any
    */
   checkout: Checkout | null;
@@ -196,7 +204,7 @@ export interface ShopState {
   /**
    * Last checkout errors, if any
    */
-  checkoutUserErrors: Array<CheckoutUserError> | null;
+  checkoutUserErrors: Array<UserError> | null;
 
   /**
    * Country codes, or null if not loaded
@@ -282,6 +290,14 @@ export type ReceiveShopifyDomainReferenceUrlId = {
 export type ClearCacheAction = {
   type: typeof SHOP_CLEAR_CACHE;
 };
+export type ClearCartAction = {
+  type: typeof CLEAR_CART;
+};
+
+export type ReceiveCartAction = {
+  type: typeof RECEIVE_CART;
+  cart: Cart | null;
+};
 
 export type AddToBasketAction = {
   type: typeof ADD_TO_BASKET;
@@ -305,7 +321,7 @@ export type BasketUpdatedAction = {
 
 export type ReceiveCheckoutAction = {
   type: typeof RECEIVE_CHECKOUT;
-  checkoutUserErrors: Array<CheckoutUserError> | null;
+  checkoutUserErrors: Array<UserError> | null;
   checkout: Checkout;
 };
 
@@ -362,7 +378,9 @@ export type ShopActions =
   | ReceiveAddressFieldsAction
   | SetVATsAction
   | SetCustomerVATInfoAction
-  | ReceiveCurrencyAction;
+  | ReceiveCurrencyAction
+  | ClearCartAction
+  | ReceiveCartAction;
 
 export default function shopReducer(
   state: ShopState = {
@@ -378,6 +396,7 @@ export default function shopReducer(
     collections: {},
     allCollections: null,
     basketUpdated: 0,
+    cart: null,
     checkout: null,
     checkoutUserErrors: null,
     countryCodes: null,
@@ -538,6 +557,18 @@ export default function shopReducer(
       return Object.assign({}, state, {
         basketUpdated: Date.now()
       });
+
+    case RECEIVE_CART: {
+      return Object.assign({}, state, {
+        cart: action.cart
+      });
+    }
+
+    case CLEAR_CART: {
+      return Object.assign({}, state, {
+        cart: null
+      });
+    }
 
     case RECEIVE_CHECKOUT: {
       return Object.assign({}, state, {

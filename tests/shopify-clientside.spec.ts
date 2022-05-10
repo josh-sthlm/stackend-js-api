@@ -2,6 +2,10 @@ import assert from 'assert';
 
 import createTestStore from './setup';
 import {
+  cartLinesAdd,
+  cartLinesUpdate,
+  createCart,
+  getCart,
   getCollection,
   getCollections,
   getProduct,
@@ -9,6 +13,8 @@ import {
   listProductTypes
 } from '../src/shop/shopify-clientside';
 import {
+  cartLinesRemove,
+  GetCartResult,
   GetCollectionResult,
   GetCollectionsResult,
   GetProductResult,
@@ -87,6 +93,88 @@ describe('Shopify Clientside', () => {
       expect(r.collections).toBeDefined();
       expect(r.collections.edges.length).toBeGreaterThan(1);
       console.log(r.collections.edges);
+    });
+  });
+
+  describe('create/get/update-cart', () => {
+    let r: GetCartResult | null = null;
+    it('Creates a cart', async () => {
+      r = await store.dispatch(
+        createCart({
+          lines: [{ merchandiseId: 'gid://shopify/ProductVariant/36607622083' }]
+        })
+      );
+      assert(r);
+      console.log(r);
+      expect(r.error).toBeUndefined();
+      assert(r.cart != undefined);
+    });
+
+    it('get a cart', async () => {
+      assert(r && r.cart);
+      r = await store.dispatch(
+        getCart({
+          cartId: r.cart.id
+        })
+      );
+      assert(r);
+      expect(r.error).toBeUndefined();
+      assert(r.cart);
+      expect(r.cart.id).toBeDefined();
+      expect(r.cart.lines.edges.length).toBe(1);
+      console.log(r.cart);
+    });
+
+    it('updates a cart', async () => {
+      assert(r && r.cart);
+      r = await store.dispatch(
+        cartLinesUpdate({
+          cartId: r.cart.id,
+          lines: [
+            { id: r.cart.lines.edges[0].node.id, merchandiseId: r.cart.lines.edges[0].node.merchandise.id, quantity: 2 }
+          ]
+        })
+      );
+      assert(r);
+      console.log(r.cart);
+      expect(r.error).toBeUndefined();
+      assert(r.cart);
+      expect(r.cart.id).toBeDefined();
+      expect(r.cart.lines.edges.length).toBe(1);
+      expect(r.cart.lines.edges[0].node.quantity).toBe(2);
+      console.log(r.cart.lines.edges[0].node);
+    });
+
+    it('add to a cart', async () => {
+      assert(r && r.cart);
+      r = await store.dispatch(
+        cartLinesAdd({
+          cartId: r.cart.id,
+          lines: [{ merchandiseId: 'gid://shopify/ProductVariant/36607712259' }]
+        })
+      );
+      assert(r);
+      expect(r.error).toBeUndefined();
+      assert(r.cart);
+      console.log(r.cart.lines.edges);
+      expect(r.cart.id).toBeDefined();
+      expect(r.cart.lines.edges.length).toBe(2);
+    });
+
+    it('removes from a cart', async () => {
+      assert(r && r.cart);
+      r = await store.dispatch(
+        cartLinesRemove({
+          cartId: r.cart.id,
+          lineIds: [r.cart.lines.edges[0].node.id]
+        })
+      );
+      assert(r);
+      expect(r.error).toBeUndefined();
+      assert(r.cart);
+      console.log(r.cart.lines.edges);
+      expect(r.cart.id).toBeDefined();
+      expect(r.cart.lines.edges.length).toBe(1);
     });
   });
 });

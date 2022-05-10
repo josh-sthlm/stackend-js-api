@@ -775,6 +775,145 @@ export function getCollections(req: GetCollectionsRequest): Thunk<Promise<GetCol
   }
 }
 
+export interface CreateCartLine {
+  /** Cart line id */
+  id?: string;
+
+  /**
+   * Product variant id "gid://shopify/ProductVariant/1"
+   */
+  merchandiseId: string;
+
+  /**
+   * Quantity
+   */
+  quantity?: number;
+}
+
+export interface CreateCartRequest {
+  lines: Array<CreateCartLine>;
+  buyerIdentity?: CartBuyerIdentity;
+  imageMaxWidth?: number;
+}
+
+export interface CartLine {
+  id: string;
+  merchandise: {
+    /**
+     * Product variant id
+     */
+    id: string;
+
+    product: {
+      /** Product id */
+      id: string;
+      /** Product handle */
+      handle: string;
+    };
+  };
+  quantity: number;
+  discountAllocations: Array<any>;
+  attributes: Array<{ key: string; value: string }>;
+  estimatedCost: {
+    subtotalAmount: MoneyV2;
+    totalAmount: MoneyV2;
+  };
+}
+
+export interface CartRequest {
+  cartId: string;
+  imageMaxWidth?: number;
+}
+
+export interface Cart {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  lines: GraphQLList<CartLine>;
+  estimatedCost: {
+    totalAmount: MoneyV2;
+    subtotalAmount: MoneyV2;
+    totalTaxAmount: MoneyV2 | null;
+    totalDutyAmount: MoneyV2 | null;
+  };
+  attributes: Array<any>;
+}
+
+export interface GetCartResult extends XcapJsonResult {
+  cart: Cart | null;
+}
+
+export interface ModifyCartResult extends GetCartResult {
+  userErrors?: Array<UserError>;
+}
+
+/**
+ * Create a cart
+ * @param req
+ */
+export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> {
+  return ShopifyClientside.createCart(req);
+}
+
+/**
+ * Alter the contents of the cart. You can not add new lines using this request
+ * @param req
+ */
+export function cartLinesUpdate(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return ShopifyClientside.cartLinesUpdate(req);
+}
+
+/**
+ * Add products of the cart
+ * @param req
+ */
+export function cartLinesAdd(req: CartLinesUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return ShopifyClientside.cartLinesAdd(req);
+}
+
+export type GetCartRequest = CartRequest;
+
+/**
+ * Get a cart
+ * @param req
+ */
+export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
+  return ShopifyClientside.getCart(req);
+}
+
+export interface CartLinesUpdateRequest extends CartRequest, CreateCartRequest {}
+
+export interface CartLinesRemoveRequest extends CartRequest {
+  lineIds: Array<string>;
+}
+
+/**
+ * Remove a product line from the cart
+ * @param req
+ */
+export function cartLinesRemove(req: CartLinesRemoveRequest): Thunk<Promise<ModifyCartResult>> {
+  return ShopifyClientside.cartLinesRemove(req);
+}
+
+export interface CartBuyerIdentity {
+  countryCode: string;
+  customerAccessToken: string;
+  email: string;
+  phone: string;
+}
+
+export interface CartBuyerIdentityUpdateRequest extends CartRequest {
+  buyerIdentity: CartBuyerIdentity;
+}
+
+/**
+ * Update buyer identity or country
+ * @param req
+ */
+export function cartBuyerIdentityUpdate(req: CartBuyerIdentityUpdateRequest): Thunk<Promise<ModifyCartResult>> {
+  return ShopifyClientside.cartBuyerIdentityUpdate(req);
+}
+
 export interface LineItem {
   quantity: number;
   variantId: string;
@@ -811,7 +950,7 @@ export interface CreateCheckoutRequest extends XcapOptionalParameters {
   referenceUrlId?: string;
 }
 
-export interface CheckoutUserError {
+export interface UserError {
   field: string;
   code: string;
   message: string;
@@ -879,7 +1018,7 @@ export interface Checkout {
 
 export interface CheckoutResult extends XcapJsonResult {
   response: {
-    checkoutUserErrors: Array<CheckoutUserError>;
+    checkoutUserErrors: Array<UserError>;
     checkout: Checkout | null;
   };
 }
@@ -1127,4 +1266,14 @@ export function getParentProductType(productType: string | null | undefined): st
   }
 
   return productType.substring(0, i);
+}
+
+export function cartFindLine(cart: Cart, productVariantId: string): CartLine | null {
+  for (const e of cart.lines.edges) {
+    if (e.node.merchandise.id == productVariantId) {
+      return e.node;
+    }
+  }
+
+  return null;
 }

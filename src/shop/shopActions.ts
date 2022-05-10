@@ -7,6 +7,7 @@ import {
   CheckoutReplaceItemsRequest,
   CheckoutResult,
   Country,
+  CreateCartRequest,
   createCheckout as doCreateCheckout,
   CreateCheckoutRequest,
   getAddressFields,
@@ -44,13 +45,25 @@ import {
   setCheckoutEmail,
   SetCheckoutEmailRequest,
   setShippingAddress,
-  SetShippingAddressRequest
+  SetShippingAddressRequest,
+  createCart as doCreateCart,
+  ModifyCartResult,
+  getCart as doGetCart,
+  cartLinesAdd as doCartLinesAdd,
+  cartLinesRemove as doCartLinesRemove,
+  Cart,
+  CartLine,
+  cartFindLine,
+  cartLinesUpdate,
+  CartBuyerIdentity
 } from './index';
 import {
   ADD_TO_BASKET,
   BASKET_UPDATED,
+  CLEAR_CART,
   CLEAR_CHECKOUT,
   RECEIVE_ADDRESS_FIELDS,
+  RECEIVE_CART,
   RECEIVE_CHECKOUT,
   RECEIVE_COLLECTION,
   RECEIVE_COLLECTION_LIST,
@@ -75,6 +88,10 @@ import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
 import { CustomerType, TradeRegion } from './vat';
 import { Community } from '../stackend';
+import { CommunityState } from '../stackend/communityReducer';
+
+export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
+export const CART_ID_LOCAL_STORAGE_NAME = 'cart';
 
 /**
  * Set shop default configuration
@@ -272,8 +289,6 @@ export const requestCollections =
     return r;
   };
 
-export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
-
 /**
  * Get the key used to index the product listings in ShopState
  * @param req
@@ -362,6 +377,282 @@ export function hasCheckoutErrors(result: CheckoutResult): boolean {
 }
 
 /**
+ * Handle product data received via a cart:
+ * Adds the products to the store and transforms the returned data
+ * @param dispatch
+ * @param cart
+ */
+function handleCartProductData(dispatch: any, cart: Cart | null | undefined): boolean {
+  if (!cart) {
+    return false;
+  }
+
+  const products: { [handle: string]: Product } = {};
+  const lines: GraphQLList<CartLine> = { edges: [] };
+  forEachGraphQLList(cart.lines, i => {
+    const p: any = i.merchandise.product;
+
+    // Contains extra product data
+    if (typeof p['availableForSale'] === 'boolean') {
+      const product = p as Product;
+      products[product.handle] = product;
+
+      // Remove the extra data
+      const li: GraphQLListNode<CartLine> = {
+        node: {
+          ...i,
+          merchandise: {
+            id: i.merchandise.id,
+            product: {
+              id: i.merchandise.product.id,
+              handle: i.merchandise.product.handle
+            }
+          }
+        }
+      };
+      lines.edges.push(li);
+    } else {
+      lines.edges.push({ node: i });
+    }
+  });
+
+  cart.lines = lines;
+
+  if (Object.keys(products).length !== 0) {
+    dispatch({
+      type: RECEIVE_MULTIPLE_PRODUCTS,
+      json: newXcapJsonResult<GetProductsResult>('success', {
+        products
+      })
+    });
+  }
+
+  dispatch({
+    type: RECEIVE_CART,
+    cart
+  });
+
+  return true;
+}
+
+/**
+ * Create a cart
+ */
+export const createCart =
+  (req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> =>
+  async (dispatch: any, getState: any): Promise<ModifyCartResult> => {
+    try {
+      await dispatch(setModalThrobberVisible(true));
+
+      // FIXME: Improve country detection
+      if (!req.buyerIdentity) {
+        req.buyerIdentity = {} as CartBuyerIdentity;
+      }
+      const bi = req.buyerIdentity as CartBuyerIdentity;
+      if (bi.countryCode) {
+        const communities: CommunityState = getState().communities;
+        const countryCode = communities.community?.settings?.shop?.countryCode;
+        if (countryCode) {
+          bi.countryCode = countryCode;
+        }
+      }
+
+      const r: ModifyCartResult = await dispatch(doCreateCart(req));
+      if (r.error || r.userErrors?.length !== 0) {
+        return r;
+      }
+
+      if (r.cart) {
+        dispatch(setLocalStorageItem(CART_ID_LOCAL_STORAGE_NAME, r.cart.id));
+      }
+
+      handleCartProductData(dispatch, r.cart);
+
+      return r;
+    } finally {
+      await dispatch(setModalThrobberVisible(false));
+    }
+  };
+
+/**
+ * If the user has established a cart, get it
+ * @param imageMaxWidth
+ */
+export const getCart =
+  ({ imageMaxWidth }: { imageMaxWidth?: number }): Thunk<Promise<Cart | null>> =>
+  async (dispatch: any, getState: any): Promise<Cart | null> => {
+    const shop: ShopState = getState().shop;
+    if (shop.cart) {
+      return shop.cart;
+    }
+
+    const cartId = dispatch(getLocalStorageItem(CART_ID_LOCAL_STORAGE_NAME));
+    if (!cartId) {
+      return null;
+    }
+
+    const r = await dispatch(doGetCart({ cartId, imageMaxWidth }));
+    if (r.cart) {
+      handleCartProductData(dispatch, r.cart);
+      return r.cart;
+    }
+
+    await dispatch(clearCart());
+    return null;
+  };
+
+/**
+ * Clear cart data and remove the id
+ */
+export const clearCart =
+  (): Thunk<Promise<void>> =>
+  async (dispatch: any): Promise<void> => {
+    dispatch(removeLocalStorageItem(CART_ID_LOCAL_STORAGE_NAME));
+
+    await dispatch({
+      type: CLEAR_CART
+    });
+  };
+
+/**
+ * Add an item to the cart or increment the quantity. Creating a new cart if needed.
+ * @param product
+ * @param variant
+ * @param quantity
+ */
+export const cartAdd =
+  (product: Product, variant: ProductVariant, quantity?: number): Thunk<Promise<ModifyCartResult>> =>
+  async (dispatch: any): Promise<ModifyCartResult> => {
+    if (!product || !variant) {
+      throw new Error('product and variant required');
+    }
+
+    const q = quantity || 1;
+    //const lines = addItem(toLineItemArray(shop.checkout), variant.id, q);
+    const lines = [
+      {
+        merchandiseId: variant.id,
+        quantity: q
+      }
+    ];
+    let r = null;
+
+    const cart = await dispatch(getCart({}));
+    if (cart) {
+      const line = cartFindLine(cart, variant.id);
+      if (line) {
+        r = await dispatch(cartSetQuantity(variant.id, line.quantity + q));
+      } else {
+        r = await dispatch(doCartLinesAdd({ cartId: cart.id, lines }));
+        if (!r.error) {
+          handleCartProductData(dispatch, r.cart);
+        }
+      }
+    } else {
+      r = await dispatch(createCart({ lines }));
+    }
+
+    if (!r.error) {
+      dispatch({ type: ADD_TO_BASKET, product, variant, variantId: variant.id, quantity: q });
+    }
+
+    return r;
+  };
+
+/**
+ * For a product in the cart, decrement the quantity. Remove if 0.
+ * NOTE: This differs from the Shopify behavior that removes the line completely.
+ * @param product
+ * @param variant
+ * @param quantity
+ */
+export const cartRemove =
+  (product: Product, variant: ProductVariant, quantity?: number): Thunk<Promise<ModifyCartResult>> =>
+  async (dispatch: any, _getState: any): Promise<ModifyCartResult> => {
+    if (!product || !variant) {
+      throw new Error('product and variant required');
+    }
+
+    const cart = await dispatch(getCart({}));
+    if (!cart) {
+      // The cart has probably expired. Improve this situation?
+      return newXcapJsonResult<ModifyCartResult>('success', { cart: null });
+    }
+
+    const line = cartFindLine(cart, variant.id);
+    if (line == null) {
+      console.warn('No such product variant in cart', variant.id, cart.lines.edges);
+      return newXcapJsonResult<ModifyCartResult>('success', { cart: null });
+    }
+
+    let r = null;
+    const q = quantity || 1;
+    const newQuantity = line.quantity - q;
+    if (newQuantity <= 0) {
+      r = await dispatch(doCartLinesRemove({ cartId: cart.id, lineIds: [line.id] }));
+    } else {
+      r = await dispatch(
+        cartLinesUpdate({
+          cartId: cart.id,
+          lines: [
+            {
+              id: line.id,
+              merchandiseId: line.merchandise.id,
+              quantity: newQuantity
+            }
+          ]
+        })
+      );
+    }
+
+    if (!r.error) {
+      handleCartProductData(dispatch, r.cart);
+      dispatch({ type: REMOVE_FROM_BASKET, product, variant, variantId: variant.id, quantity: q });
+    }
+
+    return r;
+  };
+
+/**
+ * Set quantity of an item.
+ * @param variantId
+ * @param quantity
+ */
+export const cartSetQuantity =
+  (variantId: string, quantity: number): Thunk<Promise<ModifyCartResult>> =>
+  async (dispatch: any): Promise<ModifyCartResult> => {
+    const cart = await dispatch(getCart({}));
+
+    if (!cart) {
+      if (quantity < 1) {
+        return newXcapJsonResult<ModifyCartResult>('success', { cart: null });
+      }
+      return await dispatch(createCart({ lines: [{ merchandiseId: variantId, quantity: quantity || 1 }] }));
+    }
+
+    const line = cartFindLine(cart, variantId);
+    if (!line) {
+      console.warn('No such product variant in cart', variantId, cart.lines.edges);
+      return newXcapJsonResult<ModifyCartResult>('success', { cart: null });
+    }
+
+    let r = null;
+    if (quantity < 1) {
+      r = await dispatch(doCartLinesRemove({ cartId: cart.id, lineIds: [line.id] }));
+    } else {
+      r = await dispatch(
+        cartLinesUpdate({ cartId: cart.id, lines: [{ id: line.id, quantity: quantity, merchandiseId: variantId }] })
+      );
+    }
+
+    if (!r.error) {
+      handleCartProductData(dispatch, r.cart);
+    }
+
+    return r;
+  };
+
+/**
  * Create a checkout
  */
 export const createCheckout =
@@ -390,7 +681,7 @@ export const createCheckout =
   };
 
 /**
- * If the user has a active checkout set in the local storage, request that checkout to be loaded.
+ * If the user has an active checkout set in the local storage, request that checkout to be loaded.
  * If the checkout is turned into an order, the checkout is reset in local storage.
  * @param imageMaxWidth
  */
@@ -428,12 +719,13 @@ export const requestOrResetActiveCheckout =
   };
 
 /**
- * Handle product data received via checkout
+ * Handle product data received via checkout:
+ * Adds the products to the store and tranforms the returned data
  * @param dispatch
  * @param checkout
  */
 function handleCheckoutProductData(dispatch: any, checkout: Checkout | null | undefined): boolean {
-  if (!checkout || checkout.lineItems.edges.length === 0) {
+  if (!checkout) {
     return false;
   }
 
@@ -474,11 +766,12 @@ function handleCheckoutProductData(dispatch: any, checkout: Checkout | null | un
     return false;
   }
 
-  const json = newXcapJsonResult<GetProductsResult>('success', {
-    products
+  dispatch({
+    type: RECEIVE_MULTIPLE_PRODUCTS,
+    json: newXcapJsonResult<GetProductsResult>('success', {
+      products
+    })
   });
-
-  dispatch({ type: RECEIVE_MULTIPLE_PRODUCTS, json });
 
   return true;
 }
