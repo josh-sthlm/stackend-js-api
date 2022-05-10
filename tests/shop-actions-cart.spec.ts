@@ -1,8 +1,9 @@
-import { cartAdd, cartRemove } from '../src/shop/shopActions';
+import { CART_ID_LOCAL_STORAGE_NAME, cartAdd, cartRemove, cartSetQuantity, clearCart } from '../src/shop/shopActions';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { ShopState } from '../src/shop/shopReducer';
 import assert from 'assert';
+import { getLocalStorageItem } from '../src/util';
 
 describe('Shop Cart Actions/Reducers', () => {
   const store = createTestStore();
@@ -29,6 +30,7 @@ describe('Shop Cart Actions/Reducers', () => {
       let r = await store.dispatch(cartAdd(p, p.variants.edges[0].node));
       expect(r.error).toBeUndefined();
       assert(r.cart);
+      console.log(r.cart);
       console.log(r.cart.lines.edges);
       expect(r.cart.lines.edges.length).toBe(1);
       shop = store.getState().shop;
@@ -52,11 +54,26 @@ describe('Shop Cart Actions/Reducers', () => {
       expect(l.quantity).toStrictEqual(3);
     });
 
+    it('Set quantity', async () => {
+      let shop: ShopState = store.getState().shop;
+      assert(shop);
+      const p = shop.products['pin-boot'];
+      const r = await store.dispatch(cartSetQuantity(p.variants.edges[0].node.id, 5));
+      expect(r.error).toBeUndefined();
+      assert(r.cart);
+      shop = store.getState().shop;
+      assert(shop.cart);
+      const l = shop.cart.lines.edges[0].node;
+      console.log(l);
+      expect(l.merchandise).toStrictEqual({ id: p.variants.edges[0].node.id, product: { handle: p.handle, id: p.id } });
+      expect(l.quantity).toStrictEqual(5);
+    });
+
     it('Removes items from the cart', async () => {
       let shop: ShopState = store.getState().shop;
       assert(shop);
       const p = shop.products['pin-boot'];
-      let r = await store.dispatch(cartRemove(p, p.variants.edges[0].node, 2));
+      let r = await store.dispatch(cartRemove(p, p.variants.edges[0].node, 4));
       expect(r.error).toBeUndefined();
       assert(r.cart);
       expect(r.cart.id).toBe(shop.cart?.id); // Same cart
@@ -76,6 +93,14 @@ describe('Shop Cart Actions/Reducers', () => {
       shop = store.getState().shop;
       assert(shop.cart);
       expect(shop.cart.lines.edges.length).toBe(0);
+    });
+
+    it('Clear the cart', async () => {
+      store.dispatch(clearCart());
+      const shop: ShopState = store.getState().shop;
+      expect(shop.cart).toBeNull();
+      const x = store.dispatch(getLocalStorageItem(CART_ID_LOCAL_STORAGE_NAME));
+      expect(x).toBeNull();
     });
   });
 });

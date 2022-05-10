@@ -54,7 +54,8 @@ import {
   Cart,
   CartLine,
   cartFindLine,
-  cartLinesUpdate
+  cartLinesUpdate,
+  CartBuyerIdentity
 } from './index';
 import {
   ADD_TO_BASKET,
@@ -87,6 +88,7 @@ import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
 import { CustomerType, TradeRegion } from './vat';
 import { Community } from '../stackend';
+import { CommunityState } from '../stackend/communityReducer';
 
 export const CHECKOUT_ID_LOCAL_STORAGE_NAME = 'checkout';
 export const CART_ID_LOCAL_STORAGE_NAME = 'cart';
@@ -438,9 +440,23 @@ function handleCartProductData(dispatch: any, cart: Cart | null | undefined): bo
  */
 export const createCart =
   (req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> =>
-  async (dispatch: any): Promise<ModifyCartResult> => {
+  async (dispatch: any, getState: any): Promise<ModifyCartResult> => {
     try {
       await dispatch(setModalThrobberVisible(true));
+
+      // FIXME: Improve country detection
+      if (!req.buyerIdentity) {
+        req.buyerIdentity = {} as CartBuyerIdentity;
+      }
+      const bi = req.buyerIdentity as CartBuyerIdentity;
+      if (bi.countryCode) {
+        const communities: CommunityState = getState().communities;
+        const countryCode = communities.community?.settings?.shop?.countryCode;
+        if (countryCode) {
+          bi.countryCode = countryCode;
+        }
+      }
+
       const r: ModifyCartResult = await dispatch(doCreateCart(req));
       if (r.error || r.userErrors?.length !== 0) {
         return r;
