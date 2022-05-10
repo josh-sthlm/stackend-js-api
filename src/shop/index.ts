@@ -196,6 +196,7 @@ export interface ShopDataResult {
   products: { [handle: string]: Product };
   collections: { [handle: string]: Collection };
   listings: MultipleProductListingsResult;
+  shopifyDomainReferenceUrlId: number;
 }
 
 export interface GetShopConfigurationResult extends XcapJsonResult {
@@ -943,6 +944,10 @@ export interface CreateCheckoutInput {
 
 export interface CreateCheckoutRequest extends XcapOptionalParameters {
   input: CreateCheckoutInput;
+  addedProductHandle?: string;
+  variantId?: string;
+  quantity?: number;
+  referenceUrlId?: string;
 }
 
 export interface UserError {
@@ -1023,14 +1028,12 @@ export interface CheckoutResult extends XcapJsonResult {
  * @param req
  */
 export function createCheckout(req: CreateCheckoutRequest): Thunk<Promise<CheckoutResult>> {
-  const p = {
-    input: JSON.stringify(req.input),
-    [COMMUNITY_PARAMETER]: req[COMMUNITY_PARAMETER]
-  };
-
   return post({
     url: '/shop/checkout/create',
-    parameters: p
+    parameters: {
+      ...req,
+      input: JSON.stringify(req.input)
+    }
   });
 }
 
@@ -1057,6 +1060,10 @@ export function getCheckout(req: GetCheckoutRequest): Thunk<Promise<GetCheckoutR
 export interface CheckoutReplaceItemsRequest extends XcapOptionalParameters {
   checkoutId: string;
   lineItems: LineItemArray;
+  addedProductHandle?: string;
+  variantId?: string;
+  quantity?: number;
+  referenceUrlId?: string;
 }
 
 /**
@@ -1067,9 +1074,8 @@ export function checkoutReplaceItems(req: CheckoutReplaceItemsRequest): Thunk<Pr
   return post({
     url: '/shop/checkout/replace-items',
     parameters: {
-      checkoutId: req.checkoutId,
-      lineItems: JSON.stringify(req.lineItems),
-      [COMMUNITY_PARAMETER]: req[COMMUNITY_PARAMETER]
+      ...req,
+      lineItems: JSON.stringify(req.lineItems)
     }
   });
 }
