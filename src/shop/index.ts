@@ -1279,10 +1279,10 @@ export function cartFindLine(cart: Cart, productVariantId: string): CartLine | n
 }
 
 /**
- * Turn a cart into a checkout
+ * Turn a cart into checkout line items
  * @param cart
  */
-export function cartToCreateCheckoutInput(cart: Cart): CreateCheckoutInput {
+export function cartToLineItems(cart: Cart): Array<LineItem> {
   const lineItems: Array<LineItem> = [];
   if (cart) {
     forEachGraphQLList(cart.lines, i => {
@@ -1293,8 +1293,5 @@ export function cartToCreateCheckoutInput(cart: Cart): CreateCheckoutInput {
       lineItems.push(l);
     });
   }
-
-  return {
-    lineItems
-  };
+  return lineItems;
 }

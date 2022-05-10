@@ -55,7 +55,8 @@ import {
   CartLine,
   cartFindLine,
   cartLinesUpdate,
-  CartBuyerIdentity
+  CartBuyerIdentity,
+  cartToLineItems
 } from './index';
 import {
   ADD_TO_BASKET,
@@ -82,7 +83,7 @@ import {
   SlimProductListing,
   VatState
 } from './shopReducer';
-import { newXcapJsonResult, Thunk } from '../api';
+import { newXcapJsonErrorResult, newXcapJsonResult, Thunk } from '../api';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../util';
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
@@ -665,11 +666,31 @@ export function cartSetQuantity(variantId: string, quantity: number): Thunk<Prom
 }
 
 /**
+ * Create a checkout from the cart, possibly reusing
+ */
+export function createCheckoutFromCart(): Thunk<Promise<GetCheckoutResult>> {
+  return async (dispatch: any, getState: any): Promise<GetCheckoutResult> => {
+    const cart = await dispatch(getCart({}));
+    if (!cart) {
+      return newXcapJsonErrorResult<GetCheckoutResult>('cart_not_available');
+    }
+
+    // Reuse existing checkout, if available. The customer may have entered address data
+    await dispatch(requestOrResetActiveCheckout({}));
+
+    const shop: ShopState = getState().shop;
+    const lineItems: LineItemArray = cartToLineItems(cart);
+    const r = await dispatch(checkoutUpdateOrCreateNew(shop, lineItems));
+
+    return r;
+  };
+}
+
+/**
  * Create a checkout
  */
-export const createCheckout =
-  (req: CreateCheckoutRequest): Thunk<Promise<CheckoutResult>> =>
-  async (dispatch: any): Promise<CheckoutResult> => {
+export function createCheckout(req: CreateCheckoutRequest): Thunk<Promise<CheckoutResult>> {
+  return async (dispatch: any): Promise<CheckoutResult> => {
     try {
       await dispatch(setModalThrobberVisible(true));
       const r: CheckoutResult = await dispatch(doCreateCheckout(req));
@@ -691,6 +712,7 @@ export const createCheckout =
       await dispatch(setModalThrobberVisible(false));
     }
   };
+}
 
 /**
  * If the user has an active checkout set in the local storage, request that checkout to be loaded.
@@ -856,6 +878,7 @@ export const checkoutSetQuantity =
  * @param shop
  * @param lineItems
  * @param addedProductHandle
+ * @param variantId
  * @param quantity
  */
 export const checkoutUpdateOrCreateNew =
