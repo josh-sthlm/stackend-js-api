@@ -428,9 +428,6 @@ function doPost<T extends XcapJsonResult>({
     const url = 'https://' + cfg.domain + '/api/' + cfg.apiVersion + '/graphql.json';
     const q = isMutation ? query : '{' + query + '}';
     const body = JSON.stringify({ query: q, variables: null });
-    if (isMutation) {
-      console.log(q);
-    }
 
     const h = new Headers();
     h.set('content-type', 'application/json');

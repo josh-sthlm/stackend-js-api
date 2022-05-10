@@ -887,7 +887,7 @@ export interface CartLinesRemoveRequest extends CartRequest {
 }
 
 /**
- * Remove products from the cart
+ * Remove a product line from the cart
  * @param req
  */
 export function cartLinesRemove(req: CartLinesRemoveRequest): Thunk<Promise<ModifyCartResult>> {
@@ -1260,4 +1260,14 @@ export function getParentProductType(productType: string | null | undefined): st
   }
 
   return productType.substring(0, i);
+}
+
+export function cartFindLine(cart: Cart, productVariantId: string): CartLine | null {
+  for (const e of cart.lines.edges) {
+    if (e.node.merchandise.id == productVariantId) {
+      return e.node;
+    }
+  }
+
+  return null;
 }
