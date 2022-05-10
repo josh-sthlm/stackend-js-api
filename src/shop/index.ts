@@ -1277,3 +1277,24 @@ export function cartFindLine(cart: Cart, productVariantId: string): CartLine | n
 
   return null;
 }
+
+/**
+ * Turn a cart into a checkout
+ * @param cart
+ */
+export function cartToCreateCheckoutInput(cart: Cart): CreateCheckoutInput {
+  const lineItems: Array<LineItem> = [];
+  if (cart) {
+    forEachGraphQLList(cart.lines, i => {
+      const l: LineItem = {
+        variantId: i.merchandise.id,
+        quantity: i.quantity
+      };
+      lineItems.push(l);
+    });
+  }
+
+  return {
+    lineItems
+  };
+}
