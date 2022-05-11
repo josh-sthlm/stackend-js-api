@@ -35,6 +35,9 @@ export default function cartQuery(getProductData: boolean, imageMaxWidth: number
     subtotalAmount { amount, currencyCode },
     totalTaxAmount { amount, currencyCode },
     totalDutyAmount { amount, currencyCode }
+  },
+  buyerIdentity {
+    countryCode
   }
-  `;
+`;
 }

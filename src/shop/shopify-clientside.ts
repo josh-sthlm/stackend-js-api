@@ -20,7 +20,8 @@ import {
   CartLinesUpdateRequest,
   ModifyCartResult,
   CartLinesRemoveRequest,
-  CartBuyerIdentityUpdateRequest
+  CartBuyerIdentityUpdateRequest,
+  CartBuyerIdentity
 } from './index';
 
 import collectionQuery from './querries/collectionQuery';
@@ -166,7 +167,7 @@ export function getCart(req: GetCartRequest): Thunk<Promise<GetCartResult>> {
 }
 
 /**
- * Create a cart
+ * Create a cart.
  * @param req
  */
 export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResult>> {
@@ -176,7 +177,10 @@ export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResu
     const r = await dispatch(
       mutation({
         mutation: `mutation {
-            cartCreate ( input: { lines: ${toQueryParameters(req.lines || [])} }) {
+            cartCreate ( input: {
+                lines: ${toQueryParameters(req.lines || [])}
+                ${req.buyerIdentity ? ', buyerIdentity: ' + buyerIdentityToQueryParameters(req.buyerIdentity) : ''}
+             }) {
               cart { ${cartQuery(req.lines.length !== 0, imw)} },
               userErrors { code, field, message }
             }
@@ -270,12 +274,13 @@ export function cartBuyerIdentityUpdate(req: CartBuyerIdentityUpdateRequest): Th
   return async (dispatch: any, getState: any): Promise<GetCartResult> => {
     const shopState = getState().shop;
     const imw = getImageListingMaxWidth(shopState, req.imageMaxWidth);
+
     const r = await dispatch(
       mutation({
         mutation: `mutation {
           cartBuyerIdentityUpdate(
             cartId: ${JSON.stringify(req.cartId)}
-            ${req.buyerIdentity && ', buyerIdentity: ' + toQueryParameters(req.buyerIdentity)}
+            ${req.buyerIdentity && ', buyerIdentity: ' + buyerIdentityToQueryParameters(req.buyerIdentity)}
           ) {
               cart { ${cartQuery(false, imw)} },
               userErrors { code, field, message }
@@ -286,6 +291,26 @@ export function cartBuyerIdentityUpdate(req: CartBuyerIdentityUpdateRequest): Th
 
     return newModifyCartResult(r, 'cartBuyerIdentityUpdate');
   };
+}
+
+function buyerIdentityToQueryParameters(buyerIdentity: CartBuyerIdentity): string {
+  let r = '{';
+  let i = 0;
+  for (const k of Object.keys(buyerIdentity)) {
+    if (i !== 0) {
+      r += ',';
+    }
+    const v = (buyerIdentity as any)[k];
+    if (k === 'countryCode') {
+      r += k + ':' + v;
+    } else {
+      r += k + ':' + JSON.stringify(v);
+    }
+    i++;
+  }
+
+  r += '}';
+  return r;
 }
 
 /**

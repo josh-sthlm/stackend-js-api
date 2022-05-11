@@ -56,7 +56,8 @@ import {
   cartFindLine,
   cartLinesUpdate,
   CartBuyerIdentity,
-  cartToLineItems
+  cartToLineItems,
+  cartBuyerIdentityUpdate as doCartBuyerIdentityUpdate
 } from './index';
 import {
   ADD_TO_BASKET,
@@ -448,16 +449,16 @@ export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResu
       if (!req.buyerIdentity) {
         req.buyerIdentity = {} as CartBuyerIdentity;
       }
-      const bi = req.buyerIdentity as CartBuyerIdentity;
-      if (bi.countryCode) {
+
+      if (!req.buyerIdentity.countryCode) {
         const ci = dispatch(getCustomerInfo());
         if (ci && ci.customerCountryCode) {
-          bi.countryCode = ci.customerCountryCode;
+          req.buyerIdentity.countryCode = ci.customerCountryCode;
         } else {
           const communities: CommunityState = getState().communities;
           const countryCode = communities.community?.settings?.shop?.countryCode;
           if (countryCode) {
-            bi.countryCode = countryCode;
+            req.buyerIdentity.countryCode = countryCode;
           }
         }
       }
@@ -520,6 +521,25 @@ export function clearCart(): Thunk<Promise<void>> {
 }
 
 /**
+ * Alter buyer information
+ */
+export function cartBuyerIdentityUpdate(buyerIdentity: CartBuyerIdentity): Thunk<Promise<ModifyCartResult>> {
+  return async (dispatch: any): Promise<ModifyCartResult> => {
+    const cart = await dispatch(getCart({}));
+    if (!cart) {
+      // FIXME: Create empty cart here?
+      return newXcapJsonResult<ModifyCartResult>('success', { cart: null });
+    }
+
+    const r = await dispatch(doCartBuyerIdentityUpdate({ cartId: cart.id, buyerIdentity }));
+    if (r.cart) {
+      handleCartProductData(dispatch, r.cart);
+    }
+    return r;
+  };
+}
+
+/**
  * Add an item to the cart or increment the quantity. Creating a new cart if needed.
  * @param product
  * @param variant
@@ -536,35 +556,34 @@ export function cartAdd(
     }
 
     const q = quantity || 1;
-    //const lines = addItem(toLineItemArray(shop.checkout), variant.id, q);
-    const lines = [
-      {
-        merchandiseId: variant.id,
-        quantity: q
-      }
-    ];
+    const lines = [{ merchandiseId: variant.id, quantity: q }];
     let r = null;
 
-    const cart = await dispatch(getCart({}));
-    if (cart) {
-      const line = cartFindLine(cart, variant.id);
-      if (line) {
-        r = await dispatch(cartSetQuantity(variant.id, line.quantity + q));
-      } else {
-        r = await dispatch(doCartLinesAdd({ cartId: cart.id, lines }));
-        if (!r.error) {
-          handleCartProductData(dispatch, r.cart);
+    try {
+      await dispatch(setModalThrobberVisible(true));
+      const cart = await dispatch(getCart({}));
+      if (cart) {
+        const line = cartFindLine(cart, variant.id);
+        if (line) {
+          r = await dispatch(cartSetQuantity(variant.id, line.quantity + q));
+        } else {
+          r = await dispatch(doCartLinesAdd({ cartId: cart.id, lines }));
+          if (!r.error) {
+            handleCartProductData(dispatch, r.cart);
+          }
         }
+      } else {
+        r = await dispatch(createCart({ lines }));
       }
-    } else {
-      r = await dispatch(createCart({ lines }));
-    }
 
-    if (!r.error) {
-      dispatch({ type: ADD_TO_BASKET, product, variant, variantId: variant.id, quantity: q });
-    }
+      if (!r.error) {
+        dispatch({ type: ADD_TO_BASKET, product, variant, variantId: variant.id, quantity: q });
+      }
 
-    return r;
+      return r;
+    } finally {
+      await dispatch(setModalThrobberVisible(false));
+    }
   };
 }
 
@@ -597,32 +616,37 @@ export function cartRemove(
       return newXcapJsonResult<ModifyCartResult>('success', { cart: null });
     }
 
-    let r = null;
-    const q = quantity || 1;
-    const newQuantity = line.quantity - q;
-    if (newQuantity <= 0) {
-      r = await dispatch(doCartLinesRemove({ cartId: cart.id, lineIds: [line.id] }));
-    } else {
-      r = await dispatch(
-        cartLinesUpdate({
-          cartId: cart.id,
-          lines: [
-            {
-              id: line.id,
-              merchandiseId: line.merchandise.id,
-              quantity: newQuantity
-            }
-          ]
-        })
-      );
-    }
+    try {
+      await dispatch(setModalThrobberVisible(true));
+      let r = null;
+      const q = quantity || 1;
+      const newQuantity = line.quantity - q;
+      if (newQuantity <= 0) {
+        r = await dispatch(doCartLinesRemove({ cartId: cart.id, lineIds: [line.id] }));
+      } else {
+        r = await dispatch(
+          cartLinesUpdate({
+            cartId: cart.id,
+            lines: [
+              {
+                id: line.id,
+                merchandiseId: line.merchandise.id,
+                quantity: newQuantity
+              }
+            ]
+          })
+        );
+      }
 
-    if (!r.error) {
-      handleCartProductData(dispatch, r.cart);
-      dispatch({ type: REMOVE_FROM_BASKET, product, variant, variantId: variant.id, quantity: q });
-    }
+      if (!r.error) {
+        handleCartProductData(dispatch, r.cart);
+        dispatch({ type: REMOVE_FROM_BASKET, product, variant, variantId: variant.id, quantity: q });
+      }
 
-    return r;
+      return r;
+    } finally {
+      await dispatch(setModalThrobberVisible(false));
+    }
   };
 }
 
@@ -648,20 +672,25 @@ export function cartSetQuantity(variantId: string, quantity: number): Thunk<Prom
       return newXcapJsonResult<ModifyCartResult>('success', { cart: null });
     }
 
-    let r = null;
-    if (quantity < 1) {
-      r = await dispatch(doCartLinesRemove({ cartId: cart.id, lineIds: [line.id] }));
-    } else {
-      r = await dispatch(
-        cartLinesUpdate({ cartId: cart.id, lines: [{ id: line.id, quantity: quantity, merchandiseId: variantId }] })
-      );
-    }
+    try {
+      await dispatch(setModalThrobberVisible(true));
+      let r = null;
+      if (quantity < 1) {
+        r = await dispatch(doCartLinesRemove({ cartId: cart.id, lineIds: [line.id] }));
+      } else {
+        r = await dispatch(
+          cartLinesUpdate({ cartId: cart.id, lines: [{ id: line.id, quantity: quantity, merchandiseId: variantId }] })
+        );
+      }
 
-    if (!r.error) {
-      handleCartProductData(dispatch, r.cart);
-    }
+      if (!r.error) {
+        handleCartProductData(dispatch, r.cart);
+      }
 
-    return r;
+      return r;
+    } finally {
+      await dispatch(setModalThrobberVisible(false));
+    }
   };
 }
 

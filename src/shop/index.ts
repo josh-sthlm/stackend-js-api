@@ -837,6 +837,9 @@ export interface Cart {
     totalDutyAmount: MoneyV2 | null;
   };
   attributes: Array<any>;
+  buyerIdentity: {
+    countryCode: string;
+  };
 }
 
 export interface GetCartResult extends XcapJsonResult {
@@ -896,10 +899,10 @@ export function cartLinesRemove(req: CartLinesRemoveRequest): Thunk<Promise<Modi
 }
 
 export interface CartBuyerIdentity {
-  countryCode: string;
-  customerAccessToken: string;
-  email: string;
-  phone: string;
+  countryCode?: string;
+  customerAccessToken?: string;
+  email?: string;
+  phone?: string;
 }
 
 export interface CartBuyerIdentityUpdateRequest extends CartRequest {

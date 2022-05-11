@@ -1,4 +1,12 @@
-import { CART_ID_LOCAL_STORAGE_NAME, cartAdd, cartRemove, cartSetQuantity, clearCart } from '../src/shop/shopActions';
+import {
+  CART_ID_LOCAL_STORAGE_NAME,
+  cartAdd,
+  cartBuyerIdentityUpdate,
+  cartRemove,
+  cartSetQuantity,
+  clearCart
+} from '../src/shop/shopActions';
+import { Cart } from '../src/shop';
 import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { ShopState } from '../src/shop/shopReducer';
@@ -29,9 +37,11 @@ describe('Shop Cart Actions/Reducers', () => {
       const p = shop.products['pin-boot'];
       let r = await store.dispatch(cartAdd(p, p.variants.edges[0].node));
       expect(r.error).toBeUndefined();
+      expect(r.userErrors.length).toBe(0);
       assert(r.cart);
       console.log(r.cart);
       console.log(r.cart.lines.edges);
+      expect(r.cart.buyerIdentity.countryCode).toBe('CA'); // Should default to shop country
       expect(r.cart.lines.edges.length).toBe(1);
       shop = store.getState().shop;
       assert(shop.cart);
@@ -44,6 +54,7 @@ describe('Shop Cart Actions/Reducers', () => {
       // Add a few more one
       r = await store.dispatch(cartAdd(p, p.variants.edges[0].node, 2));
       expect(r.error).toBeUndefined();
+      expect(r.userErrors.length).toBe(0);
       assert(r.cart);
       expect(r.cart.id).toBe(shop.cart.id); // Same cart
       shop = store.getState().shop;
@@ -60,6 +71,7 @@ describe('Shop Cart Actions/Reducers', () => {
       const p = shop.products['pin-boot'];
       const r = await store.dispatch(cartSetQuantity(p.variants.edges[0].node.id, 5));
       expect(r.error).toBeUndefined();
+      expect(r.userErrors.length).toBe(0);
       assert(r.cart);
       shop = store.getState().shop;
       assert(shop.cart);
@@ -75,6 +87,7 @@ describe('Shop Cart Actions/Reducers', () => {
       const p = shop.products['pin-boot'];
       let r = await store.dispatch(cartRemove(p, p.variants.edges[0].node, 4));
       expect(r.error).toBeUndefined();
+      expect(r.userErrors.length).toBe(0);
       assert(r.cart);
       expect(r.cart.id).toBe(shop.cart?.id); // Same cart
       shop = store.getState().shop;
@@ -87,12 +100,27 @@ describe('Shop Cart Actions/Reducers', () => {
       // Remove last one
       r = await store.dispatch(cartRemove(p, p.variants.edges[0].node));
       expect(r.error).toBeUndefined();
+      expect(r.userErrors.length).toBe(0);
       assert(r.cart);
       expect(r.cart.id).toBe(shop.cart?.id); // Same cart
       expect(r.cart.lines.edges.length).toBe(0);
       shop = store.getState().shop;
       assert(shop.cart);
       expect(shop.cart.lines.edges.length).toBe(0);
+    });
+
+    it('alter buyer info', async () => {
+      let cart: Cart = store.getState().shop.cart;
+      assert(cart != null);
+      expect(cart.buyerIdentity.countryCode).toBe('CA'); // Should default to shop country
+      const r = await store.dispatch(cartBuyerIdentityUpdate({ countryCode: 'SE' }));
+      expect(r.error).toBeUndefined();
+      expect(r.userErrors.length).toBe(0);
+      assert(r.cart);
+      expect(r.cart.buyerIdentity.countryCode).toBe('SE');
+      cart = store.getState().shop.cart;
+      assert(cart);
+      expect(cart.buyerIdentity.countryCode).toBe('SE');
     });
 
     it('Clear the cart', async () => {
