@@ -84,7 +84,7 @@ import {
   SlimProductListing,
   VatState
 } from './shopReducer';
-import { newXcapJsonErrorResult, newXcapJsonResult, Thunk, XcapJsonResult } from '../api';
+import { newXcapJsonErrorResult, newXcapJsonResult, Thunk } from '../api';
 import { setModalThrobberVisible } from '../throbber/throbberActions';
 import { getLocalStorageItem, removeLocalStorageItem, setLocalStorageItem } from '../util';
 import { forEachGraphQLList, GraphQLList, GraphQLListNode, mapGraphQLList } from '../util/graphql';
