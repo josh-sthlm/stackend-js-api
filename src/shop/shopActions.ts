@@ -525,17 +525,22 @@ export function clearCart(): Thunk<Promise<void>> {
  */
 export function cartBuyerIdentityUpdate(buyerIdentity: CartBuyerIdentity): Thunk<Promise<ModifyCartResult>> {
   return async (dispatch: any): Promise<ModifyCartResult> => {
-    const cart = await dispatch(getCart({}));
-    if (!cart) {
-      // FIXME: Create empty cart here?
-      return newXcapJsonResult<ModifyCartResult>('success', { cart: null });
-    }
+    try {
+      await dispatch(setModalThrobberVisible(true));
+      const cart = await dispatch(getCart({}));
+      if (!cart) {
+        // FIXME: Create empty cart here?
+        return newXcapJsonResult<ModifyCartResult>('success', { cart: null });
+      }
 
-    const r = await dispatch(doCartBuyerIdentityUpdate({ cartId: cart.id, buyerIdentity }));
-    if (r.cart) {
-      handleCartProductData(dispatch, r.cart);
+      const r = await dispatch(doCartBuyerIdentityUpdate({ cartId: cart.id, buyerIdentity }));
+      if (r.cart) {
+        handleCartProductData(dispatch, r.cart);
+      }
+      return r;
+    } finally {
+      await dispatch(setModalThrobberVisible(false));
     }
-    return r;
   };
 }
 
