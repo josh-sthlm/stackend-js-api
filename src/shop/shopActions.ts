@@ -702,14 +702,14 @@ export function cartSetQuantity(variantId: string, quantity: number): Thunk<Prom
 /**
  * Create a checkout from the cart, possibly reusing
  */
-export function createCheckoutFromCart(): Thunk<Promise<GetCheckoutResult>> {
-  return async (dispatch: any, getState: any): Promise<GetCheckoutResult> => {
+export function createCheckoutFromCart(): Thunk<Promise<CheckoutResult>> {
+  return async (dispatch: any, getState: any): Promise<CheckoutResult> => {
     try {
       dispatch(setModalThrobberVisible(true));
 
       const cart = await dispatch(getCart({}));
       if (!cart) {
-        return newXcapJsonErrorResult<GetCheckoutResult>('cart_not_available');
+        return newXcapJsonErrorResult<CheckoutResult>('cart_not_available');
       }
 
       // Reuse existing checkout, if available. The customer may have entered address data
