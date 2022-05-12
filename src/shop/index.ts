@@ -1298,3 +1298,23 @@ export function cartToLineItems(cart: Cart): Array<LineItem> {
   }
   return lineItems;
 }
+
+export interface CartNotifyProductAddedRequest extends XcapOptionalParameters {
+  handle: string;
+  variantId: string;
+}
+
+/**
+ * Notify users that someone added a product to their cart
+ * @param params
+ */
+export function cartNotifyProductAdded(params: CartNotifyProductAddedRequest): Thunk<Promise<XcapJsonResult>> {
+  return (dispatch: any): Promise<XcapJsonResult> => {
+    return dispatch(
+      post({
+        url: '/shop/cart/notify-product-added',
+        parameters: { ...params }
+      })
+    );
+  };
+}
