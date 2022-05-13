@@ -260,6 +260,7 @@ export default class StackendWebSocket {
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
     }
+    console.debug('Stackend: WebSocket reconnect in ' + Math.round(this.reconnectDelayMs / 1000) + 's');
     this.reconnectTimer = setTimeout(this._doReconnect, this.reconnectDelayMs) as any;
   };
 
@@ -273,7 +274,11 @@ export default class StackendWebSocket {
     this.socket = null;
     // Double the retry delay every time it fails
     this.reconnectDelayMs = 2 * this.reconnectDelayMs;
-    this.connect();
+    try {
+      this.connect();
+    } catch (e) {
+      this._scheduleReconnect();
+    }
   };
 
   close(): void {
