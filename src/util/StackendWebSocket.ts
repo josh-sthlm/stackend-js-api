@@ -142,6 +142,8 @@ export const USER_NOTIFICATION_COMPONENT = 'usernotification';
  */
 export const USER_NOTIFICATION_CONTEXT = 'notifications_site';
 
+const DEFAULT_RECONNECT_DELAY = 10 * 1000;
+
 /**
  * A web socket that is used to send and receive events from the stackend server.
  *
@@ -179,12 +181,15 @@ export default class StackendWebSocket {
   isOpen = false;
   sendQueue: Array<Message> = [];
 
-  /* Low level listeners. maps from broadcast id to array of listeners */
+  /** Low level listeners. maps from broadcast id to array of listeners */
   listeners: { [broadcastId: string]: Array<Listener> } = {};
 
   realTimeListeners: {
     [key: string]: Array<RealTimeListener>;
   } = {};
+
+  reconnectTimer: NodeJS.Timeout | null = null;
+  reconnectDelayMs: number = DEFAULT_RECONNECT_DELAY;
 
   /**
    * Construct a new web socket
@@ -216,35 +221,64 @@ export default class StackendWebSocket {
 
     this._broadcast(StackendWebSocketEvent.SOCKET_OPENING);
     this.socket = new SockJS(this.url);
-
-    this.socket.onopen = (): void => {
-      this._broadcast(StackendWebSocketEvent.SOCKET_OPENED);
-      this.isOpen = true;
-    };
-
-    this.socket.onmessage = (m: MessageEvent): void => {
-      const message: Message = JSON.parse(m.data);
-      this._broadcast(StackendWebSocketEvent.MESSAGE_RECEIVED, m, message);
-    };
-
-    this.socket.onclose = (e: CloseEvent): void => {
-      this._broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
-      this.isOpen = false;
-    };
-
-    this.socket.onerror = (e: Event): void => {
-      console.error('WebSocket error: ', e);
-      this._broadcast(StackendWebSocketEvent.SOCKET_ERROR, e);
-      this._broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
-      this.isOpen = false;
-    };
-
+    this.socket.onopen = this._onOpen;
+    this.socket.onmessage = this._onMessage;
+    this.socket.onclose = this._onClose;
+    this.socket.onerror = this._onError;
     this.hasConnected = true;
   }
 
-  close(): void {
-    this.socket?.close();
+  _onOpen = (): void => {
+    this._broadcast(StackendWebSocketEvent.SOCKET_OPENED);
+    this.isOpen = true;
+    this.reconnectDelayMs = DEFAULT_RECONNECT_DELAY;
+  };
+
+  _onMessage = (m: MessageEvent): void => {
+    const message: Message = JSON.parse(m.data);
+    this._broadcast(StackendWebSocketEvent.MESSAGE_RECEIVED, m, message);
+  };
+
+  _onClose = (e: CloseEvent): void => {
+    this._broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
+    if (this.isOpen) {
+      // Not closed by api. Assume error
+      this._scheduleReconnect();
+    }
     this.isOpen = false;
+  };
+
+  _onError = (e: Event): void => {
+    console.error('Stackend: WebSocket error: ', e);
+    this._broadcast(StackendWebSocketEvent.SOCKET_ERROR, e);
+    this._broadcast(StackendWebSocketEvent.SOCKET_CLOSED, e);
+    this.isOpen = false;
+    this._scheduleReconnect();
+  };
+
+  _scheduleReconnect = (): void => {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+    }
+    this.reconnectTimer = setTimeout(this._doReconnect, this.reconnectDelayMs) as any;
+  };
+
+  _doReconnect = (): void => {
+    if (this.isOpen) {
+      return;
+    }
+
+    console.debug('Stackend: WebSocket reconnecting');
+    this.socket?.close(); // May cause _onError to be invoked
+    this.socket = null;
+    // Double the retry delay every time it fails
+    this.reconnectDelayMs = 2 * this.reconnectDelayMs;
+    this.connect();
+  };
+
+  close(): void {
+    this.isOpen = false;
+    this.socket?.close();
     delete instances[this.xcapCommunityName];
   }
 

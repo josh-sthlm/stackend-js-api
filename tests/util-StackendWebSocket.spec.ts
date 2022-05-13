@@ -13,6 +13,7 @@ import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { Community } from '../src/stackend';
 import { COMMENT_CLASS } from '../src/comments';
+import assert from 'assert';
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -169,6 +170,37 @@ describe('Util', () => {
       sws.unsubscribeMultiple(RealTimeFunctionName.LIKE, 'like', references, listener);
       expect(Object.keys(sws.realTimeListeners).length).toBe(0);
       expect(sws.realTimeListeners[key]).toBeUndefined();
+    });
+
+    it('auto reconnect', async () => {
+      const community: Community = store.getState().communities.community;
+      const sws: StackendWebSocket = store.dispatch(getInstance(community));
+      let gotError = false;
+      let reconnectStarted = false;
+      let reconnected = false;
+
+      sws.reconnectDelayMs = 1000; // Make it a bit faster in the test
+
+      sws.addListener((type, event, message) => {
+        gotError = true;
+      }, StackendWebSocketEvent.SOCKET_ERROR);
+      sws.addListener((type, event, message) => {
+        reconnectStarted = true;
+      }, StackendWebSocketEvent.SOCKET_OPENING);
+      sws.addListener((type, event, message) => {
+        reconnected = true;
+      }, StackendWebSocketEvent.SOCKET_OPENED);
+      assert(sws);
+      assert(sws.socket);
+
+      if (sws.socket.onerror) {
+        sws.socket.onerror({} as any);
+      }
+
+      await sleep(sws.reconnectDelayMs + 2000);
+      expect(gotError).toBeTruthy();
+      expect(reconnectStarted).toBeTruthy();
+      expect(reconnected).toBeTruthy();
     });
 
     it('close', async () => {
