@@ -322,3 +322,21 @@ export function getSubSiteNodePermalink(hashPermalink: string | null): string | 
 
   return hashPermalink.substr(SITE_HASH_PREFIX.length);
 }
+
+/**
+ * Get a subsite from storage given a permalink
+ * @param pages
+ * @param permalink
+ */
+export function getSubSiteByPermalink(pages: PagesState, permalink: string): SubSite | null {
+  if (!permalink) {
+    return null;
+  }
+
+  const id = pages.subSiteIdByPermalink[permalink];
+  if (!id) {
+    return null;
+  }
+
+  return pages.subSiteById[id] || null;
+}
