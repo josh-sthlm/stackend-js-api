@@ -1,4 +1,4 @@
-import { getJsonErrorText, newXcapJsonResult, Thunk } from '../api';
+import { getJsonErrorText, newXcapJsonErrorResult, newXcapJsonResult, Thunk } from '../api';
 
 import {
   CLEAR_PAGE,
@@ -164,9 +164,21 @@ export function receivePages(json: GetPagesResult): Thunk<any> {
   };
 }
 
-export function requestSubSite(id: number): Thunk<Promise<GetSubSiteResult>> {
+/**
+ * Request a sub site by id or permalink
+ * @param arg May be a
+ */
+export function requestSubSite(arg: number | { id?: number; permalink?: string }): Thunk<Promise<GetSubSiteResult>> {
   return async (dispatch: any): Promise<GetSubSiteResult> => {
-    const r = await dispatch(getSubSite({ id }));
+    // For backwards compatibility, allow an id
+    let req: any = {};
+    if (typeof arg === 'number') {
+      req.id = arg as number;
+    } else {
+      req = arg;
+    }
+
+    const r = await dispatch(getSubSite(req));
     if (r.error) {
       console.error('Could not get sub sites ' + getJsonErrorText(r));
       return r;
@@ -191,6 +203,43 @@ export function requestSubSite(id: number): Thunk<Promise<GetSubSiteResult>> {
       await dispatch(receiveSubSites({ subSites: { [r.tree.id]: r.tree } }));
     }
     return r;
+  };
+}
+
+/**
+ * Request a missing sub site
+ * @param id
+ * @param permalink
+ */
+export function requestMissingSubSite({
+  id,
+  permalink
+}: {
+  id?: number;
+  permalink?: string;
+}): Thunk<Promise<GetSubSiteResult>> {
+  return async (dispatch: any, getState: any): Promise<GetSubSiteResult> => {
+    const pages: PagesState = getState().pages;
+    let subSite: SubSite | null = null;
+    if (id) {
+      subSite = pages.subSiteById[id];
+    } else if (permalink) {
+      const id = pages.subSiteIdByPermalink[permalink];
+      if (id) {
+        subSite = pages.subSiteById[id];
+      }
+    } else {
+      return newXcapJsonErrorResult<GetSubSiteResult>('supply_id_or_permalink');
+    }
+
+    if (subSite) {
+      return newXcapJsonResult<GetSubSiteResult>('success', {
+        tree: subSite,
+        referencedObjects: {}
+      });
+    }
+
+    return dispatch(requestSubSite({ id, permalink }));
   };
 }
 

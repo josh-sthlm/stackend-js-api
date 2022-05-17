@@ -276,6 +276,9 @@ export default class StackendWebSocket {
     this.reconnectDelayMs = 2 * this.reconnectDelayMs;
     try {
       this.connect();
+      if (this.socket == null) {
+        this._scheduleReconnect();
+      }
     } catch (e) {
       this._scheduleReconnect();
     }
@@ -355,6 +358,22 @@ export default class StackendWebSocket {
 
   _getReferenceKey(component: RealTimeFunctionName, obfuscatedReference: string): string {
     return 'ref:' + component + ':' + obfuscatedReference;
+  }
+
+  _getReferenceData(key: string): { component: string; obfuscatedReference: string } | null {
+    if (!key) {
+      return null;
+    }
+
+    const m = key.match(/^ref:([^:]+):([^:]+)$/);
+    if (m) {
+      return {
+        component: m[1],
+        obfuscatedReference: m[2]
+      };
+    }
+
+    return null;
   }
 
   _addRealTimeListener(key: string, listener: RealTimeListener): boolean {
@@ -473,6 +492,19 @@ export default class StackendWebSocket {
       }
     });
   }
+
+  /* FIXME: Complete this
+  _restoreSubscriptionsOnReconnect(): void {
+    const subsByComponent: { [component: string]: any } = {};
+    Object.keys(this.realTimeListeners).forEach(k => {
+      const listeners: Array<RealTimeListener> = this.realTimeListeners[k];
+      const rd = this._getReferenceData(k);
+      if (rd) {
+        subsByComponent[rd.component];
+      }
+    });
+  }
+   */
 
   /**
    * Unsubscribe from object creation/modification/deletion notifications

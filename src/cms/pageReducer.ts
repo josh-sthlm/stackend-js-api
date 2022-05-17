@@ -11,6 +11,7 @@ export interface PagesState {
   byId: { [id: string]: PageAndLoadedState | null };
   idByPermalink: { [permalink: string]: number | null };
   subSiteById: { [id: string]: SubSite };
+  subSiteIdByPermalink: { [permalink: string]: number | null };
 }
 
 export interface PageAndLoadedState extends Page {
@@ -43,7 +44,8 @@ export default function (
   state: PagesState = {
     byId: {},
     idByPermalink: {},
-    subSiteById: {}
+    subSiteById: {},
+    subSiteIdByPermalink: {}
   },
   action: PageActions
 ): PagesState {
@@ -111,7 +113,9 @@ export default function (
     case RECEIVE_SUB_SITES: {
       const s: PagesState = Object.assign({}, state);
       for (const [subSiteId, subSite] of Object.entries(action.subSites)) {
-        s.subSiteById[subSiteId] = subSite as SubSite;
+        const ss = subSite as SubSite;
+        s.subSiteById[subSiteId] = ss;
+        s.subSiteIdByPermalink[ss.permalink] = parseInt(subSiteId);
       }
 
       return s;
@@ -119,7 +123,8 @@ export default function (
 
     case CLEAR_SUB_SITES: {
       return Object.assign({}, state, {
-        subSiteByIdById: {}
+        subSiteByIdById: {},
+        subSiteIdByPermalink: {}
       });
     }
 

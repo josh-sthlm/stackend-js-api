@@ -557,10 +557,14 @@ export interface GetSubSiteResult extends XcapJsonResult {
 }
 
 /**
- * Get a subsite by id
+ * Get a subsite by id or permalink
  * @param id
+ *
  */
-export function getSubSite({ id }: { id: number } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
+export function getSubSite({
+  id,
+  permalink
+}: { id?: number; permalink?: string } & XcapOptionalParameters): Thunk<Promise<GetSubSiteResult>> {
   return getJson({
     url: '/cms/subsite/get',
     parameters: arguments

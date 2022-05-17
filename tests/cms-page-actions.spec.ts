@@ -3,8 +3,9 @@ import createTestStore from './setup';
 import { initialize } from '../src/api/actions';
 import { STACKEND_COM_COMMUNITY_PERMALINK } from '../src/stackend';
 import assert from 'assert';
-import { getPageByPermalink, requestMissingPages } from '../src/cms/pageActions';
+import { getPageByPermalink, requestMissingPages, requestMissingSubSite, requestSubSite } from '../src/cms/pageActions';
 import { PagesState } from '../src/cms/pageReducer';
+import { GetSubSiteResult } from '../src/cms';
 
 describe('CMS Page Actions', () => {
   const store = createTestStore();
@@ -41,6 +42,48 @@ describe('CMS Page Actions', () => {
 
       expect(getPageByPermalink(pages, 'about')).toBeDefined();
       expect(getPageByPermalink(pages, 'does-not-exist-666')).toBeNull();
+    });
+  });
+
+  describe('requestSubSite', () => {
+    it('Fetch a sub site', async () => {
+      let r: GetSubSiteResult = await store.dispatch(requestSubSite(4)); // For backward compatibility
+      expect(r.error).toBeUndefined();
+      expect(r.tree).toBeDefined();
+      expect(r.tree?.id).toBe(4);
+      expect(r.tree?.permalink).toBe('stackend-com');
+
+      r = await store.dispatch(requestSubSite({ id: 4 }));
+      expect(r.error).toBeUndefined();
+      expect(r.tree).toBeDefined();
+      expect(r.tree?.id).toBe(4);
+      expect(r.tree?.permalink).toBe('stackend-com');
+
+      r = await store.dispatch(requestSubSite({ permalink: 'stackend-com' }));
+      expect(r.error).toBeUndefined();
+      expect(r.tree).toBeDefined();
+      expect(r.tree?.id).toBe(4);
+      expect(r.tree?.permalink).toBe('stackend-com');
+    });
+  });
+
+  describe('requestMissingSubSite', () => {
+    it('Fetch a missing sub site', async () => {
+      const r: GetSubSiteResult = await store.dispatch(requestMissingSubSite({ id: 4 })); // For backward compatibility
+      expect(r.error).toBeUndefined();
+      expect(r.tree).toBeDefined();
+      expect(r.tree?.id).toBe(4);
+      expect(r.tree?.permalink).toBe('stackend-com');
+      let pages: PagesState = store.getState().pages;
+      expect(pages.subSiteById[4]).toBeDefined();
+      expect(pages.subSiteIdByPermalink['stackend-com']).toBe(4);
+
+      const r2: GetSubSiteResult = await store.dispatch(requestMissingSubSite({ id: 4 })); // For backward compatibility
+      expect(r2.error).toBeUndefined();
+      expect(r2.tree === r.tree).toBeTruthy(); // Should be cached
+      pages = store.getState().pages;
+      expect(pages.subSiteById[4]).toBeDefined();
+      expect(pages.subSiteIdByPermalink['stackend-com']).toBe(4);
     });
   });
 });

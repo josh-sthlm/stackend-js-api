@@ -68,6 +68,17 @@ describe('Util', () => {
       expect(myInitializerRun).toBe(1);
     });
 
+    it('_getReferenceKey/_getReferenceData', async () => {
+      const community: Community = store.getState().communities.community;
+      const sws: StackendWebSocket = store.dispatch(getInstance(community));
+      const key = sws._getReferenceKey(RealTimeFunctionName.LIKE, 'abc123');
+      expect(key).toBe('ref:' + RealTimeFunctionName.LIKE + ':abc123');
+      expect(sws._getReferenceData(key)).toStrictEqual({
+        component: RealTimeFunctionName.LIKE,
+        obfuscatedReference: 'abc123'
+      });
+    });
+
     it('getBroadcastIdentifier', async () => {
       const community: Community = store.getState().communities.community;
       const sws: StackendWebSocket = store.dispatch(getInstance(community));
