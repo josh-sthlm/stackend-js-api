@@ -57,6 +57,7 @@ export const SET_CUSTOMER_VAT_INFO = 'SET_CUSTOMER_VAT_INFO';
 export const RECEIVE_CURRENCY = 'RECEIVE_CURRENCY';
 export const RECEIVE_CART = 'RECEIVE_CART';
 export const CLEAR_CART = 'CLEAR_CART';
+export const SET_IS_SHOPIFY_APP = 'SET_IS_SHOPIFY_APP';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -231,7 +232,15 @@ export interface ShopState {
    */
   currencies: { [currencyCode: string]: CurrencyInfo };
 
+  /**
+   * Reference Url id used for basket notification comments
+   */
   shopifyDomainReferenceUrlId: number;
+
+  /**
+   * True if running as shopify app extension that requires integration with the shopify store.
+   */
+  isShopifyApp: boolean;
 }
 
 export type SetShopDefaultsAction = {
@@ -357,6 +366,11 @@ export type ReceiveCurrencyAction = {
   currency: CurrencyInfo;
 };
 
+export type SetIsShopifyAppAction = {
+  type: typeof SET_IS_SHOPIFY_APP;
+  shopifyApp: boolean;
+};
+
 export type ShopActions =
   | SetShopDefaultsAction
   | ReceiveProductTypesAction
@@ -380,7 +394,8 @@ export type ShopActions =
   | SetCustomerVATInfoAction
   | ReceiveCurrencyAction
   | ClearCartAction
-  | ReceiveCartAction;
+  | ReceiveCartAction
+  | SetIsShopifyAppAction;
 
 export default function shopReducer(
   state: ShopState = {
@@ -404,7 +419,8 @@ export default function shopReducer(
     addressFieldsByCountryCode: {},
     vats: null,
     currencies: {},
-    shopifyDomainReferenceUrlId: 0
+    shopifyDomainReferenceUrlId: 0,
+    isShopifyApp: false
   },
   action: ShopActions
 ): ShopState {
@@ -422,7 +438,8 @@ export default function shopReducer(
         countryCodes: null,
         countriesByCode: {},
         addressFieldsByCountryCode: {},
-        shopifyDomainReferenceUrlId: 0
+        shopifyDomainReferenceUrlId: 0,
+        isShopifyApp: false
       });
 
     case RECEIVE_PRODUCT_TYPES: {
@@ -626,6 +643,11 @@ export default function shopReducer(
           ...state.currencies,
           [action.currency.code]: action.currency
         }
+      });
+
+    case SET_IS_SHOPIFY_APP:
+      return Object.assign({}, state, {
+        isShopifyApp: action.shopifyApp || false
       });
   }
 

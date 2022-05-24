@@ -76,6 +76,7 @@ import {
   RECEIVE_PRODUCT_TYPES,
   REMOVE_FROM_BASKET,
   SET_CUSTOMER_VAT_INFO,
+  SET_IS_SHOPIFY_APP,
   SET_SHOP_DEFAULTS,
   SET_VATS,
   SHOP_CLEAR_CACHE,
@@ -1324,5 +1325,15 @@ export function setCustomerVatInfo({
 }) {
   return (dispatch: any, _getState: any): void => {
     dispatch({ type: SET_CUSTOMER_VAT_INFO, customerCountryCode, customerTradeRegion, customerType });
+  };
+}
+
+/**
+ * Run as a shopify app?
+ * @param shopifyApp
+ */
+export function setIsShopifyApp(shopifyApp: boolean): Thunk<void> {
+  return (dispatch: any, _getState: any): void => {
+    dispatch({ type: SET_IS_SHOPIFY_APP, shopifyApp });
   };
 }
