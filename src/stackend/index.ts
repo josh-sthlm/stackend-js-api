@@ -627,7 +627,8 @@ export function isCommunityUrlBlocked(communityUrl: string): boolean {
     billing: true,
     oauth2: true,
     google: true,
-    facebook: true
+    facebook: true,
+    'shopify-app': true
   };
 
   // Remove inital /
