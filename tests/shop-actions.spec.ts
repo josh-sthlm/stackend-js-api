@@ -41,6 +41,12 @@ describe('Shop Actions/Reducers', () => {
       expect(d2).toStrictEqual(n);
 
       store.dispatch(setShopDefaults(d)); // Restore
+
+      const shop: ShopState = store.getState().shop;
+      console.log(shop);
+      expect(shop.enableCartNotifications).toBeDefined();
+      expect(shop.shopifyDomainReferenceUrlId).toBeDefined();
+      expect(shop.isShopifyApp).toBeDefined();
     });
   });
 
@@ -100,6 +106,7 @@ describe('Shop Actions/Reducers', () => {
       const s = store.getState();
       const shop: ShopState = s.shop;
       assert(shop);
+      expect(shop.enableCartNotifications).toBeDefined();
 
       expect(shop.productListings).toBeDefined();
       const key = store.dispatch(getProductListKey(req));

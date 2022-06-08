@@ -28,7 +28,7 @@ import {
 } from '../shop/shopReducer';
 import Logger from '../util/Logger';
 import { LoadJsonResult } from './LoadJson';
-import { setCommunityVATS } from '../shop/shopActions';
+import { setCommunityVATS, setEnableCartNotifications } from '../shop/shopActions';
 
 export interface InitializeRequest extends GetInitialStoreValuesRequest {
   config?: Partial<Config>;
@@ -124,11 +124,13 @@ export function loadInitialStoreValues(
       dispatch(receiveSubSites({ subSites: r.subSites }));
     }
 
+    const community = r.stackendCommunity as Community;
+
     dispatch(receiveInitialStoreValues(r));
     dispatch(setRequestInfo({ referenceUrlId: r.referenceUrlId }));
     dispatch(receiveLoginData({ user: r.user }));
-    dispatch(setCurrentCommunity(r.stackendCommunity as Community));
-    dispatch(setCommunityVATS(r.stackendCommunity as Community));
+    dispatch(setCurrentCommunity(community));
+    dispatch(setCommunityVATS(community));
     //dispatch(receiveNotificationCounts({ numberOfUnseen: r.numberOfUnseen }));
 
     dispatch(receiveResourceUsage(r as any as ResourceUsage)); // fields not documented
@@ -154,6 +156,10 @@ export function loadInitialStoreValues(
 
       if (shopifyDomainReferenceUrlId !== 0) {
         dispatch({ type: RECEIVE_SHOPIFY_DOMAIN_REFERENCE_URL_ID, shopifyDomainReferenceUrlId });
+      }
+
+      if (community.settings.shop && typeof community.settings.shop.cartNotifications === 'boolean') {
+        dispatch(setEnableCartNotifications(community.settings.shop.cartNotifications));
       }
     }
 

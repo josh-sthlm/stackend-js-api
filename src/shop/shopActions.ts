@@ -76,6 +76,7 @@ import {
   RECEIVE_PRODUCT_TYPES,
   REMOVE_FROM_BASKET,
   SET_CUSTOMER_VAT_INFO,
+  SET_ENABLE_CART_NOTIFICATIONS,
   SET_IS_SHOPIFY_APP,
   SET_SHOP_DEFAULTS,
   SET_VATS,
@@ -1335,5 +1336,15 @@ export function setCustomerVatInfo({
 export function setIsShopifyApp(shopifyApp: boolean): Thunk<void> {
   return (dispatch: any, _getState: any): void => {
     dispatch({ type: SET_IS_SHOPIFY_APP, shopifyApp });
+  };
+}
+
+/**
+ * Enable/disable cart notifications
+ * @param enableCartNotifications
+ */
+export function setEnableCartNotifications(enableCartNotifications: boolean): Thunk<void> {
+  return (dispatch: any, _getState: any): void => {
+    dispatch({ type: SET_ENABLE_CART_NOTIFICATIONS, enableCartNotifications });
   };
 }

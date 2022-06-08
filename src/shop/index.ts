@@ -255,16 +255,19 @@ export interface StoreShopConfigurationResult extends XcapJsonResult {
  * @param shop
  * @param storeFrontAccessToken
  * @param webhookKey
+ * @param enableCartNotifications
  * @returns {Thunk<XcapJsonResult>}
  */
 export function storeShopConfiguration({
   shop,
   storeFrontAccessToken,
-  webhookKey
+  webhookKey,
+  enableCartNotifications = false
 }: {
   shop: string | null;
   storeFrontAccessToken: string | null;
   webhookKey: string | null;
+  enableCartNotifications: boolean;
 } & XcapOptionalParameters): Thunk<Promise<StoreShopConfigurationResult>> {
   return post({
     url: '/shop/admin/store-config',

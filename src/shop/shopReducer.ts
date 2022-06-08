@@ -58,6 +58,7 @@ export const RECEIVE_CURRENCY = 'RECEIVE_CURRENCY';
 export const RECEIVE_CART = 'RECEIVE_CART';
 export const CLEAR_CART = 'CLEAR_CART';
 export const SET_IS_SHOPIFY_APP = 'SET_IS_SHOPIFY_APP';
+export const SET_ENABLE_CART_NOTIFICATIONS = 'SET_ENABLE_CART_NOTIFICATIONS';
 
 export const DEFAULT_PRODUCT_TYPE = '';
 
@@ -238,6 +239,11 @@ export interface ShopState {
   shopifyDomainReferenceUrlId: number;
 
   /**
+   * Should cart notifications be enabled? (Posts a comment when someone adds a product to their cart)
+   */
+  enableCartNotifications: boolean;
+
+  /**
    * True if running as shopify app extension that requires integration with the shopify store.
    */
   isShopifyApp: boolean;
@@ -371,6 +377,11 @@ export type SetIsShopifyAppAction = {
   shopifyApp: boolean;
 };
 
+export type SetEnableCartNotificationsAction = {
+  type: typeof SET_ENABLE_CART_NOTIFICATIONS;
+  enableCartNotifications: boolean;
+};
+
 export type ShopActions =
   | SetShopDefaultsAction
   | ReceiveProductTypesAction
@@ -395,7 +406,8 @@ export type ShopActions =
   | ReceiveCurrencyAction
   | ClearCartAction
   | ReceiveCartAction
-  | SetIsShopifyAppAction;
+  | SetIsShopifyAppAction
+  | SetEnableCartNotificationsAction;
 
 export default function shopReducer(
   state: ShopState = {
@@ -419,6 +431,7 @@ export default function shopReducer(
     addressFieldsByCountryCode: {},
     vats: null,
     currencies: {},
+    enableCartNotifications: false,
     shopifyDomainReferenceUrlId: 0,
     isShopifyApp: false
   },
@@ -438,6 +451,7 @@ export default function shopReducer(
         countryCodes: null,
         countriesByCode: {},
         addressFieldsByCountryCode: {},
+        enableCartNotifications: false,
         shopifyDomainReferenceUrlId: 0,
         isShopifyApp: false
       });
@@ -648,6 +662,11 @@ export default function shopReducer(
     case SET_IS_SHOPIFY_APP:
       return Object.assign({}, state, {
         isShopifyApp: action.shopifyApp || false
+      });
+
+    case SET_ENABLE_CART_NOTIFICATIONS:
+      return Object.assign({}, state, {
+        enableCartNotifications: action.enableCartNotifications || false
       });
   }
 
