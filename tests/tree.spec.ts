@@ -1,4 +1,4 @@
-import { addNode, InsertionPoint, moveTreeNode, newTree, newTreeNode } from '../src/api/tree';
+import { addNode, getTreeNodeByPermalink, InsertionPoint, moveTreeNode, newTree, newTreeNode } from '../src/api/tree';
 
 describe('Tree', () => {
   describe('newTree', () => {
@@ -80,5 +80,27 @@ describe('Tree', () => {
       expect(t.children).toStrictEqual([n1]);
       expect(t.children[0].children).toStrictEqual([n2]);
     });
+  });
+
+  describe('getTreeNodeByPermalink', () => {
+    const t = newTree('Tree');
+    const n1 = newTreeNode('Node 1');
+    const n2 = newTreeNode('Node 2');
+    const n3 = newTreeNode('Node 3');
+    addNode(t, n1);
+    addNode(t, n2);
+    addNode(t, n3);
+    moveTreeNode(t, n3, InsertionPoint.CHILD, n2);
+
+    expect(getTreeNodeByPermalink(t, null)).toBeNull();
+    expect(getTreeNodeByPermalink(t, '')).toBeNull();
+    expect(getTreeNodeByPermalink(t, 'node-x')).toBeNull();
+
+    expect(getTreeNodeByPermalink(t, 'node-1') === n1).toBeTruthy();
+    expect(getTreeNodeByPermalink(t, '/node-1/') === n1).toBeTruthy();
+    expect(getTreeNodeByPermalink(t, 'node-2') === n2).toBeTruthy();
+
+    expect(getTreeNodeByPermalink(t, 'node-2/node-3') === n3).toBeTruthy();
+    expect(getTreeNodeByPermalink(t, 'node-2/node-5')).toBeNull();
   });
 });

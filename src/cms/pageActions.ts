@@ -11,7 +11,7 @@ import {
 } from './pageReducer';
 
 import { getPages, GetPagesResult, getSubSite, GetSubSiteResult, Page, SubSiteNode, SubSite } from './index';
-import { getPermalink } from '../api/tree';
+import { getPermalink, getTreeNodeByPermalink } from '../api/tree';
 
 /**
  * Request multiple pages
@@ -340,3 +340,10 @@ export function getSubSiteByPermalink(pages: PagesState, permalink: string): Sub
 
   return pages.subSiteById[id] || null;
 }
+
+/**
+ * Get a node within a subsite given its permalink
+ * @param subSite
+ * @param permalink
+ */
+export const getSubSiteNodeByPermalink = getTreeNodeByPermalink;

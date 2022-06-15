@@ -176,6 +176,46 @@ export function getTreePathMatch(
 }
 
 /**
+ * Get a tree node by its permalink
+ * @param tree
+ * @param permalink
+ */
+export function getTreeNodeByPermalink(tree: Tree, permalink: string | null): Node | null {
+  if (!tree || !permalink) {
+    return null;
+  }
+
+  const p = permalink.replace(/^\//, '').replace(/\/$/, '');
+  if (!p) {
+    return null;
+  }
+
+  return _findNodeByPermalink(tree, p);
+}
+
+export function _findNodeByPermalink(tree: Tree, permalink: string, accumulatedPermalink?: string): Node | null {
+  if (!tree) {
+    return null;
+  }
+
+  for (let i = 0; i < tree.children.length; i++) {
+    const n = tree.children[i];
+
+    const p = (accumulatedPermalink ? accumulatedPermalink + '/' : '') + n.permalink;
+    if (permalink == p) {
+      return n;
+    }
+
+    const f = _findNodeByPermalink(n as Tree, permalink, p);
+    if (f) {
+      return f;
+    }
+  }
+
+  return null;
+}
+
+/**
  * Remove a tree node
  * @param tree
  * @param node
