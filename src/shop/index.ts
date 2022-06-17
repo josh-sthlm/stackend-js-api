@@ -203,6 +203,7 @@ export interface GetShopConfigurationResult extends XcapJsonResult {
   shop: string | null;
   storeFrontAccessToken: string | null;
   webhookKey: string | null;
+  enableCartNotifications: boolean;
 }
 
 /**

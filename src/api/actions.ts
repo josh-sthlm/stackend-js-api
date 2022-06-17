@@ -158,8 +158,8 @@ export function loadInitialStoreValues(
         dispatch({ type: RECEIVE_SHOPIFY_DOMAIN_REFERENCE_URL_ID, shopifyDomainReferenceUrlId });
       }
 
-      if (community.settings.shop && typeof community.settings.shop.cartNotifications === 'boolean') {
-        dispatch(setEnableCartNotifications(community.settings.shop.cartNotifications));
+      if (community.settings.shop && typeof community.settings.shop.enableCartNotifications === 'boolean') {
+        dispatch(setEnableCartNotifications(community.settings.shop.enableCartNotifications));
       }
     }
 
