@@ -47,11 +47,14 @@ export enum ModuleType {
   SHOP_BASKET = 'stackend-shop-basket',
 
   /** Live Event with video and chat */
-  LIVE = 'stackend-live'
+  LIVE = 'stackend-live',
+
+  /** Listing of Live Events  */
+  LIVE_LISTING = 'stackend-live-listing'
 }
 
 export interface ModuleInfo {
-  /** Human readable name */
+  /** Human-readable name */
   name: string;
 
   /** Type */
@@ -270,6 +273,18 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     addAutomatically: false,
     parameters: ['id', 'layout'],
     simpleId: false,
+    fetchData: true,
+    complex: false,
+    xcapModuleType: 'live',
+    defaultContext: 'comments'
+  },
+  [ModuleType.LIVE_LISTING]: {
+    name: 'Live Event Listing',
+    type: ModuleType.LIVE_LISTING,
+    singleton: false,
+    addAutomatically: false,
+    parameters: ['id'],
+    simpleId: true,
     fetchData: true,
     complex: false,
     xcapModuleType: 'live',
