@@ -1,4 +1,5 @@
-import { Module, newModule } from '../stackend';
+import { GetModulesResult, Module, newModule } from '../stackend';
+import { getJson, Thunk } from '../api';
 
 /**
  * Component class: com.stackend.live.LiveEventManager
@@ -111,4 +112,23 @@ export function filterLiveEventModule(module: Module, state: LiveEventState): bo
   return (
     isLiveEventModule(module) && (typeof module?.settings?.state === 'undefined' || module?.settings?.state === state)
   );
+}
+
+/**
+ * A variation of list modules that lists only live events
+ */
+export function listLiveEvents({
+  pageSize = 1000 /* No pagination support */,
+  matchEnabled = undefined
+}: {
+  pageSize: number;
+  matchEnabled?: boolean;
+}): Thunk<Promise<GetModulesResult>> {
+  return getJson({
+    url: '/live/list',
+    parameters: {
+      pageSize,
+      matchEnabled
+    }
+  });
 }
