@@ -18,11 +18,18 @@ export const COMPONENT_NAME = 'live';
  */
 export const COMPONENT_CONTEXT = 'comments';
 
+export enum LiveEventState {
+  SCHEDULED = 'SCHEDULED',
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED'
+}
+
 /**
  * Settings for live modules
  */
 export interface LiveEventModuleSettings {
   startDate?: number;
+  state: LiveEventState;
   descriptionCmsId?: number;
   showTitle: boolean;
   videoId?: string;
@@ -53,7 +60,7 @@ export function newLiveEventModule({
 }: {
   communityId: number;
   name: string;
-  settings?: LiveEventModuleSettings;
+  settings?: Partial<LiveEventModuleSettings>;
 }): Module {
   const m = newModule({
     communityId,
@@ -63,7 +70,13 @@ export function newLiveEventModule({
   });
 
   m.componentName = COMPONENT_NAME;
-  m.settings = Object.assign({ showTitle: true }, settings || {});
+  m.settings = Object.assign(
+    {
+      showTitle: true,
+      state: LiveEventState.SCHEDULED
+    },
+    settings || {}
+  );
 
   return m;
 }
@@ -86,4 +99,16 @@ export function getLiveEventModuleSettings(module: Module): LiveEventModuleSetti
     throw 'Not a live event module: ' + module.id + ' (' + module.componentName + ')';
   }
   return module.settings as LiveEventModuleSettings;
+}
+
+/**
+ * Filter live event modules matching a given state
+ * @param module
+ * @param state
+ */
+export function filterLiveEventModule(module: Module, state: LiveEventState): boolean {
+  // undefined check for backward compatibility
+  return (
+    isLiveEventModule(module) && (typeof module?.settings?.state === 'undefined' || module?.settings?.state === state)
+  );
 }
