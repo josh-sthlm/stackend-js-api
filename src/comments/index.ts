@@ -246,7 +246,8 @@ export function postComment({
   subject,
   body,
   extraInformation,
-  referenceUrl
+  referenceUrl,
+  createdDate
 }: {
   commentId?: number;
   referenceId: number;
@@ -257,6 +258,7 @@ export function postComment({
   body: string;
   extraInformation?: any;
   referenceUrl?: string;
+  createdDate?: number;
 } & XcapOptionalParameters): Thunk<Promise<PostCommentResult>> {
   // Add referenceUrl, if not set
   if (!referenceUrl && isRunningInBrowser()) {
