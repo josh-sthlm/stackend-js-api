@@ -1,5 +1,6 @@
 import {
   COMMUNITY_PARAMETER,
+  DEFAULT_COMMUNITY,
   getJson,
   isRunningServerSide,
   post,
@@ -1318,6 +1319,22 @@ export function cartNotifyProductAdded(params: CartNotifyProductAddedRequest): T
       post({
         url: '/shop/cart/notify-product-added',
         parameters: { ...params }
+      })
+    );
+  };
+}
+
+/**
+ * Store shop app  activating code
+ * @param params string
+ * @param code string
+ */
+export function storeAppActivationCode({ shop, code }: { shop: string; code: string }): Thunk<Promise<XcapJsonResult>> {
+  return (dispatch: any): Promise<XcapJsonResult> => {
+    return dispatch(
+      post({
+        url: '/shop/app/store-activation-code',
+        parameters: { shop, code, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
       })
     );
   };
