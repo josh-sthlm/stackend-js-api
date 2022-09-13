@@ -1325,16 +1325,31 @@ export function cartNotifyProductAdded(params: CartNotifyProductAddedRequest): T
 }
 
 /**
- * Store shop app  activating code
+ * Save the storefront access token for use when connecting the shop
  * @param params string
- * @param code string
+ * @param at string
  */
-export function storeAppActivationCode({ shop, code }: { shop: string; code: string }): Thunk<Promise<XcapJsonResult>> {
+export function saveStoreFrontAccessToken({ shop, at }: { shop: string; at: string }): Thunk<Promise<XcapJsonResult>> {
   return (dispatch: any): Promise<XcapJsonResult> => {
     return dispatch(
       post({
-        url: '/shop/app/store-activation-code',
-        parameters: { shop, code, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
+        url: '/shop/app/save-store-front-access-token',
+        parameters: { shop, at, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
+      })
+    );
+  };
+}
+
+/**
+ * Connect the shop with a community. The storefront access token must to save first
+ * @param shop string
+ */
+export function connectStore({ shop }: { shop: string }): Thunk<Promise<XcapJsonResult>> {
+  return (dispatch: any): Promise<XcapJsonResult> => {
+    return dispatch(
+      post({
+        url: '/shop/app/connect-store',
+        parameters: { shop }
       })
     );
   };
