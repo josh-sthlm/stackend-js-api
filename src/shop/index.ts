@@ -1332,7 +1332,7 @@ export function cartNotifyProductAdded(params: CartNotifyProductAddedRequest): T
 export function saveStoreFrontAccessToken({ shop, at }: { shop: string; at: string }): Thunk<Promise<XcapJsonResult>> {
   return (dispatch: any): Promise<XcapJsonResult> => {
     return dispatch(
-      post({
+      getJson({
         url: '/shop/app/save-store-front-access-token',
         parameters: { shop, at, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
       })
