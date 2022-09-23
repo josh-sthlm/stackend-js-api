@@ -1,6 +1,5 @@
 import {
   COMMUNITY_PARAMETER,
-  DEFAULT_COMMUNITY,
   getJson,
   isRunningServerSide,
   post,
@@ -14,7 +13,6 @@ import { ShopConfig, ShopDefaults } from './shopReducer';
 import { Community } from '../stackend';
 import { CommunityState } from '../stackend/communityReducer';
 import * as ShopifyClientside from './shopify-clientside';
-import { User } from '../user';
 
 export interface SlimProductImage {
   altText: string | null;
@@ -1320,117 +1318,6 @@ export function cartNotifyProductAdded(params: CartNotifyProductAddedRequest): T
       post({
         url: '/shop/cart/notify-product-added',
         parameters: { ...params }
-      })
-    );
-  };
-}
-
-/**
- * Save the storefront access token for use when connecting the shop
- * @param params string
- * @param at string
- */
-export function saveStoreFrontAccessToken({ shop, at }: { shop: string; at: string }): Thunk<Promise<XcapJsonResult>> {
-  return (dispatch: any): Promise<XcapJsonResult> => {
-    return dispatch(
-      getJson({
-        url: '/shop/app/save-store-front-access-token',
-        parameters: { shop, at, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
-      })
-    );
-  };
-}
-
-/**
- * Connect an existing shop with a community. The storefront access token must first be saved
- * @param shop string
- */
-export function connectStore({ shop }: { shop: string }): Thunk<Promise<XcapJsonResult>> {
-  return (dispatch: any): Promise<XcapJsonResult> => {
-    return dispatch(
-      post({
-        url: '/shop/app/connect-store',
-        parameters: { shop }
-      })
-    );
-  };
-}
-
-export interface CreateStackAndConnectStoreResult extends XcapJsonResult {
-  /** If true, the shop was successfully registered */
-  shopRegistered: boolean;
-
-  /** The community, or null if not available */
-  stackendCommunity?: Community;
-
-  /** The user, or null if not available */
-  user?: User;
-
-  /** True if an existing user was used */
-  usingExistingUser: boolean;
-
-  /** True if an existing community was used */
-  usingExistingCommunity: boolean;
-
-  /** If non-null, then the user already exists and this is the list of connectable communities */
-  userCommunities?: Array<Community>;
-
-  /** The login token */
-  loginToken?: string;
-}
-
-/**
- * Create a new community, user and connect it to a shop.
- * If the loginToken is supplied, the user is authenticated with an existing community and that
- * community will be connected to the shop.
- * For backend use only. The loginToken should not be shared with users.
- */
-export function createStackAndConnectStore(params: {
-  shop: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  userIp?: string;
-  pictureUrl?: string;
-  /** Optional login token used to authenticate the user to an existing community */
-  loginToken?: string;
-}): Thunk<Promise<CreateStackAndConnectStoreResult>> {
-  return (dispatch: any): Promise<CreateStackAndConnectStoreResult> => {
-    return dispatch(
-      getJson({
-        url: '/shop/app/create-stack-and-connect-store',
-        parameters: {
-          ...params,
-          [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
-        }
-      })
-    );
-  };
-}
-
-export interface AuthenticateShopifyUser extends XcapJsonResult {
-  user?: User;
-  credentials?: string;
-}
-
-/**
- * Authenticate a shopify user
- * For backend use only. The loginToken should not be shared with users.
- * @param params
- */
-export function authenticateShopifyUser(params: {
-  shop: string;
-  communityId: number;
-  loginToken: string;
-}): Thunk<Promise<AuthenticateShopifyUser>> {
-  return (dispatch: any): Promise<AuthenticateShopifyUser> => {
-    return dispatch(
-      getJson({
-        url: '/shop/app/authenticate-shopify-user',
-        parameters: {
-          ...params,
-          [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
-        }
       })
     );
   };
