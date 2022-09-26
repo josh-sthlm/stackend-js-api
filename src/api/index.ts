@@ -765,11 +765,24 @@ export function addRelatedObjectsToStore(dispatch: Dispatch, json: any): void {
 }
 
 export type XcapOptionalParameters = {
+  /** Set the community parameter to target a specific community (typically from admin) */
   [COMMUNITY_PARAMETER]?: string | null | undefined;
 };
 
+/**
+ * Parameters for requests requiring an appid and api key
+ */
+export type StackendApiKeyParameters = {
+  /** Set this if the request requires a stackend app id and api key */
+  stackend_appid?: string | null | undefined;
+  /** Set this if the request requires a stackend app id and api key */
+  stackend_apikey?: string | null | undefined;
+};
+
 export type ParameterValue = string | number | boolean | null | undefined | Array<string | number | boolean | null>;
-export type Parameters = (XcapOptionalParameters & { [name: string]: ParameterValue }) | string;
+export type Parameters =
+  | (XcapOptionalParameters & StackendApiKeyParameters & { [name: string]: ParameterValue })
+  | string;
 
 export interface XcapJsonRequest {
   /** Path on the api server */

@@ -1,33 +1,49 @@
-import { COMMUNITY_PARAMETER, DEFAULT_COMMUNITY, getJson, post, Thunk, XcapJsonResult } from '../api';
+import {
+  COMMUNITY_PARAMETER,
+  DEFAULT_COMMUNITY,
+  getJson,
+  post,
+  StackendApiKeyParameters,
+  Thunk,
+  XcapJsonResult
+} from '../api';
 import { Community } from '../stackend';
 import { User } from '../user';
 
+export type SaveStoreFrontAccessTokenRequest = StackendApiKeyParameters & {
+  shop: string;
+  at: string;
+};
+
 /**
- * Save the storefront access token for use when connecting the shop
- * @param params string
- * @param at string
+ * Save the storefront access token for use when connecting the shop.
+ * Requires stackend appid and api key.
  */
-export function saveStoreFrontAccessToken({ shop, at }: { shop: string; at: string }): Thunk<Promise<XcapJsonResult>> {
+export function saveStoreFrontAccessToken(params: SaveStoreFrontAccessTokenRequest): Thunk<Promise<XcapJsonResult>> {
   return (dispatch: any): Promise<XcapJsonResult> => {
     return dispatch(
       getJson({
         url: '/shop/app/save-store-front-access-token',
-        parameters: { shop, at, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
+        parameters: { ...params, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
       })
     );
   };
 }
 
+export type ConnectStoreRequest = StackendApiKeyParameters & {
+  shop: string;
+};
+
 /**
  * Connect an existing shop with a community. The storefront access token must first be saved
- * @param shop string
+ * Requires stackend appid and api key.
  */
-export function connectStore({ shop }: { shop: string }): Thunk<Promise<XcapJsonResult>> {
+export function connectStore(params: ConnectStoreRequest): Thunk<Promise<XcapJsonResult>> {
   return (dispatch: any): Promise<XcapJsonResult> => {
     return dispatch(
       post({
         url: '/shop/app/connect-store',
-        parameters: { shop }
+        parameters: { ...params }
       })
     );
   };
@@ -44,7 +60,7 @@ export interface ShopifyUserInfo {
   userIp?: string;
 }
 
-export interface CreateStackAndConnectStoreRequest extends ShopifyUserInfo {
+export interface CreateStackAndConnectStoreRequest extends ShopifyUserInfo, StackendApiKeyParameters {
   /** Shop id or domain */
   shop: string;
   /** Optional login token used to authenticate the user to an existing community */
@@ -79,6 +95,7 @@ export interface CreateStackAndConnectStoreResult extends XcapJsonResult {
  * If the loginToken is supplied, the user is authenticated with an existing community and that
  * community will be connected to the shop.
  * For backend use only. The loginToken should not be shared with users.
+ * Requires stackend appid and api key.
  */
 export function createStackAndConnectStore(
   params: CreateStackAndConnectStoreRequest
@@ -96,7 +113,7 @@ export function createStackAndConnectStore(
   };
 }
 
-export interface AuthenticateShopifyUserRequest extends ShopifyUserInfo {
+export interface AuthenticateShopifyUserRequest extends ShopifyUserInfo, StackendApiKeyParameters {
   /** Shop id or domain */
   shop: string;
 
@@ -122,6 +139,7 @@ export interface AuthenticateShopifyUserResult extends XcapJsonResult {
  * Authenticate a shopify user.
  * Supply the shopify user info to update or automatically create a new user if needed.
  * For backend use only. The loginToken should not be shared with users.
+ * Requires stackend appid and api key.
  * @param params
  */
 export function authenticateShopifyUser(
@@ -140,11 +158,19 @@ export function authenticateShopifyUser(
   };
 }
 
+export type RemoveShopifyUserRequest = StackendApiKeyParameters & {
+  shop: string;
+  communityId: number;
+  loginToken: string;
+  email: string;
+};
+
 /**
  * Remove a previously created shopify user
+ * Requires stackend appid and api key.
  * @param params
  */
-export function removeShopifyUser(params: { shop: string; communityId: number; loginToken: string; email: string }) {
+export function removeShopifyUser(params: RemoveShopifyUserRequest) {
   return (dispatch: any): Promise<XcapJsonResult> => {
     return dispatch(
       getJson({
