@@ -56,8 +56,10 @@ export interface ShopifyUserInfo {
   firstName: string;
   lastName: string;
   email: string;
+  emailVerified?: boolean;
   pictureUrl?: string;
   userIp?: string;
+  locale?: string;
 }
 
 export interface CreateStackAndConnectStoreRequest extends ShopifyUserInfo, StackendApiKeyParameters {
@@ -88,6 +90,9 @@ export interface CreateStackAndConnectStoreResult extends XcapJsonResult {
 
   /** The login token */
   loginToken?: string;
+
+  /** Credentials to be set in the user session, if logged in */
+  credentials?: string;
 }
 
 /**
