@@ -49,6 +49,26 @@ export function connectStore(params: ConnectStoreRequest): Thunk<Promise<XcapJso
   };
 }
 
+export type DisconnectStoreRequest = StackendApiKeyParameters & {
+  shop: string;
+  communityId: number;
+};
+
+/**
+ * Disconnect a shop existing from a community.
+ * Requires stackend appid and api key.
+ */
+export function disconnectStore(params: DisconnectStoreRequest): Thunk<Promise<XcapJsonResult>> {
+  return (dispatch: any): Promise<XcapJsonResult> => {
+    return dispatch(
+      post({
+        url: '/shop/app/disconnect-store',
+        parameters: { ...params }
+      })
+    );
+  };
+}
+
 /**
  * Describes a shopify user
  */
@@ -85,14 +105,17 @@ export interface CreateStackAndConnectStoreResult extends XcapJsonResult {
   /** True if an existing community was used */
   usingExistingCommunity: boolean;
 
-  /** If non-null, then the user already exists and this is the list of connectable communities */
-  userCommunities?: Array<Community>;
-
   /** The login token */
   loginToken?: string;
 
   /** Credentials to be set in the user session, if logged in */
   credentials?: string;
+
+  /** If non-null, then the user already exists and this is the list of connectable communities */
+  userCommunities?: Array<Community>;
+
+  /** If non-null, then this community is already connected with the shop, but the user is not an admin */
+  conflictsWithCommunity?: Community;
 }
 
 /**
