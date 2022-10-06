@@ -51,11 +51,13 @@ export function connectStore(params: ConnectStoreRequest): Thunk<Promise<XcapJso
 
 export type DisconnectStoreRequest = StackendApiKeyParameters & {
   shop: string;
-  communityId: number;
+  communityId?: number;
+  ownerEmail?: string;
 };
 
 /**
  * Disconnect a shop existing from a community.
+ * Supply either communityId or ownerEmail.
  * Requires stackend appid and api key.
  */
 export function disconnectStore(params: DisconnectStoreRequest): Thunk<Promise<XcapJsonResult>> {
