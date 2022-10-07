@@ -200,11 +200,34 @@ export type RemoveShopifyUserRequest = StackendApiKeyParameters & {
  * Requires stackend appid and api key.
  * @param params
  */
-export function removeShopifyUser(params: RemoveShopifyUserRequest) {
+export function removeShopifyUser(params: RemoveShopifyUserRequest): Thunk<Promise<XcapJsonResult>> {
   return (dispatch: any): Promise<XcapJsonResult> => {
     return dispatch(
       getJson({
         url: '/shop/app/remove-shopify-user',
+        parameters: {
+          ...params,
+          [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
+        }
+      })
+    );
+  };
+}
+
+export type ListConnectableCommunities = XcapJsonResult & {
+  communities: Array<Community>;
+};
+
+/**
+ * List connectable communities: Unconnected communities where the user is admin.
+ * Requires stackend appid and api key.
+ * @param params
+ */
+export function listConnectableCommunities(params: { email: string }): Thunk<Promise<ListConnectableCommunities>> {
+  return (dispatch: any): Promise<ListConnectableCommunities> => {
+    return dispatch(
+      getJson({
+        url: '/shop/app/list-connectable-communities',
         parameters: {
           ...params,
           [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
