@@ -214,6 +214,10 @@ export function removeShopifyUser(params: RemoveShopifyUserRequest): Thunk<Promi
   };
 }
 
+export type ListConnectableCommunitiesRequest = StackendApiKeyParameters & {
+  email: string;
+};
+
 export type ListConnectableCommunities = XcapJsonResult & {
   communities: Array<Community>;
 };
@@ -223,7 +227,9 @@ export type ListConnectableCommunities = XcapJsonResult & {
  * Requires stackend appid and api key.
  * @param params
  */
-export function listConnectableCommunities(params: { email: string }): Thunk<Promise<ListConnectableCommunities>> {
+export function listConnectableCommunities(
+  params: ListConnectableCommunitiesRequest
+): Thunk<Promise<ListConnectableCommunities>> {
   return (dispatch: any): Promise<ListConnectableCommunities> => {
     return dispatch(
       getJson({
