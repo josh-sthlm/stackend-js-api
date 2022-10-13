@@ -2,7 +2,6 @@ import {
   COMMUNITY_PARAMETER,
   DEFAULT_COMMUNITY,
   getJson,
-  post,
   StackendApiKeyParameters,
   Thunk,
   XcapJsonResult
@@ -32,6 +31,8 @@ export function saveStoreFrontAccessToken(params: SaveStoreFrontAccessTokenReque
 
 export type ConnectStoreRequest = StackendApiKeyParameters & {
   shop: string;
+  email: string;
+  communityId: string;
 };
 
 /**
@@ -41,9 +42,9 @@ export type ConnectStoreRequest = StackendApiKeyParameters & {
 export function connectStore(params: ConnectStoreRequest): Thunk<Promise<XcapJsonResult>> {
   return (dispatch: any): Promise<XcapJsonResult> => {
     return dispatch(
-      post({
+      getJson({
         url: '/shop/app/connect-store',
-        parameters: { ...params }
+        parameters: { ...params, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
       })
     );
   };
@@ -52,7 +53,7 @@ export function connectStore(params: ConnectStoreRequest): Thunk<Promise<XcapJso
 export type DisconnectStoreRequest = StackendApiKeyParameters & {
   shop: string;
   communityId?: number;
-  ownerEmail?: string;
+  email?: string;
 };
 
 /**
@@ -63,9 +64,9 @@ export type DisconnectStoreRequest = StackendApiKeyParameters & {
 export function disconnectStore(params: DisconnectStoreRequest): Thunk<Promise<XcapJsonResult>> {
   return (dispatch: any): Promise<XcapJsonResult> => {
     return dispatch(
-      post({
+      getJson({
         url: '/shop/app/disconnect-store',
-        parameters: { ...params }
+        parameters: { ...params, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
       })
     );
   };
