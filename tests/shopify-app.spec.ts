@@ -8,7 +8,7 @@ describe('Shopify app ', () => {
       const t1 = otp.getMinute();
       await new Promise(resolve => setTimeout(resolve, 1000));
       const t2 = otp.getMinute();
-      expect(t2 - t1).toBeLessThan(1);
+      expect(t2 - t1).toBeLessThan(2);
     });
 
     it('Generate', async () => {
