@@ -37,12 +37,16 @@ export type ConnectStoreRequest = StackendApiKeyParameters & {
   communityId: string;
 };
 
+export type ConnectStoreResult = XcapJsonResult & {
+  stackendCommunity: Community | null;
+};
+
 /**
  * Connect an existing shop with a community. The storefront access token must first be saved
  * Requires stackend appid and api key.
  */
-export function connectStore(params: ConnectStoreRequest): Thunk<Promise<XcapJsonResult>> {
-  return (dispatch: any): Promise<XcapJsonResult> => {
+export function connectStore(params: ConnectStoreRequest): Thunk<Promise<ConnectStoreResult>> {
+  return (dispatch: any): Promise<ConnectStoreResult> => {
     return dispatch(
       getJson({
         url: '/shop/app/connect-store',
