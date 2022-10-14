@@ -9,6 +9,8 @@ import {
 import { Community } from '../stackend';
 import { User } from '../user';
 
+import { createHash } from 'crypto';
+
 export type SaveStoreFrontAccessTokenRequest = StackendApiKeyParameters & {
   shop: string;
   at: string;
@@ -242,4 +244,49 @@ export function listConnectableCommunities(
       })
     );
   };
+}
+
+/**
+ * Generate a one time password for login to stackend.
+ * Use from backend only to keep the secret.
+ */
+export class OTP {
+  secret: string;
+
+  constructor(secret: string) {
+    this.secret = secret;
+  }
+
+  getMinute(): number {
+    return Math.round(Date.now() / (60 * 1000));
+  }
+
+  async generate(email: string, communityId: number, minute?: number): Promise<string> {
+    if (!minute) {
+      minute = this.getMinute();
+    }
+    // Do not change this format or hash function. It must match what backend expects
+    const d = email + ';' + communityId + ';' + this.secret + ';' + minute;
+
+    const hash = createHash('sha256');
+    hash.update(d); // new TextEncoder().encode(d)
+    return hash.digest('hex');
+  }
+
+  async verify(email: string, communityId: number, otp: string): Promise<boolean> {
+    if (!otp || !email || !communityId) {
+      return false;
+    }
+
+    const minute = this.getMinute();
+    // Valid for up to 3 minutes to allow processing time and server time diff
+    for (let i = 0; i < 3; i++) {
+      const x = await this.generate(email, communityId, minute - i);
+      if (x === otp) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
