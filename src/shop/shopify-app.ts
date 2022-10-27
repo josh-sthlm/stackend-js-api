@@ -31,6 +31,25 @@ export function saveStoreFrontAccessToken(params: SaveStoreFrontAccessTokenReque
   };
 }
 
+type IsStoreConnectedResult = XcapJsonResult & {
+  connected: boolean;
+  communityId: number;
+};
+/**
+ * Connect an existing shop with a community. The storefront access token must first be saved
+ * Requires stackend appid and api key.
+ */
+export function isStoreConnected(params: { shop: string }): Thunk<Promise<IsStoreConnectedResult>> {
+  return (dispatch: any): Promise<IsStoreConnectedResult> => {
+    return dispatch(
+      getJson({
+        url: '/shop/app/is-store-connected',
+        parameters: { ...params, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
+      })
+    );
+  };
+}
+
 export type ConnectStoreRequest = StackendApiKeyParameters & {
   shop: string;
   email: string;
