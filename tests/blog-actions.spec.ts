@@ -76,7 +76,7 @@ describe('Blog', () => {
       expect(getBlogAuthById(blogs, 1)?.userPrivilege).toBe(Privilege.VISITOR);
       expect(getBlogAuthByPermalink(blogs, 'groups/news')?.userPrivilege).toBe(Privilege.VISITOR);
 
-      //console.log(likes);
+      // Bad test. If this fail, just add a like to https://stackend.com/resources
       expect(Object.keys(likes).length).toBeGreaterThan(Object.keys(likes1).length);
 
       // as a side effect, users should have been added
