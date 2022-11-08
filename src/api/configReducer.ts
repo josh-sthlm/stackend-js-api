@@ -32,7 +32,7 @@ const configReducer = (
 ): Config => {
   switch (action.type) {
     case XCAP_INITIAL_STORE_DATA_RECEIVED:
-      return get(action, 'json.xcapApiConfiguration', {});
+      return get(action, 'json.xcapApiConfiguration', state);
 
     case XCAP_SET_CONFIG: {
       const c = (action as SetConfigAction).config;
