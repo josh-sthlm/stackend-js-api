@@ -6,7 +6,7 @@ import {
   Thunk,
   XcapJsonResult
 } from '../api';
-import { Community } from '../stackend';
+import { Community, Module } from '../stackend';
 import { User } from '../user';
 
 import { createHash } from 'crypto';
@@ -119,7 +119,7 @@ export interface CreateStackAndConnectStoreRequest extends ShopifyUserInfo, Stac
   loginToken?: string;
 }
 
-export interface CreateStackAndConnectStoreResult extends XcapJsonResult {
+export interface CreateStackAndConnectStoreResult extends GetShopifyModulesResult, XcapJsonResult {
   /** If true, the shop was successfully registered */
   shopRegistered: boolean;
 
@@ -162,6 +162,42 @@ export function createStackAndConnectStore(
     return dispatch(
       getJson({
         url: '/shop/app/create-stack-and-connect-store',
+        parameters: {
+          ...params,
+          [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
+        }
+      })
+    );
+  };
+}
+
+export interface GetShopifyModulesRequest {
+  /** Community id */
+  communityId: number;
+}
+
+export interface GetShopifyModulesResult {
+  /** Community */
+  community: Community;
+
+  /** Shopify comment module */
+  shopifyCommentModule: Module;
+
+  /** Shopify feed module */
+  shopifyFeedModule: Module;
+
+  /** Shopify reviews module */
+  shopifyReviewModule: Module;
+}
+
+/**
+ * List modules available for shopify app
+ */
+export function getShopifyModules(params: GetShopifyModulesRequest): Thunk<Promise<GetShopifyModulesResult>> {
+  return (dispatch: any): Promise<GetShopifyModulesResult> => {
+    return dispatch(
+      getJson({
+        url: '/shop/app/get-shopify-modules',
         parameters: {
           ...params,
           [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
