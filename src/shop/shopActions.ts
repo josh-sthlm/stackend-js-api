@@ -486,11 +486,19 @@ export function createCart(req: CreateCartRequest): Thunk<Promise<ModifyCartResu
 /**
  * If the user has established a cart, get it
  * @param imageMaxWidth
+ * @param forceRefresh
  */
-export function getCart({ imageMaxWidth }: { imageMaxWidth?: number }): Thunk<Promise<Cart | null>> {
+export function getCart({
+  imageMaxWidth,
+  forceRefresh
+}: {
+  imageMaxWidth?: number;
+  forceRefresh?: boolean;
+}): Thunk<Promise<Cart | null>> {
   return async (dispatch: any, getState: any): Promise<Cart | null> => {
     const shop: ShopState = getState().shop;
-    if (shop.cart) {
+    const useCache = typeof forceRefresh === 'undefined' || !forceRefresh;
+    if (useCache && shop.cart) {
       return shop.cart;
     }
 
