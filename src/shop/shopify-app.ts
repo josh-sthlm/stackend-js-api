@@ -117,6 +117,9 @@ export interface CreateStackAndConnectStoreRequest extends ShopifyUserInfo, Stac
   shop: string;
   /** Optional login token used to authenticate the user to an existing community */
   loginToken?: string;
+
+  /** Force a new community to be created, even if the user has an existing one */
+  forceCreateNew?: boolean;
 }
 
 export interface CreateStackAndConnectStoreResult extends GetShopifyModulesResult, XcapJsonResult {
