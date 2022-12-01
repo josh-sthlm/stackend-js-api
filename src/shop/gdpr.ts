@@ -24,7 +24,7 @@ export interface GDPRCustomerRequest extends GDPRShopRequest {
  */
 export function gdprCustomerDataRequest(params: GDPRCustomerRequest): Thunk<Promise<XcapJsonResult>> {
   return getJson({
-    url: '/shop/gdpr/customer-data-request',
+    url: '/shop/app/gdpr/customer-data-request',
     parameters: {
       ...params,
       [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
@@ -38,7 +38,7 @@ export function gdprCustomerDataRequest(params: GDPRCustomerRequest): Thunk<Prom
  */
 export function gdprCustomerRedact(params: GDPRCustomerRequest): Thunk<Promise<XcapJsonResult>> {
   return post({
-    url: '/shop/gdpr/customer-redact',
+    url: '/shop/app/gdpr/customer-redact',
     parameters: {
       ...params,
       [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
@@ -52,7 +52,7 @@ export function gdprCustomerRedact(params: GDPRCustomerRequest): Thunk<Promise<X
  */
 export function gdprShopRedact(params: GDPRShopRequest): Thunk<Promise<XcapJsonResult>> {
   return post({
-    url: '/shop/gdpr/shop-redact',
+    url: '/shop/app/gdpr/shop-redact',
     parameters: {
       ...params,
       [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
