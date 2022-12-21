@@ -14,6 +14,7 @@ import {
 } from '../src/shop/shopify-clientside';
 import {
   cartLinesRemove,
+  forEachProductVariant,
   GetCartResult,
   GetCollectionResult,
   GetCollectionsResult,
@@ -57,8 +58,23 @@ describe('Shopify Clientside', () => {
       const r: GetProductResult = await store.dispatch(getProduct({ handle: 'snare-boot' }));
       assert(r);
       expect(r.error).toBeUndefined();
+      console.log('getProduct: ', JSON.stringify(r.product, undefined, 2));
       expect(r.product).toBeDefined();
-      console.log(r.product);
+      assert(r.product);
+      expect(r.product.variants).toBeDefined();
+      forEachProductVariant(r.product, v => {
+        expect(v.id).toBeDefined();
+        expect(v.title).toBeDefined();
+        expect(v.priceV2).toBeDefined(); // pre 2022-10
+        //expect(v.price).toBeDefined(); pre 2022-10
+      });
+
+      expect(r.product.options).toBeDefined();
+      r.product.options.forEach(o => {
+        expect(o.id).toBeDefined();
+        expect(o.name).toBeDefined();
+        expect(o.values).toBeDefined();
+      });
     });
   });
 

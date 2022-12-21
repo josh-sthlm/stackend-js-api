@@ -110,15 +110,18 @@ describe('Shop', () => {
 
       let j = 0;
       forEachProductVariant(p, (v, i, p) => {
+        console.log(v);
         expect(v).toBeDefined();
         expect(p).toBeDefined();
         expect(v.id).toBeDefined();
+        expect(v.priceV2).toBeDefined(); // pre 2022-10
+        //expect(v.price).toBeDefined(); // 2022-10
         expect(i).toBe(j);
         j++;
       });
       expect(j).toBe(p.variants.edges.length);
 
-      const x = mapProductVariants(p, (variant, product) => variant.id);
+      const x = mapProductVariants(p, (variant, _product) => variant.id);
       expect(x).toBeDefined();
       expect(x.length).toBe(p.variants.edges.length);
       expect(x[0]).toBe(p.variants.edges[0].node.id);
