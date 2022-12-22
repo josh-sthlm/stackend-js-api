@@ -88,7 +88,8 @@ describe('Shop', () => {
       const p = r.product;
       assert(p);
 
-      expect(p.id).toBe('Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzk4OTUyNzYwOTk=');
+      // expect(p.id).toBe('Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0Lzk4OTUyNzYwOTk='); pre 2022-10
+      expect(p.id).toBe('gid://shopify/Product/9895276099');
       expect(p.handle).toBe('snare-boot');
       expect(p.descriptionHtml).toBeDefined();
       expect(p.availableForSale).toBeTruthy();
@@ -105,8 +106,10 @@ describe('Shop', () => {
       let v = getProductVariant(p, 'x');
       expect(v).toBeNull();
 
-      v = getProductVariant(p, 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zNjYwNzYyMjA4Mw==');
-      expect(v).toBeDefined();
+      //v = getProductVariant(p, 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zNjYwNzYyMjA4Mw==');
+      v = getProductVariant(p, 'gid://shopify/ProductVariant/36607622339');
+      assert(v);
+      expect(v.id).toBe('gid://shopify/ProductVariant/36607622339');
 
       let j = 0;
       forEachProductVariant(p, (v, i, p) => {
@@ -126,7 +129,8 @@ describe('Shop', () => {
       expect(x.length).toBe(p.variants.edges.length);
       expect(x[0]).toBe(p.variants.edges[0].node.id);
 
-      const img = getVariantImage(p, 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zNjYwNzYyMjA4Mw==');
+      //const img = getVariantImage(p, 'Z2lkOi8vc2hvcGlmeS9Qcm9kdWN0VmFyaWFudC8zNjYwNzYyMjA4Mw==');
+      const img = getVariantImage(p, 'gid://shopify/ProductVariant/36607622339');
       assert(img);
       expect(img.url || (img as any).transformedSrc).toBeDefined();
       expect(img.altText).toBeDefined();

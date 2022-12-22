@@ -66,7 +66,7 @@ export interface ShopConfig {
   /** Shopify domain */
   domain: string;
 
-  /** Store front access token */
+  /** Storefront access token */
   accessToken: string;
 
   /** Country code */

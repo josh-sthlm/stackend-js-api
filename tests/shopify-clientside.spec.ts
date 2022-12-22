@@ -66,7 +66,7 @@ describe('Shopify Clientside', () => {
         expect(v.id).toBeDefined();
         expect(v.title).toBeDefined();
         expect(v.priceV2).toBeDefined(); // pre 2022-10
-        // expect(v.price).toBeDefined(); //pre 2022-10 use alias?
+        expect(v.price).toBeDefined(); // after 2022-10
       });
 
       expect(r.product.options).toBeDefined();

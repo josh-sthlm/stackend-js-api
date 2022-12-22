@@ -24,18 +24,23 @@ export default function checkoutQuery(
   email,
   note,
   lineItemsSubtotalPrice ${moneyV2Query()},
-  subtotalPriceV2 ${moneyV2Query()},
-  totalPriceV2 ${moneyV2Query()},
-  totalTaxV2 ${moneyV2Query()},
+  subtotalPrice ${moneyV2Query()},
+  subtotalPriceV2: subtotalPrice ${moneyV2Query()},
+  totalPrice ${moneyV2Query()},
+  totalPriceV2: totalPrice ${moneyV2Query()},
+  totalTax ${moneyV2Query()},
+  totalTaxV2: totalTax ${moneyV2Query()},
   taxesIncluded,
-  paymentDueV2 ${moneyV2Query()},
+  paymentDue ${moneyV2Query()},
+  paymentDueV2: paymentDue ${moneyV2Query()},
   shippingAddress {
     ${shippingAddressQuery()}
   },
   shippingLine {
     title,
     handle,
-    priceV2 ${moneyV2Query()}
+    price ${moneyV2Query()},
+    priceV2: price ${moneyV2Query()}
   },
   lineItems(first: 100) {
     edges {
@@ -61,7 +66,8 @@ export default function checkoutQuery(
       shippingRates {
         title,
         handle,
-        priceV2: ${moneyV2Query()}
+        price: ${moneyV2Query()},
+        priceV2: price ${moneyV2Query()}
       }
     }`;
   }
