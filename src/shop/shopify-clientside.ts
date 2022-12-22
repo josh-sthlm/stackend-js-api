@@ -33,7 +33,7 @@ import { ShopState } from './shopReducer';
 import { toQueryParameters } from '../util/graphql';
 import cartQuery from './querries/cartQuery';
 
-export const API_VERSION = '2022-01';
+export const API_VERSION = '2022-10';
 
 function getImageMaxWidth(shopState: ShopState, value?: number | null | undefined): number {
   if (!value) {
@@ -430,6 +430,7 @@ export function mutation<T extends XcapJsonResult>({
  * @param query
  * @param headers
  * @param aliases change names of returned data
+ * @param isMutation
  * @returns {(function(*): Promise<XcapJsonResult>)|*}
  */
 function doPost<T extends XcapJsonResult>({

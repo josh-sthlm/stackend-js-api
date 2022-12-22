@@ -35,7 +35,7 @@ describe('Shopify Clientside', () => {
 
       expect(store.dispatch(getShopifyConfig())).toStrictEqual({
         accessToken: 'ecdc7f91ed0970e733268535c828fbbe',
-        apiVersion: '2022-01',
+        apiVersion: '2022-10',
         countryCode: 'CA',
         domain: 'graphql.myshopify.com'
       });
@@ -66,7 +66,7 @@ describe('Shopify Clientside', () => {
         expect(v.id).toBeDefined();
         expect(v.title).toBeDefined();
         expect(v.priceV2).toBeDefined(); // pre 2022-10
-        //expect(v.price).toBeDefined(); pre 2022-10
+        // expect(v.price).toBeDefined(); //pre 2022-10 use alias?
       });
 
       expect(r.product.options).toBeDefined();
