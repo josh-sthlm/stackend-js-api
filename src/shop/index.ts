@@ -62,10 +62,6 @@ export interface ProductVariant {
   sku: string;
   image: ProductImage | null;
   price: MoneyV2;
-  /**
-   * @deprecated use price instead
-   */
-  priceV2: MoneyV2;
 
   /**
    * Original price, when selling at a reduced price. May be null
@@ -982,10 +978,6 @@ export interface ShippingRate {
   handle: string;
   title: string;
   price: MoneyV2;
-  /**
-   * @deprecated Use price instead
-   */
-  priceV2: MoneyV2;
 }
 
 export interface CheckoutLineItem {
@@ -1013,37 +1005,17 @@ export interface Checkout {
   /** Price of the checkout before duties, shipping and taxes. */
   subtotalPrice: MoneyV2;
 
-  /** Price of the checkout before duties, shipping and taxes.
-   * @deprecated use subtotalPrice
-   */
-  subtotalPriceV2: MoneyV2;
-
   /** The sum of all the prices of all the items in the checkout. Duties, taxes, shipping and discounts excluded */
   lineItemsSubtotalPrice: MoneyV2;
 
   /** The sum of all the prices of all the items in the checkout, duties, taxes and discounts included. */
   totalPrice: MoneyV2;
 
-  /** The sum of all the prices of all the items in the checkout, duties, taxes and discounts included.
-   * @deprecated use totalPrice instead
-   */
-  totalPriceV2: MoneyV2;
-
   /** The amount left to be paid. This is equal to the cost of the line items, duties, taxes and shipping minus discounts and gift cards.*/
   paymentDue: MoneyV2;
 
-  /** The amount left to be paid. This is equal to the cost of the line items, duties, taxes and shipping minus discounts and gift cards.
-   * @deprecated use paymentDue
-   * */
-  paymentDueV2: MoneyV2;
-
   /** The sum of all the taxes applied to the line items and shipping lines in the checkout. */
   totalTax: MoneyV2;
-
-  /** The sum of all the taxes applied to the line items and shipping lines in the checkout.
-   * @deprecated use totalTax
-   */
-  totalTaxV2: MoneyV2;
 
   /** Specifies if taxes are included in the line item and shipping line prices. */
   taxesIncluded: boolean;
