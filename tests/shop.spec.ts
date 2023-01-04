@@ -118,7 +118,7 @@ describe('Shop', () => {
         expect(p).toBeDefined();
         expect(v.id).toBeDefined();
         expect(v.priceV2).toBeDefined(); // pre 2022-10
-        //expect(v.price).toBeDefined(); // 2022-10
+        expect(v.price).toBeDefined(); // 2022-10
         expect(i).toBe(j);
         j++;
       });

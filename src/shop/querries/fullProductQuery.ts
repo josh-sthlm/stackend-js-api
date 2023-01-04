@@ -39,7 +39,10 @@ export default function fullProductQuery(imageMaxWidth: number | null, includeOr
           value
         },
         price ${moneyV2Query()},
-        priceV2: price ${moneyV2Query()}
+        priceV2: price ${moneyV2Query()},
+        compareAtPrice ${moneyV2Query()},
+        weight,
+        weightUnit
       }
     }
   },

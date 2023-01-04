@@ -34,6 +34,8 @@ export interface MoneyV2 {
   currencyCode: string;
 }
 
+export type WeightUnit = 'KILOGRAMS' | 'GRAMS' | 'POUNDS' | 'OUNCES';
+
 /**
  * Options for the product: size, color etc
  */
@@ -64,7 +66,16 @@ export interface ProductVariant {
    * @deprecated use price instead
    */
   priceV2: MoneyV2;
+
+  /**
+   * Original price, when selling at a reduced price. May be null
+   */
+  compareAtPrice: MoneyV2 | null;
+
   selectedOptions: SelectedProductOptions;
+
+  weight: number;
+  weightUnit: WeightUnit;
 }
 
 /**
@@ -578,8 +589,8 @@ export function getLowestVariantPrice(product: Product): MoneyV2 | null {
   let p: MoneyV2 | null = null;
 
   forEachProductVariant(product, variant => {
-    if (p === null || variant.priceV2.amount < p.amount) {
-      p = variant.priceV2;
+    if (p === null || variant.price.amount < p.amount) {
+      p = variant.price;
     }
   });
 

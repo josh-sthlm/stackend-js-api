@@ -13,6 +13,7 @@ export default function reducedProductQuery(
   createdAt,
   availableForSale,
   productType,
+  vendor,
   priceRange {
     minVariantPrice ${moneyV2Query()},
     maxVariantPrice ${moneyV2Query()}

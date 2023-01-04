@@ -203,7 +203,7 @@ export function getPriceIncludingVAT({
 }): MoneyV2 {
   let price: MoneyV2 | null = null;
   if (productVariant) {
-    price = productVariant.priceV2;
+    price = productVariant.price;
   } else {
     price = product.priceRange.minVariantPrice; //getLowestVariantPrice(product);
   }
