@@ -178,12 +178,14 @@ export function useVATS({
 }
 
 /**
- * Get the vat
+ * Get the price including vat.
+ * Supply the price, a product variant or get the minVariantPrice of the product.
  * @param shopState
  * @param product
  * @param productVariant
  * @param customerType
  * @param tradeRegion
+ * @param price Optional price. Overrides the product and product variant price if supplied.
  * @param quantity Optional quantity, defaults to 1
  */
 export function getPriceIncludingVAT({
@@ -192,6 +194,7 @@ export function getPriceIncludingVAT({
   productVariant,
   customerType,
   tradeRegion,
+  price,
   quantity = 1
 }: {
   shopState: ShopState;
@@ -199,23 +202,28 @@ export function getPriceIncludingVAT({
   productVariant?: ProductVariant | null;
   customerType?: CustomerType;
   tradeRegion?: TradeRegion;
+  price?: MoneyV2 | null;
   quantity?: number;
 }): MoneyV2 {
-  let price: MoneyV2 | null = null;
-  if (productVariant) {
-    price = productVariant.price;
+  let p: MoneyV2 | null = null;
+  if (price) {
+    p = price;
   } else {
-    price = product.priceRange.minVariantPrice; //getLowestVariantPrice(product);
+    if (productVariant) {
+      p = productVariant.price;
+    } else {
+      p = product.priceRange.minVariantPrice; //getLowestVariantPrice(product);
+    }
   }
 
   if (!useVATS({ shopState, customerType, tradeRegion })) {
-    return multiplyPrice(price, quantity);
+    return multiplyPrice(p, quantity);
   }
 
   // Check if there is a VAT exception for any of the collections the product belongs to
   const vatType: VatType = getVATType(shopState, product);
 
-  return applyVat(shopState, vatType, price, quantity);
+  return applyVat(shopState, vatType, p, quantity);
 }
 
 /**
