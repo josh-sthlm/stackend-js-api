@@ -8,7 +8,8 @@ import {
   _getApiUrl,
   Thunk,
   isRunningInBrowser,
-  XcapOptionalParameters
+  XcapOptionalParameters,
+  COMMUNITY_PARAMETER
 } from '../api';
 import { clearAccessToken, clearPersistentData } from '../api/AccessToken';
 
@@ -236,36 +237,31 @@ export interface LoginResult extends XcapJsonResult {
  * Some login providers may have extra parameters.
  * The email provider requires email and password to be supplied.
  */
-export function login({
-  provider,
-  returnUrl,
-  config,
-  request,
-  communityPermalink,
-  ...any
-}: {
-  provider: AuthenticationType;
-  returnUrl?: string;
-  config: Config;
-  request: Request;
-  communityPermalink?: string;
-} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult> | string> {
+export function login(
+  props: {
+    provider: AuthenticationType;
+    email?: string;
+    password?: string;
+    returnUrl?: string;
+    config: Config;
+    request: Request;
+  } & XcapOptionalParameters
+): Thunk<Promise<XcapJsonResult> | string> {
   // FIXME: return type
+  const { provider, email, password, returnUrl, config, request } = props;
+  const communityPermalink = props[COMMUNITY_PARAMETER];
+
   switch (provider) {
     case AuthenticationType.XCAP: {
-      const p = arguments[0];
-      const xcap_email = p.email;
-      const xcap_password = p.password;
-
       return post({
         url: '/user/login',
         parameters: {
           returnUrl,
           c: communityPermalink,
-          xcap_email,
-          xcap_password
-        },
-        community: communityPermalink
+          xcap_email: email,
+          xcap_password: password,
+          [COMMUNITY_PARAMETER]: communityPermalink
+        }
       });
     }
 
