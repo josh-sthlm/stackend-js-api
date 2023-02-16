@@ -47,6 +47,43 @@ describe('ProductTypeTree', () => {
       expect(t[0].children[1].children[0].productType).toBe('a/b/c');
 
       expect(getAllProductTypes(t[0])).toStrictEqual(['a', 'a/a', 'a/b', 'a/b/c']);
+
+      t = buildProductTypeTree([
+        { node: '' },
+        { node: 'Badrum/Bodycare/Bodywash' },
+        { node: 'Badrum/Bodycare/Conditioner' },
+        { node: 'Badrum/Bodycare/hand & Bodylotion' },
+        { node: 'Badrum/Bodycare/Handwash' },
+        { node: 'Badrum/Bodycare/schampoo' },
+        { node: 'Badrum/Doftljus' },
+        { node: 'Badrum/Doftljus & Doftpinnar' },
+        { node: 'Badrum/Doftpinne' },
+        { node: 'Badrum/Doftsten' },
+        { node: 'Badrum/Frotté' },
+        { node: 'Badrum/hängare' },
+        { node: 'Interiör/Detaljer' },
+        { node: 'Interiör/Järnkrukor' },
+        { node: 'Interiör/Korg' },
+        { node: 'Interiör/Old Wood' },
+        { node: 'Interiör/Oldwood' },
+        { node: 'Interiör/Plädar/Mohair' },
+        { node: 'Interiör/Vedställ' },
+        { node: 'Keramik/ Fat' }, // Spaces intentional
+        { node: 'Keramik/ Muggar/Capri' },
+        { node: 'Keramik/Capri' },
+        { node: 'Keramik/Capri/Skål' },
+        { node: 'Keramik/Fat' }
+      ]);
+
+      expect(t.length).toBe(3); // '' excluded
+      expect(t[2].name).toBe('Keramik');
+      console.log(JSON.stringify(t[2].children, undefined, 2));
+      expect(t[2].children.length).toBe(4);
+      expect(t[2].children[0].name).toBe(' Fat');
+      expect(t[2].children[1].name).toBe(' Muggar');
+      expect(t[2].children[2].name).toBe('Capri');
+      expect(t[2].children[3].name).toBe('Fat');
+      expect(t[2].children[1].children[0].name).toBe('Capri');
     });
   });
 

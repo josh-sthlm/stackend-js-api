@@ -156,6 +156,8 @@ export function buildProductTypeTree(productTypes: Array<GraphQLListNode<string>
     const n = newProductTypeTreeNode(x);
     treeHash[x] = n;
 
+    _addToCreateParent(n, t, treeHash);
+    /*
     const parent = getParentProductType(n);
     if (parent) {
       let pn = treeHash[parent];
@@ -169,8 +171,39 @@ export function buildProductTypeTree(productTypes: Array<GraphQLListNode<string>
       addNode(pn, n);
     } else {
       t.push(n);
-    }
+    }*/
   });
 
   return t;
+}
+
+/**
+ * Add the node to the correct parent. Possibly create the parent if needed
+ * @param node
+ * @param tree
+ * @param treeHash
+ */
+function _addToCreateParent(
+  node: ProductTypeTreeNode,
+  tree: ProductTypeTree,
+  treeHash: { [productType: string]: ProductTypeTreeNode }
+): void {
+  const parent = getParentProductType(node);
+
+  // Root node. Add to tree
+  if (!parent) {
+    tree.push(node);
+    return;
+  }
+
+  let pn = treeHash[parent];
+  if (!pn) {
+    pn = newProductTypeTreeNode(parent);
+    treeHash[parent] = pn;
+
+    // Recursively create parents if needed
+    _addToCreateParent(pn, tree, treeHash);
+  }
+
+  addNode(pn, node);
 }
