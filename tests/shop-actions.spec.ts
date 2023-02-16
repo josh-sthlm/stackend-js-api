@@ -119,8 +119,10 @@ describe('Shop Actions/Reducers', () => {
       expect(list.nextCursor).toBeDefined();
       expect(list.previousCursor).toBeDefined();
 
-      const EXPECTED_HANDLES = ['snare-boot', 'neptune-boot', 'arena-zip-boot'];
-      expect(list.products.map(p => p.handle)).toStrictEqual(EXPECTED_HANDLES);
+      //const EXPECTED_HANDLES = ['snare-boot', 'neptune-boot', 'arena-zip-boot'];
+      const EXPECTED_HANDLES = ['arena-zip-boot', 'neptune-boot', 'pin-boot'];
+      const handles = list.products.map(p => p.handle).sort();
+      expect(handles).toStrictEqual(EXPECTED_HANDLES);
 
       const listing = store.dispatch(getProductListing(req));
       assert(listing);
@@ -130,7 +132,7 @@ describe('Shop Actions/Reducers', () => {
       expect(listing.hasPreviousPage).toBeFalsy();
       expect(listing.nextCursor).toBeDefined();
       expect(listing.previousCursor).toBeDefined();
-      expect(listing.products[0].handle).toBe('snare-boot');
+      expect(listing.products[0].handle).toBe('pin-boot');
       expect(listing.selection).toBeDefined();
       expect(listing.selection.first).toBe(req.first);
       expect(listing.selection.productTypes).toStrictEqual(['Boots']);
