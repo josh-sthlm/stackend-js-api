@@ -58,7 +58,7 @@ function getImageListingMaxWidth(shopState: ShopState, value?: number | null | u
  */
 export function listProductTypes(req: ListProductTypesRequest): Thunk<Promise<ListProductTypesResult>> {
   return query({
-    query: `${productTypesQuery(req.first || 100)}`
+    query: `${productTypesQuery(req.first || 250)}` /* 250 is max allowed */
   });
 }
 
@@ -105,7 +105,7 @@ export function listProductsAndTypes(req: ListProductsRequest): Thunk<Promise<Li
     req.imageMaxWidth = getImageListingMaxWidth(shopState, req.imageMaxWidth);
     return dispatch(
       query({
-        query: `${productListingQuery(req)}, ${productTypesQuery(100)}`
+        query: `${productListingQuery(req)}, ${productTypesQuery(250)}` /* 250 is max allowed */
       })
     );
   };

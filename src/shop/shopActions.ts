@@ -125,9 +125,9 @@ export const getShopDefaults =
  */
 export const requestProductTypes =
   (req: ListProductTypesRequest): Thunk<Promise<ListProductTypesResult>> =>
-  async (dispatch: any, getState: any): Promise<ListProductTypesResult> => {
+  async (dispatch: any, _getState: any): Promise<ListProductTypesResult> => {
     if (!req.first) {
-      req.first = getState().shop.defaults.pageSize;
+      req.first = 250; /* 250 is max allowed */
     }
     const r = await dispatch(listProductTypes(req));
     if (!r.error) {
