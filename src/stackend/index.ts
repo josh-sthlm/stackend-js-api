@@ -1265,6 +1265,15 @@ export function inviteUserToCommunity({
  * @returns {*|string}
  */
 export function getReferenceUrl(url: string): string {
+  if (window !== undefined) {
+    // Shopify specific for reference url normalization
+    // @ts-ignore
+    if (window?.Shopify?.routes?.root !== undefined) {
+      // @ts-ignore
+      url = url.replace(window.Shopify.routes.root.slice(0, -1), '');
+    }
+  }
+
   const r = /(?:https|http)?(?::\/\/)?(?:www\.)?([^?#]*)/.exec(url);
   return r ? r[1] : url;
 }

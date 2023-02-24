@@ -1,6 +1,9 @@
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
+  testEnvironmentOptions: {
+    browsers: ['chrome', 'firefox', 'safari']
+  },
   verbose: true,
   testTimeout: 15000,
   setupFiles: ['jest-localstorage-mock'],

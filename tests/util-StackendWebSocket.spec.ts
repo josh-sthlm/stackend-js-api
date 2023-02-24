@@ -13,6 +13,7 @@ import createTestStore from './setup';
 import { loadInitialStoreValues } from '../src/api/actions';
 import { Community } from '../src/stackend';
 import { COMMENT_CLASS } from '../src/comments';
+import assert from 'assert';
 
 function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -91,15 +92,13 @@ describe('Util', () => {
       );
     });
 
-    /* FIXME: Cant get this to work after WAF was enabled on AWS
     it('ping', async () => {
       const community: Community = store.getState().communities.community;
       const sws: StackendWebSocket = store.dispatch(getInstance(community));
       sws.ping();
-      await sleep(2000);
+      await sleep(1000);
       expect(pongs).toBe(1);
     });
-     */
 
     it('subscribe/unsubscribe', async () => {
       const community: Community = store.getState().communities.community;
@@ -185,7 +184,6 @@ describe('Util', () => {
       expect(sws.realTimeListeners[key]).toBeUndefined();
     });
 
-    /* FIXME: Cant get this to work after WAF was enabled on AWS
     it('auto reconnect', async () => {
       const community: Community = store.getState().communities.community;
       const sws: StackendWebSocket = store.dispatch(getInstance(community));
@@ -204,6 +202,7 @@ describe('Util', () => {
       sws.addListener((type, event, message) => {
         reconnected = true;
       }, StackendWebSocketEvent.SOCKET_OPENED);
+
       assert(sws);
       assert(sws.socket);
 
@@ -215,7 +214,7 @@ describe('Util', () => {
       expect(gotError).toBeTruthy();
       expect(reconnectStarted).toBeTruthy();
       expect(reconnected).toBeTruthy();
-    });*/
+    });
 
     it('close', async () => {
       const community: Community = store.getState().communities.community;

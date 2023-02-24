@@ -40,6 +40,19 @@ describe('Stackend', () => {
       expect(getReferenceUrl('')).toBe(''); // FIXME: Improve this case
       expect(getReferenceUrl('http://www.stackend.com/test')).toBe('stackend.com/test');
       expect(getReferenceUrl('https://stackend.com/test')).toBe('stackend.com/test');
+
+      // Shopify specific tests
+      // @ts-ignore
+      window.Shopify = {};
+      // @ts-ignore
+      window.Shopify.routes = {};
+      // @ts-ignore
+      window.Shopify.routes.root = '/en-ca/';
+
+      expect(getReferenceUrl('https://stackend.com/test')).toBe('stackend.com/test');
+      expect(getReferenceUrl('https://stackend.com/en-ca/test')).toBe('stackend.com/test');
+      expect(getReferenceUrl('https://stackend.com/en-ca')).toBe('stackend.com');
+      expect(getReferenceUrl('https://stackend.com/en-ca/')).toBe('stackend.com/');
     });
   });
 });
