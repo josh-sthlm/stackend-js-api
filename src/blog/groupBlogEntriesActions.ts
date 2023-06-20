@@ -139,7 +139,7 @@ export function fetchBlogEntries({
       }
 
       // Ignore if already present
-      if (hasBlogEntries(groupBlogEntries, blogKey, pageSize, p, categoryId) && !invalidatePrevious) {
+      if (hasBlogEntries(groupBlogEntries, blogKey, pageSize, p, categoryId, goToBlogEntry) && !invalidatePrevious) {
         return null;
       }
 
@@ -295,25 +295,33 @@ export function fetchBlogEntriesWithComments({
       blogResponse = await dispatch(
         fetchBlogEntries({ blogKey, p: page, categories, goToBlogEntry, invalidatePrevious })
       );
-      if (!blogResponse || blogResponse.error) {
-        console.error(
-          'Could not get blog entries for ' + blogKey + ': ',
-          blogResponse ? getJsonErrorText(blogResponse) : ''
+      if (blogResponse) {
+        if (blogResponse.error) {
+          console.error(
+            'Could not get blog entries for ' + blogKey + ': ',
+            blogResponse ? getJsonErrorText(blogResponse) : ''
+          );
+          return {
+            fetchBlogEntries: blogResponse,
+            fetchMultipleComments: null
+          };
+        }
+        const referenceIds = blogResponse.resultPaginated.entries.map((entry: BlogEntry) => entry.id);
+
+        commentResponse = dispatch(
+          commentActions.fetchMultipleComments({
+            module: commentApi.CommentModule.BLOG,
+            referenceIds,
+            referenceGroupId: blogResponse.blogId
+          })
         );
+      } else {
+        // No result, probably not needed cause already in store
         return {
-          fetchBlogEntries: blogResponse,
+          fetchBlogEntries: null,
           fetchMultipleComments: null
         };
       }
-      const referenceIds = blogResponse.resultPaginated.entries.map((entry: BlogEntry) => entry.id);
-
-      commentResponse = dispatch(
-        commentActions.fetchMultipleComments({
-          module: commentApi.CommentModule.BLOG,
-          referenceIds,
-          referenceGroupId: blogResponse.blogId
-        })
-      );
     } catch (e) {
       //FIXME: Probably a private group but need fail-check
       console.error("Couldn't fetchBlogEntriesWithComments for " + blogKey + ': ', blogResponse, commentResponse, e);

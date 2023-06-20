@@ -78,7 +78,8 @@ export function hasBlogEntries(
   blogKey: string,
   pageSize: number,
   p: number,
-  categoryId: number
+  categoryId: number,
+  goToBlogEntry?: string
 ): boolean {
   const pe = getBlogEntries(groupBlogEntriesState, blogKey);
   if (pe) {
@@ -88,6 +89,11 @@ export function hasBlogEntries(
     if (pe.pageSize != pageSize) {
       return false;
     }
+
+    if (goToBlogEntry && !pe.entries.some(entry => entry.permalink === goToBlogEntry)) {
+      return false;
+    }
+
     return true;
     // FIXME: categoryId included in request, but not key
   }
