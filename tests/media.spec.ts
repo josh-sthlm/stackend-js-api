@@ -23,7 +23,7 @@ describe('Media', () => {
       assert(r.media);
       expect(r.media.id).toBe(2);
       expect(r.html).toBe(
-        '<img src="https://api.stackend.com/media/get/c55/cms/developers-jpg.jpg" alt="" width="1250" height="631" style="max-width:1250px;" class="stackend-responsive"/>'
+        '<img src="https://api.stackend.com/media/get/c55/cms/developers-jpg.jpg" alt="" width="1250" height="631" style="max-width:min(1250px, 100%)" class="stackend-responsive"/>'
       );
       assert(r.thumbnail);
       expect(r.thumbnail.mediaId).toBe(2);

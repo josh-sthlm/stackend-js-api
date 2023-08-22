@@ -23,6 +23,7 @@ import ModerationAware from '../api/ModerationAware';
 import ReferenceIdAware from '../api/ReferenceIdAware';
 import { CurrentUserRsvpStatuses } from '../event';
 import { RsvpUserResponses } from '../event/eventReducer';
+import { Tags } from '../tags';
 
 /**
  * Xcap Blog api constants and methods.
@@ -108,6 +109,7 @@ export interface BlogEntry
   pollRef?: Poll;
   numberOfComments: number;
   numberOfLikes: number;
+  tags?: Tags;
 }
 
 /**

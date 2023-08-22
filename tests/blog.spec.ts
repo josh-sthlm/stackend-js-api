@@ -107,6 +107,7 @@ export function mockBlogEntry(blog: Blog, id: number): BlogEntry {
     publishDate: now,
     numberOfComments: 0,
     numberOfLikes: 0,
-    categoryRef: []
+    categoryRef: [],
+    tags: ['tag1', 'tag2']
   };
 }
