@@ -4,6 +4,7 @@ import {
   BLOG_ENTRY_CLASS,
   BlogEntry,
   GetBlogEntryResult,
+  getCompositeBlogKey,
   getEntries,
   GetEntriesResult,
   getEntry,
@@ -22,6 +23,18 @@ describe('Blog', () => {
 
   describe('getEntries', () => {
     it('List entries', async () => {
+      const r: GetEntriesResult = await store.dispatch(
+        getEntries({ blogId: 1, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK })
+      );
+      expect(r.__resultCode).toBe('success');
+      expect(r.blog).toBeDefined();
+      expect(r.resultPaginated).toBeDefined();
+      expect(r.resultPaginated.totalSize).toBeGreaterThan(0);
+    });
+  });
+
+  describe('getEntries with tags', () => {
+    it('List entries with tags', async () => {
       const r: GetEntriesResult = await store.dispatch(
         getEntries({ blogId: 1, [COMMUNITY_PARAMETER]: STACKEND_COM_COMMUNITY_PERMALINK })
       );
@@ -54,6 +67,26 @@ describe('Blog', () => {
       const e = newBlogEntry('my-blog');
       expect(e).toBeDefined();
       expect(e.id).toBe(0);
+    });
+  });
+
+  describe('getCompositeBlogKey', () => {
+    it('Get a composite blog key (blogKey, tags)', () => {
+      const bk = getCompositeBlogKey({ blogKey: 'groups/my-blog', tags: ['bbb', 'aaa'] });
+      expect(bk).toBeDefined();
+      expect(bk).toBe('groups/my-blog/tags/aaa/bbb');
+    });
+
+    it('Get a composite blog key (blogKey, undefined tags)', () => {
+      const bk = getCompositeBlogKey({ blogKey: 'groups/my-blog', tags: undefined });
+      expect(bk).toBeDefined();
+      expect(bk).toBe('groups/my-blog');
+    });
+
+    it('Get a composite blog key (blogKey, empty tags)', () => {
+      const bk = getCompositeBlogKey({ blogKey: 'groups/my-blog', tags: [] });
+      expect(bk).toBeDefined();
+      expect(bk).toBe('groups/my-blog');
     });
   });
 });

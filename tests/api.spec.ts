@@ -61,12 +61,13 @@ describe('API', () => {
     it('Converts Arguments to an object', () => {
       const r: any = (function (x: any): any {
         return argsToObject(arguments);
-      })({ a: 'hello', b: 1, c: true });
+      })({ a: 'hello', b: 1, c: true, d: ['1', '2'] });
 
       expect(r).toBeDefined();
       expect(r.a).toBe('hello');
       expect(r.b).toBe(1);
       expect(r.c).toBe(true);
+      expect(r.d.sort()).toStrictEqual(['1', '2'].sort());
     });
   });
 

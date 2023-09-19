@@ -23,7 +23,7 @@ import ModerationAware from '../api/ModerationAware';
 import ReferenceIdAware from '../api/ReferenceIdAware';
 import { CurrentUserRsvpStatuses } from '../event';
 import { RsvpUserResponses } from '../event/eventReducer';
-import { Tags } from '../tags';
+import { normalizeTags } from '../tags';
 
 /**
  * Xcap Blog api constants and methods.
@@ -109,7 +109,7 @@ export interface BlogEntry
   pollRef?: Poll;
   numberOfComments: number;
   numberOfLikes: number;
-  tags?: Tags;
+  tags?: string[];
 }
 
 /**
@@ -295,7 +295,8 @@ export function getEntries({
   pageSize,
   categoryPermaLink,
   categoryId,
-  goToBlogEntry
+  goToBlogEntry,
+  tags
 }: XcapOptionalParameters & {
   q?: string;
   blogKey?: string;
@@ -307,6 +308,7 @@ export function getEntries({
   categoryPermaLink?: string;
   categoryId?: number;
   goToBlogEntry?: string;
+  tags?: string[];
 }): Thunk<Promise<GetEntriesResult>> {
   return getJson({
     url: '/blog/entries/list',
@@ -540,6 +542,24 @@ export function saveEntry({
       blogKey
     }
   });
+}
+
+/**
+ * Get a composite blog key that consists of the normal blog key plus eventual tags in the form:
+ * groups/social/feed/tags/mytag
+ *
+ * Use this to fetch from redux whn using tags
+ *
+ * @param blogKey
+ * @param tags
+ */
+export function getCompositeBlogKey({ blogKey, tags }: { blogKey: string; tags?: string[] }): string {
+  const normalizedTags = normalizeTags(tags);
+  let bk = blogKey;
+  if (normalizedTags.length) {
+    bk += '/tags/' + normalizedTags.join('/');
+  }
+  return bk;
 }
 
 /*

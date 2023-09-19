@@ -32,7 +32,8 @@ import {
   GetEntriesResult,
   GetBlogEntryResult,
   SaveBlogEntryInput,
-  SaveEntryResult
+  SaveEntryResult,
+  getCompositeBlogKey
   //gaPostEventObject,
   //gaEditPostEventObject
 } from './index';
@@ -109,6 +110,7 @@ export interface FetchBlogEntries {
   categories?: Array<Category>;
   invalidatePrevious?: boolean; //if true, invalidates previous blog-entries in this blog,
   goToBlogEntry?: string; // Start the pagination at the specified entry permalink
+  tags?: string[]; // Limit the listing to entries with the supplied tags
 }
 
 /**
@@ -120,10 +122,12 @@ export function fetchBlogEntries({
   p = 1,
   categories,
   invalidatePrevious = false,
-  goToBlogEntry
+  goToBlogEntry,
+  tags
 }: FetchBlogEntries): Thunk<Promise<GetEntriesResult | null>> {
   return async (dispatch: any, getState): Promise<GetEntriesResult | null> => {
     const categoryId = get(categories, '[0].id', null);
+    const compositeBlogKey = getCompositeBlogKey({ blogKey, tags });
 
     try {
       const { currentUser, groups, groupBlogEntries } = getState();
@@ -139,14 +143,19 @@ export function fetchBlogEntries({
       }
 
       // Ignore if already present
-      if (hasBlogEntries(groupBlogEntries, blogKey, pageSize, p, categoryId, goToBlogEntry) && !invalidatePrevious) {
+      if (
+        hasBlogEntries(groupBlogEntries, compositeBlogKey, pageSize, p, categoryId, goToBlogEntry) &&
+        !invalidatePrevious
+      ) {
         return null;
       }
 
-      dispatch(requestBlogEntries(blogKey));
+      dispatch(requestBlogEntries(compositeBlogKey));
 
       // FIXME: Category id not used in key?
-      const result: GetEntriesResult = await dispatch(getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry }));
+      const result: GetEntriesResult = await dispatch(
+        getEntries({ blogKey, pageSize, p, categoryId, goToBlogEntry, tags })
+      );
       if (result.error) {
         return result;
       }
@@ -182,7 +191,7 @@ export function fetchBlogEntries({
       }
 
       if (invalidatePrevious) {
-        dispatch(cleanCacheBlogEntries({ blogKey }));
+        dispatch(cleanCacheBlogEntries({ blogKey: compositeBlogKey }));
       }
 
       dispatch(receiveLikes(result.likes));
@@ -203,7 +212,7 @@ export function fetchBlogEntries({
       });
       dispatch(updatePolls(polls));
 
-      dispatch(receiveBlogEntries(blogKey, result));
+      dispatch(receiveBlogEntries(compositeBlogKey, result));
 
       return result;
     } catch (e) {
@@ -266,6 +275,7 @@ export interface FetchBlogEntriesWithComments {
   categories?: Array<Category>;
   goToBlogEntry?: string;
   invalidatePrevious?: boolean;
+  tags?: string[];
 }
 
 export interface FetchBlogEntriesWithCommentsResult {
@@ -286,14 +296,15 @@ export function fetchBlogEntriesWithComments({
   page = 1,
   categories,
   goToBlogEntry,
-  invalidatePrevious = false
+  invalidatePrevious = false,
+  tags
 }: FetchBlogEntriesWithComments): Thunk<Promise<FetchBlogEntriesWithCommentsResult>> {
   return async (dispatch: any): Promise<FetchBlogEntriesWithCommentsResult> => {
     let blogResponse: GetEntriesResult | null = null;
     let commentResponse: GetMultipleCommentsResult | null = null;
     try {
       blogResponse = await dispatch(
-        fetchBlogEntries({ blogKey, p: page, categories, goToBlogEntry, invalidatePrevious })
+        fetchBlogEntries({ blogKey, p: page, categories, goToBlogEntry, invalidatePrevious, tags })
       );
       if (blogResponse) {
         if (blogResponse.error) {

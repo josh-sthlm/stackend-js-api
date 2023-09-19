@@ -18,7 +18,8 @@ export enum AnchorType {
   BLOG = 'blog',
   USER = 'user',
   SITE = 'site',
-  COMMENT = 'comment'
+  COMMENT = 'comment',
+  TAGS = 'tags'
 }
 
 /**
@@ -45,6 +46,9 @@ export interface StackendAnchor {
   // Comment
   referenceId?: number;
   id?: number;
+
+  // Tags
+  tags?: string[];
 }
 
 /**
@@ -184,9 +188,10 @@ function parseAnchorInt(anchor: string): StackendAnchor | null {
     case AnchorType.BLOG:
       // / blog/BLOGKEY/BLOGKEY/ENTRY
       if (v.length >= 2) {
-        a.blogEntryPermalink = v[v.length - 1];
-        v.length = v.length - 1;
-        a.blogKey = v.join('/');
+        a.blogKey = v.slice(1).join('/');
+        if (v.length > 2) {
+          a.blogEntryPermalink = v[v.length - 1];
+        }
       }
       break;
 
@@ -216,6 +221,11 @@ function parseAnchorInt(anchor: string): StackendAnchor | null {
         const n = v.join('/');
         a.reference = parseAnchor(n);
       }
+      break;
+
+    case AnchorType.TAGS:
+      // tags/TAG/TAG/TAG
+      a.tags = [...v];
       break;
   }
 
