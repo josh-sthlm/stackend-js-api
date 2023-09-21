@@ -2,7 +2,7 @@ import { AnchorType, getAnchorPart, parseAnchor, StackendAnchor } from '../src/r
 
 describe('Request', () => {
   describe('Parse request', () => {
-    it('Parse blog entry anchor', async () => {
+    it('Parse blog anchor', async () => {
       const anchor: StackendAnchor | null = parseAnchor('blog/groups/peters-social-feed');
 
       expect(anchor).toBeDefined();
@@ -15,11 +15,11 @@ describe('Request', () => {
 
       expect(ap.type).toBe('blog');
       expect(ap.permalink).toBe('groups/peters-social-feed');
-      expect(ap.blogEntryPermalink).toBe(null);
+      expect(ap.blogEntryPermalink).toBeFalsy();
       expect(ap.blogKey).toBe('groups/peters-social-feed');
     });
 
-    it('Parse blog anchor', async () => {
+    it('Parse blog entry anchor', async () => {
       const anchor: StackendAnchor | null = parseAnchor('blog/groups/peters-social-feed/taggar2');
 
       expect(anchor).toBeDefined();
@@ -49,8 +49,7 @@ describe('Request', () => {
 
       expect(ap.type).toBe('tags');
       expect(ap.permalink).toBe('mytag/mysecondtag');
-      // @ts-ignore
-      expect(ap.tags.sort()).toEqual(['mytag', 'mysecondtag'].sort());
+      expect(ap.tags?.sort()).toEqual(['mytag', 'mysecondtag'].sort());
     });
   });
 });

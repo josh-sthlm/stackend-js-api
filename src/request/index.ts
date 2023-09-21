@@ -187,8 +187,10 @@ function parseAnchorInt(anchor: string): StackendAnchor | null {
   switch (type) {
     case AnchorType.BLOG:
       // / blog/BLOGKEY/BLOGKEY/ENTRY
+
       if (v.length >= 2) {
-        a.blogKey = v.slice(1).join('/');
+        // Regular handling
+        a.blogKey = v.slice(0, 2).join('/');
         if (v.length > 2) {
           a.blogEntryPermalink = v[v.length - 1];
         }
