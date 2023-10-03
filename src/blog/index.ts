@@ -110,6 +110,7 @@ export interface BlogEntry
   numberOfComments: number;
   numberOfLikes: number;
   tags?: string[];
+  pageId?: number;
 }
 
 /**
@@ -228,7 +229,8 @@ export function newBlogEntry(blogKey: string): SaveBlogEntryInput {
       hasVideoSlide: false,
       empty: true
     },
-    tags: []
+    tags: [],
+    pageId: 0
   };
 }
 
@@ -510,6 +512,7 @@ export interface SaveBlogEntryInput {
   event?: SaveBlogEntryEvent;
   slideshow?: SaveBlogEntrySlideshow;
   tags?: Array<string>;
+  pageId?: number;
   /** old deprecated stuff */
   headerStyle?: any;
 }
