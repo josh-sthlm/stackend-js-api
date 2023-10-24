@@ -59,6 +59,10 @@ export default function fullProductQuery(imageMaxWidth: number | null, includeOr
         handle
       }
     }
+  },
+  stackendAddToCartLink: metafield(namespace:"custom", key:"stackend_add_to_cart_link") {
+    key,
+    value
   }
 `;
 }
