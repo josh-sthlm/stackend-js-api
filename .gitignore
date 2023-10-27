@@ -13,7 +13,7 @@
 .idea/workspace.xml
 /build/
 /stackend-api-*.tgz
-
+/.idea/sonarlint/
 
 abuse
 api
@@ -42,3 +42,4 @@ user
 util
 vote
 /tags/
+
