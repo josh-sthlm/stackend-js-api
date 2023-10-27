@@ -116,6 +116,11 @@ export interface SlimProduct {
 
   /** List of collection handles */
   collections: GraphQLList<{ handle: string }>;
+
+  /**
+   * Custom add to cart URL used by some integrators
+   */
+  metafield__stackendAddToCartLink: MetaField | null;
 }
 
 /**
@@ -147,11 +152,6 @@ export interface Product extends SlimProduct {
 
   /** Images. Actual number of images and size depends on context/listing */
   images: GraphQLList<ProductImage>;
-
-  /**
-   * Custom add to cart URL used by some integrators
-   */
-  stackendAddToCartLink: MetaField | null;
 }
 
 export interface Country {

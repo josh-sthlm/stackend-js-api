@@ -36,6 +36,11 @@ export default function reducedProductQuery(
         handle
       }
     }
+  },
+   metafield__stackendAddToCartLink: metafield (namespace:"custom", key:"stackend") {
+    id,
+    key,
+    value
   }
   `;
 }

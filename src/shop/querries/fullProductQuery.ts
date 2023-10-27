@@ -60,7 +60,8 @@ export default function fullProductQuery(imageMaxWidth: number | null, includeOr
       }
     }
   },
-  stackendAddToCartLink: metafield(namespace:"custom", key:"stackend_add_to_cart_link") {
+  metafield__stackendAddToCartLink: metafield (namespace:"custom", key:"stackend") {
+    id,
     key,
     value
   }

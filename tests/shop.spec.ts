@@ -100,7 +100,7 @@ describe('Shop', () => {
       expect(p.images).toBeDefined();
       expect(p.options).toBeDefined();
       expect(p.vendor).toBeDefined();
-      expect(p.stackendAddToCartLink).toBeDefined();
+      expect(p.metafield__stackendAddToCartLink).toBeDefined();
 
       expect(p.variants.edges.length).toBeGreaterThan(1);
 
