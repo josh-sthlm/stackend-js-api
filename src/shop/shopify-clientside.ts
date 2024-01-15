@@ -1,27 +1,27 @@
 import { newXcapJsonErrorResult, newXcapJsonResult, Thunk, XcapJsonResult } from '../api';
 import {
-  ListProductTypesRequest,
-  ListProductTypesResult,
-  GetProductResult,
-  ListProductsRequest,
-  ListProductsResult,
-  GetCollectionRequest,
-  GetCollectionResult,
-  GetCheckoutRequest,
-  GetCheckoutResult,
-  ListProductsAndTypesResult,
-  getShopifyConfig,
-  GetProductRequest,
-  GetCollectionsRequest,
-  GetCollectionsResult,
+  CartBuyerIdentity,
+  CartBuyerIdentityUpdateRequest,
+  CartLinesRemoveRequest,
+  CartLinesUpdateRequest,
+  CreateCartRequest,
   GetCartRequest,
   GetCartResult,
-  CreateCartRequest,
-  CartLinesUpdateRequest,
-  ModifyCartResult,
-  CartLinesRemoveRequest,
-  CartBuyerIdentityUpdateRequest,
-  CartBuyerIdentity
+  GetCheckoutRequest,
+  GetCheckoutResult,
+  GetCollectionRequest,
+  GetCollectionResult,
+  GetCollectionsRequest,
+  GetCollectionsResult,
+  GetProductRequest,
+  GetProductResult,
+  getShopifyConfig,
+  ListProductsAndTypesResult,
+  ListProductsRequest,
+  ListProductsResult,
+  ListProductTypesRequest,
+  ListProductTypesResult,
+  ModifyCartResult
 } from './index';
 
 import collectionQuery from './querries/collectionQuery';
@@ -33,7 +33,7 @@ import { ShopState } from './shopReducer';
 import { toQueryParameters } from '../util/graphql';
 import cartQuery from './querries/cartQuery';
 
-export const API_VERSION = '2022-10';
+export const API_VERSION = '2023-04';
 
 function getImageMaxWidth(shopState: ShopState, value?: number | null | undefined): number {
   if (!value) {

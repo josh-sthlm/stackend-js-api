@@ -35,7 +35,7 @@ describe('Shopify Clientside', () => {
 
       expect(store.dispatch(getShopifyConfig())).toStrictEqual({
         accessToken: 'ecdc7f91ed0970e733268535c828fbbe',
-        apiVersion: '2022-10',
+        apiVersion: '2023-04',
         countryCode: 'CA',
         domain: 'graphql.myshopify.com'
       });
