@@ -1,29 +1,29 @@
-import { getJson, post, createCommunityUrl, XcapJsonResult, Thunk, logger, XcapOptionalParameters } from '../api';
-import * as event from '../event';
-import { Poll } from '../poll';
-import * as group from '../group';
+import { createCommunityUrl, getJson, logger, post, Thunk, XcapJsonResult, XcapOptionalParameters } from "../api";
+import * as event from "../event";
+import { CurrentUserRsvpStatuses } from "../event";
+import { Poll } from "../poll";
+import * as group from "../group";
 //import * as gaFunctions from '../functions/gaFunctions';
-import { Request } from '../request';
-import { Category } from '../category';
-import { VoteSummary } from '../vote';
-import { Image } from '../media';
-import { AuthObject } from '../user/privileges';
-import { PaginatedCollection } from '../api/PaginatedCollection';
-import { LikeDataMap } from '../like';
-import CreatedDateAware from '../api/CreatedDateAware';
-import CreatorUserIdAware from '../api/CreatorUserIdAware';
-import XcapObject from '../api/XcapObject';
-import NameAware from '../api/NameAware';
-import DescriptionAware from '../api/DescriptionAware';
-import PermalinkAware from '../api/PermalinkAware';
-import ModifiedDateAware from '../api/ModifiedDateAware';
-import ReferenceAble from '../api/ReferenceAble';
-import PublishDateAware from '../api/PublishDateAware';
-import ModerationAware from '../api/ModerationAware';
-import ReferenceIdAware from '../api/ReferenceIdAware';
-import { CurrentUserRsvpStatuses } from '../event';
-import { RsvpUserResponses } from '../event/eventReducer';
-import { normalizeTags } from '../tags';
+import { Request } from "../request";
+import { Category } from "../category";
+import { VoteSummary } from "../vote";
+import { Image } from "../media";
+import { AuthObject } from "../user/privileges";
+import { PaginatedCollection } from "../api/PaginatedCollection";
+import { LikeDataMap } from "../like";
+import CreatedDateAware from "../api/CreatedDateAware";
+import CreatorUserIdAware from "../api/CreatorUserIdAware";
+import XcapObject from "../api/XcapObject";
+import NameAware from "../api/NameAware";
+import DescriptionAware from "../api/DescriptionAware";
+import PermalinkAware from "../api/PermalinkAware";
+import ModifiedDateAware from "../api/ModifiedDateAware";
+import ReferenceAble from "../api/ReferenceAble";
+import PublishDateAware from "../api/PublishDateAware";
+import ModerationAware from "../api/ModerationAware";
+import ReferenceIdAware from "../api/ReferenceIdAware";
+import { RsvpUserResponses } from "../event/eventReducer";
+import { normalizeTags } from "../tags";
 
 /**
  * Xcap Blog api constants and methods.
@@ -328,7 +328,10 @@ export function getEntries({
 export function getMyEntries({
   p,
   pageSize
-}: { p?: number; pageSize?: number } & XcapOptionalParameters): Thunk<Promise<BlogEntryListingResult>> {
+}: {
+  p?: number;
+  pageSize?: number;
+} & XcapOptionalParameters): Thunk<Promise<BlogEntryListingResult>> {
   return getJson({ url: '/blog/entries/my', parameters: arguments });
 }
 
@@ -497,6 +500,7 @@ export interface SaveBlogEntryEvent {
   location: string;
   link: string;
 }
+
 export interface SaveBlogEntryInput {
   id: number;
   __type: 'net.josh.community.blog.BlogEntry';

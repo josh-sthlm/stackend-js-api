@@ -9,23 +9,23 @@ import {
   REQUEST_COMMENTS,
   REQUEST_GROUP_COMMENTS,
   UPDATE_COMMENT
-} from './commentReducer';
+} from "./commentReducer";
 
 import {
   Comment,
-  getMultipleComments,
-  getComments,
-  GetMultipleCommentsResult,
   CommentModule,
+  CommentSortCriteria,
   getComment,
   GetCommentResult,
-  CommentSortCriteria
-} from './index';
-import { Thunk, XcapJsonErrors } from '../api';
-import SortOrder from '../api/SortOrder';
-import { receiveVotes } from '../vote/voteActions';
-import { LikeDataMap, LikesByCurrentUser } from '../like';
-import { receiveLikes } from '../like/likeActions';
+  getComments,
+  getMultipleComments,
+  GetMultipleCommentsResult
+} from "./index";
+import { Thunk, XcapJsonErrors } from "../api";
+import SortOrder from "../api/SortOrder";
+import { receiveVotes } from "../vote/voteActions";
+import { LikeDataMap, LikesByCurrentUser } from "../like";
+import { receiveLikes } from "../like/likeActions";
 
 /**
  * The default page size: 3
@@ -141,7 +141,7 @@ export function fetchMultipleComments({
   p?: number; //page number in paginated collection
   pageSize?: number;
   commentSortCriteria?: CommentSortCriteria;
-  order?: SortOrder;
+  order?: SortOrder.DESCENDING;
 }): Thunk<Promise<GetMultipleCommentsResult>> {
   return async (dispatch: any): Promise<GetMultipleCommentsResult> => {
     dispatch(requestGroupComments(module, referenceGroupId, commentSortCriteria, order));

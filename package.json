@@ -1,6 +1,6 @@
 {
   "name": "@stackend/api",
-  "version": "1.4.72",
+  "version": "1.4.74",
   "description": "JS bindings to api.stackend.com",
   "keywords": [
     "comments",
@@ -91,7 +91,7 @@
     "jest": "^27.3.1",
     "jest-environment-jsdom": "27.3.1",
     "jest-localstorage-mock": "^2.4.21",
-    "msw": "1.0.0",
+    "msw": "1.0.1",
     "prettier": "^2.6.2",
     "redux": "^4.1.2",
     "redux-thunk": "^2.3.0",

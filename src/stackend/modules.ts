@@ -50,7 +50,10 @@ export enum ModuleType {
   LIVE = 'stackend-live',
 
   /** Listing of Live Events  */
-  LIVE_LISTING = 'stackend-live-listing'
+  LIVE_LISTING = 'stackend-live-listing',
+
+  /** Forums  */
+  FORUM = 'stackend-forum'
 }
 
 export interface ModuleInfo {
@@ -109,6 +112,18 @@ export const MODULE_INFO: { [moduleType: string]: ModuleInfo } = {
     complex: false,
     xcapModuleType: 'forum',
     defaultContext: 'question'
+  },
+  [ModuleType.FORUM]: {
+    name: 'Forum',
+    type: ModuleType.FORUM,
+    singleton: false,
+    addAutomatically: false,
+    parameters: ['id'],
+    simpleId: false,
+    fetchData: true,
+    complex: false,
+    xcapModuleType: 'forum',
+    defaultContext: 'forum'
   },
   [ModuleType.LOGIN]: {
     name: 'Login',

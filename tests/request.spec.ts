@@ -51,5 +51,39 @@ describe('Request', () => {
       expect(ap.permalink).toBe('mytag/mysecondtag');
       expect(ap.tags?.sort()).toEqual(['mytag', 'mysecondtag'].sort());
     });
+
+    it('Parse forum anchor', async () => {
+      const anchor: StackendAnchor | null = parseAnchor('forum/peters-forum');
+
+      expect(anchor).toBeDefined();
+
+      const anchorPart = getAnchorPart(anchor, AnchorType.FORUM);
+
+      expect(anchorPart).toBeDefined();
+
+      const ap = anchorPart as StackendAnchor;
+
+      expect(ap.type).toBe('forum');
+      expect(ap.permalink).toBe('peters-forum');
+      expect(ap.forumPermalink).toBe('peters-forum');
+      expect(ap.forumThreadPermalink).toBeFalsy();
+    });
+
+    it('Parse forum thread anchor', async () => {
+      const anchor: StackendAnchor | null = parseAnchor('forum/peters-forum/my-thread');
+
+      expect(anchor).toBeDefined();
+
+      const anchorPart = getAnchorPart(anchor, AnchorType.FORUM);
+
+      expect(anchorPart).toBeDefined();
+
+      const ap = anchorPart as StackendAnchor;
+
+      expect(ap.type).toBe('forum');
+      expect(ap.permalink).toBe('peters-forum/my-thread');
+      expect(ap.forumPermalink).toBe('peters-forum');
+      expect(ap.forumThreadPermalink).toBe('my-thread');
+    });
   });
 });

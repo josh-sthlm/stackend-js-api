@@ -19,7 +19,8 @@ export enum AnchorType {
   USER = 'user',
   SITE = 'site',
   COMMENT = 'comment',
-  TAGS = 'tags'
+  TAGS = 'tags',
+  FORUM = 'forum'
 }
 
 /**
@@ -49,6 +50,10 @@ export interface StackendAnchor {
 
   // Tags
   tags?: string[];
+
+  // Forum
+  forumPermalink?: string;
+  forumThreadPermalink?: string;
 }
 
 /**
@@ -228,6 +233,17 @@ function parseAnchorInt(anchor: string): StackendAnchor | null {
     case AnchorType.TAGS:
       // tags/TAG/TAG/TAG
       a.tags = [...v];
+      break;
+
+    case AnchorType.FORUM:
+      // forum/FORUM_PERMALINK/FORUM_THREAD_PERMALINK
+      if (v.length >= 1) {
+        // Regular handling
+        a.forumPermalink = v[0];
+        if (v.length > 1) {
+          a.forumThreadPermalink = v[1];
+        }
+      }
       break;
   }
 

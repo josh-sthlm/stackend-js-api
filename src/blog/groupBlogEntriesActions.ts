@@ -2,46 +2,44 @@
 import get from 'lodash/get';
 import update from 'immutability-helper';
 import { Category } from '../category';
-import { receiveGroups, fetchMyGroups, receiveGroupsAuth } from '../group/groupActions';
+import { fetchMyGroups, receiveGroups, receiveGroupsAuth } from '../group/groupActions';
 import { receiveBlogs } from './blogActions';
 import { Group, listMyGroups } from '../group';
 import { getJsonErrorText, newXcapJsonErrorResult, Thunk } from '../api';
 import * as commentActions from '../comments/commentAction';
 import * as commentApi from '../comments';
+import { GetCommentResult, GetMultipleCommentsResult } from '../comments';
 
 import {
+  getGroupBlogState,
+  GroupBlogEntriesActions,
+  GroupBlogEntriesState,
+  GroupBlogState,
+  hasBlogEntries,
   INVALIDATE_GROUP_BLOG_ENTRIES,
   RECEIVE_GROUP_BLOG_ENTRIES,
   REQUEST_GROUP_BLOG_ENTRIES,
   UPDATE_GROUP_BLOG_ENTRY,
-  GroupBlogEntriesActions,
-  UpdateBlogEntry,
-  hasBlogEntries,
-  getGroupBlogState,
-  GroupBlogEntriesState,
-  GroupBlogState
+  UpdateBlogEntry
 } from './groupBlogEntriesReducer';
 
 import {
   BlogEntry,
-  getEntry,
-  getEntries,
-  saveEntry,
-  SetEntryStatus,
-  setEntryStatus,
-  GetEntriesResult,
   GetBlogEntryResult,
+  getCompositeBlogKey,
+  getEntries,
+  GetEntriesResult,
+  getEntry,
   SaveBlogEntryInput,
+  saveEntry,
   SaveEntryResult,
-  getCompositeBlogKey
-  //gaPostEventObject,
-  //gaEditPostEventObject
+  SetEntryStatus,
+  setEntryStatus
 } from './index';
 import { receiveLikes } from '../like/likeActions';
 import { PaginatedCollection } from '../api/PaginatedCollection';
 import { eventsReceived } from '../event/eventActions';
 import { updatePoll, updatePolls } from '../poll/pollActions';
-import { GetCommentResult, GetMultipleCommentsResult } from '../comments';
 import { AuthObject } from '../user/privileges';
 import { Poll } from '../poll';
 
@@ -126,7 +124,7 @@ export function fetchBlogEntries({
   tags
 }: FetchBlogEntries): Thunk<Promise<GetEntriesResult | null>> {
   return async (dispatch: any, getState): Promise<GetEntriesResult | null> => {
-    const categoryId = get(categories, '[0].id', null);
+    const categoryId = get(categories, '[0].id', undefined);
     const compositeBlogKey = getCompositeBlogKey({ blogKey, tags });
 
     try {
@@ -349,6 +347,7 @@ export interface FetchBlogEntryWithCommentsResult {
   fetchBlogEntry: GetBlogEntryResult | null;
   fetchComments: GetCommentResult | null;
 }
+
 /**
  * Fetch a blog entry and its comments
  * @param id

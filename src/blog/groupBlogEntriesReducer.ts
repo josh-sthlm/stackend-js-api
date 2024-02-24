@@ -2,9 +2,7 @@ import get from 'lodash/get';
 import concat from 'lodash/concat';
 import update from 'immutability-helper';
 import createReducer from '../api/createReducer';
-import { getJsonErrorText, XcapJsonErrors } from '../api';
-
-import { logger } from '../api';
+import { getJsonErrorText, logger, XcapJsonErrors } from '../api';
 import { BlogEntry, GetEntriesResult } from './index';
 import { LikeDataMap } from '../like';
 import { emptyPaginatedCollection, PaginatedCollection } from '../api/PaginatedCollection';
@@ -78,7 +76,7 @@ export function hasBlogEntries(
   blogKey: string,
   pageSize: number,
   p: number,
-  categoryId: number,
+  categoryId?: number,
   goToBlogEntry?: string
 ): boolean {
   const pe = getBlogEntries(groupBlogEntriesState, blogKey);

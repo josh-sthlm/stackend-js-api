@@ -1,22 +1,22 @@
 // @flow
-import get from 'lodash/get';
-import { getJson, post, createCommunityUrl, XcapJsonResult, Thunk, XcapOptionalParameters } from '../api';
-import * as categoryApi from '../category';
+import get from "lodash/get";
+import { createCommunityUrl, getJson, post, Thunk, XcapJsonResult, XcapOptionalParameters } from "../api";
+import * as categoryApi from "../category";
 //import * as gaFunctions from '../functions/gaFunctions';
-import { PaginatedCollection } from '../api/PaginatedCollection';
-import { Request } from '../request';
-import { VoteSummary } from '../vote';
-import { LikeDataMap } from '../like';
-import CreatedDateAware from '../api/CreatedDateAware';
-import CreatorUserIdAware from '../api/CreatorUserIdAware';
-import XcapObject from '../api/XcapObject';
-import PermalinkAware from '../api/PermalinkAware';
-import ReferenceAble from '../api/ReferenceAble';
-import NameAware from '../api/NameAware';
-import DescriptionAware from '../api/DescriptionAware';
-import ModerationAware from '../api/ModerationAware';
-import ModifiedDateAware from '../api/ModifiedDateAware';
-import ModifiedByUserIdAware from '../api/ModifiedByUserIdAware';
+import { PaginatedCollection } from "../api/PaginatedCollection";
+import { Request } from "../request";
+import { VoteSummary } from "../vote";
+import { LikeDataMap } from "../like";
+import CreatedDateAware from "../api/CreatedDateAware";
+import CreatorUserIdAware from "../api/CreatorUserIdAware";
+import XcapObject from "../api/XcapObject";
+import PermalinkAware from "../api/PermalinkAware";
+import ReferenceAble from "../api/ReferenceAble";
+import NameAware from "../api/NameAware";
+import DescriptionAware from "../api/DescriptionAware";
+import ModerationAware from "../api/ModerationAware";
+import ModifiedDateAware from "../api/ModifiedDateAware";
+import ModifiedByUserIdAware from "../api/ModifiedByUserIdAware";
 
 /**
  * Xcap Forum API constants and methods.
@@ -101,7 +101,18 @@ const CONTEXT = 'forum';
  * Forum Component name
  * @type {string}
  */
-const COMPONENT_NAME = 'forum';
+export const COMPONENT_NAME = 'forum';
+
+export const FORUM_CLASS = 'net.josh.community.forum.impl.ForumImpl';
+
+export const FORUM_THREAD_CLASS = 'net.josh.community.forum.impl.ForumThreadImpl';
+
+export const FORUM_THREAD_ENTRY_CLASS = 'net.josh.community.forum.impl.ForumThreadEntryImpl';
+
+/**
+ * Component class (used to look up privileges, etc)
+ */
+export const COMPONENT_CLASS = 'net.josh.community.forum.ForumManager';
 
 /**
  * Get the url to a forum or forum thread
@@ -148,16 +159,7 @@ export function getForumUrl({
   }
 }
 
-export const FORUM_CLASS = 'net.josh.community.forum.impl.ForumImpl';
-
-export const FORUM_THREAD_CLASS = 'net.josh.community.forum.impl.ForumThreadImpl';
-
-export const FORUM_THREAD_ENTRY_CLASS = 'net.josh.community.forum.impl.ForumThreadEntryImpl';
-
-/**
- * Component class (used to look up privileges, etc)
- */
-export const COMPONENT_CLASS = 'net.josh.community.forum.ForumManager';
+// export const COMPONENT_NAME = 'forum';
 
 /**
  * Permalink for the QNA forum
@@ -193,6 +195,37 @@ export interface ListForumsResult extends XcapJsonResult {
 }
 
 /**
+ * Create a sorum thread
+ * @param subject
+ * @param text
+ * @param categoryId
+ * @param entryId
+ * @param forumThreadPermalink
+ * @param forumPermalink
+ */
+export function editForumThread({
+  subject,
+  text,
+  categoryId = [],
+  forumThreadPermalink,
+  forumPermalink,
+  isAI
+}: {
+  subject: string;
+  text: string;
+  categoryId?: Array<number>; //Category Ids
+  forumThreadPermalink?: any; // Allows moderators to edit an existing question.
+  forumPermalink: string; // which forum should this post to?
+  isAI: boolean;
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+  if (isAI) {
+    return post({ url: '/forum/edit-forum-thread-ai', parameters: arguments });
+  } else {
+    return post({ url: '/forum/edit-forum-thread', parameters: arguments });
+  }
+}
+
+/**
  * List forums
  *
  * @param p Page number (optional)
@@ -202,7 +235,10 @@ export interface ListForumsResult extends XcapJsonResult {
 export function listForums({
   p,
   pageSize
-}: { p?: number; pageSize?: number } & XcapOptionalParameters): Thunk<Promise<ListForumsResult>> {
+}: {
+  p?: number;
+  pageSize?: number;
+} & XcapOptionalParameters): Thunk<Promise<ListForumsResult>> {
   return getJson({ url: '/forum/list', parameters: arguments });
 }
 
@@ -332,6 +368,7 @@ export function closeForumThread({
 export interface RemoveForumThreadEntryResult extends XcapJsonResult {
   entry: ForumThreadEntry | null;
 }
+
 /**
  * Remove a forum thread entry using moderation.
  * Requires admin access or that user is owner of entry.
@@ -339,7 +376,9 @@ export interface RemoveForumThreadEntryResult extends XcapJsonResult {
  */
 export function removeForumThreadEntry({
   entryId
-}: { entryId: number } & XcapOptionalParameters): Thunk<Promise<RemoveForumThreadEntryResult>> {
+}: {
+  entryId: number;
+} & XcapOptionalParameters): Thunk<Promise<RemoveForumThreadEntryResult>> {
   return post({ url: '/forum/thread/remove', parameters: arguments });
 }
 
@@ -352,7 +391,10 @@ export function removeForumThreadEntry({
 export function moveForumThread({
   threadId,
   forumId
-}: { threadId: number; forumId: number } & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
+}: {
+  threadId: number;
+  forumId: number;
+} & XcapOptionalParameters): Thunk<Promise<XcapJsonResult>> {
   return post({ url: '/forum/thread/move', parameters: arguments });
 }
 

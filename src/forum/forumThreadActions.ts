@@ -1,11 +1,11 @@
 // @flow
-import get from 'lodash/get';
-import * as forumApi from './index';
-import { Forum, ForumThreadEntry, ListThreadsResult, removeForumThreadEntry } from './index';
-import * as likeApi from '../like';
-import * as api from '../api';
-import { Thunk } from '../api';
-import * as forumActions from './forumActions';
+import get from "lodash/get";
+import * as forumApi from "./index";
+import { Forum, ForumThreadEntry, ListThreadsResult, removeForumThreadEntry } from "./index";
+import * as likeApi from "../like";
+import * as api from "../api";
+import { Thunk, XcapJsonResult } from "../api";
+import * as forumActions from "./forumActions";
 import {
   DELETE_FORUM_THREAD,
   ForumThreadActions,
@@ -14,11 +14,49 @@ import {
   RECEIVE_VOTE_FORUM_THREAD,
   REQUEST_FORUM_THREADS,
   UPDATE_FORUM_THREAD_ENTRY
-} from './forumThreadReducer';
-import { PaginatedCollection } from '../api/PaginatedCollection';
-import { receiveLikes } from '../like/likeActions';
+} from "./forumThreadReducer";
+import { PaginatedCollection } from "../api/PaginatedCollection";
+import { receiveLikes } from "../like/likeActions";
 
 //import { sendEventToGA } from '../analytics/analyticsFunctions';
+
+export interface EditForumThread {
+  subject: string;
+  text: string;
+  categoryId?: Array<number>; //Category Ids
+  forumThreadPermalink?: any; // Allows moderators to edit an existing question.
+  forumPermalink: string;
+  isAI: boolean;
+}
+
+export function editForumThread({
+  subject,
+  text,
+  categoryId,
+  forumThreadPermalink,
+  forumPermalink,
+  isAI = false
+}: EditForumThread): Thunk<Promise<XcapJsonResult | { error: string }>> {
+  return async (dispatch: any): Promise<XcapJsonResult | { error: string }> => {
+    const json = await dispatch(
+      forumApi.editForumThread({
+        subject,
+        text,
+        categoryId,
+        forumThreadPermalink,
+        forumPermalink,
+        isAI
+      })
+    );
+
+    if (json.error) {
+      console.error(forumPermalink + ': ' + api.getJsonErrorText(json));
+      return { error: "Couldn't edit forum thread :" + api.getJsonErrorText(json) };
+    }
+
+    return json;
+  };
+}
 
 export interface FetchForumThreads {
   forumPermalink: string;
@@ -58,6 +96,7 @@ export function fetchForumThreads({
         forumPermalink
       })
     );
+
     return json;
   };
 }
@@ -80,7 +119,14 @@ export function fetchForumThreadEntries({
   entryId,
   pageSize = 15,
   p
-}: FetchForumThreadEntries): Thunk<Promise<PaginatedCollection<ForumThreadEntry> | { error: string }>> {
+}: FetchForumThreadEntries): Thunk<
+  Promise<
+    | PaginatedCollection<ForumThreadEntry>
+    | {
+        error: string;
+      }
+  >
+> {
   return async (dispatch: any): Promise<PaginatedCollection<ForumThreadEntry> | { error: string }> => {
     try {
       const data = await dispatch(
@@ -93,6 +139,7 @@ export function fetchForumThreadEntries({
           isQna: forumPermalink === 'question'
         })
       );
+
       if (data.error) {
         console.error("couldn't fetchForumThreadEntries :", api.getJsonErrorText(data));
         return { error: "couldn't fetchForumThreadEntries :" + api.getJsonErrorText(data) };
@@ -216,6 +263,11 @@ export function likeForumThreadEntry({ referenceId, likedByCurrentUser, context 
     }
     const obfuscatedReference = get(forumThreadEntry, `.obfuscatedReference`);
     const forumPermalink = get(forumThreadEntry, `.forumRef.permalink`, undefined);
+
+    if (!forumPermalink) {
+      return;
+    }
+
     let receivedLikes;
     if (!obfuscatedReference) {
       throw Error("can't get obfuscatedReference from forumThreadEntry in redux");

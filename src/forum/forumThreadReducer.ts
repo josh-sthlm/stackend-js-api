@@ -1,14 +1,12 @@
 // @flow
 
 // @ts-ignore
-import chain from 'lodash/chain';
-import get from 'lodash/get';
-import spread from 'lodash/spread';
-import merge from 'lodash/merge';
-import update from 'immutability-helper';
-import createReducer from '../api/createReducer';
-import * as forumApi from './index';
-import { ForumThreadEntry } from './index';
+import chain from "lodash/chain";
+import get from "lodash/get";
+import update from "immutability-helper";
+import createReducer from "../api/createReducer";
+import * as forumApi from "./index";
+import { ForumThreadEntry } from "./index";
 
 export type ForumThreadActions = Request | Receive | Invalidate | Rate | Like | DeleteEntry | Update;
 
@@ -72,7 +70,7 @@ const initialState: ForumThreadState = {
   forums: {}
 };
 
-export default createReducer(initialState, {
+export const forumThreads = createReducer(initialState, {
   REQUEST_FORUM_THREADS: (state: ForumThreadState) =>
     update(state, {
       isFetching: { $set: true },
@@ -80,12 +78,17 @@ export default createReducer(initialState, {
     }),
 
   RECEIVE_FORUM_THREADS: (state: ForumThreadState, action: Receive) => {
-    const uniqueForumThreads = chain(action.entries)
-      .concat(get(state, `forums[${action.forumPermalink}]`, []))
-      .groupBy('id')
-      .map(spread(merge))
-      .value()
+    const allForumThreads = action.entries.concat(get(state, `forums[${action.forumPermalink}]`, []));
+    const uniqueForumThreads = allForumThreads
+      .filter((a, i) => allForumThreads.findIndex(s => a.id === s.id) === i)
       .sort((a: ForumThreadEntry, b: ForumThreadEntry) => (a.sticky ? 1 : 0) - (b.sticky ? 1 : 0));
+
+    // const uniqueForumThreads = chain(action.entries)
+    //   .concat(get(state, `forums[${action.forumPermalink}]`, []))
+    //   .groupBy('id')
+    //   .map(spread(merge))
+    //   .value()
+    //   .sort((a: ForumThreadEntry, b: ForumThreadEntry) => (a.sticky ? 1 : 0) - (b.sticky ? 1 : 0));
 
     return update(state, {
       isFetching: { $set: false },

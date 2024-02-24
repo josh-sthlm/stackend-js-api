@@ -31,7 +31,8 @@ export enum StackendWebSocketEvent {
 export enum RealTimeFunctionName {
   COMMENT = 'comment',
   BLOG = 'blog',
-  LIKE = 'like'
+  LIKE = 'like',
+  FORUM = 'forum'
 }
 
 /**
@@ -86,6 +87,12 @@ export class CommentsSubscription extends Subscription {
 export class BlogSubscription extends Subscription {
   constructor(context: string, blogId: number) {
     super(RealTimeFunctionName.BLOG, context, blogId);
+  }
+}
+
+export class ForumSubscription extends Subscription {
+  constructor(context: string, referenceId: number) {
+    super(RealTimeFunctionName.FORUM, context, referenceId);
   }
 }
 
@@ -150,7 +157,7 @@ const DEFAULT_RECONNECT_DELAY = 10 * 1000;
  * // Register your notification handler
  * addInitializer((sws: StackendWebSocket) => {
  *  sws.addListener((type, event, message) => {
- * 	  console.log("Got notification: ", type, event, data);
+ *    console.log("Got notification: ", type, event, data);
  *  }, StackendWebSocketEvent.MESSAGE_RECEIVED, communityContext, USER_NOTIFICATION_COMPONENT);
  * });
  *
