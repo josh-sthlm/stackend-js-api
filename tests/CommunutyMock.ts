@@ -25,7 +25,9 @@ export default function CommunityMock(props?: Partial<Community>): Community {
       creatorUserId: 1,
       createdDate: Date.now(),
       modStatus: ModerationStatus.NONE,
-      expiresDate: 2145916861000
+      expiresDate: 2145916861000,
+      defaultUserId: 2,
+      openAIApiKey: 'sk-asdfghjklmnopqrst'
     },
     props
   );

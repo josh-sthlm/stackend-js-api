@@ -1,12 +1,12 @@
 // @flow
 
 // @ts-ignore
-import chain from "lodash/chain";
-import get from "lodash/get";
-import update from "immutability-helper";
-import createReducer from "../api/createReducer";
-import * as forumApi from "./index";
-import { ForumThreadEntry } from "./index";
+import chain from 'lodash/chain';
+import get from 'lodash/get';
+import update from 'immutability-helper';
+import createReducer from '../api/createReducer';
+import * as forumApi from './index';
+import { ForumThreadEntry } from './index';
 
 export type ForumThreadActions = Request | Receive | Invalidate | Rate | Like | DeleteEntry | Update;
 

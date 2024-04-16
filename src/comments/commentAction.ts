@@ -9,7 +9,7 @@ import {
   REQUEST_COMMENTS,
   REQUEST_GROUP_COMMENTS,
   UPDATE_COMMENT
-} from "./commentReducer";
+} from './commentReducer';
 
 import {
   Comment,
@@ -20,12 +20,12 @@ import {
   getComments,
   getMultipleComments,
   GetMultipleCommentsResult
-} from "./index";
-import { Thunk, XcapJsonErrors } from "../api";
-import SortOrder from "../api/SortOrder";
-import { receiveVotes } from "../vote/voteActions";
-import { LikeDataMap, LikesByCurrentUser } from "../like";
-import { receiveLikes } from "../like/likeActions";
+} from './index';
+import { Thunk, XcapJsonErrors } from '../api';
+import SortOrder from '../api/SortOrder';
+import { receiveVotes } from '../vote/voteActions';
+import { LikeDataMap, LikesByCurrentUser } from '../like';
+import { receiveLikes } from '../like/likeActions';
 
 /**
  * The default page size: 3

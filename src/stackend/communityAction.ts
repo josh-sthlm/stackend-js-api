@@ -1,13 +1,13 @@
 import {
-  REQUEST_COMMUNITIES,
+  CommunityActions,
+  CommunityState,
   RECEIVE_COMMUNITIES,
-  UPDATE_COMMUNITY,
-  SET_COMMUNITY_SETTINGS,
+  RECEIVE_RESOURCE_USAGE,
   REMOVE_COMMUNITIES,
   REMOVE_COMMUNITY,
-  RECEIVE_RESOURCE_USAGE,
-  CommunityActions,
-  CommunityState
+  REQUEST_COMMUNITIES,
+  SET_COMMUNITY_SETTINGS,
+  UPDATE_COMMUNITY
 } from './communityReducer';
 
 import { newXcapJsonErrorResult, Thunk } from '../api';
@@ -182,6 +182,8 @@ function updateCommunity(community: Community): CommunityActions {
  * @param status
  * @param locale
  * @param domains
+ * @param defaultUserId
+ * @param openAIApiKey
  */
 export function editCommunity({
   id = 0,
@@ -190,7 +192,9 @@ export function editCommunity({
   description = '',
   status = CommunityStatus.VISIBLE,
   locale = 'en_US',
-  domains = []
+  domains = [],
+  defaultUserId = 0,
+  openAIApiKey = ''
 }: {
   id?: number; // Post id
   name: string;
@@ -199,9 +203,23 @@ export function editCommunity({
   status: string;
   locale: string; //The body text
   domains: any;
+  defaultUserId: number;
+  openAIApiKey?: string;
 }): Thunk<Promise<StoreCommunityResult>> {
   return async (dispatch: any /*, getState: any*/): Promise<StoreCommunityResult> => {
-    const response = await dispatch(storeCommunity({ id, name, permalink, description, status, locale, domains }));
+    const response = await dispatch(
+      storeCommunity({
+        id,
+        name,
+        permalink,
+        description,
+        status,
+        locale,
+        domains,
+        defaultUserId,
+        openAIApiKey
+      })
+    );
 
     if (!!id && id !== 0) {
       dispatch(updateCommunity(response.storedCommunity));

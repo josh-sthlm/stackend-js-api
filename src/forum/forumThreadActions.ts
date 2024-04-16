@@ -1,11 +1,11 @@
 // @flow
-import get from "lodash/get";
-import * as forumApi from "./index";
-import { Forum, ForumThreadEntry, ListThreadsResult, removeForumThreadEntry } from "./index";
-import * as likeApi from "../like";
-import * as api from "../api";
-import { Thunk, XcapJsonResult } from "../api";
-import * as forumActions from "./forumActions";
+import get from 'lodash/get';
+import * as forumApi from './index';
+import { Forum, ForumThreadEntry, ListThreadsResult, removeForumThreadEntry } from './index';
+import * as likeApi from '../like';
+import * as api from '../api';
+import { Thunk, XcapJsonResult } from '../api';
+import * as forumActions from './forumActions';
 import {
   DELETE_FORUM_THREAD,
   ForumThreadActions,
@@ -14,9 +14,9 @@ import {
   RECEIVE_VOTE_FORUM_THREAD,
   REQUEST_FORUM_THREADS,
   UPDATE_FORUM_THREAD_ENTRY
-} from "./forumThreadReducer";
-import { PaginatedCollection } from "../api/PaginatedCollection";
-import { receiveLikes } from "../like/likeActions";
+} from './forumThreadReducer';
+import { PaginatedCollection } from '../api/PaginatedCollection';
+import { receiveLikes } from '../like/likeActions';
 
 //import { sendEventToGA } from '../analytics/analyticsFunctions';
 

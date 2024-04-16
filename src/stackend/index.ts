@@ -1,5 +1,5 @@
 import { Request } from '../request';
-import { getJson, post, getCurrentCommunityPermalink, XcapJsonResult, Thunk } from '../api';
+import { getCurrentCommunityPermalink, getJson, post, Thunk, XcapJsonResult } from '../api';
 import ModerationStatus from '../api/ModerationStatus';
 import Order from '../api/Order';
 import { fetchModules } from './moduleAction';
@@ -70,6 +70,8 @@ export interface Community
   theme: string;
   settings: any;
   style: any;
+  defaultUserId: number;
+  openAIApiKey: string;
 }
 
 /**
@@ -293,7 +295,8 @@ export function newCommunity(name: string, permalink: string): any {
     logotypeId: 0,
     admins: [],
     moderators: [],
-    theme: Theme.STACKEND
+    theme: Theme.STACKEND,
+    openAIApiKey: ''
   };
 }
 
@@ -317,6 +320,8 @@ export interface StoreCommunityResult extends XcapJsonResult {
  * @param moderators {number[]} List of moderator user ids
  * @param theme {String} Name of theme to use
  * @param style {String} Implementation specific style data (typically CSS) for front end.
+ * @param defaultUserId
+ * @param openAIApiKey
  */
 export function storeCommunity({
   id,
@@ -331,7 +336,9 @@ export function storeCommunity({
   admins = [],
   moderators = [],
   theme,
-  style = undefined
+  style = undefined,
+  defaultUserId,
+  openAIApiKey
 }: {
   id?: number;
   permalink?: string;
@@ -346,6 +353,8 @@ export function storeCommunity({
   moderators?: Array<number>;
   theme?: string;
   style?: any;
+  defaultUserId?: number;
+  openAIApiKey?: string;
 }): Thunk<Promise<StoreCommunityResult>> {
   return post({
     url: '/stackend/community/store',
@@ -362,7 +371,9 @@ export function storeCommunity({
       moderators,
       theme,
       style: style ? JSON.stringify(style) : '{}',
-      settings: settings ? JSON.stringify(settings) : '{}'
+      settings: settings ? JSON.stringify(settings) : '{}',
+      defaultUserId,
+      openAIApiKey
     },
     community: STACKEND_COMMUNITY
   });
@@ -741,6 +752,7 @@ export function isCommunityAdmin(community: Community | null, userId?: number | 
 
   return typeof community.adminUserIds !== 'undefined' && community.adminUserIds.includes(userId as number);
 }
+
 /**
  * Check if the user has stackend admin access (any community/stack).
  * @param currentUser
@@ -960,11 +972,11 @@ export interface StoreModuleResult extends XcapJsonResult {
  *
  * Supported optional extra data:
  * <dl>
- * 	<dt>permalink</dt>
- * 	<dt>description</dt>
- * 	<dt>forumAnonymity</dt><dd>ForumAnonymityLevel</dd>
- * 	<dt>groupVisibile</dt><dd>true/false</dd>
- * 	<dt>groupContentVisibile</dt><dd>true/false</dd>
+ *  <dt>permalink</dt>
+ *  <dt>description</dt>
+ *  <dt>forumAnonymity</dt><dd>ForumAnonymityLevel</dd>
+ *  <dt>groupVisibile</dt><dd>true/false</dd>
+ *  <dt>groupContentVisibile</dt><dd>true/false</dd>
  *  <dt>body<dt>
  *  <dt>teaser</dt>
  * <dl>
@@ -1208,6 +1220,7 @@ export interface SetCommunityAccessResult extends XcapJsonResult {
   communityPrivilegeType: number;
   communityId: number;
 }
+
 /**
  * Make a user moderator or admin status from a community. Or remove that status
  * @param communityId
