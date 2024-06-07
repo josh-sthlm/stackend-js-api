@@ -187,6 +187,7 @@ export default class StackendWebSocket {
   socket: WebSocket | null = null;
   isOpen = false;
   sendQueue: Array<Message> = [];
+  pongTimeoutId: any = null;
 
   /** Low level listeners. maps from broadcast id to array of listeners */
   listeners: { [broadcastId: string]: Array<Listener> } = {};
@@ -294,6 +295,12 @@ export default class StackendWebSocket {
   close(): void {
     this.isOpen = false;
     this.socket?.close();
+
+    if (this.pongTimeoutId != null) {
+      console.log('StackendWebSocket: Removing pong interval.');
+      clearInterval(this.pongTimeoutId);
+    }
+
     delete instances[this.xcapCommunityName];
   }
 
@@ -805,6 +812,23 @@ export function getInstance(community: Community): Thunk<StackendWebSocket> {
       sws.connect();
       instances[community.xcapCommunityName] = sws;
       instance = sws;
+
+      // console.log('StackendWebSocket: Adding pong listener.');
+      // sws.addMessageListener(
+      //   (type, event, message) => {
+      //     if (message && message.messageType === 'PONG') {
+      //       console.log('Got Pong: ', type, event, message);
+      //     }
+      //   },
+      //   REALTIME_COMPONENT,
+      //   REALTIME_COMPONENT
+      // );
+
+      // console.log('StackendWebSocket: Adding ping interval.');
+      const pongTimeoutId = setInterval(() => {
+        sws.ping();
+      }, 60 * 1000);
+      sws.pongTimeoutId = pongTimeoutId;
     }
 
     return instance;

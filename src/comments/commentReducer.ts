@@ -144,7 +144,7 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
 
       const requestBlogEntryComments = Object.assign(
         {},
-        state[key] ? state[key].json.comments[action.referenceId] : {},
+        state[key] && state[key].json ? state[key].json.comments[action.referenceId] : {},
         {
           isFetching: true,
           didInvalidate: false
