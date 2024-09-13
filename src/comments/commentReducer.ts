@@ -151,11 +151,18 @@ export function GroupComments(state: CommentsState = {}, action: CommentsActions
         }
       );
 
-      const requestBlogEntiesWithComments = Object.assign({}, state[key] ? state[key].json.comments : {}, {
-        [action.referenceId]: requestBlogEntryComments
-      });
+      const requestBlogEntiesWithComments = Object.assign(
+        {},
+        state[key] && state[key].json ? state[key].json.comments : {},
+        {
+          [action.referenceId]: requestBlogEntryComments
+        }
+      );
 
-      const likesByCurrentUser = Object.assign({}, state[key] ? state[key].json.likesByCurrentUser : {});
+      const likesByCurrentUser = Object.assign(
+        {},
+        state[key] && state[key].json ? state[key].json.likesByCurrentUser : {}
+      );
 
       return Object.assign({}, state, {
         [key]: {

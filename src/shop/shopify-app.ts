@@ -35,6 +35,7 @@ type IsStoreConnectedResult = XcapJsonResult & {
   connected: boolean;
   communityId: number;
 };
+
 /**
  * Connect an existing shop with a community. The storefront access token must first be saved
  * Requires stackend appid and api key.
@@ -379,6 +380,61 @@ export function otpLogin(params: OTPLoginRequest): Thunk<Promise<OTPLoginResult>
           ...params,
           [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
         }
+      })
+    );
+  };
+}
+
+export type GetStackDataRequest = StackendApiKeyParameters & {
+  id: number;
+};
+
+export type GetStackDataResult = XcapJsonResult & {
+  id: number;
+  permalink: string;
+  domains: Array<string>;
+  theme: string;
+};
+
+/**
+ * Get stack data for display in shopify admin
+ * @param params
+ */
+export function getStackData(params: GetStackDataRequest): Thunk<Promise<GetStackDataResult>> {
+  return (dispatch: any): Promise<GetStackDataResult> => {
+    return dispatch(
+      getJson({
+        url: '/shop/app/get-stack-data',
+        parameters: {
+          ...params,
+          [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY
+        }
+      })
+    );
+  };
+}
+
+export type SaveStackDataRequest = StackendApiKeyParameters & {
+  id: number;
+  domains: string[];
+  openAIApiKey: string;
+  mainColor: string;
+  aiColor: string;
+  buttonColor: string;
+  borderRadius: string;
+  buttonBorderRadius: string;
+};
+
+/**
+ * Save the stack data
+ * Requires stackend appid and api key.
+ */
+export function saveStackData(params: SaveStackDataRequest): Thunk<Promise<XcapJsonResult>> {
+  return (dispatch: any): Promise<XcapJsonResult> => {
+    return dispatch(
+      getJson({
+        url: '/shop/app/save-stack-data',
+        parameters: { ...params, [COMMUNITY_PARAMETER]: DEFAULT_COMMUNITY }
       })
     );
   };
